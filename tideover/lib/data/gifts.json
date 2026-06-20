@@ -1,0 +1,132 @@
+[
+  {
+    "id": "gft_c3ox3a0gfjib",
+    "merchantId": "mch_lumen0001",
+    "name": "Early access to the next drop",
+    "kind": "early-access",
+    "costCents": 0,
+    "perceivedValueCents": 4000,
+    "eligibility": {
+      "minLtvCents": 0,
+      "minWaitDays": 30,
+      "minRiskScore": 40
+    }
+  },
+  {
+    "id": "gft_wc389u6nyrtw",
+    "merchantId": "mch_lumen0001",
+    "name": "Handwritten founder note",
+    "kind": "founder-note",
+    "costCents": 500,
+    "perceivedValueCents": 3000,
+    "eligibility": {
+      "minLtvCents": 0,
+      "minWaitDays": 45,
+      "minRiskScore": 50
+    }
+  },
+  {
+    "id": "gft_wj9bznuqh5q1",
+    "merchantId": "mch_lumen0001",
+    "name": "Priority dispatch (first out the door)",
+    "kind": "priority-dispatch",
+    "costCents": 1200,
+    "perceivedValueCents": 6000,
+    "eligibility": {
+      "minLtvCents": 50000,
+      "minWaitDays": 45,
+      "minRiskScore": 60
+    }
+  },
+  {
+    "id": "gft_ctzt2e9m1yc5",
+    "merchantId": "mch_lumen0001",
+    "name": "Digital perk pack (wallpapers + guide)",
+    "kind": "digital-perk",
+    "costCents": 0,
+    "perceivedValueCents": 2000,
+    "eligibility": {
+      "minLtvCents": 0,
+      "minWaitDays": 7,
+      "minRiskScore": 30
+    }
+  },
+  {
+    "id": "gft_lom6ti5hz85z",
+    "merchantId": "mch_lumen0001",
+    "name": "$25 next-order credit",
+    "kind": "next-order-credit",
+    "costCents": 2500,
+    "perceivedValueCents": 2500,
+    "eligibility": {
+      "minLtvCents": 60000,
+      "minWaitDays": 60,
+      "minRiskScore": 65
+    }
+  },
+  {
+    "id": "gft_uz7g4lx577xh",
+    "merchantId": "mch_atelier02",
+    "name": "Early access to the next drop",
+    "kind": "early-access",
+    "costCents": 0,
+    "perceivedValueCents": 4000,
+    "eligibility": {
+      "minLtvCents": 0,
+      "minWaitDays": 30,
+      "minRiskScore": 40
+    }
+  },
+  {
+    "id": "gft_t267e3cehcm0",
+    "merchantId": "mch_atelier02",
+    "name": "Handwritten founder note",
+    "kind": "founder-note",
+    "costCents": 500,
+    "perceivedValueCents": 3000,
+    "eligibility": {
+      "minLtvCents": 0,
+      "minWaitDays": 45,
+      "minRiskScore": 50
+    }
+  },
+  {
+    "id": "gft_3nrvh9dolwps",
+    "merchantId": "mch_atelier02",
+    "name": "Priority dispatch (first out the door)",
+    "kind": "priority-dispatch",
+    "costCents": 1200,
+    "perceivedValueCents": 6000,
+    "eligibility": {
+      "minLtvCents": 50000,
+      "minWaitDays": 45,
+      "minRiskScore": 60
+    }
+  },
+  {
+    "id": "gft_8e8tscaqjthh",
+    "merchantId": "mch_atelier02",
+    "name": "Digital perk pack (wallpapers + guide)",
+    "kind": "digital-perk",
+    "costCents": 0,
+    "perceivedValueCents": 2000,
+    "eligibility": {
+      "minLtvCents": 0,
+      "minWaitDays": 7,
+      "minRiskScore": 30
+    }
+  },
+  {
+    "id": "gft_3k2d01hwiw6k",
+    "merchantId": "mch_atelier02",
+    "name": "$25 next-order credit",
+    "kind": "next-order-credit",
+    "costCents": 2500,
+    "perceivedValueCents": 2500,
+    "eligibility": {
+      "minLtvCents": 60000,
+      "minWaitDays": 60,
+      "minRiskScore": 65
+    }
+  }
+]

@@ -1,0 +1,373 @@
+[
+  {
+    "id": "cus_p9l4ma3fgp2e",
+    "merchantId": "mch_lumen0001",
+    "email": "mara59@example.com",
+    "firstName": "Mara",
+    "ltvCents": 49509,
+    "orderIds": [
+      "ord_mx4s8st5zaeq",
+      "ord_7vzpm6h2ql35"
+    ],
+    "ticketCount": 4,
+    "lastSentiment": "chargeback-threat"
+  },
+  {
+    "id": "cus_3gnlolqycs15",
+    "merchantId": "mch_lumen0001",
+    "email": "rosa91@example.com",
+    "firstName": "Rosa",
+    "ltvCents": 31828,
+    "orderIds": [
+      "ord_yguwoox4us0p"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_pt6pa1a6rxev",
+    "merchantId": "mch_lumen0001",
+    "email": "aisha16@example.com",
+    "firstName": "Aisha",
+    "ltvCents": 39810,
+    "orderIds": [
+      "ord_pu8z6itg6s8n",
+      "ord_c3l20wplsuau"
+    ],
+    "ticketCount": 4,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_fv0oaf32uwqy",
+    "merchantId": "mch_lumen0001",
+    "email": "dana98@example.com",
+    "firstName": "Dana",
+    "ltvCents": 12214,
+    "orderIds": [
+      "ord_a2y81ats3y4z"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "hostile"
+  },
+  {
+    "id": "cus_hde7ct87fwk9",
+    "merchantId": "mch_lumen0001",
+    "email": "noor51@example.com",
+    "firstName": "Noor",
+    "ltvCents": 61286,
+    "orderIds": [
+      "ord_1vyly8e86mha",
+      "ord_xftv0b8sj4qu"
+    ],
+    "ticketCount": 4,
+    "lastSentiment": "chargeback-threat"
+  },
+  {
+    "id": "cus_c8wfjheeea9a",
+    "merchantId": "mch_lumen0001",
+    "email": "wes52@example.com",
+    "firstName": "Wes",
+    "ltvCents": 31794,
+    "orderIds": [
+      "ord_oaoizbqal569"
+    ],
+    "ticketCount": 0,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_pq4i5jasd94t",
+    "merchantId": "mch_lumen0001",
+    "email": "chen63@example.com",
+    "firstName": "Chen",
+    "ltvCents": 89970,
+    "orderIds": [
+      "ord_780fgzueixzk",
+      "ord_zmg5fjryy2rr"
+    ],
+    "ticketCount": 2,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_g0k6wt9hpq4k",
+    "merchantId": "mch_lumen0001",
+    "email": "liam28@example.com",
+    "firstName": "Liam",
+    "ltvCents": 9541,
+    "orderIds": [
+      "ord_zm35g6r6iacc"
+    ],
+    "ticketCount": 2,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_if41gzk729hc",
+    "merchantId": "mch_lumen0001",
+    "email": "sofia11@example.com",
+    "firstName": "Sofia",
+    "ltvCents": 83730,
+    "orderIds": [
+      "ord_wr09l1jy00n1"
+    ],
+    "ticketCount": 2,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_mxcv4gb20j9k",
+    "merchantId": "mch_lumen0001",
+    "email": "chen88@example.com",
+    "firstName": "Chen",
+    "ltvCents": 48310,
+    "orderIds": [
+      "ord_84sthgbsrre9",
+      "ord_kx26oc9a099v"
+    ],
+    "ticketCount": 2,
+    "lastSentiment": "anxious"
+  },
+  {
+    "id": "cus_7nty2dy6kqbu",
+    "merchantId": "mch_lumen0001",
+    "email": "greta81@example.com",
+    "firstName": "Greta",
+    "ltvCents": 36585,
+    "orderIds": [
+      "ord_chncb2tlutov",
+      "ord_iogartf6w2yp"
+    ],
+    "ticketCount": 4,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_x28v6eyzaqcl",
+    "merchantId": "mch_lumen0001",
+    "email": "tomás20@example.com",
+    "firstName": "Tomás",
+    "ltvCents": 30625,
+    "orderIds": [
+      "ord_3w6zwgaxuf9q"
+    ],
+    "ticketCount": 2,
+    "lastSentiment": "hostile"
+  },
+  {
+    "id": "cus_imixidctka8l",
+    "merchantId": "mch_lumen0001",
+    "email": "greta35@example.com",
+    "firstName": "Greta",
+    "ltvCents": 10900,
+    "orderIds": [
+      "ord_jn2po6s6pnb1"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "anxious"
+  },
+  {
+    "id": "cus_xe4zvtvvv4x9",
+    "merchantId": "mch_lumen0001",
+    "email": "marcus62@example.com",
+    "firstName": "Marcus",
+    "ltvCents": 11139,
+    "orderIds": [
+      "ord_t6ksfinenw78"
+    ],
+    "ticketCount": 0,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_11qsr6h79wjc",
+    "merchantId": "mch_lumen0001",
+    "email": "greta91@example.com",
+    "firstName": "Greta",
+    "ltvCents": 125497,
+    "orderIds": [
+      "ord_mswlvthzm2x4",
+      "ord_2ky4ik4v0alj"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_e10ung3tisqc",
+    "merchantId": "mch_atelier02",
+    "email": "yuki26@example.com",
+    "firstName": "Yuki",
+    "ltvCents": 26261,
+    "orderIds": [
+      "ord_d41k77u6slxu"
+    ],
+    "ticketCount": 0,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_b6tuhu714vrh",
+    "merchantId": "mch_atelier02",
+    "email": "otto55@example.com",
+    "firstName": "Otto",
+    "ltvCents": 13738,
+    "orderIds": [
+      "ord_y66xco0nj52r"
+    ],
+    "ticketCount": 0,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_n4t53zh85i1g",
+    "merchantId": "mch_atelier02",
+    "email": "noor20@example.com",
+    "firstName": "Noor",
+    "ltvCents": 18556,
+    "orderIds": [
+      "ord_oyo5uimf5ah3"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "anxious"
+  },
+  {
+    "id": "cus_a7pkcsvwq3ba",
+    "merchantId": "mch_atelier02",
+    "email": "mara50@example.com",
+    "firstName": "Mara",
+    "ltvCents": 29885,
+    "orderIds": [
+      "ord_azyrzo8efgli",
+      "ord_q7drkaiaaw2f"
+    ],
+    "ticketCount": 0,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_cuivgjr7qszl",
+    "merchantId": "mch_atelier02",
+    "email": "greta45@example.com",
+    "firstName": "Greta",
+    "ltvCents": 37888,
+    "orderIds": [
+      "ord_k3erk4jp4e0p"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "hostile"
+  },
+  {
+    "id": "cus_64fknw279h0g",
+    "merchantId": "mch_atelier02",
+    "email": "mara15@example.com",
+    "firstName": "Mara",
+    "ltvCents": 74416,
+    "orderIds": [
+      "ord_9zapxp27rm0k",
+      "ord_ungveel4mo6x"
+    ],
+    "ticketCount": 0,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_twb07xf6mh7t",
+    "merchantId": "mch_atelier02",
+    "email": "greta11@example.com",
+    "firstName": "Greta",
+    "ltvCents": 6739,
+    "orderIds": [
+      "ord_7a85ix2fg2c4"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "chargeback-threat"
+  },
+  {
+    "id": "cus_wl5xj8vj4h5k",
+    "merchantId": "mch_atelier02",
+    "email": "mara22@example.com",
+    "firstName": "Mara",
+    "ltvCents": 35637,
+    "orderIds": [
+      "ord_34mp17i7q1zv"
+    ],
+    "ticketCount": 3,
+    "lastSentiment": "hostile"
+  },
+  {
+    "id": "cus_jrzy3b618bmu",
+    "merchantId": "mch_atelier02",
+    "email": "otto57@example.com",
+    "firstName": "Otto",
+    "ltvCents": 41627,
+    "orderIds": [
+      "ord_ca4n3tbfhydr",
+      "ord_b65odfvl14he"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "anxious"
+  },
+  {
+    "id": "cus_ph2tklfdc8bf",
+    "merchantId": "mch_atelier02",
+    "email": "hassan28@example.com",
+    "firstName": "Hassan",
+    "ltvCents": 15157,
+    "orderIds": [
+      "ord_k18tpnqg9jsi",
+      "ord_b3htzmn68kcr"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_mq968avavbwk",
+    "merchantId": "mch_atelier02",
+    "email": "otto49@example.com",
+    "firstName": "Otto",
+    "ltvCents": 50418,
+    "orderIds": [
+      "ord_ikmpfn3yt32j"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_ngqf4ymywb3d",
+    "merchantId": "mch_atelier02",
+    "email": "tomás72@example.com",
+    "firstName": "Tomás",
+    "ltvCents": 219678,
+    "orderIds": [
+      "ord_q34i4lkk0lqs"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "chargeback-threat"
+  },
+  {
+    "id": "cus_ohzqotu0r5fl",
+    "merchantId": "mch_atelier02",
+    "email": "felix40@example.com",
+    "firstName": "Felix",
+    "ltvCents": 25169,
+    "orderIds": [
+      "ord_gmsivk93i696"
+    ],
+    "ticketCount": 0,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_4duncsay2531",
+    "merchantId": "mch_atelier02",
+    "email": "noor71@example.com",
+    "firstName": "Noor",
+    "ltvCents": 95364,
+    "orderIds": [
+      "ord_8rcz3j619s6v"
+    ],
+    "ticketCount": 0,
+    "lastSentiment": "calm"
+  },
+  {
+    "id": "cus_k7dwlxc65eg7",
+    "merchantId": "mch_atelier02",
+    "email": "kwame10@example.com",
+    "firstName": "Kwame",
+    "ltvCents": 16311,
+    "orderIds": [
+      "ord_l5m7768s7eay"
+    ],
+    "ticketCount": 2,
+    "lastSentiment": "hostile"
+  }
+]
