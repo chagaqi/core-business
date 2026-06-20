@@ -10,7 +10,7 @@
     "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
     "type": "wismo",
     "sentiment": "chargeback-threat",
-    "createdAt": "2026-06-14T05:45:26.188Z",
+    "createdAt": "2026-06-14T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -30,7 +30,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "calm",
-    "createdAt": "2026-06-16T05:45:26.188Z",
+    "createdAt": "2026-06-16T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -49,7 +49,7 @@
     "body": "Realized I need to update something on my order before it ships. Can you help?",
     "type": "other",
     "sentiment": "anxious",
-    "createdAt": "2026-06-15T05:45:26.188Z",
+    "createdAt": "2026-06-15T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -68,7 +68,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "hostile",
-    "createdAt": "2026-06-20T05:45:26.188Z",
+    "createdAt": "2026-06-20T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -87,7 +87,7 @@
     "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
     "type": "deposit",
     "sentiment": "anxious",
-    "createdAt": "2026-06-14T05:45:26.188Z",
+    "createdAt": "2026-06-14T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -106,7 +106,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "anxious",
-    "createdAt": "2026-06-14T05:45:26.188Z",
+    "createdAt": "2026-06-14T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -125,7 +125,7 @@
     "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
     "type": "other",
     "sentiment": "chargeback-threat",
-    "createdAt": "2026-06-19T05:45:26.188Z",
+    "createdAt": "2026-06-19T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -145,7 +145,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "anxious",
-    "createdAt": "2026-06-20T05:45:26.188Z",
+    "createdAt": "2026-06-20T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -164,7 +164,7 @@
     "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
     "type": "refund",
     "sentiment": "calm",
-    "createdAt": "2026-06-14T05:45:26.188Z",
+    "createdAt": "2026-06-14T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -183,7 +183,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "anxious",
-    "createdAt": "2026-06-18T05:45:26.188Z",
+    "createdAt": "2026-06-18T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -202,7 +202,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "anxious",
-    "createdAt": "2026-06-14T05:45:26.188Z",
+    "createdAt": "2026-06-14T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -221,7 +221,7 @@
     "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
     "type": "deposit",
     "sentiment": "anxious",
-    "createdAt": "2026-06-20T05:45:26.188Z",
+    "createdAt": "2026-06-20T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -240,7 +240,7 @@
     "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
     "type": "deposit",
     "sentiment": "hostile",
-    "createdAt": "2026-06-17T05:45:26.188Z",
+    "createdAt": "2026-06-17T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -259,7 +259,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "anxious",
-    "createdAt": "2026-06-14T05:45:26.188Z",
+    "createdAt": "2026-06-14T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -278,7 +278,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "calm",
-    "createdAt": "2026-06-17T05:45:26.188Z",
+    "createdAt": "2026-06-17T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -297,7 +297,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "hostile",
-    "createdAt": "2026-06-16T05:45:26.188Z",
+    "createdAt": "2026-06-16T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -316,7 +316,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "anxious",
-    "createdAt": "2026-06-18T05:45:26.188Z",
+    "createdAt": "2026-06-18T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -335,7 +335,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "anxious",
-    "createdAt": "2026-06-19T05:45:26.188Z",
+    "createdAt": "2026-06-19T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -354,7 +354,7 @@
     "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
     "type": "wismo",
     "sentiment": "chargeback-threat",
-    "createdAt": "2026-06-16T05:45:26.188Z",
+    "createdAt": "2026-06-16T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -374,7 +374,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "hostile",
-    "createdAt": "2026-06-17T05:45:26.188Z",
+    "createdAt": "2026-06-17T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -393,7 +393,7 @@
     "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
     "type": "deposit",
     "sentiment": "calm",
-    "createdAt": "2026-06-16T05:45:26.188Z",
+    "createdAt": "2026-06-16T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -412,7 +412,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "calm",
-    "createdAt": "2026-06-17T05:45:26.188Z",
+    "createdAt": "2026-06-17T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -431,7 +431,7 @@
     "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
     "type": "refund",
     "sentiment": "calm",
-    "createdAt": "2026-06-20T05:45:26.188Z",
+    "createdAt": "2026-06-20T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -450,7 +450,7 @@
     "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
     "type": "refund",
     "sentiment": "hostile",
-    "createdAt": "2026-06-20T05:45:26.188Z",
+    "createdAt": "2026-06-20T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -469,7 +469,7 @@
     "body": "Realized I need to update something on my order before it ships. Can you help?",
     "type": "other",
     "sentiment": "calm",
-    "createdAt": "2026-06-17T05:45:26.188Z",
+    "createdAt": "2026-06-17T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -488,7 +488,7 @@
     "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
     "type": "deposit",
     "sentiment": "anxious",
-    "createdAt": "2026-06-17T05:45:26.188Z",
+    "createdAt": "2026-06-17T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -507,7 +507,7 @@
     "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
     "type": "deposit",
     "sentiment": "anxious",
-    "createdAt": "2026-06-17T05:45:26.188Z",
+    "createdAt": "2026-06-17T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -526,7 +526,7 @@
     "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
     "type": "refund",
     "sentiment": "chargeback-threat",
-    "createdAt": "2026-06-19T05:45:26.189Z",
+    "createdAt": "2026-06-19T06:50:00.686Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -546,7 +546,7 @@
     "body": "Realized I need to update something on my order before it ships. Can you help?",
     "type": "other",
     "sentiment": "calm",
-    "createdAt": "2026-06-17T05:45:26.189Z",
+    "createdAt": "2026-06-17T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -565,7 +565,7 @@
     "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
     "type": "wismo",
     "sentiment": "chargeback-threat",
-    "createdAt": "2026-06-17T05:45:26.189Z",
+    "createdAt": "2026-06-17T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -585,7 +585,7 @@
     "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
     "type": "wismo",
     "sentiment": "chargeback-threat",
-    "createdAt": "2026-06-16T05:45:26.189Z",
+    "createdAt": "2026-06-16T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -605,7 +605,7 @@
     "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
     "type": "deposit",
     "sentiment": "calm",
-    "createdAt": "2026-06-18T05:45:26.192Z",
+    "createdAt": "2026-06-18T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -624,7 +624,7 @@
     "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
     "type": "refund",
     "sentiment": "hostile",
-    "createdAt": "2026-06-16T05:45:26.192Z",
+    "createdAt": "2026-06-16T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -643,7 +643,7 @@
     "body": "Realized I need to update something on my order before it ships. Can you help?",
     "type": "other",
     "sentiment": "hostile",
-    "createdAt": "2026-06-16T05:45:26.192Z",
+    "createdAt": "2026-06-16T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -662,7 +662,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "anxious",
-    "createdAt": "2026-06-20T05:45:26.192Z",
+    "createdAt": "2026-06-20T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -681,7 +681,7 @@
     "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
     "type": "deposit",
     "sentiment": "chargeback-threat",
-    "createdAt": "2026-06-17T05:45:26.194Z",
+    "createdAt": "2026-06-17T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -701,7 +701,7 @@
     "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
     "type": "wismo",
     "sentiment": "chargeback-threat",
-    "createdAt": "2026-06-19T05:45:26.194Z",
+    "createdAt": "2026-06-19T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -721,7 +721,7 @@
     "body": "Realized I need to update something on my order before it ships. Can you help?",
     "type": "other",
     "sentiment": "hostile",
-    "createdAt": "2026-06-14T05:45:26.194Z",
+    "createdAt": "2026-06-14T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -740,7 +740,7 @@
     "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
     "type": "deposit",
     "sentiment": "chargeback-threat",
-    "createdAt": "2026-06-16T05:45:26.194Z",
+    "createdAt": "2026-06-16T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -760,7 +760,7 @@
     "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
     "type": "wismo",
     "sentiment": "anxious",
-    "createdAt": "2026-06-18T05:45:26.194Z",
+    "createdAt": "2026-06-18T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -779,7 +779,7 @@
     "body": "Realized I need to update something on my order before it ships. Can you help?",
     "type": "other",
     "sentiment": "calm",
-    "createdAt": "2026-06-15T05:45:26.194Z",
+    "createdAt": "2026-06-15T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
@@ -798,12 +798,334 @@
     "body": "Realized I need to update something on my order before it ships. Can you help?",
     "type": "other",
     "sentiment": "calm",
-    "createdAt": "2026-06-14T05:45:26.194Z",
+    "createdAt": "2026-06-14T06:50:00.687Z",
     "firstResponseSec": null,
     "status": "open",
     "tags": [
       "presale",
       "presale:other"
+    ]
+  },
+  {
+    "id": "tkt_h5y7633vpta5",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_4eg63sjv1821",
+    "orderId": "ord_jaues8ssc7sm",
+    "channel": "gorgias",
+    "externalId": "gorgias-50001",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "refund",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-20T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:refund",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_d1veefqxoxgo",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_pt6pa1a6rxev",
+    "orderId": "ord_pu8z6itg6s8n",
+    "channel": "gorgias",
+    "externalId": "gorgias-21711",
+    "subject": "I was about to dispute, but…",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-17T06:50:00.687Z",
+    "firstResponseSec": 3340,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-17T06:50:00.687Z",
+      "externalId": "mock_send_0"
+    },
+    "tags": [
+      "presale",
+      "presale:dispute-risk",
+      "gift-sent:priority-dispatch"
+    ]
+  },
+  {
+    "id": "tkt_467zixiivhl3",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_c8wfjheeea9a",
+    "orderId": "ord_oaoizbqal569",
+    "channel": "gorgias",
+    "externalId": "gorgias-21617",
+    "subject": "I was about to dispute, but…",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-13T06:50:00.687Z",
+    "firstResponseSec": 3764,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-13T06:50:00.687Z",
+      "externalId": "mock_send_1"
+    },
+    "tags": [
+      "presale",
+      "presale:dispute-risk",
+      "gift-sent:priority-dispatch"
+    ]
+  },
+  {
+    "id": "tkt_mt0r81wobqx9",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "orderId": "ord_7vzpm6h2ql35",
+    "channel": "gorgias",
+    "externalId": "gorgias-23782",
+    "subject": "I was about to dispute, but…",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-18T06:50:00.687Z",
+    "firstResponseSec": 2294,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-18T06:50:00.687Z",
+      "externalId": "mock_send_2"
+    },
+    "tags": [
+      "presale",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_lrzn86ggk7zw",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "orderId": "ord_mx4s8st5zaeq",
+    "channel": "gorgias",
+    "externalId": "gorgias-29417",
+    "subject": "I was about to dispute, but…",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-13T06:50:00.687Z",
+    "firstResponseSec": 4934,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-13T06:50:00.687Z",
+      "externalId": "mock_send_3"
+    },
+    "tags": [
+      "presale",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_nxxoo7gq15qf",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "orderId": "ord_7vzpm6h2ql35",
+    "channel": "gorgias",
+    "externalId": "gorgias-25167",
+    "subject": "did my order go through?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-14T06:50:00.687Z",
+    "firstResponseSec": 1889,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-14T06:50:00.687Z",
+      "externalId": "mock_send_4"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_5aiqn4xgvqok",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_imixidctka8l",
+    "orderId": "ord_jn2po6s6pnb1",
+    "channel": "gorgias",
+    "externalId": "gorgias-29072",
+    "subject": "where is my order??",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-12T06:50:00.687Z",
+    "firstResponseSec": 3643,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-12T06:50:00.687Z",
+      "externalId": "mock_send_5"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_wz2t7yyv4726",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_g0k6wt9hpq4k",
+    "orderId": "ord_zm35g6r6iacc",
+    "channel": "gorgias",
+    "externalId": "gorgias-25297",
+    "subject": "any update on my order?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-18T06:50:00.687Z",
+    "firstResponseSec": 4276,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-18T06:50:00.687Z",
+      "externalId": "mock_send_6"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_jbvzqp0nay9f",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_xe4zvtvvv4x9",
+    "orderId": "ord_t6ksfinenw78",
+    "channel": "gorgias",
+    "externalId": "gorgias-23976",
+    "subject": "did my order go through?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-15T06:50:00.688Z",
+    "firstResponseSec": 5127,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-15T06:50:00.688Z",
+      "externalId": "mock_send_7"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_8m5eftgfssz3",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_pq4i5jasd94t",
+    "orderId": "ord_780fgzueixzk",
+    "channel": "gorgias",
+    "externalId": "gorgias-27736",
+    "subject": "hello — checking on my preorder",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-14T06:50:00.688Z",
+    "firstResponseSec": 2275,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-14T06:50:00.688Z",
+      "externalId": "mock_send_8"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_hpv7nk9yk32o",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_xe4zvtvvv4x9",
+    "orderId": "ord_t6ksfinenw78",
+    "channel": "gorgias",
+    "externalId": "gorgias-28040",
+    "subject": "did my order go through?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-14T06:50:00.688Z",
+    "firstResponseSec": 910,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-14T06:50:00.688Z",
+      "externalId": "mock_send_9"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_syi328to8769",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_g0k6wt9hpq4k",
+    "orderId": "ord_zm35g6r6iacc",
+    "channel": "gorgias",
+    "externalId": "gorgias-21838",
+    "subject": "did my order go through?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-16T06:50:00.688Z",
+    "firstResponseSec": 4172,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-16T06:50:00.688Z",
+      "externalId": "mock_send_10"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_61p6p2l8896n",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_imixidctka8l",
+    "orderId": "ord_jn2po6s6pnb1",
+    "channel": "gorgias",
+    "externalId": "gorgias-23340",
+    "subject": "where is my order??",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-18T06:50:00.688Z",
+    "firstResponseSec": 3669,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-18T06:50:00.688Z",
+      "externalId": "mock_send_11"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
     ]
   }
 ]

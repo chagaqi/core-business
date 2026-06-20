@@ -96,7 +96,7 @@ const merchants = [
     ltvTiers: { standard: 0, high: 50000, vip: 200000 },
     giftCatalogIds: [],
     slaWindows: { amStart: "9:00", pmStart: "15:00", tz: "ET" },
-    baseline: { capturedOn: iso(35), medianFrtSec: 27000, wismoPer100Orders: 41, ticketsPerWeek: 38, repeatWismoPct: 62 },
+    baseline: { capturedOn: iso(35), medianFrtSec: 27000, wismoPer100Orders: 150, ticketsPerWeek: 38, repeatWismoPct: 62 },
     createdAt: iso(40),
   },
   {
@@ -119,7 +119,7 @@ const merchants = [
     ltvTiers: { standard: 0, high: 60000, vip: 250000 },
     giftCatalogIds: [],
     slaWindows: { amStart: "8:30", pmStart: "14:30", tz: "CET" },
-    baseline: { capturedOn: iso(28), medianFrtSec: 19000, wismoPer100Orders: 33, ticketsPerWeek: 22, repeatWismoPct: 55 },
+    baseline: { capturedOn: iso(28), medianFrtSec: 19000, wismoPer100Orders: 95, ticketsPerWeek: 22, repeatWismoPct: 55 },
     createdAt: iso(33),
   },
 ];
@@ -251,6 +251,94 @@ for (const m of merchants) {
       firstResponseSec: null,
       status: "open",
       tags: ["presale", `presale:${type}`].concat(isCb ? ["presale:dispute-risk"] : []),
+    });
+  }
+}
+
+// ── showcase scenarios (make the demo land) ──
+// A curated "hero" ticket on the first merchant: high-value VIP, overdue,
+// chargeback-threat → lights up red + escalated + a gift recommendation, and
+// sorts to the very top of the operator queue.
+{
+  const lumen = merchants[0];
+  const heroCid = id("cus");
+  const heroOid = id("ord");
+  const heroTotal = 110;
+  const heroWait = 116; // past the window → overdue
+  customers.push({
+    id: heroCid,
+    merchantId: lumen.id,
+    email: "dana.vip@example.com",
+    firstName: "Dana",
+    ltvCents: 96000,
+    orderIds: [heroOid],
+    ticketCount: 1,
+    lastSentiment: "chargeback-threat",
+  });
+  orders.push({
+    id: heroOid,
+    merchantId: lumen.id,
+    customerId: heroCid,
+    group: "ks-backer",
+    orderValueCents: 48000,
+    createdAt: iso(heroWait + 1),
+    fulfillmentStart: iso(heroWait),
+    fulfillmentEnd: iso(heroWait - heroTotal),
+    productionStage: "dispatch",
+    region: "US",
+    statusToken: statusToken(),
+    preorderEtaSource: "metafield",
+  });
+  tickets.push({
+    id: id("tkt"),
+    merchantId: lumen.id,
+    customerId: heroCid,
+    orderId: heroOid,
+    channel: lumen.helpdesk,
+    externalId: `${lumen.helpdesk}-50001`,
+    subject: "LAST WARNING before chargeback",
+    body: BODIES.chargeback,
+    type: "refund",
+    sentiment: "chargeback-threat",
+    createdAt: iso(0),
+    firstResponseSec: null,
+    status: "open",
+    tags: ["presale", "presale:refund", "presale:dispute-risk"],
+  });
+
+  // Already-sent history so the dashboard shows a real before/after: fast
+  // first-response times (vs the 7.5h baseline), logged saves, deflection.
+  const lumenOrders = orders.filter((o) => o.merchantId === lumen.id && o.id !== heroOid);
+  for (let i = 0; i < 12; i++) {
+    const ord = pick(lumenOrders);
+    const cust = customers.find((c) => c.id === ord.customerId);
+    const isSave = i < 4; // dispute-risk turned around
+    const giftSave = i < 2;
+    cust.ticketCount += 1;
+    const ageDays = int(2, 9);
+    tickets.push({
+      id: id("tkt"),
+      merchantId: lumen.id,
+      customerId: cust.id,
+      orderId: ord.id,
+      channel: lumen.helpdesk,
+      externalId: `${lumen.helpdesk}-${int(20000, 29999)}`,
+      subject: isSave ? "I was about to dispute, but…" : pick(SUBJECTS.wismo),
+      body: isSave ? BODIES.refund : BODIES.wismo,
+      type: isSave ? "refund" : "wismo",
+      sentiment: isSave ? "anxious" : "calm",
+      createdAt: iso(ageDays),
+      firstResponseSec: int(900, 5200),
+      status: "sent",
+      sent: {
+        text: "(approved day-stage reassurance reply)",
+        approvedBy: "Chaga",
+        sentAt: iso(ageDays),
+        externalId: `mock_send_${i}`,
+      },
+      tags: ["presale", isSave ? "presale:dispute-risk" : "presale:wismo"].concat(
+        giftSave ? ["gift-sent:priority-dispatch"] : [],
+      ),
     });
   }
 }

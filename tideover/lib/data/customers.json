@@ -9,7 +9,7 @@
       "ord_mx4s8st5zaeq",
       "ord_7vzpm6h2ql35"
     ],
-    "ticketCount": 4,
+    "ticketCount": 7,
     "lastSentiment": "chargeback-threat"
   },
   {
@@ -34,7 +34,7 @@
       "ord_pu8z6itg6s8n",
       "ord_c3l20wplsuau"
     ],
-    "ticketCount": 4,
+    "ticketCount": 5,
     "lastSentiment": "calm"
   },
   {
@@ -71,7 +71,7 @@
     "orderIds": [
       "ord_oaoizbqal569"
     ],
-    "ticketCount": 0,
+    "ticketCount": 1,
     "lastSentiment": "calm"
   },
   {
@@ -84,7 +84,7 @@
       "ord_780fgzueixzk",
       "ord_zmg5fjryy2rr"
     ],
-    "ticketCount": 2,
+    "ticketCount": 3,
     "lastSentiment": "calm"
   },
   {
@@ -96,7 +96,7 @@
     "orderIds": [
       "ord_zm35g6r6iacc"
     ],
-    "ticketCount": 2,
+    "ticketCount": 4,
     "lastSentiment": "calm"
   },
   {
@@ -158,7 +158,7 @@
     "orderIds": [
       "ord_jn2po6s6pnb1"
     ],
-    "ticketCount": 1,
+    "ticketCount": 3,
     "lastSentiment": "anxious"
   },
   {
@@ -170,7 +170,7 @@
     "orderIds": [
       "ord_t6ksfinenw78"
     ],
-    "ticketCount": 0,
+    "ticketCount": 2,
     "lastSentiment": "calm"
   },
   {
@@ -369,5 +369,17 @@
     ],
     "ticketCount": 2,
     "lastSentiment": "hostile"
+  },
+  {
+    "id": "cus_4eg63sjv1821",
+    "merchantId": "mch_lumen0001",
+    "email": "dana.vip@example.com",
+    "firstName": "Dana",
+    "ltvCents": 96000,
+    "orderIds": [
+      "ord_jaues8ssc7sm"
+    ],
+    "ticketCount": 1,
+    "lastSentiment": "chargeback-threat"
   }
 ]

@@ -24,14 +24,15 @@ const GROUP_LABEL: Record<string, string> = {
   "new-preorder": "New preorder",
 };
 
-function frtDelta(live: number | null, baseline: number) {
-  if (live == null) return undefined;
+/** Delta vs baseline for metrics where LOWER is better (FRT, WISMO). */
+function lowerIsBetterDelta(live: number | null, baseline: number) {
+  if (live == null || baseline === 0) return undefined;
   if (live === baseline) return { text: "flat vs baseline", tone: "flat" as const };
-  const faster = live < baseline;
+  const better = live < baseline;
   const pct = Math.round((Math.abs(live - baseline) / Math.max(1, baseline)) * 100);
   return {
-    text: `${faster ? "↓" : "↑"} ${pct}% vs baseline`,
-    tone: (faster ? "up" : "down") as "up" | "down",
+    text: `${better ? "↓" : "↑"} ${pct}% vs baseline`,
+    tone: (better ? "up" : "down") as "up" | "down",
   };
 }
 
@@ -86,13 +87,14 @@ export default async function DashboardPage({
           proof
           label="Median first response"
           value={formatFrt(live.medianFrtSec)}
-          delta={frtDelta(live.medianFrtSec, baseline.medianFrtSec)}
+          delta={lowerIsBetterDelta(live.medianFrtSec, baseline.medianFrtSec)}
           sublabel={`baseline ${formatFrt(baseline.medianFrtSec)}`}
         />
         <MetricTile
           proof
           label="WISMO / 100 orders"
           value={live.wismoPer100Orders}
+          delta={lowerIsBetterDelta(live.wismoPer100Orders, baseline.wismoPer100Orders)}
           sublabel={`baseline ${baseline.wismoPer100Orders}`}
         />
         <MetricTile

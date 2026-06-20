@@ -124,13 +124,13 @@
       "tz": "ET"
     },
     "baseline": {
-      "capturedOn": "2026-05-16T05:45:26.168Z",
+      "capturedOn": "2026-05-16T06:50:00.683Z",
       "medianFrtSec": 27000,
-      "wismoPer100Orders": 41,
+      "wismoPer100Orders": 150,
       "ticketsPerWeek": 38,
       "repeatWismoPct": 62
     },
-    "createdAt": "2026-05-11T05:45:26.181Z"
+    "createdAt": "2026-05-11T06:50:00.683Z"
   },
   {
     "id": "mch_atelier02",
@@ -257,12 +257,12 @@
       "tz": "CET"
     },
     "baseline": {
-      "capturedOn": "2026-05-23T05:45:26.181Z",
+      "capturedOn": "2026-05-23T06:50:00.683Z",
       "medianFrtSec": 19000,
-      "wismoPer100Orders": 33,
+      "wismoPer100Orders": 95,
       "ticketsPerWeek": 22,
       "repeatWismoPct": 55
     },
-    "createdAt": "2026-05-18T05:45:26.181Z"
+    "createdAt": "2026-05-18T06:50:00.683Z"
   }
 ]

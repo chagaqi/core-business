@@ -99,10 +99,37 @@ On Shopify, inject the same iframe via a theme app extension / script tag, passi
 
 ## Deploy (Vercel)
 
-Framework preset Next.js; `vercel.json` is included. No secrets needed for the seeded demo. For
-production set `DATA_DRIVER=mongo` + `MONGODB_URI`, a strong `STATUS_TOKEN_SECRET` (this
-invalidates seeded demo tokens — regenerate), helpdesk OAuth/webhook secrets, and (optionally)
-`LLM_PROVIDER`/`LLM_API_KEY`.
+`vercel.json` is included and correct. **No secrets are needed for the seeded demo.**
+
+### One-time setup (≈2 min)
+1. Vercel → **Add New… → Project** → import `chagaqi/core-business`.
+2. **Set Root Directory = `tideover`** (this app is a subdirectory of the repo — the build
+   fails without this). Framework preset auto-detects as **Next.js**.
+3. Leave env vars empty for the demo → **Deploy**. Every push to the branch redeploys; PR #1
+   gets a Vercel preview URL automatically.
+
+### Known demo caveat — ephemeral state on serverless
+The demo's data lives in an **in-memory store** seeded from `lib/data/*.json`
+(`lib/repositories/json/store.ts`). On Vercel's serverless runtime that store resets on cold
+starts and isn't shared across function instances, so **write actions don't persist durably**:
+an approved reply (`approve-send`) or an onboarding-created merchant is visible within the same
+warm instance/session but may not survive a cold start or land on a different lambda.
+
+- **Read surfaces are always fully populated** (re-seeded per instance), so the dashboard,
+  cockpit, status pages, and marketing always look complete — fine for a live walkthrough done
+  in one sitting.
+- For **durable** writes, set `DATA_DRIVER=mongo` + `MONGODB_URI` (skeleton in
+  `lib/repositories/mongo/`) — that's the production path; no call sites change.
+
+### Production env vars
+`DATA_DRIVER=mongo` + `MONGODB_URI`/`MONGODB_DB`; a strong `STATUS_TOKEN_SECRET` (**changing it
+invalidates the seeded demo tokens — regenerate with `node scripts/gen-seed.mjs`**); per-helpdesk
+OAuth/webhook secrets (`GORGIAS_WEBHOOK_SECRET`, `INTERCOM_CLIENT_SECRET`, …); and optionally
+`LLM_PROVIDER`/`LLM_API_KEY` to enable novel-reply drafting (still human-approved).
+
+> Note: this repo can't be deployed from the build environment itself (no Vercel
+> account/token wired here). The steps above are the full path; connect a Vercel project to the
+> repo and it deploys as-is.
 
 ## Proof-only
 
