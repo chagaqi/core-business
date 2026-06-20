@@ -1,0 +1,1131 @@
+[
+  {
+    "id": "tkt_rs3h4pcto9v4",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_if41gzk729hc",
+    "orderId": "ord_wr09l1jy00n1",
+    "channel": "gorgias",
+    "externalId": "gorgias-11778",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "wismo",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-14T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_vhr8h6ipojzf",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_11qsr6h79wjc",
+    "orderId": "ord_mswlvthzm2x4",
+    "channel": "gorgias",
+    "externalId": "gorgias-70290",
+    "subject": "where is my order??",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-16T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_rb59e63uipi9",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_pq4i5jasd94t",
+    "orderId": "ord_780fgzueixzk",
+    "channel": "gorgias",
+    "externalId": "gorgias-80748",
+    "subject": "can I change my shipping address?",
+    "body": "Realized I need to update something on my order before it ships. Can you help?",
+    "type": "other",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-15T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:other"
+    ]
+  },
+  {
+    "id": "tkt_bo404yhm2upi",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_pt6pa1a6rxev",
+    "orderId": "ord_c3l20wplsuau",
+    "channel": "gorgias",
+    "externalId": "gorgias-52363",
+    "subject": "hello — checking on my preorder",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "hostile",
+    "createdAt": "2026-06-20T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_aw52xggdbdt7",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_7nty2dy6kqbu",
+    "orderId": "ord_iogartf6w2yp",
+    "channel": "gorgias",
+    "externalId": "gorgias-74324",
+    "subject": "when is my balance charged?",
+    "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
+    "type": "deposit",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-14T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:deposit"
+    ]
+  },
+  {
+    "id": "tkt_lold1lw7um75",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_pt6pa1a6rxev",
+    "orderId": "ord_c3l20wplsuau",
+    "channel": "gorgias",
+    "externalId": "gorgias-46410",
+    "subject": "hello — checking on my preorder",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-14T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_jsh1jesewrlu",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "orderId": "ord_mx4s8st5zaeq",
+    "channel": "gorgias",
+    "externalId": "gorgias-55860",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "other",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-19T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:other",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_9vmejsqsnt9u",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_x28v6eyzaqcl",
+    "orderId": "ord_3w6zwgaxuf9q",
+    "channel": "gorgias",
+    "externalId": "gorgias-82706",
+    "subject": "hello — checking on my preorder",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-20T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_n2d1nl4rimbv",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_pt6pa1a6rxev",
+    "orderId": "ord_c3l20wplsuau",
+    "channel": "gorgias",
+    "externalId": "gorgias-59812",
+    "subject": "I'd like to cancel and get a refund",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "calm",
+    "createdAt": "2026-06-14T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:refund"
+    ]
+  },
+  {
+    "id": "tkt_oi0uhjr076uo",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_hde7ct87fwk9",
+    "orderId": "ord_1vyly8e86mha",
+    "channel": "gorgias",
+    "externalId": "gorgias-14898",
+    "subject": "did my order go through?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-18T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_b90a628pjna8",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_mxcv4gb20j9k",
+    "orderId": "ord_kx26oc9a099v",
+    "channel": "gorgias",
+    "externalId": "gorgias-50808",
+    "subject": "where is my order??",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-14T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_wrrqgvdm8ksa",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_7nty2dy6kqbu",
+    "orderId": "ord_chncb2tlutov",
+    "channel": "gorgias",
+    "externalId": "gorgias-16639",
+    "subject": "question about my deposit",
+    "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
+    "type": "deposit",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-20T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:deposit"
+    ]
+  },
+  {
+    "id": "tkt_idyf6sxe91yr",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_hde7ct87fwk9",
+    "orderId": "ord_xftv0b8sj4qu",
+    "channel": "gorgias",
+    "externalId": "gorgias-17121",
+    "subject": "when is my balance charged?",
+    "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
+    "type": "deposit",
+    "sentiment": "hostile",
+    "createdAt": "2026-06-17T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:deposit"
+    ]
+  },
+  {
+    "id": "tkt_4r5pu3ii9cod",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_mxcv4gb20j9k",
+    "orderId": "ord_kx26oc9a099v",
+    "channel": "gorgias",
+    "externalId": "gorgias-95997",
+    "subject": "where is my order??",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-14T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_n3vvurn511l2",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_pt6pa1a6rxev",
+    "orderId": "ord_c3l20wplsuau",
+    "channel": "gorgias",
+    "externalId": "gorgias-20271",
+    "subject": "any update on my order?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-17T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_sf3eeq8h7sv8",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_x28v6eyzaqcl",
+    "orderId": "ord_3w6zwgaxuf9q",
+    "channel": "gorgias",
+    "externalId": "gorgias-86326",
+    "subject": "any update on my order?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "hostile",
+    "createdAt": "2026-06-16T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_34q8o67hxf4h",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_imixidctka8l",
+    "orderId": "ord_jn2po6s6pnb1",
+    "channel": "gorgias",
+    "externalId": "gorgias-98676",
+    "subject": "hello — checking on my preorder",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-18T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_35lhl54rgk3a",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_7nty2dy6kqbu",
+    "orderId": "ord_chncb2tlutov",
+    "channel": "gorgias",
+    "externalId": "gorgias-58076",
+    "subject": "any update on my order?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-19T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_qhbr4narfmwj",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_hde7ct87fwk9",
+    "orderId": "ord_xftv0b8sj4qu",
+    "channel": "gorgias",
+    "externalId": "gorgias-94706",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "wismo",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-16T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_5409zynp5nf7",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_fv0oaf32uwqy",
+    "orderId": "ord_a2y81ats3y4z",
+    "channel": "gorgias",
+    "externalId": "gorgias-54707",
+    "subject": "hello — checking on my preorder",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "hostile",
+    "createdAt": "2026-06-17T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_irc3cu5tb3wy",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_pq4i5jasd94t",
+    "orderId": "ord_780fgzueixzk",
+    "channel": "gorgias",
+    "externalId": "gorgias-63916",
+    "subject": "when is my balance charged?",
+    "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
+    "type": "deposit",
+    "sentiment": "calm",
+    "createdAt": "2026-06-16T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:deposit"
+    ]
+  },
+  {
+    "id": "tkt_t27y3mq9wo5g",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_3gnlolqycs15",
+    "orderId": "ord_yguwoox4us0p",
+    "channel": "gorgias",
+    "externalId": "gorgias-90049",
+    "subject": "did my order go through?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-17T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_9xmktikkwcdy",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_if41gzk729hc",
+    "orderId": "ord_wr09l1jy00n1",
+    "channel": "gorgias",
+    "externalId": "gorgias-78773",
+    "subject": "this is taking forever, I want a refund",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "calm",
+    "createdAt": "2026-06-20T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:refund"
+    ]
+  },
+  {
+    "id": "tkt_ein69dt3p31x",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_g0k6wt9hpq4k",
+    "orderId": "ord_zm35g6r6iacc",
+    "channel": "gorgias",
+    "externalId": "gorgias-20814",
+    "subject": "I'd like to cancel and get a refund",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "hostile",
+    "createdAt": "2026-06-20T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:refund"
+    ]
+  },
+  {
+    "id": "tkt_04mketon6ac0",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_g0k6wt9hpq4k",
+    "orderId": "ord_zm35g6r6iacc",
+    "channel": "gorgias",
+    "externalId": "gorgias-76782",
+    "subject": "quick question about my order",
+    "body": "Realized I need to update something on my order before it ships. Can you help?",
+    "type": "other",
+    "sentiment": "calm",
+    "createdAt": "2026-06-17T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:other"
+    ]
+  },
+  {
+    "id": "tkt_sve0jhmz4kjz",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "orderId": "ord_mx4s8st5zaeq",
+    "channel": "gorgias",
+    "externalId": "gorgias-68338",
+    "subject": "when is my balance charged?",
+    "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
+    "type": "deposit",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-17T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:deposit"
+    ]
+  },
+  {
+    "id": "tkt_gqo7ndujo7bz",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "orderId": "ord_7vzpm6h2ql35",
+    "channel": "gorgias",
+    "externalId": "gorgias-33298",
+    "subject": "when is my balance charged?",
+    "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
+    "type": "deposit",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-17T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:deposit"
+    ]
+  },
+  {
+    "id": "tkt_ongs7ao0xb2j",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "orderId": "ord_mx4s8st5zaeq",
+    "channel": "gorgias",
+    "externalId": "gorgias-38156",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "refund",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-19T06:50:00.686Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:refund",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_eata2zf084l4",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_7nty2dy6kqbu",
+    "orderId": "ord_chncb2tlutov",
+    "channel": "gorgias",
+    "externalId": "gorgias-95456",
+    "subject": "can I change my shipping address?",
+    "body": "Realized I need to update something on my order before it ships. Can you help?",
+    "type": "other",
+    "sentiment": "calm",
+    "createdAt": "2026-06-17T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:other"
+    ]
+  },
+  {
+    "id": "tkt_ssclznolot09",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_hde7ct87fwk9",
+    "orderId": "ord_1vyly8e86mha",
+    "channel": "gorgias",
+    "externalId": "gorgias-97217",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "wismo",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-17T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_yp7cx6a2ot57",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_k7dwlxc65eg7",
+    "orderId": "ord_l5m7768s7eay",
+    "channel": "email",
+    "externalId": "email-92828",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "wismo",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-16T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_3pz915p24gye",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_wl5xj8vj4h5k",
+    "orderId": "ord_34mp17i7q1zv",
+    "channel": "email",
+    "externalId": "email-94175",
+    "subject": "question about my deposit",
+    "body": "I paid the deposit at checkout — when does the rest get charged, and does that change my ship window?",
+    "type": "deposit",
+    "sentiment": "calm",
+    "createdAt": "2026-06-18T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:deposit"
+    ]
+  },
+  {
+    "id": "tkt_npumsi7by6k5",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_k7dwlxc65eg7",
+    "orderId": "ord_l5m7768s7eay",
+    "channel": "email",
+    "externalId": "email-53569",
+    "subject": "I'd like to cancel and get a refund",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "hostile",
+    "createdAt": "2026-06-16T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:refund"
+    ]
+  },
+  {
+    "id": "tkt_xo0jasbxtvel",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_cuivgjr7qszl",
+    "orderId": "ord_k3erk4jp4e0p",
+    "channel": "email",
+    "externalId": "email-82977",
+    "subject": "can I change my shipping address?",
+    "body": "Realized I need to update something on my order before it ships. Can you help?",
+    "type": "other",
+    "sentiment": "hostile",
+    "createdAt": "2026-06-16T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:other"
+    ]
+  },
+  {
+    "id": "tkt_1yhf0d1fbdsl",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_jrzy3b618bmu",
+    "orderId": "ord_b65odfvl14he",
+    "channel": "email",
+    "externalId": "email-73960",
+    "subject": "any update on my order?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-20T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_j2d616ons9hu",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_wl5xj8vj4h5k",
+    "orderId": "ord_34mp17i7q1zv",
+    "channel": "email",
+    "externalId": "email-63681",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "deposit",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-17T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:deposit",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_budj38b9hy8l",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_ngqf4ymywb3d",
+    "orderId": "ord_q34i4lkk0lqs",
+    "channel": "email",
+    "externalId": "email-19775",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "wismo",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-19T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_62ee27racdgd",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_wl5xj8vj4h5k",
+    "orderId": "ord_34mp17i7q1zv",
+    "channel": "email",
+    "externalId": "email-78793",
+    "subject": "can I change my shipping address?",
+    "body": "Realized I need to update something on my order before it ships. Can you help?",
+    "type": "other",
+    "sentiment": "hostile",
+    "createdAt": "2026-06-14T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:other"
+    ]
+  },
+  {
+    "id": "tkt_ttiz6haxpeye",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_twb07xf6mh7t",
+    "orderId": "ord_7a85ix2fg2c4",
+    "channel": "email",
+    "externalId": "email-50637",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "deposit",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-16T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:deposit",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_2o3hlcroeq9f",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_n4t53zh85i1g",
+    "orderId": "ord_oyo5uimf5ah3",
+    "channel": "email",
+    "externalId": "email-65312",
+    "subject": "where is my order??",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-18T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_pux3jt2kh3v9",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_mq968avavbwk",
+    "orderId": "ord_ikmpfn3yt32j",
+    "channel": "email",
+    "externalId": "email-61776",
+    "subject": "quick question about my order",
+    "body": "Realized I need to update something on my order before it ships. Can you help?",
+    "type": "other",
+    "sentiment": "calm",
+    "createdAt": "2026-06-15T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:other"
+    ]
+  },
+  {
+    "id": "tkt_5e7tfp06vygu",
+    "merchantId": "mch_atelier02",
+    "customerId": "cus_ph2tklfdc8bf",
+    "orderId": "ord_k18tpnqg9jsi",
+    "channel": "email",
+    "externalId": "email-61277",
+    "subject": "quick question about my order",
+    "body": "Realized I need to update something on my order before it ships. Can you help?",
+    "type": "other",
+    "sentiment": "calm",
+    "createdAt": "2026-06-14T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:other"
+    ]
+  },
+  {
+    "id": "tkt_h5y7633vpta5",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_4eg63sjv1821",
+    "orderId": "ord_jaues8ssc7sm",
+    "channel": "gorgias",
+    "externalId": "gorgias-50001",
+    "subject": "LAST WARNING before chargeback",
+    "body": "Last chance before I dispute this with my bank. I paid and have nothing to show for it. This feels like a scam.",
+    "type": "refund",
+    "sentiment": "chargeback-threat",
+    "createdAt": "2026-06-20T06:50:00.687Z",
+    "firstResponseSec": null,
+    "status": "open",
+    "tags": [
+      "presale",
+      "presale:refund",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_d1veefqxoxgo",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_pt6pa1a6rxev",
+    "orderId": "ord_pu8z6itg6s8n",
+    "channel": "gorgias",
+    "externalId": "gorgias-21711",
+    "subject": "I was about to dispute, but…",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-17T06:50:00.687Z",
+    "firstResponseSec": 3340,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-17T06:50:00.687Z",
+      "externalId": "mock_send_0"
+    },
+    "tags": [
+      "presale",
+      "presale:dispute-risk",
+      "gift-sent:priority-dispatch"
+    ]
+  },
+  {
+    "id": "tkt_467zixiivhl3",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_c8wfjheeea9a",
+    "orderId": "ord_oaoizbqal569",
+    "channel": "gorgias",
+    "externalId": "gorgias-21617",
+    "subject": "I was about to dispute, but…",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-13T06:50:00.687Z",
+    "firstResponseSec": 3764,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-13T06:50:00.687Z",
+      "externalId": "mock_send_1"
+    },
+    "tags": [
+      "presale",
+      "presale:dispute-risk",
+      "gift-sent:priority-dispatch"
+    ]
+  },
+  {
+    "id": "tkt_mt0r81wobqx9",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "orderId": "ord_7vzpm6h2ql35",
+    "channel": "gorgias",
+    "externalId": "gorgias-23782",
+    "subject": "I was about to dispute, but…",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-18T06:50:00.687Z",
+    "firstResponseSec": 2294,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-18T06:50:00.687Z",
+      "externalId": "mock_send_2"
+    },
+    "tags": [
+      "presale",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_lrzn86ggk7zw",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "orderId": "ord_mx4s8st5zaeq",
+    "channel": "gorgias",
+    "externalId": "gorgias-29417",
+    "subject": "I was about to dispute, but…",
+    "body": "It's been weeks and I still don't have my order. Honestly considering a refund at this point.",
+    "type": "refund",
+    "sentiment": "anxious",
+    "createdAt": "2026-06-13T06:50:00.687Z",
+    "firstResponseSec": 4934,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-13T06:50:00.687Z",
+      "externalId": "mock_send_3"
+    },
+    "tags": [
+      "presale",
+      "presale:dispute-risk"
+    ]
+  },
+  {
+    "id": "tkt_nxxoo7gq15qf",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "orderId": "ord_7vzpm6h2ql35",
+    "channel": "gorgias",
+    "externalId": "gorgias-25167",
+    "subject": "did my order go through?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-14T06:50:00.687Z",
+    "firstResponseSec": 1889,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-14T06:50:00.687Z",
+      "externalId": "mock_send_4"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_5aiqn4xgvqok",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_imixidctka8l",
+    "orderId": "ord_jn2po6s6pnb1",
+    "channel": "gorgias",
+    "externalId": "gorgias-29072",
+    "subject": "where is my order??",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-12T06:50:00.687Z",
+    "firstResponseSec": 3643,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-12T06:50:00.687Z",
+      "externalId": "mock_send_5"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_wz2t7yyv4726",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_g0k6wt9hpq4k",
+    "orderId": "ord_zm35g6r6iacc",
+    "channel": "gorgias",
+    "externalId": "gorgias-25297",
+    "subject": "any update on my order?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-18T06:50:00.687Z",
+    "firstResponseSec": 4276,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-18T06:50:00.687Z",
+      "externalId": "mock_send_6"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_jbvzqp0nay9f",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_xe4zvtvvv4x9",
+    "orderId": "ord_t6ksfinenw78",
+    "channel": "gorgias",
+    "externalId": "gorgias-23976",
+    "subject": "did my order go through?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-15T06:50:00.688Z",
+    "firstResponseSec": 5127,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-15T06:50:00.688Z",
+      "externalId": "mock_send_7"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_8m5eftgfssz3",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_pq4i5jasd94t",
+    "orderId": "ord_780fgzueixzk",
+    "channel": "gorgias",
+    "externalId": "gorgias-27736",
+    "subject": "hello — checking on my preorder",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-14T06:50:00.688Z",
+    "firstResponseSec": 2275,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-14T06:50:00.688Z",
+      "externalId": "mock_send_8"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_hpv7nk9yk32o",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_xe4zvtvvv4x9",
+    "orderId": "ord_t6ksfinenw78",
+    "channel": "gorgias",
+    "externalId": "gorgias-28040",
+    "subject": "did my order go through?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-14T06:50:00.688Z",
+    "firstResponseSec": 910,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-14T06:50:00.688Z",
+      "externalId": "mock_send_9"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_syi328to8769",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_g0k6wt9hpq4k",
+    "orderId": "ord_zm35g6r6iacc",
+    "channel": "gorgias",
+    "externalId": "gorgias-21838",
+    "subject": "did my order go through?",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-16T06:50:00.688Z",
+    "firstResponseSec": 4172,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-16T06:50:00.688Z",
+      "externalId": "mock_send_10"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  },
+  {
+    "id": "tkt_61p6p2l8896n",
+    "merchantId": "mch_lumen0001",
+    "customerId": "cus_imixidctka8l",
+    "orderId": "ord_jn2po6s6pnb1",
+    "channel": "gorgias",
+    "externalId": "gorgias-23340",
+    "subject": "where is my order??",
+    "body": "Hey — just making sure my order is still on track. Haven't heard anything in a while. Thanks!",
+    "type": "wismo",
+    "sentiment": "calm",
+    "createdAt": "2026-06-18T06:50:00.688Z",
+    "firstResponseSec": 3669,
+    "status": "sent",
+    "sent": {
+      "text": "(approved day-stage reassurance reply)",
+      "approvedBy": "Chaga",
+      "sentAt": "2026-06-18T06:50:00.688Z",
+      "externalId": "mock_send_11"
+    },
+    "tags": [
+      "presale",
+      "presale:wismo"
+    ]
+  }
+]
