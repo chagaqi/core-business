@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copy Standard — anti-slop</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">Copy Standard — anti-slop</span>
+    <a class="back" href="../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>Copy Standard — anti-slop</h1>
+<p>The bar: a sharp, skeptical operator nods instead of wincing. Tight beats complete.</p>
+<h2>Kill on sight</h2>
+<ul>
+<li><strong>Em-dash as connector.</strong> The #1 AI tell. Use a period or comma, or rewrite.</li>
+<li><strong>Example-lists one word covers.</strong> "Gorgias, Intercom, Tidio, or plain email" is "your existing inbox."</li>
+<li><strong>"Not X, it's Y." / "Not X. Not Y. Both."</strong> Say it once.</li>
+<li><strong>Triads</strong> ("faster, cleaner, smarter"). Break the pattern.</li>
+<li><strong>Filler/hype:</strong> leverage, unlock, elevate, seamless, robust, supercharge, delve, realm, game-changer, "imagine," "the truth is," "let's be honest."</li>
+<li><strong>Restatement.</strong> The same point twice in new words.</li>
+<li><strong>Rhyme.</strong> Every sentence the same length and shape. Vary it.</li>
+<li><strong>Dead reassurance + filler tells.</strong> Bare sign-offs that reassure no one: "not a pitch," "no agenda," "no deck," "no pressure." Throat-clearing openers: "just following up," "just circling back," "bumping this," "quick question," "hope this finds you well," "I'll keep this short," "wanted to reach out." Rule: at most one <em>earned</em> reassurance per message (tied to a real reason the prospect would believe it), and never a standalone "Not a pitch."</li>
+</ul>
+<h2>Do instead</h2>
+<ul>
+<li>Cut every word that isn't load-bearing. Read it aloud. If it sounds like LinkedIn, redo it.</li>
+<li>One concrete specific over three adjectives.</li>
+<li>Short sentences. Fragments. Let it breathe.</li>
+</ul>
+<h2>Process</h2>
+<p>Every copy deliverable gets a final pass against this list before it ships. Target cut: 30 to 60%. Every workflow quotes this file and ends with that pass.</p>
+<h2>Worked example</h2>
+<ul>
+<li>Before: "It bolts onto the Gorgias, Intercom, Tidio, or plain email inbox you already run."</li>
+<li>After: "It bolts onto your existing inbox."</li>
+</ul>
+<hr>
+<h1>Example Messages — Outreach</h1>
+<p>Paste-grade exemplars. Strategy lives in <code>outreach-playbook.md</code>. Every one holds the proof-only guardrail (no fabricated metrics, case studies, or track record), leads with the prospect, avoids every dead opener. Bracketed fields are the only text that changes per lead. Read aloud before sending.</p>
+<h2>Adwield — DTC ad operators</h2>
+<p><strong>1. X DM, Wounded Veteran (the ad they over-rely on).</strong></p>
+<blockquote><p>[firstName] — your whole account is riding on the one [hero-product] testimonial ad. It's a good one, which is the problem: it's going to stop around week 7, same ad, same audience, no reason.</p>
+<p>So I rebuilt that angle as a 15-sec ad of [product], from your own site and reviews: [link]</p>
+<p>Watch the pour shot. I built the ad instead of pitching you because I'd rather show it than claim it. If it holds up I'll send the 4 angles I'd test against it.</p></blockquote>
+<p><strong>2. LinkedIn first message, Lean Team (the ideal client).</strong></p>
+<blockquote><p>[firstName] — running [brand] at your spend on a two-person ops team is a tightrope. Your creative agency turns around 4 concepts a month; the auction eats them in two weeks.</p>
+<p>So I made you one: a 15-sec ad of [product], pulled from your reviews. [link]</p>
+<p>If it holds up, I'd run that off your plate at 4 angles every two weeks, launched and tagged in your own account. Watch this first.</p></blockquote>
+<p><strong>3. Cold email, Volume-Player (artifact-first, &lt;80 words, plain text).</strong></p>
+<blockquote><p>Subject: [firstName] — your [hero-angle] is doing the work of 3</p>
+<p>[firstName] — you ship ~90 creatives a week, so volume isn't your problem. [hero-angle] is carrying the account and you're still hand-cutting the variations off it.</p>
+<p>So I took that angle and built one finished 15-sec ad of [product] from your reviews: [link]</p>
+<p>One angle-family fully off your plate, launched and tagged in your account. If the output holds up, that's the whole pitch.</p></blockquote>
+<p><strong>4. Reply-handler, "AI ads are slop."</strong></p>
+<blockquote><p>Fair, and most of it is. AI with no brand context renders generic mush. The render I sent works because it's built from your reviews and your actual product, with an operator picking which of 4 angles fits your AOV. The AI is the hands. The judgment is what you're paying for. Watch the mouth-sync on the one I sent and tell me if it reads as slop.</p></blockquote>
+<h2>Tideover — Shopify presale merchants</h2>
+<p><strong>5. LinkedIn, mid-fulfillment (highest-intent trigger).</strong></p>
+<blockquote><p>Hi [firstName] — saw [brand] is in the thick of fulfilling [campaignName]. That stretch is the part nobody warns you about: the money's in, but the inbox turns into "any update on my order?" on repeat, and the calm answer at day 20 is a different answer than the one at day 80.</p>
+<p>I ran fulfillment, in-house shipping, and the where's-my-order comms for a physical-goods brand for years. Answered the day-60 refund email at 11pm more times than I can count.</p>
+<p>I'm doing free 15-min presale-support teardowns for a few crowdfunding brands mid-fulfillment. Want one? I'll show you the 2 or 3 points in your wait where backers are most likely to bail. [bookingLink]</p></blockquote>
+<p><strong>6. X DM, just moved to Shopify.</strong></p>
+<blockquote><p>Hey [firstName] — saw [brand] just moved onto Shopify, congrats. Heads-up from the next chapter: once preorders open on your own store, a 90-day wait gets treated like a "late" order, and it all lands in tickets instead of a [platform] comment feed. I ran the where's-my-order comms for a physical-goods brand for years. Doing free 15-min presale-support teardowns for brands right at this transition. Want one? [bookingLink]</p></blockquote>
+<p><strong>7. Reply-handler, "we already have a helpdesk."</strong></p>
+<blockquote><p>That's the point, keep it. Tideover only takes the presale tickets. Every other ticket stays in [their helpdesk], handled exactly as today. Nothing to migrate, nothing for your team to learn. You're adding the presale brain your stack never had. The teardown shows you what that looks like on your actual tickets.</p></blockquote>
+<h2>Warm-reply objection tree (replies 2 to 5, both ventures)</h2>
+<p>The interested-but-stalling prospect. They replied, so the targeting worked; now they're deflecting, not rejecting. One move per stall, paste-grade, per venture. Lead with them, proof-only, no dead openers.</p>
+<p><strong>"Just send me some info." (the deflection)</strong> Don't send a deck; it dies in the inbox. The artifact is the info.</p>
+<blockquote><p><em>Adwield:</em> Easier to show than send. The 15-sec ad I built off your reviews is the info: [link]. Two min. If it holds up, that's the conversation; if not, the ad's yours either way.<br>
+<em>Tideover:</em> The teardown is the info, and it's on your actual tickets, not a one-pager you'd skim and forget. 15 min, I screen-share, you keep the 2 or 3 weak points I find. [bookingLink]</p></blockquote>
+<p><strong>"What's your pricing?" (the momentum-trap, asked before they've felt the value)</strong> A number now anchors against nothing. Defer to the call without dodging.</p>
+<blockquote><p><em>Adwield:</em> Scales with cycle volume, so a number now would be a guess that helps neither of us. 15 min on your account and I'll quote the real one. Worth a slot? [bookingLink]<br>
+<em>Tideover:</em> Depends on backer count and wait length, so I'd quote you wrong blind. The teardown ends with a real number for your setup, no obligation. Grab a time? [bookingLink]</p></blockquote>
+<p><strong>Ghosted after interest. (the re-engage)</strong> One touch, fresh value, no guilt-trip. Then stop.</p>
+<blockquote><p><em>Adwield:</em> [firstName] — no chase. One thing regardless: [one-line specific tell from their current ads, e.g. the angle that just started fatiguing]. Still glad to send the 4 angles if the timing's better now.<br>
+<em>Tideover:</em> [firstName] — no chase. One that's useful regardless: [one-line specific from their campaign, e.g. the day-X point where backer comments spike]. The teardown slot's still open if now's better.</p></blockquote>
+<p><strong>"We're slammed right now." (the stall)</strong> Their busy is the buying signal, not the brush-off. Name that, ask for nothing now.</p>
+<blockquote><p><em>Adwield:</em> That's exactly when the account runs on autopilot and the one ad carries everything. The artifact's already built, so there's nothing for you to do but watch it: [link]. Ping me when the fire's out.<br>
+<em>Tideover:</em> Mid-fulfillment slammed is the whole reason this exists, so I won't add to your plate. Teardown's 15 min whenever the wave passes, and the offer holds. Ping me when it does.</p></blockquote>
+<h2>Community comment, r/shopify (value-first, no pitch)</h2>
+<p><strong>8.</strong></p>
+<blockquote><p>The fix that worked for me running long preorders: write the timeline answer for day 7, day 45, and day 89 <em>separately</em> and pin them. Most disputes come from giving a day-20 answer to a day-80 customer. The wording that calms a backer early reads as a brush-off late. Acknowledge the wait first, then give an honest ETA band, never a hard date. The hard date is what gets you the chargeback when it slips.</p></blockquote>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Outreach &amp; Communication Playbook</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">Outreach &amp; Communication Playbook</span>
+    <a class="back" href="../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>Outreach &amp; Communication Playbook</h1>
+<h3>The durable reference. How to move a stranger from "who are you" to "take my money" across email, DM, and content, in 2026 and after.</h3>
+<blockquote><p><strong>What this is.</strong> One source of truth distilled from the <code>_outreach-research/</code> briefs, the <code>cold-outreach-playbook.md</code> spine, and 2026 web research. It outlives any single venture. New venture needs an outreach motion? Start here, then build the venture layer (the Adwield and Tideover plays at the end are the worked examples).</p>
+<p><strong>The bar (<code>copy-standard.md</code>, every line you send).</strong> A burned-once operator reads it and nods. No em-dash-as-connector, no "I hope this finds you well," no example-lists one word covers, no triads, no hype. Cut every word that isn't load-bearing. Read it aloud before it ships.</p>
+<p><strong>The one rule under all of it:</strong> the message is <strong>"you deserve respect,"</strong> never <strong>"I deserve your attention."</strong> Volume is dead. Relevance, timing, earned attention. (Hunter; Saleshandy)</p></blockquote>
+<hr>
+<h2>1. CORE PRINCIPLES</h2>
+<p>These don't change when a platform changes.</p>
+<p><strong>1. The whole game is one motion.</strong> Move someone from "Who are you?" to "Take my money." Every step shrinks that distance. Nothing you send should fail to close some of the gap.</p>
+<p><strong>2. Give value before you ask.</strong> Outreach is networking, not a transaction. Pick people you find interesting. Stay useful whether or not they buy. The slow way is the fast way for <em>durable network value</em>: a goodwill network can close a seven-figure program years later on one message. (That's a years-later close. For a 90-day cash sprint, see §3 — the artifact replaces the goodwill ladder.) Date the product, marry the niche.</p>
+<p><strong>3. The first message's job is a reply, not a sale.</strong> You are a stranger. Ask for a small, easy first step. Sell after they write back. The opener exists to de-risk the first conversation, nothing more.</p>
+<p><strong>4. Talk about them twice as much as yourself.</strong> Most cold outreach is 80% sender. Flip it. The body is about them; your credentials live below the signature.</p>
+<p><strong>5. Lead from selectivity, not need.</strong> "I only reached out to 17 [role] in [niche]" signals you chose them. A needy opener repels. Going <em>up</em> the org chart often converts easier than down. (Hunter)</p>
+<p><strong>6. Curiosity is the on-switch.</strong> An open loop fires the reward system and creates anticipation instead of pressure. "I noticed something on your [X] you'll want to fix" outperforms any pitch. (S.I.P.E.)</p>
+<p><strong>7. The artifact is the credential.</strong> Reciprocity is the oldest lever. Lead with a made-for-them thing before any ask, and frame it as already done: "I made you X, cool if I send it?"</p>
+<p><strong>8. Specificity is the proof of effort.</strong> One concrete number self-selects who it's for. "Boost open rates 5%" targets; "increase your open rates" excites nobody. Kill every adjective ("award-winning," "world-class"); they read as filler and let bad-fits opt out.</p>
+<p><strong>9. Belief is engineered.</strong> Never violate a belief they hold; bridge from what they accept to your claim. Place proof at the moment they demand it, not before. If a six-year-old wouldn't buy the core logic (Problem → Root cause → Solution → Emotional win), no story saves it. (Schwartz)</p>
+<p><strong>10. Story bypasses the defenses a pitch raises.</strong> The prospect is the hero (often "them two years ago"); you are the guide. Name the villain blocking them. Lecturing triggers resistance; narrative doesn't.</p>
+<p><strong>11. The pre-send filter (merge of the Nuisance Test + Harry Dry's three tests).</strong> Run every message through this. Fail one, don't send.</p>
+<ol>
+<li>Would I be annoyed receiving this? Would 10x this week make me trust the sender <em>less</em>?</li>
+<li>Does it ask for attention before earning it?</li>
+<li>Can a stranger tell exactly who it's for, and can a competitor <em>not</em> say the same line?</li>
+<li>Can I <strong>visualize</strong> it, and <strong>falsify</strong> it (kill "next-generation," "quality you can trust")?</li>
+<li>If they reply "not now," do I have a respectful next step?</li>
+</ol>
+<p><strong>12. Consistency is the deliverable.</strong> The failure mode that kills solo founders: sell okay, get busy, stop prospecting, fall apart. What you skip today shows up 90 to 180 days out. Prospecting has a half-life; stopping is backsliding downhill. (Jeb Blount)</p>
+<hr>
+<h2>2. THE 2026 META</h2>
+<p>The through-line across every source: the 2023 volume playbook is dead, and volume now actively hurts you. 2026 rewards relevance, signal-timing, earned attention.</p>
+<h3>What works now</h3>
+<ul>
+<li><strong>Signal-first beats sequence-first.</strong> Start from a real buying behavior, then trigger outreach. Reaching a prospect inside 48h of a fresh trigger is the lift. <strong>For a $750 budget this is the cheat code:</strong> a hand-checked watchlist of 50 to 100 ICP accounts gets it with zero paid intent-data stack. (Factors.ai; Apollo)</li>
+<li><strong>One signal per prospect, and it must be fresh.</strong> Stacking signals reads like a research report, not a conversation. An 18-month-old funding round signals you <em>didn't</em> research them.</li>
+<li><strong>Soft, single, interest-based CTA.</strong> Ask for interest, not time. "Worth 15 minutes this week?" beats a raw calendar link. Every extra CTA reduces response.</li>
+<li><strong>Layer ONE other channel, not three.</strong> Email stays the workhorse; add a second channel only with real relevance. Coverage without context does nothing.</li>
+<li><strong>Personalized video and voice notes are the un-copied edge.</strong> They don't scale, which is why competitors skip them, and they put a founder's face and voice on the table. <strong>The asymmetric weapon for a time-rich, money-poor founder.</strong> Always <em>link</em> hosted video, never attach. (See §3.7 for the production playbook.)</li>
+<li><strong>X/Twitter DM is the fresh channel.</strong> LinkedIn is saturated; X DMs reach decision-makers with less competition. For Adwield, operators live on X. Structure: genuine specific praise → soft ask.</li>
+<li><strong>Warm beats cold by a wide margin.</strong> Mine any 2nd-degree or community path <em>first</em> before any cold touch. (Growleads)</li>
+</ul>
+<h3>What's dead or saturated</h3>
+<ul>
+<li><strong>Volume blasting.</strong> Deliverability collapses; volume no longer fixes weak targeting.</li>
+<li><strong>Spintax at scale.</strong> Heavy synonym substitution has a detectable statistical signature; filters score it and it torches domains. (Smartlead)</li>
+<li><strong>Generic AI "personalization."</strong> "Hey {first}, noticed {company} is hiring {role}," mission-statement references, "I noticed you're in the SaaS space." Buyers call this AI slop and it's <em>worse than none</em>. Basic merge tags are the floor, not a differentiator. The fix is a real researched signal (see §3.6 hook-sourcing), not better spinning. (Instantly; Lukdigital)</li>
+<li><strong>Dead openers, pattern-matched in one second:</strong> "Fellow [dog dad]," "Congrats on the promotion," "Loved your recent post about [X]," "I hope this email finds you well," "Quick question," "I can 10x your...," fake "Re:"/"Fwd:" threads, "not selling anything here," "I'll keep this short." (Hunter; Saleshandy)</li>
+<li><strong>Other dead tactics:</strong> calendar-link in email 1, attachment bait, templated Looms, fabricated urgency, breakup guilt-trips, dumping a link plus ask in message one.</li>
+</ul>
+<h3>Deliverability floor (cold email only — defer per the budget verdict below)</h3>
+<p>Three lines, because this is a channel you don't build yet:</p>
+<ol>
+<li><strong>SPF + DKIM + DMARC on a secondary domain</strong> (<code>tryX.com</code>, 12+ months old), never your primary. Cap ~25 sends/mailbox/day. Warm 3 weeks before live.</li>
+<li><strong>Plain text, ≤80 words, one link, send Tue to Thu 8 to 10am</strong> prospect time. Keep spam complaints under 0.1%, bounce under 2%, one-click unsubscribe.</li>
+<li><strong>Engagement drives placement.</strong> Irrelevant mail tanks future deliverability even when technically compliant. Relevance is a deliverability lever. (Full setup spec in <code>_outreach-research/07-meta</code>.)</li>
+</ol>
+<p><strong>Budget verdict:</strong> the warm-DM lane is near-free (LinkedIn + X manual prospecting + a scheduler). The cold-email rig (domains, warming, verifier) only earns its cost once you run a direct cold-email channel. <strong>Defer it. Spend first dollars on the warm lane.</strong></p>
+<hr>
+<h2>3. FRAMEWORKS THAT RECUR</h2>
+<p><strong>Pick your motion first.</strong> For a cash-sprint venture (Adwield, Tideover, $750 budget, 90-day goal, no case studies), the default is <strong>artifact-first (§3.5)</strong>: one touch carries a true hook plus a finished sample of their own product, and the artifact buys all the trust the goodwill ladder was buying over weeks. The 8-unit value ladder (§3.3) is the <em>fallback</em> for prospects who don't bite the artifact, and the <em>primary</em> motion only for whale/anchor accounts where lifetime value justifies the patience. Don't run a 2-to-4-week goodwill ramp per prospect on a 90-day clock.</p>
+<h3>3.1 Schwartz: Awareness × Sophistication (where to start the message)</h3>
+<p>The deepest idea in the stack. Where you begin is set by what the prospect knows and how many competitors got there first.</p>
+<ul>
+<li><strong>Five states of awareness:</strong> Most aware (name + offer) → Product-aware → Solution-aware → Problem-aware → Completely unaware. <strong>Cold B2B prospects are usually problem- or solution-aware: lead with the problem named and dramatized, not the product.</strong> Reserve price/feature talk for warm, in-pipeline stage 1 to 2.</li>
+<li><strong>Five stages of sophistication:</strong> 1st to market = claim straight. 2nd = enlarge it. 3rd = lead with a <strong>new mechanism</strong> (shift WHAT to HOW). 4th = elaborate the mechanism. 5th = shift to <strong>identification</strong>. <strong>AI-ads and agency space is stage 3 to 5: "more leads," "AI-powered" are dead claims. Lead with a distinct named mechanism or operator-to-operator identification.</strong> This is differentiation in any saturated market.</li>
+<li><strong>Channel desire, don't manufacture it.</strong> Copy attaches your offer to a want already in millions of hearts. Name the existing desire before writing a line.</li>
+</ul>
+<h3>3.2 Hook formulas (earn the read)</h3>
+<ul>
+<li><strong>S.I.P.E.</strong> — the most reusable first-line hook: <strong>S</strong>hort, <strong>I</strong>ncomplete (open loop), <strong>P</strong>ersonal (one reader), <strong>E</strong>motional (curiosity first). (Miguel)</li>
+<li><strong>Credibility-first opener types</strong> (replace small talk): <strong>Outcome</strong> ("We helped 12-person SaaS teams cut no-show demos"), <strong>Research</strong> ("I'm benchmarking reply rates for SaaS teams under 50"), <strong>Constraint</strong> ("I only reached out to 17 VP Sales in payroll"). (Hunter)</li>
+<li><strong>Never fabricate the scarcity or proof you're triggering.</strong> The emotional drivers only work on real scarcity and real results. One fake claim burns the whole asset.</li>
+</ul>
+<h3>3.3 The Value Ladder (anchor-account / long-game motion only)</h3>
+<p>Each rung is goodwill in the bank; by the time you ask, it doesn't feel like one.</p>
+<p><code>like → reply → reshare → tip → intro → resource → insight → cheer → THE ASK</code></p>
+<p><strong>This is the fallback, not the spine.</strong> Eight goodwill touches before an ask, even compressed, is a 2-to-4-week ramp per prospect, which doesn't close on a 90-day clock (see §3 header). For normal cash-sprint prospects, use artifact-first (§3.5). Reserve the full ladder for anchor accounts and partners. For everyone in between, compress to a 2-to-3-touch warm path: a substantive comment plus a like, then a DM referencing the comment.</p>
+<h3>3.4 The warm-DM sequence</h3>
+<ol>
+<li><strong>Connection request with NO message.</strong> Naked requests get accepted far more than pitch-carrying ones. No link in the note, ever.</li>
+<li><strong>Like their posts.</strong></li>
+<li><strong>Comment with substance</strong> (not "great post!").</li>
+<li><strong>Be consistently visible.</strong></li>
+<li><strong>The warm DM:</strong> name a real specific thing, be honest about the goodwill ("you can probably tell I've been liking a lot of it"), lead with curiosity not a calendar link, give an easy low-pressure yes.</li>
+</ol>
+<p>The structure to steal even outside the full ladder: <strong>specific compliment → open question → permission ask → channel move</strong> (take warm relationships off-platform). (Matt Gray)</p>
+<h3>3.5 Artifact-first / First Strike (the cash-sprint spine)</h3>
+<p>The primary motion for ventures with no case studies and a money-now clock. Across every channel: <strong>never pitch the service in the opener.</strong> Earn the read with <strong>one true, specific observation about the prospect's own account</strong> (the <code>{{hook}}</code>), then hand them a <strong>finished sample you already made of their own product</strong>. The retainer is never mentioned until they reply. The artifact does the relationship-building the goodwill ladder did, in one touch.</p>
+<ul>
+<li><strong><code>{{hook}}</code> quality bar (all three):</strong> true (verifiable from their public account), specific (names the actual ad/angle/review/timeline), and <em>says the quiet part</em> (something they half-suspected and didn't want to say out loud).</li>
+<li><strong>Show, don't claim.</strong> Prove quality with concrete tells. Never name the buyer's feared word.</li>
+<li><strong>Why it works in 2026:</strong> AI makes a real custom artifact cheap to produce per lead. The artifact is the proof when you have no track record. (14-cold-email-sequence; AP; SF)</li>
+</ul>
+<h3>3.6 Hook-sourcing engine (where the <code>{{hook}}</code> and triggers come from)</h3>
+<p>The §3.5 motion lives or dies on producing one true variable per prospect at a rate above fully-manual. This is the bottleneck that decides 10 sends/day vs 50. The pipeline: <strong>a tool pulls the raw signal; a human writes the hook.</strong> Don't let AI write the hook (that's the slop in §2). The free trigger sources:</p>
+<table>
+<thead>
+<tr><th>Venture</th><th>Trigger source (free)</th><th>The <code>{{hook}}</code> it yields</th></tr>
+</thead>
+<tbody>
+<tr><td>Adwield</td><td><strong>Meta Ad Library</strong> (public, searchable)</td><td>The creative/angle they're over-running, hand-cut variations, fatigue tells</td></tr>
+<tr><td>Adwield</td><td>Their reviews / Trustpilot themes</td><td>The exact pain language to build the ad around</td></tr>
+<tr><td>Tideover</td><td><strong>Kickstarter / BackerKit campaign-end dates</strong> as a calendar</td><td>Who hits the 60-to-120-day fulfillment window, and when</td></tr>
+<tr><td>Tideover</td><td>Backer comment feeds, delay-update posts</td><td>Visibly angry "where's my order?" threads = highest intent</td></tr>
+<tr><td>Both</td><td>Job posts (hiring a creative lead, a CX rep)</td><td>A capacity or staffing signal, fresh and dated</td></tr>
+<tr><td>Both</td><td>Review-theme scraping (the <code>gooseworks</code> scrape pipeline)</td><td>Competitor-hate and pain phrasing at moderate scale</td></tr>
+</tbody>
+</table>
+<p><strong>Make it a steady inbound stream, not a one-off hunt.</strong> A trigger you find by hand once is not a system. Run the scrape on a cadence (the campaign-end calendar refreshed weekly, the Ad Library checked for the watchlist), queue the raw signals, and write hooks in a batch.</p>
+<h3>3.7 The video/voice weapon (production playbook)</h3>
+<p>§2 calls this the founder's biggest edge, so here's how to ship it without being cringe:</p>
+<ul>
+<li><strong>Tool:</strong> screen-record their actual account/site with Loom or a free recorder. Face-cam bubble on. No studio.</li>
+<li><strong>3-beat script (under 45 sec):</strong> (1) name the specific thing on <em>their</em> screen you're pointing at; (2) the one insight or the artifact you made; (3) a single soft ask. No intro, no "hope you're well."</li>
+<li><strong>Length:</strong> 30 to 45 sec. Past 60 it stops getting watched.</li>
+<li><strong>Host, don't attach:</strong> link the Loom/hosted file. Attachments tank deliverability and trust.</li>
+</ul>
+<h3>3.8 The hook-iteration loop</h3>
+<p>Every send is a data point; build the learning machinery in. <strong>Hold the body constant. Rotate 3 first-lines across each batch of ~30 sends.</strong> Read which open-loop pulls (reply rate, not opens). Keep the winner, retire the other two, write a new challenger. Diagnose by symptom: high reply + low booking = fix the offer/copy, not targeting; high bounce = data hygiene; silence across all three first-lines = the trigger source is too generic.</p>
+<h3>Left out</h3>
+<p>The 38 headline devices, the full VSL blueprint, Kell's manufactured-scarcity tactics, the 30 LinkedIn templates, the growth-pod machinery. Real, but single-channel deep-cuts, content-production systems, or brand-damaging/FTC-hot. Pull from the briefs when you specifically need them.</p>
+<hr>
+<h2>4. CHANNEL PLAYBOOKS</h2>
+<p>Each channel: the steps, then one template. All templates inherit Section 1 and <code>copy-standard.md</code>. Paste-grade exemplars live in <code>copy-standard.md</code> → Example Messages.</p>
+<h3>4.1 Cold Email (deferred per §2 budget verdict; here for when the rig is live)</h3>
+<p><strong>Setup:</strong> see §2 deliverability floor.</p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li><strong>Laser-pointer list, not flashlight.</strong> A few dozen to 50/week at high personalization beats hundreds at low. Start with prospects most like your best past clients.</li>
+<li><strong>One fresh signal per prospect</strong> (§3.6). No signal, don't send.</li>
+<li><strong>Write body first, subject last.</strong> Leave the To: line empty until done. One ask.</li>
+<li><strong>Open with the hook plus shown sample work</strong>, not a credential dump.</li>
+<li><strong>One soft, interest-based CTA.</strong> "Worth exploring?" If you must ask for a call, 10 to 15 min, and kill the admin friction ("send me a couple times and I'll send the invite," not a Calendly link).</li>
+<li><strong>Sequence 3 to 5 emails</strong> per §3.5 cadence below, in-thread bumps, new info each time.</li>
+<li><strong>Diagnose per §3.8.</strong> "Not interested" means you reached the right person, so fix copy/offer, not data. Move any reply straight to your CRM.</li>
+</ol>
+<p><strong>Cadence:</strong> 3 to 5 emails, front-loaded, each follow-up adds NEW info, never "just bumping this." Day 1 hook + artifact (&lt;80 words); Day 4 value-add, same thread, blank subject; Day 8 a different angle, named specific result; Day 13 new angle/trend; Day 18 to 20 low-pressure breakup ("Is this a priority right now?"), genuinely useful, never a guilt-trip. When interest appears, follow up every 3 business days until they book, block, or stop you.</p>
+<p><strong>Template (first touch, &lt;80 words, plain text):</strong></p>
+<pre><code>Subject: {{firstName}}, {{specific thing about their account}}
+
+{{firstName}} — {{one true, specific observation about their own
+account that says the quiet part}}.
+
+So I {{made the artifact}} to show what I mean: {{link}}.
+
+If the output holds up, that's the whole pitch.</code></pre>
+<h3>4.2 LinkedIn / DM</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li><strong>Dial the profile first.</strong> Headline = the outcome you create for <em>them</em>, not "Founder &amp; CEO." Bio mirrors the niche in the first two lines. Recent posts prove you know the space. Featured points to value, not a sales page.</li>
+<li><strong>Connection request, no note.</strong></li>
+<li><strong>On accept:</strong> if warmed with comments, send the warm DM referencing the specific thing. If cold, open with shared context, never a pitch.</li>
+<li><strong>DM only on a real trigger</strong> (Intent × Consent): high intent + high consent → be direct; high intent + low consent → probe, don't pitch; low intent → shared interest or light tribe alignment only.</li>
+<li><strong>Follow the energy</strong> after they reply: match their tone, advance via curiosity. (For the interested-but-stalling replies 2 to 5, run the warm-reply objection tree in <code>copy-standard.md</code>.)</li>
+<li><strong>Ladder of tiny yeses to the close.</strong> Move the warm relationship off-platform when it's real.</li>
+</ol>
+<p><strong>Limits:</strong> 15 to 25 messages/seat/day.</p>
+<p><strong>Template (warm DM, after 2 to 3 touches):</strong></p>
+<pre><code>Hey {{firstName}} — you can probably tell I've been around your
+stuff. The post on {{specific topic}} especially landed.
+
+{{One specific observation or made-for-them artifact}}.
+
+No agenda. If it's useful, happy to send the {{next small thing}}.</code></pre>
+<h3>4.3 X / Twitter</h3>
+<p><strong>Steps:</strong></p>
+<ol>
+<li><strong>Five-Point Profile:</strong> bio = "Helping [group] do [job] using [method]," real name, clear-face photo, banner stating what you do, pinned tweet proving competence.</li>
+<li><strong>Reply-guy first (zero-audience move):</strong> pick 10 to 20 niche accounts, notifications on for 5, reply to 3 to 5 posts/day with real insight. Borrow their audience before posting to your own.</li>
+<li><strong>Warm the DM with a reply or quote-tweet</strong>, then DM.</li>
+<li><strong>DM = genuine specific praise anchored to one tweet → soft ask.</strong></li>
+<li><strong>Content warms the whole pool.</strong> Weight toward comment-bait questions (warm pool plus free market research) and results posts (the ones that sell). Every post makes the eventual DM non-cold.</li>
+</ol>
+<p><strong>Template (X cold DM):</strong></p>
+<pre><code>{{firstName}} — {{specific genuine praise tied to one exact post}}.
+{{One-line shared-context observation about their situation}}.
+
+{{Made-for-them artifact or a one-line useful insight}} — want me
+to send it?</code></pre>
+<h3>4.4 Reddit / Community</h3>
+<p><strong>The hard rule:</strong> most communities are hostile to overt selling. Pitching gets you banned and burns the brand. <strong>Mine and be present, don't pitch.</strong></p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li><strong>Listen-and-mine for voice-of-customer.</strong> Communities are a free public transcript of your ICP's pain, objections, and exact phrasing. This is the ammunition for §3.6.</li>
+<li><strong>Run the pain-point mining pass</strong> on scraped threads: pull the pain language and the competitor-hate (what they hate about incumbents is your wedge).</li>
+<li><strong>Be the genuinely-helpful operator</strong>, not a vendor. Let people come to you.</li>
+<li><strong>A community-mined lead magnet</strong> (a resource in their exact language, solving a real named problem) is a credible inbound trigger.</li>
+</ol>
+<p><strong>Template (community comment, value-first, no pitch):</strong></p>
+<pre><code>{{Direct answer to their exact question, from real operator
+experience}}. {{One specific tactic or number}}.
+
+{{Only if genuinely relevant and they asked: a light,
+non-promotional pointer. Otherwise no CTA at all.}}</code></pre>
+<hr>
+<h2>5. TAILORED PLAYS</h2>
+<p>The venture layer. Each names the angle, channel, trigger, and first message. Both inherit Section 1, the artifact-first spine (§3.5), and a hard <strong>proof-only guardrail</strong>: every metric is a target to measure, never a claimed result. Zero fabricated case studies, testimonials, logos, or numbers.</p>
+<h3>5.1 Adwield — agency to DTC ad operators</h3>
+<p><strong>Who.</strong> DTC performance-ads operators at $20 to 100K/mo Meta + TikTok spend, functional-consumables. Three archetypes: <strong>Wounded Veteran</strong> (5 to 10yr operator gutted by the Feb-2025 Andromeda update, "tested everything"), <strong>Volume-Player</strong> (ships 90+ creatives/wk, wants ops leverage), <strong>Lean Team</strong> (2 to 3 person team, $200 to 400K/mo, already using external creative agencies, the ideal client).</p>
+<p><strong>The angle (Schwartz-correct).</strong> Stage 3 to 5 sophistication: "more leads," "AI-powered" are dead claims. <strong>Lead with the mechanism (the named loadout: 4 angles × 24 variations every two weeks, launched and tagged in their own account) and operator-to-operator identification.</strong> The big idea handles the objection before a feature is named: <em>you don't hire an agency, you equip a weapon.</em> Never lead with volume (pings the slop alarm), the word "AI," or price.</p>
+<p><strong>The trigger (pick ONE, verifiable, from §3.6 — Meta Ad Library is the engine).</strong> The ad they over-rely on; a review theme; an AOV/ritual signal; the angle carrying the account; a visible post about creative fatigue or post-Andromeda pain. Generic = no reply.</p>
+<p><strong>The proof move.</strong> The <strong>First Strike</strong>: one battle-ready ad of <em>their own</em> product, rendered from their real site and reviews, before they pay a coin. Hook earns the read; First Strike carries the credibility; the loadout mechanism and the No-Risk guarantee ("beat your control or the next cycle's free") wait for the reply. No priority touch ships without a rendered First Strike and a hand-written true hook.</p>
+<p><strong>Channel order.</strong> X and LinkedIn DMs first (operators live on X, zero warmup) to the top ~10 A-tier leads, the first-cash channel. Cold email rig warms in parallel but is not the critical path. r/FacebookAds for intel and soft presence.</p>
+<p><strong>Objection counters (locked):</strong></p>
+<ul>
+<li>"AI ads are slop." → AI alone is slop; AI plus DTC operator brand-context judgment = winners. Show, don't claim. Never repeat the word "slop."</li>
+<li>"AI does this for free now." → ChatGPT writes a script. It can't tell you which of 4 angles to lead with for your $90-AOV SKU vs your $45-AOV SKU. That's the judgment layer.</li>
+<li>"My agency disappointed me." → Most agencies bill you to be slow. 24 variations every two weeks, not 4 in a month.</li>
+</ul>
+<p><strong>First message:</strong> <code>copy-standard.md</code> → Example Messages #1 to #4.</p>
+<h3>5.2 Tideover — to Shopify presale merchants</h3>
+<p><strong>Who.</strong> Beachhead = Kickstarter / Indiegogo / BackerKit graduates moving onto Shopify, hardware/design/made-to-order creators with 60-to-120-day fulfillment windows and large backer lists. Then made-to-order luxury and drop/scarcity brands.</p>
+<p><strong>The angle.</strong> Presale brands collect cash today, ship in 60 to 120 days. That gap is an emotional liability: the inbox floods with "where's my order?", customers file chargebacks and call the brand a scam, generic helpdesks can't tell which orders are preorders. <strong>Lead with the phase-pain and the bolt-on truth:</strong> Tideover takes only the presale tickets, everything else stays put. Coin the category (no shared vocabulary exists yet). Frame value on <strong>revenue protection</strong> (no refund, no chargeback, preserved Stripe/PayPal standing), never on cheaper tickets.</p>
+<p><strong>The trigger (verifiable, from §3.6 — BackerKit/Kickstarter end-date calendar is the engine).</strong> Campaign mid-fulfillment (highest intent); just moved to Shopify; a posted delay update or angry backer comments; juggling backers plus late pledges plus Shopify preorders. Never send a signal-claim you can't see.</p>
+<p><strong>The proof move.</strong> Not an app, a <strong>free 15-minute presale-support teardown</strong> → a <strong>free founding-partner concierge pilot</strong> (founder plus AI run their presale support by hand for one cycle, inside their own helpdesk). Credibility is the <strong>operator war story</strong>, framed as experience not a number: "I ran fulfillment, in-house shipping, and the where's-my-order comms for a physical-goods brand for years." The ~$2M figure is warm-call only, never a cold DM. No fabricated refund stats; the full case study doesn't exist until a cohort completes its wait, and you say so plainly.</p>
+<p><strong>Channel order.</strong> Personal LinkedIn / X / IG DMs first (warm, signal-matched, the gate-critical Week 1/2 sends). Shopify Community, Gorgias Community, r/shopify, BackerKit Community for voice-of-customer mining and helpful presence. The warmed tideover.app domain is next-cohort email only.</p>
+<p><strong>Objection counters:</strong></p>
+<ul>
+<li>"We already have a helpdesk / don't want to change our setup." (the #1 wall) → Bolt-on. You keep your helpdesk; Tideover only takes the presale tickets. Nothing to migrate, nothing to learn.</li>
+<li>"You don't need an app to sell preorders." → True for <em>selling</em>. The gap is the 60-to-120-day <em>support</em> wait.</li>
+<li>"AI can't handle the emotional nuance." → Bring data, not hype. The moat is the day-by-day reassurance scripts at each wait-stage, not the model. Replies use honest confidence-band ETAs, never invented hard dates.</li>
+</ul>
+<p><strong>First message:</strong> <code>copy-standard.md</code> → Example Messages #5 to #8.</p>
+<hr>
+<h2>6. EXAMPLE MESSAGES</h2>
+<p>The paste-grade exemplars live in <code>copy-standard.md</code> → "Example Messages — Outreach," so the copy bar and its exemplars sit in one file. This playbook governs <em>strategy</em>; that file holds the <em>exemplars</em> and the warm-reply objection tree.</p>
+<hr>
+<h2>Sources</h2>
+<p>Synthesized from <code>_outreach-research/</code> briefs 01 to 07 (cold email, agency lead-gen, DM &amp; social, persuasion &amp; story, content &amp; inbound, IdeaBrowser frameworks, and 2026 web meta), the relationship-first <code>cold-outreach-playbook.md</code>, <code>adwield-brand-kit.md</code>, <code>tideover-brand-kit.md</code>, and <code>14-cold-email-sequence.md</code>. Held throughout to <code>copy-standard.md</code>.</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

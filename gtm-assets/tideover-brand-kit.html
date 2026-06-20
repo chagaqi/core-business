@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TIDEOVER — Brand Kit (Brand Bible)</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">TIDEOVER — Brand Kit (Brand Bible)</span>
+    <a class="back" href="../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>TIDEOVER — Brand Kit (Brand Bible)</h1>
+<blockquote><p><strong>Status:</strong> Locked brand spine. This is the voice authority for every Tideover asset — landing page, outreach, playbook, App Store listing, partner comms.<br>
+<strong>Venture:</strong> Venture 2 (formerly working-named <strong>"PresaleAI"</strong> — that name is RETIRED; the brand is now <strong>TIDEOVER</strong>).<br>
+<strong>Domain:</strong> tideover.app<br>
+<strong>Grounded in:</strong> <code>35-presaleai-research-capture.md</code>, <code>35b-presaleai-market-community-capture.md</code>, <code>36-presaleai-90-day-roadmap.md</code> (IdeaBrowser idea 7901). All metrics here are <strong>targets to measure, never claimed results.</strong><br>
+<strong>HARD RULE — PROOF-ONLY:</strong> Never fabricate metrics, case studies, testimonials, reviews, star ratings, or client logos. Where proof would normally go, use the free offer + the guarantee + "founding/early" framing or a literal <code>[CASE STUDY PLACEHOLDER]</code>. Every number is a target-to-measure.</p></blockquote>
+<hr>
+<h2>1. The Name + What It Means</h2>
+<p><strong>TIDEOVER</strong> — from the idiom <strong>"to tide someone over"</strong>: to support or sustain a person through a difficult, in-between stretch until things get better. You give someone enough to <em>tide them over</em> until the real thing arrives.</p>
+<p>That is the whole brand in one word. A presale customer has paid, but the product is 60–120 days away. They're stuck in the in-between — anxious, second-guessing, one frustrating silence away from a refund request or a chargeback. <strong>Tideover is what carries them across that gap, calm and aboard, until their order ships.</strong></p>
+<ul>
+<li>The name is a <strong>promise</strong>, not a feature. It says what we do <em>for the customer</em> (carry them through the wait), which is exactly what the merchant is buying.</li>
+<li>It is warm, human, and plain-English — no jargon, no tech-bro suffix, no "AI" bolted on. The word does the emotional work.</li>
+<li>"Tide" also quietly evokes patience and inevitability: the tide always comes in. The order <em>is</em> coming. We keep people steady until it does.</li>
+</ul>
+<p><strong>One-liner:</strong> <em>Tideover keeps your presale buyers calm — and aboard — through the long wait, so they don't bail before their order ships.</em></p>
+<p><strong>The bolt-on truth (say it early, everywhere):</strong> <em>Tideover bolts onto the helpdesk you already run and takes only your presale tickets — everything else stays exactly where it is. Nothing to migrate, nothing to rip out.</em> This is a <strong>core value proposition</strong>, not a footnote: the merchant adds the presale brain their stack never had and changes nothing else.</p>
+<hr>
+<h2>2. The Big Idea</h2>
+<p><strong>Tideover is a presale-specialist support layer for the long wait.</strong></p>
+<p>Presale and preorder brands collect cash today and ship in 60–120 days. That gap is an <strong>emotional liability</strong>: inboxes flood with "where is my order?", customers file chargebacks and call the brand a scam, and generic helpdesks (Gorgias / Tidio / Intercom) have <strong>no idea which orders are preorders</strong> or what to say at day 7 vs. day 60 vs. day 89.</p>
+<p>Tideover plugs into the merchant's <strong>existing</strong> helpdesk (Gorgias / Tidio / Intercom — we don't replace it), knows <strong>each order's real production timeline</strong>, and delivers <strong>timeline-aware, emotionally-intelligent reassurance</strong> that keeps anxious buyers from bailing during the wait.</p>
+<p><strong>Tideover is a bolt-on, not a rip-and-replace.</strong> It routes <strong>only</strong> the presale/preorder-related tickets to Tideover; <strong>every other ticket stays in the merchant's current helpdesk, handled exactly as it is today.</strong> There is no infrastructure change, no migration, no new helpdesk for the team to learn — Tideover works <em>alongside</em> Gorgias / Tidio / Intercom and touches nothing but the presale wait. This is a <strong>core reason to say yes</strong>: the merchant keeps everything they already have and simply adds the presale brain it never had.</p>
+<p><strong>What makes this defensible (the wedge):</strong></p>
+<ul>
+<li>The hard part is <strong>not the AI</strong> — LLMs are commoditized. The moat is the <strong>day-by-day reassurance playbooks</strong> (what to say at each stage of the wait) and the <strong>outcome data</strong> (which messages keep a buyer aboard).</li>
+<li><strong>No funded player owns "presale support."</strong> Incumbents are generalists who treat "where's my order?" as a one-off ticket, not a months-long emotional journey. That gap is the wedge. (Source: idea 7901 traction analysis — no visible funded presale-support player, no search vocabulary, no patents.)</li>
+<li>The category has <strong>no name yet</strong>. Tideover gets to coin and own it.</li>
+</ul>
+<p><strong>What Tideover is NOT:</strong></p>
+<ul>
+<li>Not a new helpdesk (we bolt onto theirs and take only the presale tickets — nothing else changes).</li>
+<li>Not a generic chatbot (we're presale-specialist, timeline-aware).</li>
+<li>Not a preorder/checkout app (those stop at <em>taking</em> the order; we own the wait <em>after</em>).</li>
+<li>Not an MMO / gamified / gimmicky product. This is a <strong>trust + empathy brand.</strong></li>
+</ul>
+<hr>
+<h2>3. Hero Concept + Headline Options</h2>
+<p><strong>Hero concept:</strong> <em>The support layer that tides your customers over until their order ships.</em></p>
+<p><strong>Three headline options (use per surface — all on-voice: warm, calm, confident, never gimmicky):</strong></p>
+<ol>
+<li><strong>"Keep your presale buyers calm — and aboard — through the long wait."</strong> <em>(Best for: landing-page hero. Leads with the customer's emotional state + the merchant's outcome: nobody bails.)</em></li>
+</ol>
+<ol>
+<li><strong>"The support layer that tides your customers over until their order ships."</strong> <em>(Best for: positioning line / one-liner / outreach. States the category and the name's meaning in one breath.)</em></li>
+</ol>
+<ol>
+<li><strong>"Your customers paid. Now they're waiting 90 days. Tideover keeps them aboard."</strong> <em>(Best for: cold outreach / problem-aware audiences. Names the exact pain — the paid-but-waiting gap — then the relief.)</em></li>
+</ol>
+<p><strong>Subhead (pairs with any of the above):</strong><br>
+<em>Tideover bolts onto the Gorgias, Tidio, or Intercom you already use — taking only your presale tickets, nothing else changes — knows each order's real production timeline, and answers the long wait with calm, human, timeline-aware reassurance, so "where's my order?" doesn't become a refund.</em></p>
+<p><strong>Bolt-on supporting line (use near the hero on every surface):</strong><br>
+<em>Works with your existing stack. A bolt-on, not a rip-and-replace — only presale tickets route to Tideover; every other ticket stays in your current helpdesk, handled exactly as today.</em></p>
+<hr>
+<h2>4. Positioning — vs. the Generic Helpdesk</h2>
+<p>The competitive truth, stated plainly: <strong>Gorgias, Tidio, and Intercom are generic.</strong> They're strong horizontal helpdesks — but none has a presale-specific layer. A presale order looks like any other order; the bot gives a "standard shipping answer" to a product that hasn't shipped and won't for two months. (Verbatim merchant pain, Tidio Community: <em>"Our chatbot answers shipping questions fine, but it doesn't understand pre-orders… it gives standard shipping answers even though it's a pre-order that hasn't shipped yet."</em>)</p>
+<table>
+<thead>
+<tr><th></th><th><strong>Generic helpdesk (Gorgias / Tidio / Intercom)</strong></th><th><strong>Tideover</strong></th></tr>
+</thead>
+<tbody>
+<tr><td>Knows an order is a <em>preorder</em></td><td>No — looks like any order</td><td><strong>Yes — presale-aware</strong></td></tr>
+<tr><td>Knows the <em>real production timeline</em></td><td>No — agents dig through 3 tools</td><td><strong>Yes — timeline-aware per order</strong></td></tr>
+<tr><td>Handles the <em>60–120 day emotional journey</em></td><td>No — treats WISMO as a one-off</td><td><strong>Yes — day-stage reassurance (day 7 vs 60 vs 89)</strong></td></tr>
+<tr><td>Tone</td><td>Cold, transactional helpdesk</td><td><strong>Warm, calm, human, steady</strong></td></tr>
+<tr><td>Replaces your stack</td><td>It <em>is</em> the stack</td><td><strong>Plugs into your existing stack</strong></td></tr>
+<tr><td>What it touches</td><td>All your tickets</td><td><strong>Only presale/preorder tickets — everything else stays put</strong></td></tr>
+<tr><td>Setup</td><td>Migration, new tool to learn</td><td><strong>Bolt-on — zero infrastructure change</strong></td></tr>
+</tbody>
+</table>
+<p><strong>Positioning statement (the canonical line):</strong></p>
+<blockquote><p>Tideover is the <strong>presale-specialist support layer</strong> that bolts onto the helpdesk you already use, takes only your presale tickets (everything else stays exactly where it is), knows each order's real production timeline, and turns the anxious 60–120 day wait into calm, human reassurance — so your presale buyers stay aboard instead of demanding refunds.</p></blockquote>
+<p><strong>The bolt-on line (use whenever the "we already have a helpdesk" wall comes up):</strong></p>
+<blockquote><p>You keep your helpdesk. Tideover only takes the presale tickets — every other ticket stays in Gorgias / Tidio / Intercom, handled exactly as it is today. Nothing to migrate, nothing to rip out, no new tool for your team to learn. We add the presale layer your stack never had, and change nothing else.</p></blockquote>
+<p><strong>Frame the value on revenue protection, not cost.</strong> The market is price-sensitive and crowded with "we save you money" bots. Anchor on <strong>keeping the sale</strong> (no refund, no chargeback, preserved brand trust), not on cheaper tickets. Refunds and chargebacks threaten the merchant's Stripe/PayPal standing — that is the pain worth paying to remove.</p>
+<hr>
+<h2>5. The Beachhead — Crowdfunding Graduates</h2>
+<p><strong>CHOSEN BEACHHEAD: Kickstarter / Indiegogo / BackerKit graduates moving onto Shopify.</strong> Within that, prioritize <strong>hardware + design + made-to-order creators with 60–120 day fulfillment windows and large backer lists.</strong></p>
+<p><strong>Why this segment first (the explicit call):</strong></p>
+<ul>
+<li><strong>Most acute pain.</strong> They juggle three customer groups at once on different timelines — Kickstarter backers, BackerKit late-pledges, and new Shopify preorders. Verbatim: <em>"Support is losing their minds trying to figure out who is who and what timeline they're on."</em> This is a 9/10 pain and the longest waits live here.</li>
+<li><strong>Clearest outbound list.</strong> Unlike the unnamed "long-wait DTC" segment (no shared vocabulary, no list), crowdfunding graduates are <strong>enumerable</strong> — campaign pages, BackerKit community, r/kickstarter, r/Crowdfunding, "moving to our store" threads. A scout agent can build a named, time-bound prospect list of campaigns mid-fulfillment.</li>
+<li><strong>Already pay for workflow tools.</strong> BackerKit is paid software; these creators are accustomed to paying for preorder/fulfillment tools. ~30–50% will pay $100–$300/mo.</li>
+<li><strong>Founder credibility maps 1:1</strong> (see §8) — physical-goods, long-fulfillment, in-house customer comms is exactly this buyer's world.</li>
+<li><strong>Reusable playbook.</strong> One crowdfunding-graduate playbook resells across the segment; made-to-order luxury and drop/scarcity brands inherit ~80% of it for expansion later.</li>
+</ul>
+<p><strong>Deprioritized for now (not abandoned):</strong> made-to-order luxury (#2 expansion), drop/scarcity brands (#3), micro/solo (too low ARPU), regulated/supplements (timeline-promise liability too high to learn on). <strong>De-prioritized entirely:</strong> building a full helpdesk.</p>
+<hr>
+<h2>6. The Concierge-First Model</h2>
+<p><strong>Prove the language and the impact manually before writing any software. Software automates only what's already proven.</strong></p>
+<p>Tideover does <strong>not</strong> lead with an app. It leads with a <strong>concierge pilot</strong>: the founder + AI run a partner's presale support <strong>by hand</strong>, drafting timeline-aware replies <em>inside the partner's own Gorgias / Intercom / inbox</em>, capturing the exact reassurance language at each day-in-wait stage. Only once the day-by-day scripts are proven do they get encoded into a thin Shopify embedded app.</p>
+<p><strong>Why concierge-first:</strong></p>
+<ul>
+<li><strong>Zero integration risk to start</strong> — no build needed to deliver value or learn.</li>
+<li><strong>Manufactures the first real proof</strong> — the day-stage playbook and the leading-indicator wins come from real tickets, not assumptions.</li>
+<li><strong>The moat is built here</strong> — the playbooks and outcome data are authored in the concierge phase; the app just scales them.</li>
+</ul>
+<p><strong>Live-support cadence (the pilot SLA):</strong> replies are approved in <strong>two fixed daily windows (AM + PM)</strong>, told to partners up front. Between windows, only a small, pre-approved, timeline-safe holding template set may auto-send (e.g., <em>"Got your message — here's your current ETA band, full reply by [next window]"</em>). <strong>Novel replies are always human-approved</strong> — never auto-sent — to avoid hallucinated timeline promises. This is a load-bearing trust rule: in presale, a false delivery promise is far more damaging than a slow one.</p>
+<hr>
+<h2>7. Value Ladder + Pricing</h2>
+<p><strong>Pricing philosophy: land low, expand on proof.</strong> (Resolves IdeaBrowser's $49–$299 vs. $499–$1,500 conflict.) Pilots are free; first paid conversions sit at <strong>$199–$499/mo</strong> — defensible today and matched to the dominant WTP band. The premium tier and any performance fee are <strong>earned later</strong>, only once a real refund-reduction case study exists.</p>
+<table>
+<thead>
+<tr><th>Rung</th><th>Offer</th><th>Price</th><th>Purpose</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td><strong>"Presale Anxiety Playbook"</strong> (free PDF/Notion)</td><td>Free</td><td>Lead magnet + category-creation; mines pain, builds list</td></tr>
+<tr><td>1</td><td><strong>Founding-partner concierge pilot</strong> — founder + AI run your presale support manually for one cycle</td><td><strong>Free</strong> → intro <strong>$199–$299/mo</strong> at conversion</td><td>Learn the day-by-day language; manufacture the first real proof</td></tr>
+<tr><td>2</td><td><strong>Starter (productized)</strong></td><td><strong>$299–$499/mo</strong></td><td>Thin app automates the proven scripts in your existing helpdesk</td></tr>
+<tr><td>3</td><td><strong>Proactive (core)</strong></td><td><strong>$799–$999+/mo</strong></td><td>Proactive day-7/30/60/90 timeline-aware outreach + refund-risk scoring</td></tr>
+<tr><td>4</td><td><strong>Insight add-on / Refund-Risk Dashboard</strong></td><td><strong>$200–$500/mo</strong> usage-based</td><td>Refund-risk curve, deflection + saves reporting</td></tr>
+<tr><td>5</td><td><strong>Enterprise / agency white-label</strong></td><td><strong>$10k+/yr</strong> custom</td><td>Multi-brand, "powered by," rev-share with Gorgias-heavy agencies</td></tr>
+</tbody>
+</table>
+<p><strong>Performance fee is DEFERRED out of the launch window.</strong> Refund-reduction attribution needs baselined, controlled cohorts we won't have early; an unprovable performance fee kills deals. Lead with subscription; defer the "% of refunds prevented" to the dashboard rung, post-proof.</p>
+<hr>
+<h2>8. Proof-Only + Leading-Indicator Framing + the Operator War Story</h2>
+<p>This section governs <strong>every claim Tideover makes publicly.</strong> Read it before writing any copy.</p>
+<h3>The hard rule (non-negotiable)</h3>
+<p><strong>Never fabricate metrics, case studies, testimonials, reviews, star ratings, or client logos.</strong> Where proof would normally sit, use one of:</p>
+<ul>
+<li>the <strong>free founding-partner offer</strong>,</li>
+<li>the <strong>guarantee</strong> (leading-indicator improvement or you don't pay),</li>
+<li><strong>"founding / early partner"</strong> framing, or</li>
+<li>a literal <strong><code>[CASE STUDY PLACEHOLDER]</code></strong>.</li>
+</ul>
+<p>Any external statistic (IdeaBrowser figures, industry benchmarks) is <strong>cited to its named source, never restated as Tideover's own measured result.</strong></p>
+<h3>Leading-indicator framing (what we <em>can</em> prove in 90 days)</h3>
+<p>A full refund-reduction case study needs a complete presale cycle (60–120 days) — that <strong>exceeds the launch window</strong>. So we do <strong>not</strong> promise a finished refund case study early. The honest 90-day proof is <strong>leading indicators</strong>:</p>
+<ul>
+<li><strong>First-response time</strong> on presale tickets, cut vs. the partner's own baseline.</li>
+<li><strong>WISMO ("where is my order?") ticket deflection</strong> — repetitive presale questions auto-resolved.</li>
+<li><strong>Partner-reported "saves"</strong> — logged instances of an anxious/chargeback-threat customer talked back from the ledge.</li>
+</ul>
+<p>Every metric is framed as a <strong>target to measure against a clean baseline</strong>, never a claimed result. The full refund-reduction case study lands <strong>after the first cohort completes its wait</strong> — and we say that plainly to every partner up front. <code>[CASE STUDY PLACEHOLDER — refund-reduction delta, post first completed cohort]</code></p>
+<h3>The honest operator war story (the founder's real credibility)</h3>
+<p>The founder ran a real <strong>~$2M/yr physical-goods company</strong> — warehouse, in-house shipping, fulfillment, <strong>and</strong> the "where's my order?" customer comms during long fulfillment waits. He lived this exact problem <em>from the merchant side.</em> That is legitimate, ownable, lived-experience credibility — the strongest asset Tideover has pre-proof.</p>
+<p><strong>How to use it (proof-only):</strong></p>
+<ul>
+<li>In <strong>cold outreach</strong>, frame it as a <strong>war story, not a number-led flex</strong>: <em>"I spent years running fulfillment, in-house shipping, and the customer comms during long order waits for a physical-goods brand — I lived the support wave during the wait."</em></li>
+<li><strong>Reserve the "$2M" figure for warm conversations</strong> where the founder can speak to it in detail and substantiate it on request. Never inflate it, never extend it into adjacent claims, never lead cold outreach with the number.</li>
+<li>He has <strong>no presale case studies yet</strong> — the pilots generate them. Until then, credibility = lived experience + the free offer + the guarantee.</li>
+</ul>
+<hr>
+<h2>9. Voice &amp; Tone</h2>
+<p><strong>The voice of Tideover is the opposite of a cold helpdesk.</strong> It is the steady, reassuring human who tells you your order is fine, here's exactly where it is, and you're in good hands — and means it.</p>
+<p><strong>Five voice pillars:</strong> <strong>Warm. Calm. Reassuring. Human. Steady.</strong><br>
+Confident but <strong>never gimmicky.</strong> We are a trust + empathy brand — every word either builds calm or it doesn't ship.</p>
+<h3>DO</h3>
+<ul>
+<li><strong>Be warm and human.</strong> Write like a real person who genuinely cares the customer isn't left in the dark. Contractions, plain words, a steady tone.</li>
+<li><strong>Be calm and steady.</strong> Never breathless, never hype. The whole point is to lower the customer's pulse. Short, settled sentences.</li>
+<li><strong>Lead with reassurance + specifics.</strong> Pair empathy ("totally understand the wait feels long") with a concrete, honest detail ("your order is in production; current ETA band is X–Y").</li>
+<li><strong>Acknowledge the feeling before the fact.</strong> Name the anxiety first ("waiting on something you've already paid for is genuinely stressful"), then resolve it.</li>
+<li><strong>Use honest confidence bands, never hard promises.</strong> "Currently tracking for [month]" / "ETA band X–Y," never an invented exact ship date.</li>
+<li><strong>Be plain-spoken.</strong> No jargon, no "leverage / synergy / cutting-edge." If a real merchant wouldn't say it to a customer, we don't write it.</li>
+<li><strong>Speak to the merchant as a fellow operator</strong> — peer to peer, "I've been in your inbox," not vendor-to-lead.</li>
+<li><strong>Stay quietly confident.</strong> State what we do clearly and let the calm carry the authority.</li>
+</ul>
+<h3>DON'T</h3>
+<ul>
+<li><strong>Don't sound like a cold helpdesk / canned bot.</strong> No "Your ticket has been received," no robotic deflection, no "per our policy."</li>
+<li><strong>Don't be gimmicky, hypey, or salesy.</strong> No exclamation-point energy, no "🚀 revolutionary," no MMO/gaming theme, no growth-hack tone. This brand never winks at the reader.</li>
+<li><strong>Don't fabricate or imply proof.</strong> No invented metrics, testimonials, star ratings, logos, or "trusted by thousands." (See §8.)</li>
+<li><strong>Don't make hard delivery promises</strong> or guarantee exact dates. Confidence bands only — a false promise is the most damaging thing we can say.</li>
+<li><strong>Don't be cold, clinical, or corporate.</strong> No buzzwords, no passive bureaucratic voice, no "we value your patience."</li>
+<li><strong>Don't manipulate or guilt the anxious customer.</strong> Empathy is sincere, never a tactic. (Edge case: if production is cancelled, empathy that papers over it reads as manipulative — be honest.)</li>
+<li><strong>Don't over-claim the founder's background.</strong> War story in cold outreach; the "$2M" number only in warm, substantiable contexts.</li>
+</ul>
+<h3>Voice in one swap</h3>
+<blockquote><p>❌ <em>"Your order has been received and is being processed. Please allow 60–120 days for fulfillment. Thank you for your patience."</em><br>
+✅ <em>"Hey — totally get that waiting on something you've already paid for can feel like a long time. Quick reassurance: your order's in production and currently tracking for [month]. I'll keep you posted the moment that changes. You're in good hands here."</em></p></blockquote>
+<hr>
+<h2>10. The Call to Action</h2>
+<p><strong>Primary CTA (the offer):</strong></p>
+<blockquote><p><strong>"Get a free 15-min presale-support teardown."</strong></p></blockquote>
+<p>This is the front door across landing page, outreach, and community. It's low-friction, value-first, and on-voice — a helpful operator offering to look at <em>your</em> presale support, not a demo-pitch.</p>
+<p><strong>Supporting CTA language (on-voice variants):</strong></p>
+<ul>
+<li>"See how Tideover would handle your next presale wave — free 15-min teardown."</li>
+<li>"Founding-partner pilots are open. We'll run your presale support by hand for one cycle — free." <em>(concierge offer, §6)</em></li>
+<li>"Grab the free Presale Anxiety Playbook." <em>(lead-magnet / rung 0)</em></li>
+</ul>
+<p><strong>The guarantee (proof-stand-in, §8):</strong> lead with the <strong>free founding-partner pilot</strong> + a leading-indicator improvement guarantee (faster first response / fewer WISMO tickets, measured against your own baseline) — <em>not</em> a fabricated result. The proof is the free work and the measured delta, not a claim.</p>
+<p><strong>The #1 objection-handler — "we already have a helpdesk / we don't want to change our setup":</strong> This is the biggest wall, and the bolt-on framing is the answer. Lead with it, don't bury it. Tideover is a <strong>bolt-on</strong>: it routes <strong>only</strong> presale/preorder tickets to us; <strong>every other ticket stays in their current helpdesk, handled exactly as today.</strong> Zero infrastructure change — no rip-and-replace, no migration, no new helpdesk to learn — it works alongside Gorgias / Tidio / Intercom. Reframe the objection into the reason to say yes: <em>"Keep everything you have. We only take the presale tickets and change nothing else."</em> On-voice variant: <em>"You're not switching anything. Tideover sits on top of the helpdesk you already run and only handles the presale wait — the rest of your inbox doesn't even notice we're there."</em></p>
+<hr>
+<p><em>End of brand kit. This is the locked voice authority — every Tideover asset is checked against §9 (Voice &amp; Tone) and §8 (Proof-Only) before it ships.</em></p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tideover — Daily Prospecting SOP</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">Tideover — Daily Prospecting SOP</span>
+    <a class="back" href="../../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>Tideover — Daily Prospecting SOP</h1>
+<blockquote><p><strong>What this is.</strong> The daily operating checklist for Tideover outreach. Derived from <code>outreach-playbook.md</code> (§3.5 artifact-first, §3.6 hook-sourcing, §5.2 the Tideover play) and <code>tideover-brand-kit.md</code>. Strategy lives there; this is the do-it-today list.</p>
+<p><strong>The bar.</strong> Every line you send clears <code>copy-standard.md</code>. Read it aloud before it ships. No em-dash connector, no "I hope this finds you well," no triads, no hype.</p>
+<p><strong>Proof-only, non-negotiable.</strong> No fabricated metrics, case studies, testimonials, or refund stats. Credibility is the operator war story, framed as experience not a number ("I ran fulfillment and the where's-my-order comms for a physical-goods brand for years"). The ~$2M figure is warm-call only. The refund-reduction case study does not exist until a cohort completes its wait. Say that plainly.</p>
+<p><strong>The one motion.</strong> One fresh, verifiable trigger per prospect. One soft, interest-based ask. The free teardown is the artifact that buys the trust. Personal DM first, never the cold-email rig.</p></blockquote>
+<hr>
+<h2>A. The trigger engine — campaign-end-date calendar (weekly, ~45 min)</h2>
+<p>The whole play runs on knowing who hits the 60-to-120-day fulfillment window, and when. Build the calendar once, refresh it weekly.</p>
+<p><strong>Build (first run):</strong></p>
+<ul>
+<li>[ ] Open a sheet: columns = <code>brand | platform | campaign | campaign-end-date | est. fulfillment window | moved to Shopify? | trigger spotted | last touch | stage</code>.</li>
+<li>[ ] Pull funded campaigns from the three sources: <strong>Kickstarter</strong> (Discover, by category + "successful" + recently-ended), <strong>Indiegogo</strong> (ended, funded), <strong>BackerKit</strong> (live + recently-launched crowdfunding projects).</li>
+<li>[ ] Filter to the beachhead: <strong>hardware, design, made-to-order</strong>, with a real fulfillment delay and a large backer list. Skip digital, skip same-week-ship.</li>
+<li>[ ] Record each campaign's end date. Add the estimated ship window the creator stated (or 60 to 120 days out if unstated). That window is the trigger clock.</li>
+</ul>
+<p><strong>Refresh (every week, same day):</strong></p>
+<ul>
+<li>[ ] Re-run the scrape. Add new funded campaigns to the bottom.</li>
+<li>[ ] Sort by who is now <strong>inside their fulfillment window</strong> (campaign ended 30+ days ago, product not yet shipped). These are this week's targets.</li>
+<li>[ ] Flag any that just opened preorders on their own Shopify store (the "moved to Shopify" signal).</li>
+<li>[ ] Queue raw signals; do not write hooks yet. Hooks get written in batch (Section C).</li>
+</ul>
+<p><strong>Rule:</strong> a trigger you find by hand once is not a system. The calendar refreshed weekly is the system. Never send to a brand whose trigger you cannot see on their public page.</p>
+<hr>
+<h2>B. Detecting the highest-intent triggers (daily, ~20 min)</h2>
+<p>Mid-fulfillment with visible strain is the strongest signal there is. These prospects jump the queue.</p>
+<p>Scan the active-window brands from the calendar for, in priority order:</p>
+<ul>
+<li>[ ] <strong>A posted delay update</strong> (campaign update titled "shipping update," "delay," "timeline change"). The creator has admitted slippage publicly. Highest intent.</li>
+<li>[ ] <strong>Angry backer threads</strong> — comment feeds with "where's my order?", "is this a scam?", refund or chargeback mentions, repeated unanswered questions. Screenshot the public thread (you reference the situation, never the individual backer).</li>
+<li>[ ] <strong>Mid-fulfillment with a large backer list</strong> — ended 60+ days ago, no ship notice, hundreds-plus backers. The wave is coming even if the comments are quiet.</li>
+<li>[ ] <strong>The three-timeline juggle</strong> — backers + BackerKit late-pledges + new Shopify preorders running at once. The "who is who and what timeline" pain.</li>
+</ul>
+<p>For each hit:</p>
+<ul>
+<li>[ ] Mark <code>trigger spotted</code> in the calendar with one line naming the exact thing (the delay-update date, the angry-thread topic, the campaign name).</li>
+<li>[ ] Move it to the front of today's send queue. One trigger per prospect, the freshest one. Stacking signals reads like a research report, not a conversation.</li>
+</ul>
+<hr>
+<h2>C. The free 15-minute teardown — the artifact (batch, ~15 min each)</h2>
+<p>The teardown is the credential. It replaces the case study you do not have. Produce one per priority prospect before you send. Frame it as already made: "I'm doing free 15-min presale-support teardowns for a few crowdfunding brands mid-fulfillment. Want one?"</p>
+<p><strong>What you actually do (the teardown itself):</strong></p>
+<ul>
+<li>[ ] Open their public presale surface: campaign comments, the brand's reply pattern, their FAQ/shipping page, any visible helpdesk auto-reply.</li>
+<li>[ ] Read their wait against the day-stage map. Find <strong>the 2 or 3 points in their wait where backers are most likely to bail</strong> — typically the first long silence, the day the stated ship date passes with no word, and the post-delay-update stretch.</li>
+<li>[ ] Note where their current answer fails: a day-20 reassurance answer given to a day-80 customer, a "standard shipping" auto-reply on a product that has not shipped, a hard date they promised that is now slipping.</li>
+<li>[ ] Draft, for one real recurring question on their feed, the <strong>timeline-aware reply</strong> the brand kit voice would send: acknowledge the feeling first, then an honest ETA band, never an invented hard date. (See <code>tideover-brand-kit.md</code> §9 voice-in-one-swap.)</li>
+</ul>
+<p><strong>What you show them (the deliverable, on the call or in the DM):</strong></p>
+<ul>
+<li>[ ] The 2 to 3 bail points on <em>their</em> wait, named to their campaign.</li>
+<li>[ ] One before/after: their current answer to a real question vs. the timeline-aware version. Show, do not claim.</li>
+<li>[ ] The bolt-on truth: this rides on the helpdesk they already run and touches only presale tickets.</li>
+<li>[ ] No deck. No metrics. No fabricated refund numbers. The teardown is the proof.</li>
+</ul>
+<p><strong>Voice + proof check before it ships:</strong></p>
+<ul>
+<li>[ ] Honest confidence bands only ("currently tracking for [month]" / "ETA band X to Y"). Zero hard dates.</li>
+<li>[ ] War story, not the $2M number.</li>
+<li>[ ] Read it aloud. Run the <code>copy-standard.md</code> pass. Cut 30 to 60%.</li>
+</ul>
+<hr>
+<h2>D. The concierge-pilot setup (on a yes)</h2>
+<p>When a teardown converts to interest, the offer is the <strong>founding-partner concierge pilot</strong>: founder + AI run their presale support by hand for one cycle, inside the partner's own helpdesk. Nothing is built; you prove the language first.</p>
+<ul>
+<li>[ ] <strong>Confirm the bolt-on, up front.</strong> Only presale/preorder tickets route to you. Every other ticket stays in their Gorgias / Tidio / Intercom, handled exactly as today. Nothing to migrate, nothing for the team to learn.</li>
+<li>[ ] <strong>Get access to their existing helpdesk</strong> (a seat, a shared inbox, or a forwarding rule on presale tickets). You work inside their tool, not a new one.</li>
+<li>[ ] <strong>Pull each order's real production timeline</strong> from the creator so replies are timeline-aware per order.</li>
+<li>[ ] <strong>State the live-support SLA plainly:</strong> replies approved in two fixed daily windows (AM + PM). Between windows, only a small pre-approved, timeline-safe holding set may auto-send ("Got your message, here's your current ETA band, full reply by [next window]").</li>
+<li>[ ] <strong>Novel replies are always human-approved, never auto-sent.</strong> A false delivery promise is more damaging than a slow reply. This is the load-bearing trust rule.</li>
+<li>[ ] <strong>Set the baseline before you touch a ticket:</strong> their current first-response time, the WISMO volume, so the leading-indicator delta is measured against a clean number.</li>
+<li>[ ] <strong>Name the honest proof horizon:</strong> the leading indicators (faster first response, fewer repeat WISMO tickets, logged saves) land in this cycle; the full refund-reduction case study only after the cohort finishes its wait. Say so.</li>
+<li>[ ] Pilot is free, converting to <strong>$199 to $299/mo</strong>. Hold pricing for the pilot wrap, not the cold DM.</li>
+</ul>
+<hr>
+<h2>E. The daily touch routine (~60 to 90 min total)</h2>
+<p>Personal LinkedIn / X / IG first. These are the gate-critical Week 1/2 sends. The warmed tideover.app domain is next-cohort email only, not the critical path. Cap: 15 to 25 messages per platform per day.</p>
+<p><strong>Order of the day:</strong></p>
+<ol>
+<li>[ ] <strong>Refresh + scan (Sections A/B):</strong> pull today's active-window and high-intent prospects into the send queue.</li>
+<li>[ ] <strong>Warm before cold.</strong> Mine any 2nd-degree or community path first. Where a path exists, warm it: like, then one substantive comment, then the DM referencing it.</li>
+<li>[ ] <strong>Write the batch.</strong> For each priority prospect: one true trigger line + the teardown offer + one soft ask. Pull the exemplar that matches the trigger:
+<ul>
+<li>mid-fulfillment → <code>copy-standard.md</code> #5</li>
+<li>just moved to Shopify → #6</li>
+<li>"we already have a helpdesk" reply → #7</li>
+</ul></li>
+<li>[ ] <strong>Send, personal accounts first</strong> — LinkedIn, then X, then IG. Signal-matched only; no trigger, no send.</li>
+<li>[ ] <strong>Presence, not pitch:</strong> one genuinely-helpful comment in Shopify Community / Gorgias Community / r/shopify / BackerKit Community. Mine voice-of-customer while there (exact pain phrasing for future hooks). Never pitch in-community. (<code>copy-standard.md</code> #8 is the model.)</li>
+<li>[ ] <strong>Work the replies</strong> with the warm-reply objection tree (<code>copy-standard.md</code>): "just send info" → make the teardown the info; "what's your pricing?" → defer to the call's real number; ghosted → one re-engage with new value, then stop.</li>
+<li>[ ] <strong>Log every touch</strong> in the calendar (<code>last touch</code>, <code>stage</code>). Move any reply straight into the pipeline.</li>
+</ol>
+<p><strong>Pre-send filter — fail one, do not send:</strong></p>
+<ul>
+<li>[ ] Would 10x this today make them trust me less?</li>
+<li>[ ] Does it ask for attention before earning it?</li>
+<li>[ ] Can they see the trigger is true and specific to them, and could no competitor copy the line?</li>
+<li>[ ] Any fabricated number, hard date, or implied case study? (Kill it.)</li>
+<li>[ ] If they reply "not now," do I have a respectful next step?</li>
+</ul>
+<p><strong>The deliverable is consistency.</strong> What you skip today shows up 90 to 180 days out. Prospecting has a half-life. The routine runs every working day or it is not a system.</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

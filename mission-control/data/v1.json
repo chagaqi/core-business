@@ -1,0 +1,266 @@
+{
+  "id": "v1",
+  "name": "Adwield",
+  "tagline": "The AI-ads creative engine — more hits, more crits, every two weeks. Equip a weapon instead of hiring an agency: 4 angles, 24 AI UGC variations, proven on your own product first, free.",
+  "accent": "v1",
+  "scores": {
+    "opportunity": 8,
+    "pain": 9,
+    "builderConfidence": 8,
+    "executionDifficulty": 7
+  },
+  "hormozi": {
+    "dream": 9,
+    "likelihood": 6,
+    "time": 8,
+    "effort": 8,
+    "value": 54
+  },
+  "honestTarget": "By Day 90 (Sat Sep 12): $6,000-9,000 MRR (realistic ~2 retainers while V2 also consumes founder hours; 2-3 is the no-V2 best case) + 3 documented founding-partner case studies + a replenishing lead pipeline (+10/wk, never starves) + Perceived Likelihood 6 to 8 measured via observable funnel deltas. $20K/mo is NOT the 90-day target — it is a ~Day 150-180 outcome that needs ASP lift plus a first Post/Editor VA. Near-term checkpoints: first cash ~Day 16-21 (Jun 30-Jul 5), $3-5K cash cleared ~Day 30-35 (Jul 14-19), 1-2 retainers ~Day 45 (Jul 29), 3 case studies ~Day 75-80 (Aug 28-Sep 2).",
+  "positioning": "For growth-stage DTC functional-consumables brands ($20-100K/mo Meta + TikTok spend, founder is decision-maker) fighting the 7-week creative-fatigue clock: I find your next winning ad before your last one dies — 4 hypothesis angles into 24 AI UGC variations every 2 weeks, launched and tagged in your own account. Unlike AI tools that hand you a $110/mo license and zero hands, volume agencies that bill you to be slow and brand-blind, or sniper shops selling one perfect ad into a flooded auction — I'm newer than the 10-year agencies, so I prove it the only honest way: a free rendered ad of your own product before you pay a cent, and the risk stays on me. Volume is the method, the winning ad is the hero. Vertical specialist (functional consumables only) at the lean tier the big shops skip; capped at 5 brands so you're never the deprioritized account.",
+  "method": {
+    "name": "The 4x24 Framework",
+    "desc": "4 hypothesis ANGLES x 6 VARIATIONS = 24 deliverables per 2-week cycle, launched live in the client's account, read at the 2-week mark, losers killed, winners doubled, next 4 angles loaded — so fresh creative is always in-auction before the 7-week fatigue wall. The 4 angles: PAS (problem-agitate-solve, highest-EV cold opener), Founder/Origin Authenticity (trust transfer), Mechanism/Ingredient Education (rational permission-to-buy), Social-Proof/Transformation (the universal closer/scale angle). Always ship all 4 every cycle — the AOV x avatar cheat-sheet decides spend weighting and which angle leads, never which to drop. Each angle fans into 6 variations by moving ONE lever at a time (hook / opening-3s visual / format / runtime / CTA) so the read is clean. Diagnostic gates: thumb-stop (kill <25%, scale >35%), hold-rate (kill <20%, scale >35%), link CTR (kill <0.8%, scale >1.5%), after a ~$20-30 / ~2,000-impression spend gate. The name is not the moat: the moat is WHO picks the angles (operator judgment), the all-in $200-500 production economics that make 24 affordable, the production-and-launch labor a lean 2-person team doesn't have hands for, and the compounding cross-cycle pattern library.",
+    "source": "4x24-framework-spec.md"
+  },
+  "gate": {
+    "modeA": "Pre-graduation (S0, the [HUMAN]-only skill gate): V1 effectively owns the whole day. V2 is starved to <=20 min/day of approvals so the one gate that unlocks all V1 revenue gets its full deep-work hours.",
+    "modeB": "Post-graduation, post-first-cash: V1's budget settles to ~6-7 focused hrs/day as V2's ~3 hrs/day human phase comes online. Delivery is FLOORED; sample-render and content are the FLEX buckets cut first on a heavy-V2 day.",
+    "trigger": "V1 first cash banked (~Day 35-45) or the Day-45 backstop fires V2's human phase. Two-venture capacity guard: if combined V1-delivery + V2-concierge load exceeds ~6 hrs/day for 3+ consecutive days, FREEZE new V1 selling (do not sign brand #3)."
+  },
+  "beachhead": "DTC functional-consumables brands only — mushroom coffee, adaptogen gummies, functional beverages, greens/superfood powders, nootropic stacks, mushroom chocolates — at $20-100K/mo Meta + TikTok spend where the founder is the decision-maker. Product-centric not person-centric, so the avatar holds the product and the uncanny-valley penalty is structurally low. Entry on Archetype A (Wounded Veteran) emotional wound, win in Archetype B (Volume-Player) capacity lane, convert Archetype C (Solo + Lean Team) as the dream client. The scarce asset is the 24 A-tier brands (of a 79-brand list) — never burn one on a sub-bar render.",
+  "offerLadder": [
+    { "rung": "0a", "name": "1 made-for-you sample (their own brand)", "price": "$0", "purpose": "Cold-outreach opener — the #1 reply-getter and the single highest-trust action in the business. Kills 'is the AI any good?' and 'does he even know my brand?' at once. Rule: never send a cold email to a priority prospect without their sample in it." },
+    { "rung": "0b", "name": "Founding-partner pilot: 5 videos, instrumented for a before/after CTR + hold-rate delta", "price": "$0", "purpose": "Earns the account AND manufactures the first case studies. Capture the control baseline BEFORE the pilot ships or there is no case study. Framed as status not charity: a founding slot against the published 5-brand cap." },
+    { "rung": "1", "name": "10-video pack (one-time)", "price": "$497", "purpose": "PUBLIC price, foot-in-door, LEAD WITH THIS. At <2.5% of one month's spend for a $20-100K/mo brand it is an impulse yes, not a deliberation. Deliberately underpriced trust-purchase that manufactures a paying relationship; the retainer is where the business lives." },
+    { "rung": "2", "name": "Mid retainer (20 videos/mo + bi-weekly strategy call)", "price": "$1.5-2.5K/mo", "purpose": "Primary conversion target. Quoted live at the FOUNDING locked rate on the $20-100K/mo spend branch." },
+    { "rung": "3", "name": "Standard retainer (+ reporting + live iteration loop)", "price": "$2.5-3.5K/mo", "purpose": "Core revenue. Start quoting standard not mid once 3 case studies land (the ASP lever)." },
+    { "rung": "4", "name": "Premium (+ media buying)", "price": "$5K+/mo", "purpose": "Earned only after demonstrated creative wins, never sold cold. The cleanest path to high ASP per slot and the bridge toward $20K." },
+    { "rung": "5", "name": "Skool community", "price": "$97/mo", "purpose": "Month-6+ backend — gated, dark until Gate-1 clears; standalone subscription is killed." }
+  ],
+  "funnel": [
+    { "stage": "Deliverability (warmed inbox)", "assumption": "90-95% inbox", "planWith": "2-3wk warmup, SPF/DKIM/DMARC, plain-text, tracking off" },
+    { "stage": "Reply rate (priority, sample-in-email)", "assumption": "8-15%", "planWith": "10% all-reply — sample-led + true hook beats generic 1-3%; no proof yet caps the ceiling. Re-baseline after first 200 sends." },
+    { "stage": "Positive reply (genuinely interested)", "assumption": "~78% of replies", "planWith": "~7.5% of sends — the subset that is genuinely interested, not 'nice, not now'" },
+    { "stage": "Positive reply -> call/pilot booked", "assumption": "30-40% of positive", "planWith": "35% — the sample converts curiosity, the call converts intent" },
+    { "stage": "Call -> free pilot or $497 pack", "assumption": "40-55%", "planWith": "45% — free sample/pilot is low-friction; pack is an impulse-yes at <2.5% of monthly spend" },
+    { "stage": "Pilot/pack -> retainer", "assumption": "25-40%", "planWith": "30% — offer doc's own assumption; floor until case studies exist, drifts to 40% after 3 deltas" },
+    { "stage": "Rule of thumb", "assumption": "~200-220 priority sample-backed sends per signed retainer pre-proof", "planWith": "Compresses toward ~120-150 sends/retainer after 3 case studies land. Binding constraint = qualified unique brands + sample-production time, NOT email throughput (6 inboxes x ~35/day ~= 210/day, ~10x lead supply)." }
+  ],
+  "stages": [
+    {
+      "id": "S0",
+      "name": "Graduate the Skill",
+      "goal": "Clear the doc-30 Graduation Bar so renders are reliably good enough to send to a real founder. THE [HUMAN] gate, in progress now — a sub-bar render burns a scarce A-tier lead permanently (only 24 exist).",
+      "entry": "Today (Day 0). Chaga is mid-ladder on the drills.",
+      "exit": "S0 clears IFF the single cold, timed graduation render passes 8/8 first try AND a 10-consecutive-8/8 streak is logged in the practice log. Those two ARE the gate; hit-rate >=80%/25, cold->passing <20min on 3 cold products, and zero FTC fails are leading prerequisite drills that produce the streak.",
+      "dayRange": "Day 0 -> ~Day 14 (best case Day 7; PLAN against Day 14)",
+      "kpis": [
+        { "metric": "Cold graduation render passes 8/8 first try", "target": "1, cold + timed <20 min", "measure": "practice log", "leading": false },
+        { "metric": "Consecutive 8/8 streak", "target": "10 in a row", "measure": "practice log", "leading": false },
+        { "metric": "Rubric pass-rate (hit-rate)", "target": ">=80% over last 25 renders", "measure": "practice log overall PASS/FAIL", "leading": true },
+        { "metric": "Cold sample time", "target": "<20 min, 3 consecutive cold products", "measure": "stopwatch logged in seconds-to-produce", "leading": true },
+        { "metric": "24/24 pack completed", "target": "1 logged with wall-clock time", "measure": "practice log + /03-Renders/", "leading": true },
+        { "metric": "FTC point-8 fails", "target": "0 (non-negotiable)", "measure": "rubric check #8", "leading": true }
+      ],
+      "killScale": "SCALE: the instant the gate clears, STOP practicing and start selling (S1 DM ignition). KILL/FIX: if hit-rate is stuck <60% after ~40 renders, the bottleneck is a specific rubric point — read the 1P 2P 3F column, the most-failed check is the next deliberate-practice target (don't grind volume on a broken input). Never send a sub-bar render.",
+      "dailyPlan": [
+        "AM (~3 hr): run the next drill in the strict D1->D8 ladder (do NOT skip ahead). Log every render's 8-point Slop Rubric verdict before watching the next. Tool: Sora 2 + kie.ai; practice log columns render_id/brand/drill/rubric-8/secs/discard/fix.",
+        "Drill ladder order: D1 clean product still (3 passes, >=2 brands) -> D2 consistent character holding product (2 chars, 2 brands) -> D3 single clean 15s talking spot, lipsync locks (x3) -> D4 same char/3 clips change only action+dialogue (2 brands) -> D5 full 6-cell angle set 6/6 (x2 sets) -> D6 clean 24/24 pack on DailyGreens24 (log wall-clock, own ~9.5-hr block) -> D7 speed run cold->passing 15s <20 min (x3, all 3 brands) -> D8 cold-brand drill, never-seen product, sub-20-min 8/8.",
+        "Midday (~1 hr): review ONE infra item from the Week-1 critical path. DNS/config is DRAFTED by [AGENT+REVIEW]; your job is review + click-confirm, not building. Done = the day's one infra item tested green.",
+        "Day 0 first infra actions: [AGENT+REVIEW] buy brand domain + 2-3 cold-email throwaway lookalike domains (Cloudflare/Namecheap) — the warmup long pole. Set up the practice log.",
+        "Day 1: [AGENT+REVIEW] Google Workspace inboxes + SPF/DKIM/DMARC (verify >=9/10 mail-tester) -> connect Smartlead -> TURN WARMUP ON end-of-day (warmup Jun 15 -> email-ready ~Jul 6). Build/configure the agent rig (Scout-Personalizer, Dispatcher DM-triage skeleton, thin Pipeline-Keeper).",
+        "Days 2-5: [AGENT+REVIEW] deploy landing page (free host); wire Stripe $497 link (test 4242) + Calendly + Formspree/Tally; begin enriching the 79-list (A-tier 24 first, never fabricate email) once Scout-Personalizer is verified; end-to-end test LP->Stripe->Calendly->form (resolve the 3 contact [FILL]s).",
+        "Day 6: D6 gets its own ~9.5-hr full-day block (clean 24/24 pack on DailyGreens24) — log wall-clock, this becomes your real cycle-time number. Do NOT also schedule portfolio renders today.",
+        "PM (~30 min): engage 5 named A-tier founders — leave ONE substantive comment (>=1 sentence, on-topic, NO pitch, NO link) on their most-recent post and follow them; stamp tracker note 'engaged + date'. Compute hit-rate (passing / total) and name tomorrow's deliberate-practice target from the most-failed rubric check.",
+        "Day 10 GRADUATION DAY: pull a never-before-rendered product image from a real DTC brand NOT on the 79-lead list. Cold, timed <20 min, must pass 8/8 first try. NEVER use an A-tier prospect product for the graduation attempt. If it clears + the 10-streak is logged -> S0 DONE, selling starts."
+      ]
+    },
+    {
+      "id": "S1",
+      "name": "Go-Live Infra + DM First-Cash",
+      "goal": "Stand up the minimal money-collecting stack, start the immovable warmup clock (Day 0/1), and collect first cash via LinkedIn/X DMs to the top 10 (zero warmup) the moment S0 clears.",
+      "entry": "Day 0 — infra build runs in PARALLEL with S0 (most needs no rendering skill).",
+      "exit": "INFRA-GATE (controllable): end-to-end path tested with Stripe 4242 (LP->Stripe->Calendly->form, no EDIT_ME/[FILL] left) + top-10 A-tier made-for-them samples rendered & hosted with view-analytics + warmup ON since Day 0/1 (mail-tester >=9/10). PROOF-CHECKPOINT (tracked, non-blocking): first $497 pack(s) cleared in Stripe.",
+      "dayRange": "Day 0 -> ~Day 21 (DMs ignite the day S0 clears, ~Day 14-16)",
+      "kpis": [
+        { "metric": "Go-live stack tested end-to-end", "target": "LP->Stripe->Calendly->form, no EDIT_ME/[FILL] left", "measure": "manual test w/ Stripe 4242", "leading": true },
+        { "metric": "Warmup started", "target": "Day 0/1 (literal first infra action); mail-tester >=9/10", "measure": "Smartlead warmup ON + mxtoolbox", "leading": true },
+        { "metric": "Top-10 A-tier samples rendered", "target": "10 (8 have scripts in doc 26)", "measure": "outreach tracker sample_rendered", "leading": true },
+        { "metric": "Priority DMs sent (top 10)", "target": "10, sample-backed", "measure": "tracker sent", "leading": true },
+        { "metric": "DM reply rate", "target": ">=25% (warm, hand-picked, sample-backed beats cold-email 10%)", "measure": "tracker replied / DMs landed", "leading": true },
+        { "metric": "DM positive replies (of top 10)", "target": "2-3 of 10", "measure": "tracker replied=positive", "leading": true },
+        { "metric": "On-track checkpoint (DM-ignition +~4 days)", "target": ">=2 of top-10 replied positively AND >=1 discovery call booked", "measure": "tracker", "leading": true },
+        { "metric": "First cash", "target": ">=1 x $497 pack (~$497-1.5K), ~Day 16-21", "measure": "Stripe", "leading": false }
+      ],
+      "killScale": "SCALE: >=3 of 10 DMs reply positively -> widen DMs to A-tier 11-24 while email warms. KILL/FIX: 0 positive replies after all 10 top-10 DMs land AND 5+ business days elapsed -> the sample quality or hook is the problem (loop back to S0 judgment + hand-rebuild the hook against the 3-part bar), not volume. EARLY-WARN (DM-ignition +~4 days): if <2 positive replies or 0 calls booked, trigger the hook-rebuild loop NOW, before the first-cash deadline.",
+      "dailyPlan": [
+        "Day 11 (fresh-eyes block): render first batch of top-10 A-tier made-for-them samples (Alice, Brez, Clevr, Hiyo, Kiala, Kin, Magic Mind, Spacegoods have scripts) + host with analytics. Hand-clean {{hook}}/{{product}} per lead against the doc-14 bar (true / specific / says-the-quiet-part).",
+        "Day 11 profiles live (checklist, decisions pre-made): set X + LinkedIn bio to doc-20 Option A; banner per checklist (NO follower count / fake logos); About filled from doc-20 origin pack; pin the origin manifesto post; queue doc-20 Week-1 X+LI posts in Typefully. Done = all 5 checked, honesty-lock passed.",
+        "Days 12-13: finish top-10 samples + host. DM the top 10 on LinkedIn/X, sample-backed (doc-14 variants, Track-routed). Check reply inbox AM+PM; route every reply.",
+        "Reply-routing rule: POSITIVE/'show me'/'when?' -> send Calendly link + stamp call_booked attempt; OBJECTION/'not now' -> log in note, queue the doc-18 objection-bank response; NO/unsubscribe -> mark replied=no, suppress. Done = inbox at zero unactioned AM and PM.",
+        "Day 14: first DM replies -> book discovery calls (doc-18). Run the Day-10-equivalent on-track check; if red, trigger hook-rebuild now. Render samples for A-tier 11-18 as DMs land.",
+        "Live-quote numbers (no mid-call lookup): $20-100K/mo spend branch -> retainer mid $1.5-2.5K or standard $2.5-3.5K at the FOUNDING locked rate, and offer the $0 instrumented 5-video pilot FIRST; state the real remaining founding-slot count (proof-only, no inflation). $5-20K/mo spend branch -> put the $497 pack in their hand.",
+        "Front-load: aim to commit first founding pilot(s) in the ~Day 21-35 window -> capture control baseline FIRST (non-negotiable). Distinguish 'pilot committed' from 'cycle Day-0' — budget 3-7 founder-gated intake days before the 14-day clock starts.",
+        "First cash likely begins landing ~Day 16-21 (~$497-1.5K). Cumulative cash target ~$2-3.5K by Day 21."
+      ]
+    },
+    {
+      "id": "S2",
+      "name": "Email Engine Live",
+      "goal": "With domains warmed, run priority sample-backed sends at volume across the full 79-list to feed calls beyond the DM top-10.",
+      "entry": "Warmup complete (~Day 21, email-ready ~Jul 6) AND S0 cleared (samples sendable). Note: on the honest baseline email going live COINCIDES with the DM channel producing first cash — both channels light up together.",
+      "exit": "INFRA-GATE (controllable): sustained ~150-250 priority sample-backed sends/wk; reply rate measured on >=200 real sends and re-baselined against the doc-25 funnel; lead list replenished +40 so it doesn't starve ~Day 45. PROOF-CHECKPOINT (tracked): >=1 retainer signed off the email channel.",
+      "dayRange": "~Day 21 -> ~Day 45 (then continues as standing motion)",
+      "kpis": [
+        { "metric": "Priority sample-backed sends/wk", "target": "150-250", "measure": "Smartlead + tracker", "leading": true },
+        { "metric": "All-reply rate (priority only)", "target": ">=10% of sends", "measure": "tracker replied (any)", "leading": true },
+        { "metric": "Positive-reply rate (priority only)", "target": ">=7.5% of sends (~78% of replies)", "measure": "tracker replied=positive", "leading": true },
+        { "metric": "Sample-link click rate", "target": ">=30% of opens", "measure": "host analytics", "leading": true },
+        { "metric": "Positive-reply -> call booked", "target": ">=35%", "measure": "tracker call_booked", "leading": true },
+        { "metric": "Lead replenishment", "target": "+40 qualified brands/mo (binding constraint)", "measure": "tracker new rows", "leading": true }
+      ],
+      "killScale": "SCALE: all-reply >=10% sustained over >=200 sends AND >=1 retainer signed -> add inboxes + replenish aggressively. DRIFT/INVESTIGATE: all-reply 5-9% sustained over >=200 sends (nearly doubles sends-per-retainer from ~210 to ~370+) -> hand-rebuild 10 hooks on the WORST-performing Track and re-baseline BEFORE adding any inboxes. KILL/FIX: all-reply <5% over 200 priority sends -> STOP scaling sends; hand-rebuild 20 hooks against the 3-part bar; re-test before resuming. Replies healthy but call-book <20% -> tighten Email-3 (the cycle / head-to-head ask), not the cold open.",
+      "dailyPlan": [
+        "Day 21: go email-live — load the 4-email cadence (Day 0/2/5/9), Track-routed (1 Wounded-Vet / 2 Volume-Lean, pre-assigned per lead in doc 22). Per-inbox ramp: Wk1 ~10-15/day -> Wk2 ~20 -> Wk3+ 30-40/day ceiling; scale by adding inboxes, never spiking. Tracking OFF; click-track {{sampleLink}} via host.",
+        "Daily outreach block (~60 min): DM the day's priority leads + load/monitor the email cadence; check reply inbox AM+PM and route every reply per the S1 routing rule; inbox at zero unactioned.",
+        "Weekly quota math (carry these): to clear $3-5K cash (Mix B = 4 packs + 1 retainer first-month ~= $4,988) need ~11 qualified calls <- ~31 positive replies <- ~40 total replies <- ~315 priority sample-backed sends (10% all-reply, ~78% positive). Per net-new retainer pre-proof: ~200-220 priority sends.",
+        "Friday lead-gen block (2 hr): Scout-Personalizer [AGENT] enrich + [HUMAN] hook-judgment. Standing replenish +10/wk; surge to +40 in a single week if the unworked-qualified-brands list crosses below 30 (the one binding floor).",
+        "Lead accept test at point of execution: run Scout-Personalizer over Meta Ad Library functional-consumables advertisers; accept a brand ONLY if it passes the 3-part ICP test (functional-consumables DTC, est. $20-100K/mo Meta+TikTok spend, reachable founder/marketing lead). Enrichment is [AGENT]; per-lead hand-cleaned hook + made-for-them render judgment stay [HUMAN]. Never fabricate email.",
+        "Sample-render block (60-90 min batch, FLEX): render 4-6 made-for-them prospect samples (15s spec, templatized — reuse character family + fixed format, ~15-20 min each). First block cut on a heavy-V2 day.",
+        "Send capacity is NOT the constraint (6 inboxes x ~35/day ~= 210/day ~= 10x lead supply). The constraints are unique qualified brands + sample-production time — so lead replenishment and templatized sample batching are the real levers."
+      ]
+    },
+    {
+      "id": "S3",
+      "name": "Manufacture Proof",
+      "goal": "Land founding-partner pilots, capture control baselines BEFORE the pilot ships, deliver cycles, and ship 3 documented creative-delta case studies — lifting Perceived Likelihood 6 to 8. The highest-ROI work in the business.",
+      "entry": "First qualified $20-100K/mo fits from S1/S2 calls.",
+      "exit": "3 documented founding-partner deltas (control hold-rate -> winner hold-rate, CPA flat-or-better, baseline + 1-line testimonial), each replacing a [CASE STUDY PLACEHOLDER] in the cold email / sell sheet / content (doc 29 Gate-1 component).",
+      "dayRange": "~Day 21 -> ~Day 80 (baselines start landing ~Day 21; first delta ~Day 45; 3rd ~Day 75-80)",
+      "kpis": [
+        { "metric": "Free founding pilots committed", "target": "2-3 by ~Day 30", "measure": "tracker verdict=pilot", "leading": true },
+        { "metric": "Baselines captured / pilots started", "target": "100% (every pilot)", "measure": "tracker baseline_captured (proof view)", "leading": true },
+        { "metric": "Documented case-study deltas", "target": "1 by ~Day 45 · 3 by ~Day 75-80", "measure": "proof ledger", "leading": false },
+        { "metric": "Perceived Likelihood (operationalized)", "target": "6->7 = positive-reply rate rises >=2pts after first case-study swap; 7->8 = pilot->retainer crosses 40%", "measure": "observable funnel deltas", "leading": false },
+        { "metric": "Pilot -> retainer conversion", "target": ">=30% (drifts to 40% post-proof)", "measure": "tracker", "leading": true }
+      ],
+      "killScale": "SCALE: pilot->retainer >=30% on >=3 pilots -> prioritize landing pilots over chasing new replies. KILL/FIX: pilot->retainer <15% on >=4 pilots -> if BEFORE 3 case studies, expected (the cure is shipping case studies, not changing the pitch); if it persists AFTER 3 case studies, review offer/price. Pilot intake stalled >7 days (commit -> cycle Day-0) -> chase the 6-shot assets/claims or SWAP the pilot; don't let the case-study clock idle.",
+      "dailyPlan": [
+        "The non-negotiable: no baseline screenshot captured before the pilot = no case study = the pilot was wasted proof. Capture the control's hook/hold-rate FIRST, every time.",
+        "Distinguish 'pilot committed' (founder said yes) from 'cycle Day-0' (baseline captured + 6-shot asset list + claims + control-baseline access all IN HAND). Budget 3-7 founder-gated intake days; the 14-day delta-read clock starts from cycle Day-0, NOT from commit.",
+        "Front-load pilot commits to ~Day 21-35 so all three 14-day cycles finish with margin before Day 90. Pilots #2/#3 must COMMIT by ~Day 45 to make their Day-14 reads by ~Day 70.",
+        "Client-delivery block (FLOORED >=2.5 hr protected): active pilot/retainer cycle work — angle lock -> 24 variations -> QC every clip on the Slop Rubric -> launch + tag in their account -> Day-14 read. Capture baseline FIRST on any new pilot.",
+        "Run the 2-week iteration loop: D0 lock the 24-grid -> D1-3 produce (script -> render -> edit/caption -> compliance pass) -> D4 launch all 24 -> D5-7 learning phase (hands off) -> D8 first kills (thumb-stop/hold) -> D10 scale decision (CTR/CPA) -> D11-13 scale winners + draft next cycle from survivors -> D14 retro + log all 24 to results sheet.",
+        "Capture the delta screenshot as the case study: 'control 0.9% -> winner 1.6% hold-rate +22%, CPA flat'. Contract the proof output via the pilot agreement (right to publish delta + 1-line testimonial). Start the public proof ledger with the first real entry; '2 founding slots left' becomes honest scarcity.",
+        "Keep the retainer-without-pilot escape hatch live: a strong-enough sample can close a retainer DIRECTLY off the discovery call, skipping the pilot — the only path to $6-9K MRR by Day 90 if any pilot's intake stalls. Don't make every retainer wait on a completed pilot cycle."
+      ]
+    },
+    {
+      "id": "S4",
+      "name": "Stack Retainers",
+      "goal": "Convert proof into recurring revenue: $3-5K cash -> $6-9K MRR at the solo ceiling, mix lifted toward standard tier.",
+      "entry": "First case study in hand (~Day 45) + pilots converting.",
+      "exit": "LEADING SUB-GATE (the thing that predicts the $6-9K): pilot->retainer conversion >=30% measured on >=3 pilots. PROOF-CHECKPOINT (tracked, not blocking): $6-9K MRR (realistic ~2 retainers while V2 also consumes hours; 2-3 is the no-V2 best case), mix mid/standard + packs; outreach now leads with real proof.",
+      "dayRange": "~Day 45 -> Day 90",
+      "kpis": [
+        { "metric": "Retainers signed", "target": "1-2 (~Day 45-60) -> 2 realistic (3 only if V2 hours free) by Day 90", "measure": "tracker verdict=retainer + Stripe", "leading": false },
+        { "metric": "MRR", "target": "$3-5K (~Day 60) -> $6-9K (Day 90)", "measure": "Stripe / invoices", "leading": false },
+        { "metric": "ASP per retainer", "target": "start quoting standard once 3 proofs land", "measure": "quote log", "leading": true },
+        { "metric": "Production hrs/wk vs brands live", "target": "< ceiling (~2 brands solo+V2; <=3 only if V2 hours free)", "measure": "time log", "leading": true }
+      ],
+      "killScale": "SCALE: 3 case studies documented -> flip outreach proof-first, raise ASP (quote standard not mid). KILL: production hrs exceed ceiling -> STOP SELLING, START HIRING (Post/Editor VA first). Capacity kill-line is a TWO-VENTURE ceiling: a 24-pack ~= 9-9.5 hrs; 3 brands is sustainable with no second venture, but Chaga also owes V2 ~3 hrs/day -> realistic solo+V2 ceiling is ~2 retainer brands. If combined V1+V2 load exceeds ~6 hrs/day for 3+ consecutive days, FREEZE new V1 selling (do not sign brand #3). Never sign a 4th brand until the Post/Editor VA is hired and trained — signing past capacity recreates the exact agency-betrayal scar the offer is built to avoid.",
+      "dailyPlan": [
+        "Run the steady-state weekly template (Day 22 onward): Mon-Fri each day = sample-render (FLEX) + outreach/route + held call slots + content (FLEX) + delivery (FLOORED >=2.5h). Sat = HARD REST (no client work, no calls, no sends). Sun = newsletter SEND (auto/queued) + weekly KPI scoreboard review.",
+        "Booked-call slots (PROTECTED, 2x 30 min held): run the 15-min discovery script — spend-branch -> Track -> pain-dig -> pitch -> live quote -> close; log verdict. Expect the first 2-3 calls to be practice/disqualify-heavy (NEW skill).",
+        "Quote standard not mid once 3 proofs land (the ASP lever). Do NOT discount the retainer to close early — it trains the wrong buyer and erodes the margin the business runs on. Never inflate the founding-slot count.",
+        "Capacity guard each day: delivery is FLOORED >=2.5 hr; cut Block 1 (samples) then Block 4 (content) before ever touching delivery or calls, and never let the lead list starve.",
+        "Collision rule: on any day V2 has a live partner call or problem-interview block, the V1 block cut is the sample-render/content block — NEVER the client-delivery block and NEVER a booked call.",
+        "Friday: +10 new leads (surge +40 if unworked qualified-list <30) + engagement-bait 'comment PACK' post. Newsletter QUEUED + KPI packet [AGENT]-prepped by Review-Prepper so Sunday is review-only.",
+        "If V1 production hrs alone exceed the ceiling: stop selling and trigger the VA hire (S5). Fund the Post/Editor VA (frees ~3 hrs/pack) from the first 2-3 retainers."
+      ]
+    },
+    {
+      "id": "S5",
+      "name": "Bridge to $20K",
+      "goal": "Lift ASP to standard/premium across ~5 brands + add the first Post/Editor VA (frees ~3 hrs/pack) -> path to $15-20K (~Day 150-180) and $20K/mo (~Day 180+). Preview only, NOT a 90-day commitment.",
+      "entry": "Day-90 state achieved: 3 case studies, $6-9K MRR, pipeline replenishing, capacity at ceiling.",
+      "exit": "Gate-1 (doc 29, ALL true): 3 case studies + pipeline reliability (usable-clip yield >= stated %, doc-28 validation closed) + founder-capacity free (DFY below cap OR QC delegated). DWY/community/course stay dark until then; standalone subscription is KILLED.",
+      "dayRange": "Day 90+ (preview)",
+      "kpis": [
+        { "metric": "Post/Editor VA hired + trained", "target": "1, funded from first 2-3 retainers", "measure": "hire log / SOP 7.2", "leading": true },
+        { "metric": "ASP lifted to standard/premium", "target": "across ~5 brands", "measure": "quote log / Stripe", "leading": true },
+        { "metric": "MRR", "target": "$15-20K (~Day 150-180)", "measure": "Stripe / invoices", "leading": false },
+        { "metric": "Gate-1 conditions met", "target": "3 (case studies + pipeline reliability + capacity free)", "measure": "Gate-1 checklist", "leading": false }
+      ],
+      "killScale": "SCALE: only past Gate-1 — premium ($5K+ media buying) earned only after creative wins. KILL/HOLD: if any Gate-1 condition is false, do NOT expand; DWY/community/course stay dark. Never sign past the two-venture ceiling until the VA is trained.",
+      "dailyPlan": [
+        "First move: hire + train the Post/Editor VA, funded from the first 2-3 retainers (SOP 7.2 hire order: Post/Editor VA first).",
+        "Lift ASP — don't add logos: 3 standard + 2 premium (~$19K across 5 brands) beats 8 mid-tier brands you can't service. Quote standard/premium once case studies justify it.",
+        "Earn premium ($5K+ media buying) only after demonstrated creative wins; it can't be rushed.",
+        "Hold Gate-1 before any expansion: DWY/community/course stay dark until 3 case studies + pipeline reliability + founder-capacity-free are all true.",
+        "Treat the 5-brand cap as a feature (premium SLA, real scarcity), not a revenue cage. Re-set the $20K date to Day 150-180."
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Scout-Personalizer",
+      "owns": "Per lead-list row -> verified intent-qualification + send-ready opener (new brand / weekly +40 top-up). Pulls live signals via gooseworks (Meta Ad Library, IG, LinkedIn). Outputs a CP record: {{hook}}/{{product}}/Track/sample-concept + email_status enrich->verified. Never fabricates email.",
+      "humanTouch": "Chaga reads the opener + confirms the decision-maker (CEO/founder/Head of Growth, still at the company); per-lead hand-cleaned hook + made-for-them render judgment stay [HUMAN].",
+      "activeFrom": "NOW (Day 1-2, no-skill, parallel to AM drills) — S1-S2 enrich + replenish"
+    },
+    {
+      "name": "Dispatcher",
+      "owns": "(a) Sequencer: load verified email + {{sampleLink}} into the 4-email cadence, route by Track, respect caps; (b) Reply-triage: classify every reply + draft the next action; creates Calendly hold.",
+      "humanTouch": "Every reply to a real founder is approved before send (one bad DM burns a scarce lead); may auto-send the Calendly link only on an unambiguous 'when?'. The human decision rule (route POSITIVE/OBJECTION/NO) stays yours.",
+      "activeFrom": "NOW (DM-triage skeleton); email side at ~Day 21 — S1 DM, S2 email"
+    },
+    {
+      "name": "Calendar-Filler",
+      "owns": "5-pillar / G-A-P skeleton -> drafted posts + newsletter + Friday PACK bait (weekly + monthly refill). Outputs ContP items (Idea -> Writing -> Ready, never auto-Published).",
+      "humanTouch": "Approves before publish; leaves every [CASE STUDY PLACEHOLDER] literally in place until a real founding-partner delta exists. Voice stays [HUMAN].",
+      "activeFrom": "AFTER FIRST CASH — S3-S4 content scale"
+    },
+    {
+      "name": "Meta-Scout",
+      "owns": "Watch the functional-consumables ad landscape for newly-winning renderable formats (speed-to-meta edge). Outputs a weekly 'new winning format' brief -> knowledge vault + drafted teardowns.",
+      "humanTouch": "Chaga judges real-signal vs noise + rig-feasibility.",
+      "activeFrom": "PHASE 2 (post-Gate-1); read-only scaffold early — S5+"
+    },
+    {
+      "name": "Pipeline-Keeper",
+      "owns": "Keep the CRM current (event-driven: send/reply/call/Stripe-clear/baseline -> stamp field, advance stage). Maintains the Proof view (baseline_captured per pilot); flags 0-action projects.",
+      "humanTouch": "Mostly autonomous; $ cash + verdict are human-confirmed.",
+      "activeFrom": "NOW (thin) — S1 onward; deepen with webhooks after first cash"
+    },
+    {
+      "name": "Review-Prepper",
+      "owns": "Assemble the weekly-review packet the evening before review: cap check, funnel scoreboard, Grad-Bar streak, stall flags, proposed 1-3 priorities. Drafts the Friday newsletter for Sunday auto-send.",
+      "humanTouch": "The review IS the human work; the agent only prepares the table.",
+      "activeFrom": "AFTER FIRST CASH — S3-S4"
+    }
+  ],
+  "budget": [
+    { "item": "Domains (brand + 2-3 cold-email lookalikes)", "cost": "~$33 one-time" },
+    { "item": "Google Workspace", "cost": "~$14-29/mo" },
+    { "item": "Smartlead (cold-email + warmup)", "cost": "~$39/mo" },
+    { "item": "Enrichment / lead replenishment (recurring, or gooseworks credits)", "cost": "~$39-49/mo" },
+    { "item": "Sora 2 + kie.ai render credits (usage-based, ~$0.15 per 10s clip)", "cost": "~$10-40/mo" },
+    { "item": "ChatGPT Plus (Sora-2 app access for the consistent-character MINT step)", "cost": "~$20/mo" },
+    { "item": "CapCut (editing) — defer paid Captions to Phase 2", "cost": "$0 (free)" },
+    { "item": "Element-9 self-funded micro ad test (optional, one real hold-rate number)", "cost": "~$50-100 one-time" },
+    { "item": "Honest month-1 total (well under the $500-750 ceiling)", "cost": "~$155-230" }
+  ],
+  "risks": [
+    "Warmup time delays first revenue (HIGH, timing-fatal): inbox warmup is a fixed ~21-day clock that does not compress. Mitigation: start warmup Day 0/1 as the literal first action; bridge with LinkedIn/X DMs (zero warmup) for the first $3-5K; re-label first cash honestly to ~Day 16-21.",
+    "The proof gap throttles conversion (HIGH, the core constraint): Perceived Likelihood sits at 6/10 and is the only growth lever for 90 days; zero case studies at launch. Pilots may convert <30% until proof exists, inflating sends-per-retainer to 300+. Mitigation: race to 3 documented founding-partner deltas (capture the control baseline BEFORE every pilot or there is no case study) — the highest-ROI work in the business.",
+    "Solo + two-venture capacity ceiling caps revenue below $20K (CERTAIN at scale): $20K/mo needs 5+ retainer-equivalents; the solo+V2 ceiling is ~2 brands (3 only if V2 hours free). You cannot solo your way to $20K. Mitigation: lift ASP not logos; hire the Post/Editor VA first (S5); reset the $20K date to Day 150-180; treat the 5-brand cap as a feature. FREEZE new selling if combined V1+V2 load >~6 hrs/day for 3+ days.",
+    "Lead-list starvation (MEDIUM-HIGH, silent killer): 79 brands x 4 emails ~= 316 touches yields maybe 1-2 retainers; the funnel runs dry ~Day 45 without replenishment. Mitigation: standing weekly lead-gen (+10/wk, surge +40 if the unworked list crosses below 30); protect the scarce A-tier 24; budget ~15-25 hrs/mo for enrichment + hooks + sample renders.",
+    "Sample-production time competes with client delivery (MEDIUM, compounding): every priority send needs a rendered sample first (~15-30 min), directly competing with the ~9.5 hrs/pack of paid delivery. Mitigation: templatize sample production (reuse character family + fixed 15s spec, ~15-20 min); batch weekly; this is the second-strongest argument for the VA hire.",
+    "Guarantee exposure under a thin pipeline (LOW-MEDIUM, manageable): a free re-do cycle is ~9.5 hrs of unpaid labor. Mitigation: the guarantee is labor-currency not cash (a $500-budget founder can always honor it); the metric is creative-controllable (hold-rate, not whole-account ROAS); the 5-brand cap bounds worst-case exposure.",
+    "Platform / policy risk (IB net-new, intensity 9/10 — the highest pain): swapping a human UGC creator for an AI avatar on the same script/targeting triggers Meta 'misleading or manipulated media' flags and TikTok Spark Ad shutdowns; enforcement is inconsistent and unexplained; a disabled BM costs a high-spend brand six figures overnight, and a labeling/ban policy change could close the arbitrage window. Mitigation: productize 'Policy-Safe Delivery' (AI-voice-over-real-footage option, transparent labeling, disapproval-rate baseline + alerting, disclaimer A/B test); lead compliance-first as the TRUST wedge; monitor buyer-community policy chatter as the leading indicator.",
+    "High-trust vertical performance risk (IB net-new): functional consumables are supplement-adjacent, where PURE synthetic testimonials underperform (skincare AI testimonial dropped ROAS 3.2->1.1; CTR 1.8%->0.7%). Mitigation: bias the 4x24 toward HYBRID (AI voice/edit + real footage, or AI for hooks/variants/B-roll) for client work; reserve fully-synthetic talking-heads for TOFU/explainer slots; route around the 'drink-and-react' consumption shot.",
+    "Platform-native fast-follow (IB net-new): Meta Advantage+ Creative and TikTok Smart Performance auto-generate creative inside ad manager; if they ship 'good enough' one-click synthetic UGC, basic script->avatar services get commoditized (arbitrage window ~12-24 months). Mitigation: own creative STRATEGY (which angle / which vertical framework / closed-loop testing + compliance-trust brand), not generation — the cross-cycle pattern library is the moat."
+  ]
+}

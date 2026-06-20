@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="36c88fed-9b86-4510-b586-a984f55640a6"></script>
+</head>
+<body>
+
+<x-dc>
+<helmet>
+<style>
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0}
+  summary{list-style:none}
+  summary::-webkit-details-marker{display:none}
+  details > summary > .tgl{transition:transform .25s ease}
+  details[open] > summary > .tgl{transform:rotate(45deg)}
+  a:focus-visible,summary:focus-visible,button:focus-visible{outline:3px solid #D9762F;outline-offset:3px;border-radius:8px}
+  @keyframes tideDrift{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{animation:none!important;transition:none!important}}
+</style>
+</helmet>
+
+<div style="background:#FBF8F2;color:#1B282D;font-family:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden">
+
+  <a href="#main" style="position:absolute;left:-9999px;top:0;background:#0E5366;color:#FBF8F2;padding:12px 18px;border-radius:0 0 12px 0;z-index:200;text-decoration:none;font-weight:600" style-focus="left:0">Skip to content</a>
+
+  <!-- ============ NAV ============ -->
+  <nav aria-label="Primary" style="position:sticky;top:0;z-index:100;background:rgba(251,248,242,0.82);backdrop-filter:saturate(140%) blur(12px);-webkit-backdrop-filter:saturate(140%) blur(12px);border-bottom:1px solid #ECE3D2">
+    <div style="max-width:1180px;margin:0 auto;padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+      <a href="#main" style="display:inline-flex;align-items:center;gap:11px;text-decoration:none;color:#0E5366">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 23 Q9 17 16 23 T30 23" stroke="#0E5366" stroke-width="2.1" fill="none" stroke-linecap="round"></path><path d="M5 17 Q11 12 16 17 T27 17" stroke="#0E5366" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.6"></path><path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#0E5366" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.34"></path></svg>
+        <span style="font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;font-size:22px;font-weight:600;letter-spacing:-0.01em">Tideover</span>
+      </a>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <a href="#wait" style="text-decoration:none;color:#314548;font-size:15px;font-weight:500;padding:8px 12px;border-radius:999px;transition:color .15s,background .15s" style-hover="color:#0E5366;background:#EFE7D7">The long wait</a>
+        <a href="#how" style="text-decoration:none;color:#314548;font-size:15px;font-weight:500;padding:8px 12px;border-radius:999px;transition:color .15s,background .15s" style-hover="color:#0E5366;background:#EFE7D7">How it works</a>
+        <a href="#pilot" style="text-decoration:none;color:#314548;font-size:15px;font-weight:500;padding:8px 12px;border-radius:999px;transition:color .15s,background .15s" style-hover="color:#0E5366;background:#EFE7D7">The pilot</a>
+        <a href="#faq" style="text-decoration:none;color:#314548;font-size:15px;font-weight:500;padding:8px 12px;border-radius:999px;transition:color .15s,background .15s" style-hover="color:#0E5366;background:#EFE7D7">FAQ</a>
+        <a href="{{ book_call }}" style="display:inline-flex;align-items:center;gap:7px;background:linear-gradient(135deg,#E0833D 0%,#C25C29 100%);color:#FFF6EE;font-size:15px;font-weight:600;padding:11px 21px;border-radius:999px;text-decoration:none;box-shadow:0 8px 20px rgba(194,92,41,0.40),0 2px 5px rgba(194,92,41,0.28);transition:background .2s,transform .2s,box-shadow .2s" style-hover="background:linear-gradient(135deg,#EF9249 0%,#D2682F 100%);transform:translateY(-2px);box-shadow:0 14px 30px rgba(194,92,41,0.5)">Free teardown<span aria-hidden="true" style="font-size:1.05em;line-height:1">→</span></a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+
+  <!-- ============ HERO ============ -->
+  <header style="position:relative;background:radial-gradient(120% 80% at 82% -10%, rgba(217,118,47,0.18), transparent 58%), radial-gradient(120% 95% at 8% 8%, rgba(15,84,104,0.17), transparent 56%), linear-gradient(180deg,#FBF8F2 0%,#F4ECDA 100%)">
+    <div style="max-width:1180px;margin:0 auto;padding:clamp(48px,7vw,92px) 22px clamp(56px,8vw,104px);display:flex;flex-wrap:wrap;gap:clamp(36px,5vw,64px);align-items:center">
+
+      <!-- left -->
+      <div style="flex:1 1 420px;min-width:300px">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:26px">
+          <span style="display:inline-flex;align-items:center;gap:8px;background:#E4EEF0;color:#0E5366;font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid #D2E2E4">For 60–120 day presale waits</span>
+          <span style="display:inline-flex;align-items:center;gap:8px;background:#E4EEF0;color:#0E5366;font-size:13px;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid #D2E2E4">Built for Kickstarter &amp; BackerKit graduates</span>
+        </div>
+
+        <h1 style="font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;font-weight:600;font-size:clamp(34px,5.2vw,56px);line-height:1.08;letter-spacing:-0.015em;color:#11252A;margin:0 0 22px;text-wrap:balance">Calm the wait. Keep the sale.</h1>
+
+        <p style="font-size:clamp(17px,1.5vw,19px);line-height:1.65;color:#374A4F;max-width:560px;margin:0 0 30px">Tideover plugs into the Gorgias, Tidio, or Intercom you already use, knows each order's real production timeline, and answers the long wait with calm, human, timeline-aware reassurance — so "where's my order?" doesn't become a refund.</p>
+
+        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-bottom:28px">
+          <a href="{{ book_call }}" style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#E0833D 0%,#C25C29 100%);color:#FFF6EE;font-size:17px;font-weight:600;padding:16px 32px;border-radius:999px;text-decoration:none;box-shadow:0 14px 32px rgba(194,92,41,0.42),0 3px 8px rgba(194,92,41,0.3);transition:background .2s,transform .2s,box-shadow .2s" style-hover="background:linear-gradient(135deg,#EF9249 0%,#D2682F 100%);transform:translateY(-2px);box-shadow:0 20px 44px rgba(194,92,41,0.52)">Get a free 15-min presale-support teardown<span aria-hidden="true" style="font-size:1.1em;line-height:1">→</span></a>
+          <a href="#how" style="display:inline-flex;align-items:center;gap:7px;color:#0E5366;font-size:16px;font-weight:600;text-decoration:none" style-hover="gap:11px"><span style="border-bottom:1.5px solid rgba(31,91,107,0.35);padding-bottom:1px">See how it works</span><span aria-hidden="true">→</span></a>
+        </div>
+
+        <div style="display:flex;gap:13px;align-items:flex-start;background:#FFFFFF;border:1px solid #EBE2D0;border-radius:16px;padding:16px 18px;max-width:540px;box-shadow:0 8px 24px rgba(31,91,107,0.06)">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex:none;margin-top:1px"><path d="M12 2 4 6v6c0 4.4 3.2 7.6 8 10 4.8-2.4 8-5.6 8-10V6l-8-4Z" stroke="{{ accent }}" stroke-width="1.7" fill="rgba(201,122,74,0.08)" stroke-linejoin="round"></path><path d="M9 12l2 2 4-4.5" stroke="{{ accent }}" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+          <p style="margin:0;font-size:14.5px;line-height:1.55;color:#374A4F"><strong style="color:#11252A">No new helpdesk to install.</strong> Nothing to rip out. We work inside the tools you already have.</p>
+        </div>
+      </div>
+
+      <!-- right: reassurance reply card -->
+      <div style="flex:1 1 380px;min-width:290px">
+        <div style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:24px;box-shadow:0 24px 60px rgba(31,91,107,0.12);overflow:hidden;animation:tideDrift 9s ease-in-out infinite">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;background:#F3F8F8;border-bottom:1px solid #E4EEF0">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="width:34px;height:34px;border-radius:50%;background:#E4EEF0;display:flex;align-items:center;justify-content:center;color:#0E5366;font-weight:700;font-size:14px">D</span>
+              <div style="line-height:1.2"><div style="font-weight:600;font-size:14px;color:#11252A">Dana — order #4821</div><div style="font-size:12px;color:#6B7C80">Presale · backer pledge</div></div>
+            </div>
+            <span style="font-size:12px;font-weight:600;color:#0E5366;background:#E4EEF0;padding:5px 11px;border-radius:999px;border:1px solid #D2E2E4">Day 58</span>
+          </div>
+          <div style="padding:22px 20px;display:flex;flex-direction:column;gap:16px">
+            <div style="align-self:flex-start;max-width:88%;background:#F1ECE0;color:#314548;border-radius:16px 16px 16px 4px;padding:13px 16px;font-size:14.5px;line-height:1.55">I ordered back in March and it's been almost two months. Starting to wonder if this is actually coming, or if I should just ask for a refund.</div>
+            <div style="align-self:flex-end;max-width:90%;background:#0E5366;color:#F4F9F9;border-radius:16px 16px 4px 16px;padding:14px 16px;font-size:14.5px;line-height:1.58">Hey Dana — totally fair to wonder after this long, and I'm really glad you reached out. Your order's in the production batch that's <strong style="color:#fff">currently tracking to ship late July</strong>. You're on the list and nothing's stuck. I'll check back in the moment anything shifts.</div>
+            <div style="display:flex;align-items:center;gap:8px;align-self:flex-end;color:#8A7A66;font-size:11.5px;font-weight:500">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 4 6v6c0 4.4 3.2 7.6 8 10 4.8-2.4 8-5.6 8-10V6l-8-4Z" stroke="{{ accent }}" stroke-width="1.8" fill="none"></path></svg>
+              timeline-aware · human-approved · no hard date promised
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ============ THE LONG WAIT ============ -->
+  <section id="wait" style="max-width:1180px;margin:0 auto;padding:clamp(56px,8vw,104px) 22px">
+    <div style="max-width:680px;margin-bottom:48px">
+      <div style="text-transform:uppercase;letter-spacing:0.14em;font-size:13px;font-weight:700;color:{{ accent }};margin-bottom:14px">The long wait</div>
+      <h2 style="font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.14;letter-spacing:-0.01em;color:#11252A;margin:0 0 16px;text-wrap:balance">It isn't one ticket. It's a months-long emotional journey.</h2>
+      <p style="font-size:17px;line-height:1.65;color:#374A4F;margin:0">You collected the cash today and ship in 60 to 120 days. In that gap a confident buyer slowly turns into an anxious one — and an anxious one turns into a refund request.</p>
+    </div>
+
+    <!-- timeline -->
+    <ol style="list-style:none;margin:0 0 56px;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px">
+      <li style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:18px;padding:22px;box-shadow:0 10px 28px rgba(31,91,107,0.05)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span style="width:12px;height:12px;border-radius:50%;background:#7FB0A6"></span><span style="font-weight:700;font-size:13px;letter-spacing:0.05em;color:#0E5366">DAY 7</span></div>
+        <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:20px;font-weight:600;color:#11252A;margin:0 0 7px">Still excited</h3>
+        <p style="margin:0;font-size:14.5px;line-height:1.55;color:#46585C">The confirmation-email glow. They tell friends. No questions yet.</p>
+      </li>
+      <li style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:18px;padding:22px;box-shadow:0 10px 28px rgba(31,91,107,0.05)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span style="width:12px;height:12px;border-radius:50%;background:#E1C07A"></span><span style="font-weight:700;font-size:13px;letter-spacing:0.05em;color:#0E5366">DAY 30</span></div>
+        <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:20px;font-weight:600;color:#11252A;margin:0 0 7px">First doubt</h3>
+        <p style="margin:0;font-size:14.5px;line-height:1.55;color:#46585C">The excitement fades. "Wait — when is this actually coming?"</p>
+      </li>
+      <li style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:18px;padding:22px;box-shadow:0 10px 28px rgba(31,91,107,0.05)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span style="width:12px;height:12px;border-radius:50%;background:#D89A6A"></span><span style="font-weight:700;font-size:13px;letter-spacing:0.05em;color:#0E5366">DAY 60</span></div>
+        <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:20px;font-weight:600;color:#11252A;margin:0 0 7px">Anxious</h3>
+        <p style="margin:0;font-size:14.5px;line-height:1.55;color:#46585C">No update in weeks. They Google your name with "scam" and start screenshotting.</p>
+      </li>
+      <li style="background:#FFFFFF;border:1px solid #E7CFC0;border-radius:18px;padding:22px;box-shadow:0 10px 28px rgba(201,122,74,0.08)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px"><span style="width:12px;height:12px;border-radius:50%;background:#C0603A"></span><span style="font-weight:700;font-size:13px;letter-spacing:0.05em;color:#B05A30">DAY 89</span></div>
+        <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:20px;font-weight:600;color:#11252A;margin:0 0 7px">Ready to bail</h3>
+        <p style="margin:0;font-size:14.5px;line-height:1.55;color:#46585C">One unanswered message away from a refund request — or a chargeback.</p>
+      </li>
+    </ol>
+
+    <!-- stakes -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px">
+      <div style="background:#FBF6EC;border:1px solid #EBE2D0;border-radius:18px;padding:26px">
+        <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:20px;font-weight:600;color:#11252A;margin:0 0 10px">Chargebacks hit more than revenue</h3>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#46585C">A refund is a lost sale. A chargeback is a dispute on your record — and enough of them put your Stripe or PayPal standing at risk.</p>
+      </div>
+      <div style="background:#FBF6EC;border:1px solid #EBE2D0;border-radius:18px;padding:26px">
+        <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:20px;font-weight:600;color:#11252A;margin:0 0 10px">WISMO floods the inbox</h3>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#46585C">"Where's my order?" arrives in waves for months, burying the tickets that actually need you.</p>
+      </div>
+      <div style="background:#FBF6EC;border:1px solid #EBE2D0;border-radius:18px;padding:26px">
+        <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:20px;font-weight:600;color:#11252A;margin:0 0 10px">"Scam" reviews stick</h3>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#46585C">An anxious buyer left in the dark writes the review first and asks questions later. That page outlives the wait.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section id="how" style="background:linear-gradient(180deg,#F3EEE2 0%,#FBF8F2 100%)">
+    <div style="max-width:1180px;margin:0 auto;padding:clamp(56px,8vw,104px) 22px">
+      <div style="max-width:680px;margin-bottom:48px">
+        <div style="text-transform:uppercase;letter-spacing:0.14em;font-size:13px;font-weight:700;color:{{ accent }};margin-bottom:14px">The presale-specialist layer</div>
+        <h2 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.14;letter-spacing:-0.01em;color:#11252A;margin:0 0 16px;text-wrap:balance">A calm layer on top of the stack you already run.</h2>
+        <p style="font-size:17px;line-height:1.65;color:#374A4F;margin:0">We don't replace your helpdesk. We bolt on, take the presale tickets, and answer the long wait — while everything else stays exactly as it is.</p>
+      </div>
+
+      <!-- 4 points -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;margin-bottom:44px">
+        <div style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:18px;padding:26px;box-shadow:0 10px 28px rgba(31,91,107,0.05)">
+          <span style="display:inline-flex;width:40px;height:40px;border-radius:11px;background:#E4EEF0;align-items:center;justify-content:center;margin-bottom:16px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="8" height="7" rx="2" stroke="#0E5366" stroke-width="1.7"></rect><rect x="13" y="13" width="8" height="7" rx="2" stroke="#0E5366" stroke-width="1.7"></rect><path d="M11 7.5h4a2 2 0 0 1 2 2V13" stroke="#0E5366" stroke-width="1.7" fill="none"></path></svg></span>
+          <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:19px;font-weight:600;color:#11252A;margin:0 0 8px">Plugs into your existing stack</h3>
+          <p style="margin:0;font-size:14.5px;line-height:1.58;color:#46585C">We bolt onto the Gorgias, Tidio, or Intercom you already run. No migration, no second inbox, no infra change.</p>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:18px;padding:26px;box-shadow:0 10px 28px rgba(31,91,107,0.05)">
+          <span style="display:inline-flex;width:40px;height:40px;border-radius:11px;background:#E4EEF0;align-items:center;justify-content:center;margin-bottom:16px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E5366" stroke-width="1.7"></circle><path d="M12 7v5l3.5 2" stroke="#0E5366" stroke-width="1.7" fill="none" stroke-linecap="round"></path></svg></span>
+          <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:19px;font-weight:600;color:#11252A;margin:0 0 8px">Knows each order's real timeline</h3>
+          <p style="margin:0;font-size:14.5px;line-height:1.58;color:#46585C">Tideover reads order data and your production schedule, so every reply is grounded in where that specific order actually is.</p>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:18px;padding:26px;box-shadow:0 10px 28px rgba(31,91,107,0.05)">
+          <span style="display:inline-flex;width:40px;height:40px;border-radius:11px;background:#E4EEF0;align-items:center;justify-content:center;margin-bottom:16px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5h16v11H8l-4 3V5Z" stroke="#0E5366" stroke-width="1.7" fill="none" stroke-linejoin="round"></path><path d="M8 10h8M8 13h5" stroke="#0E5366" stroke-width="1.7" stroke-linecap="round"></path></svg></span>
+          <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:19px;font-weight:600;color:#11252A;margin:0 0 8px">Timeline-aware, day-stage replies</h3>
+          <p style="margin:0;font-size:14.5px;line-height:1.58;color:#46585C">A Day 20 nudge and a Day 80 worry need different words. Replies meet the buyer at the emotional stage they're in.</p>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:18px;padding:26px;box-shadow:0 10px 28px rgba(31,91,107,0.05)">
+          <span style="display:inline-flex;width:40px;height:40px;border-radius:11px;background:#E4EEF0;align-items:center;justify-content:center;margin-bottom:16px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.4" stroke="#0E5366" stroke-width="1.7"></circle><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0" stroke="#0E5366" stroke-width="1.7" fill="none" stroke-linecap="round"></path><path d="M16.5 8.5l1.6 1.6 2.4-2.6" stroke="{{ accent }}" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+          <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:19px;font-weight:600;color:#11252A;margin:0 0 8px">Every novel reply is human-approved</h3>
+          <p style="margin:0;font-size:14.5px;line-height:1.58;color:#46585C">Nothing auto-fires a promise. New situations get a real person's eyes before they ever reach your customer.</p>
+        </div>
+      </div>
+
+      <!-- diagram -->
+      <div style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:22px;padding:clamp(24px,4vw,40px);box-shadow:0 16px 40px rgba(31,91,107,0.07);margin-bottom:44px">
+        <div style="text-align:center;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#8A9A9D;margin-bottom:28px">How the bolt-on routes</div>
+        <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(14px,2.5vw,28px)">
+          <!-- inputs -->
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="text-align:center;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#8A9A9D;margin-bottom:2px">Your data</div>
+            <div style="background:#F3F8F8;border:1px solid #D2E2E4;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:600;color:#0E5366;text-align:center">Order data</div>
+            <div style="background:#F3F8F8;border:1px solid #D2E2E4;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:600;color:#0E5366;text-align:center">Production timeline</div>
+            <div style="background:#F3F8F8;border:1px solid #D2E2E4;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:600;color:#0E5366;text-align:center">Backer &amp; preorder list</div>
+          </div>
+          <span aria-hidden="true" style="font-size:26px;color:#C0CFD1;font-weight:300">→</span>
+          <!-- tideover node -->
+          <div style="background:#0E5366;border-radius:18px;padding:24px 26px;text-align:center;box-shadow:0 14px 34px rgba(31,91,107,0.28);color:#F4F9F9">
+            <svg width="34" height="34" viewBox="0 0 32 32" fill="none" aria-hidden="true" style="margin-bottom:8px"><path d="M2 23 Q9 17 16 23 T30 23" stroke="#F4F9F9" stroke-width="2.1" fill="none" stroke-linecap="round"></path><path d="M5 17 Q11 12 16 17 T27 17" stroke="#F4F9F9" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.66"></path><path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#F4F9F9" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.4"></path></svg>
+            <div style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:21px;font-weight:600">Tideover</div>
+            <div style="font-size:12.5px;opacity:0.8;margin-top:2px">presale layer · routes WISMO only</div>
+          </div>
+          <span aria-hidden="true" style="font-size:26px;color:#C0CFD1;font-weight:300">→</span>
+          <!-- outputs -->
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="text-align:center;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;color:#8A9A9D;margin-bottom:2px">Your helpdesk</div>
+            <div style="background:#FBF6EC;border:1px solid #EBE2D0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:600;color:#314548;text-align:center">Gorgias</div>
+            <div style="background:#FBF6EC;border:1px solid #EBE2D0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:600;color:#314548;text-align:center">Tidio</div>
+            <div style="background:#FBF6EC;border:1px solid #EBE2D0;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:600;color:#314548;text-align:center">Intercom</div>
+            <div style="text-align:center;font-size:12px;color:#8A9A9D;font-style:italic;margin-top:2px">stays exactly as it is</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- comparison table -->
+      <div style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:22px;overflow:hidden;box-shadow:0 16px 40px rgba(31,91,107,0.07)">
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;min-width:560px">
+            <caption style="text-align:left;padding:24px 26px 4px;font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:21px;font-weight:600;color:#11252A">Generic helpdesk vs. Tideover</caption>
+            <thead>
+              <tr>
+                <th scope="col" style="text-align:left;padding:16px 26px;font-size:13px;font-weight:600;color:#8A9A9D;border-bottom:1px solid #EBE2D0"></th>
+                <th scope="col" style="text-align:left;padding:16px 20px;font-size:14px;font-weight:600;color:#46585C;border-bottom:1px solid #EBE2D0">Generic helpdesk<br><span style="font-weight:400;font-size:12.5px;color:#9AA8AB">Gorgias / Tidio / Intercom</span></th>
+                <th scope="col" style="text-align:left;padding:16px 20px;font-size:14px;font-weight:700;color:#0E5366;border-bottom:2px solid #0E5366;background:#F3F8F8">Tideover</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" style="text-align:left;padding:15px 26px;font-size:14.5px;font-weight:600;color:#11252A;border-bottom:1px solid #F1EADC">Knows it's a preorder</th>
+                <td style="padding:15px 20px;font-size:14px;color:#8A9A9D;border-bottom:1px solid #F1EADC">Treats it like any ticket</td>
+                <td style="padding:15px 20px;font-size:14px;color:#26534F;font-weight:600;border-bottom:1px solid #F1EADC;background:#F8FCFB">Built for it</td>
+              </tr>
+              <tr>
+                <th scope="row" style="text-align:left;padding:15px 26px;font-size:14.5px;font-weight:600;color:#11252A;border-bottom:1px solid #F1EADC">Knows the real timeline</th>
+                <td style="padding:15px 20px;font-size:14px;color:#8A9A9D;border-bottom:1px solid #F1EADC">No production context</td>
+                <td style="padding:15px 20px;font-size:14px;color:#26534F;font-weight:600;border-bottom:1px solid #F1EADC;background:#F8FCFB">Reads each order's schedule</td>
+              </tr>
+              <tr>
+                <th scope="row" style="text-align:left;padding:15px 26px;font-size:14.5px;font-weight:600;color:#11252A;border-bottom:1px solid #F1EADC">Handles the 60–120 day journey</th>
+                <td style="padding:15px 20px;font-size:14px;color:#8A9A9D;border-bottom:1px solid #F1EADC">One reply, then silence</td>
+                <td style="padding:15px 20px;font-size:14px;color:#26534F;font-weight:600;border-bottom:1px solid #F1EADC;background:#F8FCFB">Day-stage reassurance</td>
+              </tr>
+              <tr>
+                <th scope="row" style="text-align:left;padding:15px 26px;font-size:14.5px;font-weight:600;color:#11252A;border-bottom:1px solid #F1EADC">Tone</th>
+                <td style="padding:15px 20px;font-size:14px;color:#8A9A9D;border-bottom:1px solid #F1EADC">Canned &amp; transactional</td>
+                <td style="padding:15px 20px;font-size:14px;color:#26534F;font-weight:600;border-bottom:1px solid #F1EADC;background:#F8FCFB">Warm, human, calm</td>
+              </tr>
+              <tr>
+                <th scope="row" style="text-align:left;padding:15px 26px;font-size:14.5px;font-weight:600;color:#11252A">Your stack</th>
+                <td style="padding:15px 20px;font-size:14px;color:#8A9A9D">Is the stack</td>
+                <td style="padding:15px 20px;font-size:14px;color:#26534F;font-weight:600;background:#F8FCFB">Plugs in — nothing to replace</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PILOT ============ -->
+  <section id="pilot" style="background:radial-gradient(120% 80% at 85% 0%, rgba(201,122,74,0.16), transparent 55%), linear-gradient(180deg,#16424E 0%,#123843 100%);color:#E7F1F0">
+    <div style="max-width:1080px;margin:0 auto;padding:clamp(56px,8vw,104px) 22px">
+      <div style="max-width:720px;margin-bottom:44px">
+        <div style="text-transform:uppercase;letter-spacing:0.14em;font-size:13px;font-weight:700;color:#E9B486;margin-bottom:14px">The founding-partner pilot</div>
+        <h2 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-weight:600;font-size:clamp(29px,4vw,44px);line-height:1.12;letter-spacing:-0.01em;color:#F4F9F8;margin:0 0 18px;text-wrap:balance">{{ pilotHeadline }}</h2>
+        <p style="font-size:17px;line-height:1.65;color:#BDD4D2;margin:0">Concierge first. The founder and our drafting system run your presale support manually, inside your own helpdesk — capturing the day-by-day reassurance language that works, measured against a clean baseline.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px;align-items:start">
+        <!-- included card -->
+        <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:22px;padding:30px">
+          <div style="display:inline-flex;align-items:center;gap:9px;background:#E9B486;color:#5A2D14;font-size:13px;font-weight:700;padding:6px 14px;border-radius:999px;margin-bottom:20px">Free · one full cycle</div>
+          <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:22px;font-weight:600;color:#F4F9F8;margin:0 0 18px">What's included</h3>
+          <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px">
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5;color:#D7E6E4"><span style="color:#E9B486;flex:none;font-weight:700;margin-top:1px">✓</span>Works inside your helpdesk — nothing to migrate.</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5;color:#D7E6E4"><span style="color:#E9B486;flex:none;font-weight:700;margin-top:1px">✓</span>Timeline-aware, human-approved replies in two fixed daily windows.</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5;color:#D7E6E4"><span style="color:#E9B486;flex:none;font-weight:700;margin-top:1px">✓</span>A day-by-day reassurance playbook, built from your real tickets.</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5;color:#D7E6E4"><span style="color:#E9B486;flex:none;font-weight:700;margin-top:1px">✓</span>Leading-indicator measurement vs. your own clean baseline.</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5;color:#D7E6E4"><span style="color:#E9B486;flex:none;font-weight:700;margin-top:1px">✓</span>Logged "saves" — anxious buyers who stayed aboard.</li>
+            <li style="display:flex;gap:12px;align-items:flex-start;font-size:15px;line-height:1.5;color:#D7E6E4"><span style="color:#E9B486;flex:none;font-weight:700;margin-top:1px">✓</span>Founder-led, by hand, for one full presale cycle.</li>
+          </ul>
+          <a href="{{ first_strike_form }}" style="display:inline-flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-top:26px;background:linear-gradient(135deg,#E98F49 0%,#C9612C 100%);color:#FFF6EE;font-size:16px;font-weight:600;padding:16px 24px;border-radius:999px;text-decoration:none;box-shadow:0 14px 32px rgba(0,0,0,0.28),0 6px 18px rgba(201,97,44,0.5);transition:transform .2s,background .2s,box-shadow .2s" style-hover="transform:translateY(-2px);background:linear-gradient(135deg,#F59C53 0%,#D86E34 100%);box-shadow:0 20px 44px rgba(0,0,0,0.34),0 10px 26px rgba(201,97,44,0.6)">Apply for a founding-partner pilot<span aria-hidden="true" style="font-size:1.1em;line-height:1">→</span></a>
+        </div>
+
+        <!-- ladder + guarantee -->
+        <div style="display:flex;flex-direction:column;gap:22px">
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:22px;padding:28px">
+            <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:20px;font-weight:600;color:#F4F9F8;margin:0 0 16px">A simple value ladder</h3>
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;font-size:14.5px;color:#D7E6E4">
+              <span style="background:rgba(233,180,134,0.18);border:1px solid rgba(233,180,134,0.4);color:#F0C79E;padding:7px 14px;border-radius:999px;font-weight:600">Free pilot</span>
+              <span aria-hidden="true" style="color:#7FA0A4">→</span>
+              <span style="background:rgba(255,255,255,0.07);padding:7px 14px;border-radius:999px">$199–$499/mo on proof</span>
+              <span aria-hidden="true" style="color:#7FA0A4">→</span>
+              <span style="background:rgba(255,255,255,0.07);padding:7px 14px;border-radius:999px">$799–$999+/mo as it scales</span>
+            </div>
+            <p style="margin:16px 0 0;font-size:14px;line-height:1.55;color:#A9C2C0">Any performance fee is deferred until a real case study exists.</p>
+          </div>
+
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.14);border-radius:22px;padding:28px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 4 6v6c0 4.4 3.2 7.6 8 10 4.8-2.4 8-5.6 8-10V6l-8-4Z" stroke="#E9B486" stroke-width="1.7" fill="none" stroke-linejoin="round"></path></svg>
+              <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:20px;font-weight:600;color:#F4F9F8;margin:0">An honest guarantee</h3>
+            </div>
+            <p style="margin:0;font-size:15px;line-height:1.62;color:#C7DAD8">We measure leading indicators — faster first response, fewer WISMO tickets, logged saves — against your own baseline. If the pilot doesn't move them, you don't pay. The full refund-reduction picture takes a complete 60–120 day cycle; we report it after the first cohort finishes, and we're telling you that up front.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HONEST FIT ============ -->
+  <section id="fit" style="max-width:1080px;margin:0 auto;padding:clamp(56px,8vw,104px) 22px">
+    <div style="max-width:640px;margin-bottom:44px">
+      <div style="text-transform:uppercase;letter-spacing:0.14em;font-size:13px;font-weight:700;color:{{ accent }};margin-bottom:14px">Honest fit</div>
+      <h2 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.14;letter-spacing:-0.01em;color:#11252A;margin:0;text-wrap:balance">We'd rather tell you now if this isn't for you.</h2>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:22px">
+      <div style="background:#FFFFFF;border:1px solid #D6E5E0;border-radius:20px;padding:30px;box-shadow:0 12px 30px rgba(31,91,107,0.06)">
+        <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:21px;font-weight:600;color:#0E5366;margin:0 0 18px">A strong fit if…</h3>
+        <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:13px">
+          <li style="display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.55;color:#374A4F"><span style="color:#2E7D6E;flex:none;font-weight:700;margin-top:1px">✓</span>You're graduating a Kickstarter, Indiegogo, or BackerKit campaign onto Shopify.</li>
+          <li style="display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.55;color:#374A4F"><span style="color:#2E7D6E;flex:none;font-weight:700;margin-top:1px">✓</span>You sell hardware, design, or made-to-order goods with 60–120 day waits.</li>
+          <li style="display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.55;color:#374A4F"><span style="color:#2E7D6E;flex:none;font-weight:700;margin-top:1px">✓</span>You're juggling backers, late pledges, and fresh preorders at once.</li>
+          <li style="display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.55;color:#374A4F"><span style="color:#2E7D6E;flex:none;font-weight:700;margin-top:1px">✓</span>Your inbox floods with "where's my order?" for months.</li>
+          <li style="display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.55;color:#374A4F"><span style="color:#2E7D6E;flex:none;font-weight:700;margin-top:1px">✓</span>You'd rather keep the sale than fight a chargeback.</li>
+        </ul>
+      </div>
+      <div style="background:#FBF6EC;border:1px solid #EBE2D0;border-radius:20px;padding:30px">
+        <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:21px;font-weight:600;color:#9A6B45;margin:0 0 18px">Probably not yet if…</h3>
+        <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:13px">
+          <li style="display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.55;color:#46585C"><span style="color:#B5836A;flex:none;font-weight:700;margin-top:1px">—</span>You ship in-stock orders within a few days.</li>
+          <li style="display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.55;color:#46585C"><span style="color:#B5836A;flex:none;font-weight:700;margin-top:1px">—</span>You want to replace your whole helpdesk.</li>
+          <li style="display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.55;color:#46585C"><span style="color:#B5836A;flex:none;font-weight:700;margin-top:1px">—</span>You sell regulated or supplement goods with timeline liability.</li>
+          <li style="display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.55;color:#46585C"><span style="color:#B5836A;flex:none;font-weight:700;margin-top:1px">—</span>You only have a handful of orders to cover.</li>
+          <li style="display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.55;color:#46585C"><span style="color:#B5836A;flex:none;font-weight:700;margin-top:1px">—</span>You want a bot that auto-fires delivery promises.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPERATOR ============ -->
+  <section id="operator" style="background:linear-gradient(180deg,#FBF8F2 0%,#F3EEE2 100%)">
+    <div style="max-width:900px;margin:0 auto;padding:clamp(56px,8vw,104px) 22px">
+      <div style="text-transform:uppercase;letter-spacing:0.14em;font-size:13px;font-weight:700;color:{{ accent }};margin-bottom:14px">The operator behind it</div>
+      <blockquote style="margin:0 0 32px;border:0;padding:0">
+        <p style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:clamp(22px,3vw,30px);line-height:1.32;color:#11252A;margin:0;text-wrap:pretty">"I ran a physical-goods company that did around <strong style="color:#0E5366">$2M a year</strong> — our own warehouse, our own shipping, our own fulfillment. I spent years in the inbox writing the 'where's my order?' replies during long waits. I'm not a vendor who read about this problem. I lived it from your side of the counter."</p>
+      </blockquote>
+
+      <div style="background:#FFFFFF;border:1px solid #EBE2D0;border-radius:20px;padding:30px;box-shadow:0 12px 30px rgba(31,91,107,0.06)">
+        <h3 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:20px;font-weight:600;color:#11252A;margin:0 0 14px">A plain-spoken proof pledge</h3>
+        <p style="font-size:15.5px;line-height:1.62;color:#374A4F;margin:0 0 22px">No invented metric. No fake testimonial. No borrowed logo. No unearned star rating. Every number on this page is a target measured against your own baseline — and the full refund-reduction case study lands only after a real cohort completes.</p>
+        <div style="border:1.5px dashed #C9B79A;border-radius:14px;padding:20px 22px;background:#FBF6EC;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:13.5px;color:#8A6B45;line-height:1.5">[CASE STUDY PLACEHOLDER — refund-reduction delta, post first completed cohort]</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section id="faq" style="max-width:860px;margin:0 auto;padding:clamp(56px,8vw,104px) 22px">
+    <div style="margin-bottom:36px">
+      <div style="text-transform:uppercase;letter-spacing:0.14em;font-size:13px;font-weight:700;color:{{ accent }};margin-bottom:14px">Questions</div>
+      <h2 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-weight:600;font-size:clamp(28px,3.6vw,40px);line-height:1.14;letter-spacing:-0.01em;color:#11252A;margin:0">Answered plainly.</h2>
+    </div>
+    <div>
+      <details style="border-top:1px solid #EBE2D0">
+        <summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 4px;font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:18.5px;font-weight:600;color:#0E5366">Do I switch helpdesks or install anything?<span class="tgl" aria-hidden="true" style="flex:none;font-size:24px;font-weight:300;color:#D9762F;line-height:1">+</span></summary>
+        <div style="padding:0 4px 24px;color:#4E5F63;font-size:15.5px;line-height:1.7;max-width:720px">No. Tideover bolts onto the Gorgias, Tidio, or Intercom you already run. Nothing to rip out, no second inbox, no infra change — we work inside your existing setup and handle the presale tickets specifically.</div>
+      </details>
+      <details style="border-top:1px solid #EBE2D0">
+        <summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 4px;font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:18.5px;font-weight:600;color:#0E5366">How is this different from the bot already in my helpdesk?<span class="tgl" aria-hidden="true" style="flex:none;font-size:24px;font-weight:300;color:#D9762F;line-height:1">+</span></summary>
+        <div style="padding:0 4px 24px;color:#4E5F63;font-size:15.5px;line-height:1.7;max-width:720px">A generic bot doesn't know an order is a preorder, doesn't know its real production timeline, and answers a Day 80 panic the same as a Day 5 hello. Tideover is built only for the 60–120 day wait, with replies tied to where each order actually is.</div>
+      </details>
+      <details style="border-top:1px solid #EBE2D0">
+        <summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 4px;font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:18.5px;font-weight:600;color:#0E5366">Will you make promises you can't keep?<span class="tgl" aria-hidden="true" style="flex:none;font-size:24px;font-weight:300;color:#D9762F;line-height:1">+</span></summary>
+        <div style="padding:0 4px 24px;color:#4E5F63;font-size:15.5px;line-height:1.7;max-width:720px">Never. We use honest confidence bands — "currently tracking for late July," not a hard date. Every novel reply is human-approved before it sends. A false delivery promise is the most damaging thing we could say, so we don't.</div>
+      </details>
+      <details style="border-top:1px solid #EBE2D0">
+        <summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 4px;font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:18.5px;font-weight:600;color:#0E5366">What does the free pilot involve?<span class="tgl" aria-hidden="true" style="flex:none;font-size:24px;font-weight:300;color:#D9762F;line-height:1">+</span></summary>
+        <div style="padding:0 4px 24px;color:#4E5F63;font-size:15.5px;line-height:1.7;max-width:720px">For one full presale cycle, we run your presale support by hand inside your helpdesk — timeline-aware, human-approved replies in two daily windows — and build a day-by-day reassurance playbook from your real tickets, measured against your baseline.</div>
+      </details>
+      <details style="border-top:1px solid #EBE2D0">
+        <summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 4px;font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:18.5px;font-weight:600;color:#0E5366">What can you prove, and what can't you yet?<span class="tgl" aria-hidden="true" style="flex:none;font-size:24px;font-weight:300;color:#D9762F;line-height:1">+</span></summary>
+        <div style="padding:0 4px 24px;color:#4E5F63;font-size:15.5px;line-height:1.7;max-width:720px">Right now we can show leading indicators — faster first response, fewer WISMO tickets, logged saves. The full refund-reduction delta needs a complete 60–120 day cycle to be real, so we report it after the first cohort finishes. We'd rather tell you that than invent a number.</div>
+      </details>
+      <details style="border-top:1px solid #EBE2D0">
+        <summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 4px;font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:18.5px;font-weight:600;color:#0E5366">What does it cost after the pilot?<span class="tgl" aria-hidden="true" style="flex:none;font-size:24px;font-weight:300;color:#D9762F;line-height:1">+</span></summary>
+        <div style="padding:0 4px 24px;color:#4E5F63;font-size:15.5px;line-height:1.7;max-width:720px">The pilot is free. On proof, it's roughly $199–$499/mo, scaling to $799–$999+/mo as volume grows. Any performance fee waits until there's a real case study to stand on.</div>
+      </details>
+      <details style="border-top:1px solid #EBE2D0;border-bottom:1px solid #EBE2D0">
+        <summary style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 4px;font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:18.5px;font-weight:600;color:#0E5366">I'm a crowdfunding creator juggling backers and preorders — does that fit?<span class="tgl" aria-hidden="true" style="flex:none;font-size:24px;font-weight:300;color:#D9762F;line-height:1">+</span></summary>
+        <div style="padding:0 4px 24px;color:#4E5F63;font-size:15.5px;line-height:1.7;max-width:720px">That's exactly who this is for. Backers, late pledges, and new preorders all bring their own long waits, and Tideover handles that mixed presale load without you switching a thing.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section style="background:radial-gradient(120% 90% at 50% 0%, rgba(201,122,74,0.14), transparent 60%), linear-gradient(180deg,#0E5366 0%,#16424E 100%);color:#EAF4F3">
+    <div style="max-width:820px;margin:0 auto;padding:clamp(60px,9vw,116px) 22px;text-align:center">
+      <svg width="44" height="44" viewBox="0 0 32 32" fill="none" aria-hidden="true" style="margin-bottom:20px"><path d="M2 23 Q9 17 16 23 T30 23" stroke="#E9B486" stroke-width="2.1" fill="none" stroke-linecap="round"></path><path d="M5 17 Q11 12 16 17 T27 17" stroke="#E9B486" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.66"></path><path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#E9B486" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.4"></path></svg>
+      <h2 style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-weight:600;font-size:clamp(30px,4.2vw,48px);line-height:1.12;letter-spacing:-0.015em;color:#F5FAF9;margin:0 0 18px;text-wrap:balance">{{ finalHeadline }}</h2>
+      <p style="font-size:17px;line-height:1.65;color:#BDD4D2;max-width:560px;margin:0 auto 32px">Start with a free 15-minute presale-support teardown — a real operator looking at your real support, no pitch. We'll tell you honestly whether we can help.</p>
+      <a href="{{ book_call }}" style="display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#EE9650 0%,#CC642E 100%);color:#FFF6EE;font-size:17px;font-weight:600;padding:17px 34px;border-radius:999px;text-decoration:none;box-shadow:0 16px 38px rgba(0,0,0,0.3),0 8px 22px rgba(204,100,46,0.55);transition:transform .2s,background .2s,box-shadow .2s" style-hover="transform:translateY(-2px);background:linear-gradient(135deg,#F7A258 0%,#DB7036 100%);box-shadow:0 24px 50px rgba(0,0,0,0.36),0 12px 30px rgba(204,100,46,0.65)">Get a free 15-min presale-support teardown<span aria-hidden="true" style="font-size:1.1em;line-height:1">→</span></a>
+      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px;margin-top:30px;font-size:14px;color:#A9C5C2">
+        <span style="display:inline-flex;align-items:center;gap:8px"><span style="color:#E9B486">●</span>No new helpdesk to install</span>
+        <span style="display:inline-flex;align-items:center;gap:8px"><span style="color:#E9B486">●</span>Free founding-partner pilot</span>
+        <span style="display:inline-flex;align-items:center;gap:8px"><span style="color:#E9B486">●</span>Talk to the operator, not a queue</span>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer style="background:#13343D;color:#A9C2C0">
+    <div style="max-width:1180px;margin:0 auto;padding:clamp(44px,6vw,68px) 22px">
+      <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:28px;padding-bottom:28px;border-bottom:1px solid rgba(255,255,255,0.1)">
+        <div style="max-width:420px">
+          <div style="display:flex;align-items:center;gap:11px;margin-bottom:14px">
+            <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 23 Q9 17 16 23 T30 23" stroke="#E9F2F1" stroke-width="2.1" fill="none" stroke-linecap="round"></path><path d="M5 17 Q11 12 16 17 T27 17" stroke="#E9F2F1" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.6"></path><path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#E9F2F1" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.35"></path></svg>
+            <span style="font-family:'Iowan Old Style',Palatino,Georgia,serif;font-size:21px;font-weight:600;color:#F4F9F8">Tideover</span>
+          </div>
+          <p style="margin:0 0 6px;font-size:15px;line-height:1.6;color:#B9D0CE">The support layer that tides your customers over until their order ships.</p>
+          <a href="https://tideover.app" style="color:#E9B486;font-size:15px;font-weight:600;text-decoration:none" style-hover="text-decoration:underline">tideover.app</a>
+        </div>
+        <a href="{{ book_call }}" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#E98F49 0%,#C9612C 100%);color:#FFF6EE;font-size:15px;font-weight:600;padding:13px 25px;border-radius:999px;text-decoration:none;box-shadow:0 10px 24px rgba(201,97,44,0.4);transition:transform .2s,background .2s,box-shadow .2s" style-hover="transform:translateY(-2px);background:linear-gradient(135deg,#F59C53 0%,#D86E34 100%);box-shadow:0 16px 34px rgba(201,97,44,0.52)">Get a free teardown<span aria-hidden="true" style="font-size:1.05em;line-height:1">→</span></a>
+      </div>
+      <p style="margin:24px 0 0;font-size:13.5px;line-height:1.6;color:#7E9B98;max-width:640px">Every figure on this page is a target to measure against your own baseline — never a claimed result. We never make hard delivery promises; confidence bands only.</p>
+    </div>
+  </footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script="" data-props="{
+  &quot;accentColor&quot;: {&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#D9762F&quot;,&quot;tsType&quot;:&quot;string&quot;},
+  &quot;pilotHeadline&quot;: {&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;We'll run your presale support by hand for one cycle. Free.&quot;,&quot;tsType&quot;:&quot;string&quot;},
+  &quot;finalHeadline&quot;: {&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;The tide always comes in. Their order is coming.&quot;,&quot;tsType&quot;:&quot;string&quot;}
+}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      book_call: '{{book_call}}',
+      first_strike_form: '{{first_strike_form}}',
+      accent: this.props.accentColor ?? '#D9762F',
+      pilotHeadline: this.props.pilotHeadline ?? "We'll run your presale support by hand for one cycle. Free.",
+      finalHeadline: this.props.finalHeadline ?? "The tide always comes in. Their order is coming.",
+    };
+  }
+}
+</script>
+
+
+</body></html>

@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tideover — VSL / Loom Scripts</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">Tideover — VSL / Loom Scripts</span>
+    <a class="back" href="../../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>Tideover — VSL / Loom Scripts</h1>
+<blockquote><p><strong>Venture 2 (Tideover — tideover.app).</strong> Founder: Chaga Chai. A presale-support layer for crowdfunding brands moving to Shopify. The name is the idiom "to tide someone over": Tideover carries anxious presale buyers through the wait until their order ships.<br>
+<strong>Voice:</strong> warm, calm, steady. Operator to operator. The guy who answered the day-60 refund email at 11pm. No hype.<br>
+<strong>PROOF-ONLY (hard rule):</strong> No invented refund %, no case studies, no testimonials, no logos. A refund case study needs a full 60-to-120-day cycle, so it doesn't exist yet. Say so. Proof is the war story, the free pilot, and honest leading indicators. The "$2M" number is warm-call only, never in cold or public copy. External stats stay cited to their source.</p></blockquote>
+<p><strong>In this file:</strong> four scripts plus a short appendix. Each asset gives a default hook plus one alternate, then one body.</p>
+<ol>
+<li>Cold Loom (under 90s)</li>
+<li>Landing-page VSL (3 to 4 min)</li>
+<li>Partner-pitch demo (5 to 6 min)</li>
+<li>"Presale Anxiety Playbook" promo (under 90s)</li>
+</ol>
+<p><strong>Merge fields</strong> (the only placeholders): <code>{{firstName}}</code>, <code>{{brand}}</code>, <code>{{campaign}}</code>, <code>{{product}}</code>, <code>{{leadTimeWeeks}}</code>, <code>{{platform}}</code>, <code>{{calLink}}</code>, <code>{{playbookLink}}</code>, and <code>{{hook}}</code> (the per-prospect line, always human-written, never AI-drafted).</p>
+<p><strong>The day-stage arc</strong> (every asset leans on it): Curious (day 7 to 14), Restless (day 30 to 45), Frustrated (day 60 to 75), Dispute-risk (day 85 to 120). Same buyer, four answers.</p>
+<p><strong>The credibility line</strong> (verbatim, every asset): <em>"I ran fulfillment, in-house shipping, and the 'where is my order' comms for a physical-goods brand. I've sent the day-60 refund email that works and the one that makes it worse."</em></p>
+<p><strong>Personalization rule (non-negotiable, per outreach-proof.md Tactic 3):</strong> every per-prospect line a human writes. A tool pulls the raw signal (campaign-end date, angry backer thread, ship-date note); a human writes the hook. Never let AI draft the variable line. AI/token personalization now converts worse than none. The merge fields above are human-filled, not auto-generated.</p>
+<p><strong>The honest-proof line</strong> (verbatim, Assets 2 and 3): <em>"A 'we cut refunds by X percent' case study needs a full presale cycle, 60 to 120 days, so it doesn't exist yet and I won't fake one. What a pilot shows you first are the honest leading indicators: faster replies, fewer repeat tickets. The refund numbers come after a first cohort finishes its wait."</em></p>
+<p><strong>Source map (every asset mirrors a proven, published script — see <code>../real-scripts-library.md</code> and <code>../outreach-proof.md</code>):</strong></p>
+<ul>
+<li><strong>Asset 1</strong> (cold Loom + permission-ask DM/email) ← the 150-brand video campaign's permission-ask ("I recorded a short video… want me to send it?", no link in touch 1): https://prospeo.io/s/cold-email-examples ; structure of the specific-observation cold DM with no calendar link ← Justin Welsh: https://www.justinwelsh.me/newsletter/how-to-find-more-customers-on-linkedin ; "no link = ~3x replies" ← Daniel Fazio: https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e</li>
+<li><strong>Asset 2</strong> (landing VSL) ← 30MPC data-backed Opener → Problem → Proof → CTA: https://www.30mpc.com/newsletter/the-data-backed-cold-email-formula-the-exact-words-length ; free-artifact / lead-magnet pretzel ← Alex Hormozi: https://blog.vidtao.com/alex-hormozi-lead-magnet-framework/</li>
+<li><strong>Asset 3</strong> (partner demo) ← decision pre-frame in the agenda ← Josh Nelson: https://sevenfigureagency.com/master-cold-outreach/ ; clarify-the-objection-before-answering ← Jeremy Miner (NEPQ): https://7thlevelhq.com/the-top-52-objections/ ; price-after-desire close ← Alex Hormozi (CLOSER): https://www.jointhefollowup.com/p/alex-hormozis-closer-sales-framework</li>
+<li><strong>Asset 4</strong> (playbook promo) ← free top-of-ladder lead magnet that reveals the paid problem ← Alex Hormozi "salty pretzel": https://blog.vidtao.com/alex-hormozi-lead-magnet-framework/</li>
+</ul>
+<hr>
+<h1>ASSET 1 — COLD LOOM, FOUNDER MID-FULFILLMENT (under 90s)</h1>
+<p><strong>Format:</strong> Loom. Webcam bubble bottom-left, their <code>{{campaign}}</code> or Shopify preorder page on screen. No slides. Past 90s a cold video loses the watch-through.<br>
+<strong>Thumbnail:</strong> before recording, hold paper to camera with their brand name handwritten.<br>
+<strong>Goal:</strong> book a 15-min teardown. One ask.</p>
+<h2>Hooks (first 8 seconds)</h2>
+<p><strong>Default — looking at your page:</strong></p>
+<blockquote><p>"Hey {{firstName}}, 60 seconds. I'm looking at {{campaign}} right now [<em>scroll their page</em>], and I had one thought about what's about to hit your inbox once these ship."</p></blockquote>
+<p><strong>Alternate — the day-60 question:</strong></p>
+<blockquote><p>"Hey {{firstName}}, one question, then I'm gone. What's your plan for the day-60 refund email? With a {{leadTimeWeeks}}-week wait on {{product}}, you'll get a lot of them, and most founders don't have an answer until it's already a chargeback. 60 seconds."</p></blockquote>
+<h2>Body (after the hook) — about 50s</h2>
+<blockquote><p>[<em>On screen: their <code>{{campaign}}</code> page, then their Shopify preorder page.</em>]</p>
+<p>"Here's the pattern. I lived it. The campaign funds, that's the hard part, congrats. But the second the money clears, a {{leadTimeWeeks}}-week clock starts, and that's where it goes sideways.</p>
+<p>[<em>Scroll to their shipping note.</em>] You wrote the ship date everywhere. People still forget. So your inbox becomes the same question two hundred times, and you're copy-pasting all day.</p>
+<p>The volume isn't the dangerous part. A generic helpdesk can't even tell which of these are preorders. The curious buyer at day 12 needs a different answer than the one threatening to dispute at day 89. Same canned line to both. Get it wrong and they don't wait. They file a chargeback and call you a scam. I've watched that hit a Stripe account.</p>
+<p>So here's what I want: 15 minutes to look at how your presale support runs today and show you the two or three moments where you're most likely to lose people. I'd rather map your actual inbox than pitch you. If it's useful, great. If not, you're out 15 minutes. Link's below. Rooting for {{brand}}."</p></blockquote>
+<p><strong>Notes:</strong> Eye on camera for hook and CTA, screen for the middle. Say their name at open and close, "Tideover" once at most. Hard stop at the CTA. No numbers about your results; the only claim is the war story.</p>
+<p><strong>Structure source:</strong> opener-then-permission-ask, no link in touch 1, mirrors the 150-brand video campaign (https://prospeo.io/s/cold-email-examples) and Justin Welsh's specific-observation cold DM (https://www.justinwelsh.me/newsletter/how-to-find-more-customers-on-linkedin).</p>
+<h2>Send-context lines (what the Loom rides on)</h2>
+<p>Two lanes only (the playbook says layer one other channel, not three): the warm DM and the cold email.</p>
+<p><strong>Permission-first is the default.</strong> Per outreach-proof.md (Tactics 5 + 10): asking "want me to send it?" before delivering the Loom converts higher than embedding the link in touch 1, across every documented case. Lead with the permission-ask variant; keep the embedded-link variant only as an explicit A/B. Record the Loom either way so the "yes" is answered same-day.</p>
+<h3>LinkedIn / IG DM</h3>
+<p><strong>Default — permission-ask:</strong></p>
+<blockquote><p>"{{firstName}} — saw {{brand}} graduated off {{platform}}. {{hook}}. Recorded you a 60-sec Loom on the support wave that hits during the fulfillment wait, the thing I lived running fulfillment for a physical-goods brand. Want me to send it?"</p></blockquote>
+<p><strong>A/B variant — embedded link (test against the default, do not assume it wins):</strong></p>
+<blockquote><p>"{{firstName}} — saw {{brand}} graduated off {{platform}}. {{hook}}. Recorded you a 60-sec Loom on the support wave that hits during the fulfillment wait. [loom] Worth a look before your units ship."</p></blockquote>
+<h3>Cold email (Chaga's aged personal inbox, not the warming tideover.app domain)</h3>
+<p><strong>Default — permission-ask (no link in touch 1):</strong></p>
+<blockquote><p><strong>Subject:</strong> {{firstName}}, your preorder wait<br>
+Hi {{firstName}},<br>
+{{hook}}. Right after a crowdfunding move to Shopify, the "where's my order" flood hits during the {{leadTimeWeeks}}-week wait. I lived this running fulfillment for a physical-goods brand, and {{campaign}} reminded me of it.<br>
+I recorded you a 60-second video on it. Want me to send it?<br>
+— Chaga</p></blockquote>
+<p><strong>A/B variant — embedded link + calendar (test against the default):</strong></p>
+<blockquote><p><strong>Subject:</strong> 60-sec video re: {{brand}}'s preorder wait<br>
+Hi {{firstName}},<br>
+I recorded you a 60-second video on the support problem that ambushes crowdfunding creators right after they move to Shopify: the "where's my order" flood during the {{leadTimeWeeks}}-week wait. I lived this running fulfillment for a physical-goods brand, and {{campaign}} reminded me of it.<br>
+[loom]<br>
+If it's useful, my calendar's here for a 15-min teardown: {{calLink}}. If not, the video's yours to keep.<br>
+— Chaga</p></blockquote>
+<p><strong>Send-context rules (per outreach-proof.md):</strong></p>
+<ul>
+<li><strong>{{hook}} is human-written.</strong> A tool surfaces the signal; a human writes the line. Never AI-drafted (Tactic 3).</li>
+<li><strong>Pre-send gate, not a step (Tactic 6):</strong> before any outbound, the profile + featured section must carry one offer plus visible proof, verified live. A DM only buys a profile click; the profile closes. Don't send until it does.</li>
+<li><strong>Connection note (Tactic 6):</strong> no note, or one ultra-specific note under 180 characters. Never a generic note.</li>
+<li><strong>Cadence (Tactic 4):</strong> hold at 3 to 5 touches over a ~20-day window. The first follow-up is the single most value-dense message, so make it carry new info, not a bump. Never drift to 8 to 12 touches or a compressed few-day burst.</li>
+</ul>
+<hr>
+<h1>ASSET 2 — LANDING-PAGE VSL (3 to 4 minutes)</h1>
+<p><strong>Placement:</strong> top of the Tideover landing page, above the teardown CTA. Also the lead-magnet thank-you page.<br>
+<strong>Format:</strong> talking-head plus screen cutaways (inbox mockup, day-stage timeline). The operator voice dies if it sounds read.<br>
+<strong>Length:</strong> about 3:30 to 4:00. On-screen cues in [BRACKETS].</p>
+<h2>Cold-opens (first 12 seconds)</h2>
+<p><strong>Default — the reframe:</strong></p>
+<blockquote><p>"Your presale buyers don't get cold feet. They need someone to tide them over the wait. [<em>ON SCREEN: that line as a title card.</em>] Whether a backer gets carried calmly through 90 days or files a chargeback and calls you a scam usually comes down to whether anyone said the right thing at the right moment. Let me show you where that happens."</p></blockquote>
+<p><strong>Alternate — the operator confession:</strong></p>
+<blockquote><p>"I've answered the day-60 refund email at 11pm with no good answer, watching a customer slip toward a dispute. [<em>ON SCREEN: Chaga, plain background, to camera.</em>] If you run presales, you know the email. I'll show you why it happens, why your helpdesk can't fix it, and what actually calms that buyer down."</p></blockquote>
+<h2>Full script (word-for-word)</h2>
+<blockquote><p><strong>[HOOK. 0:00 to 0:15]</strong></p>
+<p><strong>[PROBLEM — 0:15 to 1:05]</strong><br>
+Here's the setup. You run a presale. The cash comes in, that's the hard part. But the moment it clears, a 60-to-120-day clock starts, and the paid-but-waiting window is where it goes wrong.</p>
+<p>[<em>ON SCREEN: merchant quote with source label.</em>] This is how presale merchants actually talk: <em>"We clearly wrote PRE-ORDER all over the product but customers still open disputes saying we 'never shipped' after 3 weeks… It's killing our Stripe account with disputes."</em> — Shopify Community.</p>
+<p>The inbox floods. Your helpdesk can't tell which orders are even preorders. And the buyers who can't get a calm, specific answer don't wait. They dispute. Industry benchmarks put presale-heavy stores at five-to-ten times the "where is my order" tickets during a long wait [<em>ON SCREEN: Source — YepAI 2026, industry benchmark</em>], and every chargeback runs fifteen to twenty-five dollars in fees before you lose the product and the customer.</p>
+<p><strong>[WHY HELPDESKS FAIL — 1:05 to 1:40]</strong><br>
+So why doesn't your helpdesk just handle this? It's built for in-stock support, so it treats "where is my order" as a one-off shipping question. Answer, close, done. But a presale is a months-long wait, and the buyer's mood moves through it. [<em>ON SCREEN: the day-stage timeline animates.</em>] Curious at day 12 needs a different answer than restless at day 40, or the day-89 buyer who's one email from a chargeback. A generic bot gives all three the same canned line. That's when trust breaks.</p>
+<p><strong>[THE APPROACH — 1:45 to 2:35]</strong><br>
+Tideover is a presale-specialist layer that bolts onto the inbox you already run. [<em>ON SCREEN: "The presale-specialist layer for your inbox."</em>] It reads each order's real production timeline and drafts a calm, human reply tuned to where that buyer sits in the wait.</p>
+<p>[<em>ON SCREEN: inbox mockup — three tickets, day 12, 58, 89, each with a timeline-aware reply.</em>]<br>
+Day 12, someone's nervous it didn't go through, so they get a calm confirmation and a clear ship window. Day 58, "I want a refund," so they get an honest read on the wait and a real production update. Day 89, "last chance before I dispute," the highest-stakes save: an honest tracking update and a real reason to wait one more day, so it goes to them and not their bank. Same inbox, different replies, because now your support knows the difference.</p>
+<p><strong>[CREDIBILITY — operator, proof-only — 2:35 to 3:00]</strong><br>
+I'm Chaga, not a CS-software salesperson. [<em>Deliver the credibility line.</em>] What calms an anxious buyer versus what makes them hit dispute, that's the whole product.</p>
+<p>[<em>ON SCREEN: honest-proof callout box.</em>] And here's the straight talk. [<em>Deliver the honest-proof line.</em>] You'll know where the proof stands at every step.</p>
+<p><strong>[OFFER + CTA — 3:05 to 3:40]</strong><br>
+So here's what I'm doing. I'm running a small first cohort of founding partners' presale support by hand, inside the tools they already use. Free for one cycle. No software to install, and you approve every reply before it goes out. If you convert after, the founding intro is a hundred-ninety-nine to two-ninety-nine a month, and the productized version runs two-ninety-nine to four-ninety-nine, with no performance fee until a real case study exists.</p>
+<p>[<em>ON SCREEN: CTA button — "Get a free presale-support teardown (15 min)".</em>]<br>
+If you graduated off crowdfunding onto Shopify and you've got real buyers in the wait window now, book the free 15-minute teardown below. I'll show you where buyers are most likely to bail and tell you honestly whether a pilot is worth your time. Operator to operator. Talk soon."</p></blockquote>
+<p><strong>Production notes:</strong> PROBLEM and APPROACH carry the video; slow down on the day-stage examples, let each reply sit about 2s. Every external stat gets its source on screen. The honest-proof box is the trust mechanism, no logos or star ratings. Shorter cut: drop WHY-HELPDESKS-FAIL. CTA matches the page button verbatim.</p>
+<p><strong>Structure source:</strong> Opener → Problem → Proof → CTA follows 30MPC's data-backed formula (https://www.30mpc.com/newsletter/the-data-backed-cold-email-formula-the-exact-words-length); the free-teardown-as-entry-offer is Hormozi's lead-magnet pretzel (https://blog.vidtao.com/alex-hormozi-lead-magnet-framework/).</p>
+<hr>
+<h1>ASSET 3 — PARTNER-PITCH / DEMO VIDEO (5 to 6 minutes)</h1>
+<p><strong>Audience:</strong> a warm founder who booked the teardown or a design partner who replied to the Loom. Also a "watch before our call" asset.<br>
+<strong>Format:</strong> screen-share heavy. You show the concierge motion on a real or realistic inbox. Webcam bubble on.<br>
+<strong>On the "$2M":</strong> lead with the war story. If asked and substantiable, the number is optional color, never the lede.<br>
+<strong>Goal:</strong> convert to a free founding-partner pilot.</p>
+<h2>Hooks (first 20s)</h2>
+<p><strong>Default — the mirror (for a booked teardown):</strong></p>
+<blockquote><p>"Okay {{firstName}}, before our call I pulled up your setup. There are two spots in your {{leadTimeWeeks}}-week wait where you're leaking customers, and once you see them you can't un-see them. Screen's coming up."</p></blockquote>
+<p><strong>Alternate — the side-by-side:</strong></p>
+<blockquote><p>"I'm going to do one thing in the next five minutes: show you the same customer message answered two ways. The way a generic helpdesk answers it, and the way a presale-specialist layer does. That difference is a refund or a loyal backer. Let's go."</p></blockquote>
+<h2>Full demo script (word-for-word, with screen actions)</h2>
+<blockquote><p><strong>[HOOK. 0:00 to 0:20]</strong></p>
+<p><strong>[1. FRAME + DECISION PRE-FRAME — 0:20 to 0:40]</strong><br>
+"Quick frame so this isn't a sales ambush. I'll show you the problem on your own setup, how the concierge pilot works, and what proof I have and don't. By the end we'll both know if this fits, and I'll ask you straight whether it's a yes, a no, or a not-yet. If you're not the only call on that, tell me now and we'll loop in whoever is. If at any point it's not useful, say so and we stop. Let's look at your inbox."</p>
+<p><strong>[2. THE PROBLEM, ON THEIR SETUP — 0:45 to 1:35]</strong><br>
+[<em>Screen: their preorder page, or a sample preorder inbox if no access yet.</em>]<br>
+"You've got {{product}} on a {{leadTimeWeeks}}-week wait, and you did the right thing. The ship window's written right here. Here's the trap. [<em>Scroll.</em>] You've got three groups who all think they're the same: your {{platform}} backers, your late pledges, your new Shopify preorders. Different timelines, identical to your helpdesk. So your agents are clicking into Shopify, then the order, then the preorder app, just to figure out who's who. And while you dig, the clock's running on someone's patience.<br>
+[<em>Screen: a sample ticket, 'any update on my order??'</em>]<br>
+Multiply that by a few hundred. The inbox becomes a pile of the same question, and somewhere in it is the customer about to dispute, and you can't tell which one.<br>
+[<em>If live: ask and wait for the answer. If async: leave the question on screen as a beat.</em>] If this keeps running the way it does through your next wave, what does that cost you, in chargebacks and in time?"</p>
+<p><strong>[3. THE DEMO — same message, two answers — 1:35 to 3:00]</strong><br>
+[<em>Screen: split view, generic reply vs. Tideover-drafted reply.</em>]<br>
+"Here's the part that matters. Take this day-58 message: <em>'This is taking forever, I want a refund.'</em><br>
+A generic bot, or a rushed copy-paste, answers like this: <em>'Thanks for reaching out! Your order is a preorder and will ship by the estimated date. Let us know if you have questions!'</em> [<em>pause</em>] Technically correct, and it's exactly what makes them dispute. No acknowledgment of two months waiting, no new information, reads like a brush-off.<br>
+Now the same message from the presale layer, which knows this is order number whatever, placed day 58, in final packing: [<em>read slowly</em>] <em>'Totally fair to feel that at the two-month mark. You've been patient and I appreciate it. Your unit cleared QC this week and it's in the final packing run. Current ship window is 9 to 14 days, and I'll send tracking the moment it generates. Want me to flag it for priority dispatch so you're first out the door?'</em><br>
+Same customer, same facts. One makes a chargeback, one makes a fan. [<em>Screen: the day-stage timeline.</em>] The system does this across the whole arc, each stage pulled from the order's real timeline. That's the idea."</p>
+<p><strong>[4. HOW THE PILOT WORKS — 3:00 to 3:45]</strong><br>
+"Now how you'd get this, because it's deliberately low-risk. No software to install, no bot to bet on. I run your presale support by hand, inside your existing inbox. Three steps.<br>
+One: you give me read access and your real production schedule, and I map what a buyer should hear at each stage. No generic templates.<br>
+Two: I draft every presale reply in your brand voice, timeline-accurate, and you approve it before it goes out. Nothing autonomous. Replies stay inside honest confidence bands like 'ships in weeks 9 to 11,' never invented hard dates. I've watched one bad timeline promise turn a backer into a chargeback. That's designed out.<br>
+Three: I baseline your first-response time and your 'where's my order' volume before I touch anything, then show you the before and after."</p>
+<p><strong>[5. HONEST PROOF — the trust moment — 3:50 to 4:25]</strong><br>
+"Now the proof, straight. [<em>Deliver the honest-proof line.</em>] That's exactly why the pilot is free and run by hand: I'd rather build the proof on your real inbox than claim it. Clean baseline, real numbers, and you'll always know where the proof stands."</p>
+<p><strong>[6. THE ASK + FOUNDING TERMS — 4:25 to 5:05]</strong><br>
+"So the ask is simple. A free concierge pilot for one cycle. No software fee, no setup fee, no card. You approve every reply, you keep the entire reassurance library we build, and you lock the lowest price I'll ever offer if you continue. After the pilot, the founding intro is a hundred-ninety-nine to two-ninety-nine a month, and the productized version runs two-ninety-nine to four-ninety-nine, with no performance fee until a real case study exists. In exchange, I learn from your real inbox, and only if you're genuinely happy, an honest testimonial.<br>
+[<em>Webcam full screen.</em>] You're a strong fit, with real buyers in the wait window right now. If you want in, I can send the one-page pilot agreement today and capture your baseline this week. Want me to send it?"</p></blockquote>
+<p><strong>Production notes:</strong> For async send, end on <em>"Reply yes and I'll send the one-pager, or grab a time: {{calLink}}."</em> No partner access yet? Build ONE realistic sample inbox (day 7, 30, 58, 89), demo on that, label it an example. The split-screen is the money moment: rehearse the bad reply flat, the good reply warm. Section 5 is load-bearing, don't soften it. Keep runtime under 6 min; running long, compress Section 2.</p>
+<p><strong>Structure source:</strong> the Section 1 decision pre-frame ("by the end we'll both know if it's a yes, no, or not-yet") mirrors Josh Nelson's agenda-plus-decision-ask (https://sevenfigureagency.com/master-cold-outreach/); the Section 6 price-after-desire close mirrors Hormozi's CLOSER (https://www.jointhefollowup.com/p/alex-hormozis-closer-sales-framework).</p>
+<p><strong>Live-call objection rule (per outreach-proof.md Tactic 9; Jeremy Miner's NEPQ Clarify → Discuss → Diffuse, https://7thlevelhq.com/the-top-52-objections/):</strong> when this asset runs on a live teardown and an objection lands, clarify before you answer. One line in front of every scripted counter (the counters live in copy-standard.md): <em>"When you say the AI looked fake, what specifically read as fake to you?"</em> / <em>"When you say you already have a helpdesk, what's it doing well that you'd want kept?"</em> Then deploy the answer. Never fire the rebuttal at an objection the prospect didn't quite make.</p>
+<hr>
+<h1>ASSET 4 — "PRESALE ANXIETY PLAYBOOK" PROMO (under 90s)</h1>
+<p><strong>Purpose:</strong> drive lead-magnet (<code>{{playbookLink}}</code>) downloads. The free top-of-ladder asset.<br>
+<strong>Format:</strong> talking-head, fast cuts, a few playbook-page screenshots. Energetic but operator-grounded.<br>
+<strong>One ask:</strong> download the playbook.</p>
+<h2>Hooks (first 6 seconds)</h2>
+<p><strong>Default — promise with proof of substance:</strong></p>
+<blockquote><p>"I wrote down the exact thing to say to a presale buyer at day 7, day 30, day 60, and day 89. The difference between a refund and a loyal customer. And I'm giving it away. Here's what's in it."</p></blockquote>
+<p><strong>Alternate — the contrarian:</strong></p>
+<blockquote><p>"Most advice for presale support is 'over-communicate.' Not wrong, but useless without knowing what to say when. So I made the free playbook that tells you, stage by stage."</p></blockquote>
+<h2>Body (after the hook) — about 50s</h2>
+<blockquote><p>"Quick context. I ran fulfillment and the customer comms during long order waits for a physical-goods brand. The biggest mistake I see crowdfunding founders make on Shopify isn't a bad product. It's saying the wrong thing at the wrong stage of the wait, and turning a patient backer into a chargeback. So I put the whole arc into one free playbook. [<em>Screen: flip the pages.</em>] Inside:<br>
+— The four stages of a presale buyer, and what's going on in their head at each.<br>
+— The exact reassurance moves for day 7, day 30, day 60, and day 89, including the day-89 'last chance before I dispute' message, the hardest one to get right.<br>
+— The confidence-band trick for honest ship windows without promising a hard date you can't keep.<br>
+— A simple way to tell preorder tickets apart from in-stock ones so your support stops guessing.</p>
+<p>Built from real merchant pain and what I learned answering those emails myself. [<em>Screen: title card 'The Presale Anxiety Playbook — free'.</em>]</p>
+<p>Free, no catch, link's here. Grab it before your next drop ships. And if you want help running this in your actual inbox, there's a way to do that inside too. Go get it."</p></blockquote>
+<p><strong>Production notes:</strong> Fast energy, short sentences, war story in line one so it doesn't read as an infomercial. Every page-flip shows a real playbook section. One CTA: download; the pilot mention is a soft P.S. No "this playbook helped X brands." 15-second Reels cut: Hook, the four bullets, "free, link's here."</p>
+<p><strong>Structure source:</strong> free top-of-ladder asset that solves a small problem and reveals the paid one mirrors Hormozi's lead-magnet "salty pretzel" (https://blog.vidtao.com/alex-hormozi-lead-magnet-framework/).</p>
+<hr>
+<h1>APPENDIX</h1>
+<h2>A. CTA bank (match the destination)</h2>
+<ul>
+<li><strong>Teardown:</strong> "Get a free presale-support teardown. 15 minutes on your actual setup. {{calLink}}"</li>
+<li><strong>Pilot ask (warm):</strong> "I'll send the one-page founding-partner pilot agreement today. Want it?"</li>
+<li><strong>Playbook:</strong> "Grab the free Presale Anxiety Playbook: {{playbookLink}}"</li>
+<li><strong>Soft reply (async video):</strong> "Reply 'yes' and I'll send the next step."</li>
+</ul>
+<h2>B. Shot list (Assets 2 and 3)</h2>
+<ol>
+<li>A preorder page with a visible ship window.</li>
+<li>An inbox with 3 to 4 identical "any update on my order?" tickets, day 12, 30, 58, 89.</li>
+<li>The day-stage timeline (the four stages from the header).</li>
+<li>Split-screen: generic canned reply vs. timeline-aware Tideover reply (the day-58 example).</li>
+<li>The "three groups" visual: {{platform}} backers, late pledges, new Shopify preorders, into one inbox.</li>
+<li>The honest-proof callout box. &gt; Every sample inbox is a clearly synthetic example. Never imply a real customer or result.</li>
+</ol>
+<h2>C. Proof-only guardrails (extends the header rule, check before publishing)</h2>
+<ul>
+<li>"$2M" or any revenue figure: cold and public scripts never use it (Assets 1, 2, 4). Asset 3 live only, if asked and substantiable.</li>
+<li>Every external stat cited to its source on screen and spoken (YepAI 2026; card-network dispute fees). Never restated as Tideover's own data.</li>
+<li>Ship windows are always confidence bands ("weeks 9 to 11"), never invented hard dates.</li>
+</ul>
+<h2>D. Delivery notes (on-camera)</h2>
+<ul>
+<li>Pace about 140 to 155 wpm. Slow down on the day-stage examples and the honest-proof section.</li>
+<li>First 8 seconds decide everything. Open on the hook, never "Hi, my name is."</li>
+<li>Re-record the hook a few ways, keep the best. The body rarely needs more than one take.</li>
+</ul>
+<hr>
+<p><em>End of v2-vsl-scripts.md — Tideover VSL/Loom script pack. Proof-only. Net-new; does not duplicate the landing page (<code>_tideover-landing-page.html</code>) or the Venture-1 creative scripts.</em></p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adwield — Daily Prospecting SOP</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">Adwield — Daily Prospecting SOP</span>
+    <a class="back" href="../../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>Adwield — Daily Prospecting SOP</h1>
+<h3>The operator's daily run sheet. Turns the artifact-first spine (outreach-playbook §3.5–3.7, §5.1) into a checklist you run without re-reading the strategy.</h3>
+<blockquote><p><strong>What this is.</strong> The repeatable daily motion for Adwield outreach. Strategy lives in <code>outreach-playbook.md</code>; the voice lives in <code>adwield-brand-kit.md</code>; the copy bar is <code>copy-standard.md</code>. This file is the <em>how-many, in-what-order, by-when</em>. Run it every working day.</p>
+<p><strong>The one guardrail over all of it (Proof-Only).</strong> Every metric is a target to measure, never a claimed result. No fabricated case studies, testimonials, logos, or numbers. No priority touch ships without a rendered First Strike and a hand-written true hook.</p>
+<p><strong>Channel order:</strong> X and LinkedIn DMs first. Operators live on X, zero warmup. Cold email is not the critical path.</p>
+<p><strong>The pre-send filter (every message).</strong> True. Specific. Says the quiet part. A competitor can't paste the same line. If you'd be annoyed receiving it 10x this week, don't send.</p></blockquote>
+<hr>
+<h2>0. THE DAILY SHAPE (run in this order)</h2>
+<table>
+<thead>
+<tr><th>Block</th><th>Task</th><th>Cadence</th><th>Output</th></tr>
+</thead>
+<tbody>
+<tr><td>A</td><td>Watchlist hygiene</td><td>10 min daily</td><td>50–100 ICP accounts, live</td></tr>
+<tr><td>B</td><td>Ad Library scan</td><td>~20 min daily, full sweep weekly</td><td>1 fresh trigger per touched prospect</td></tr>
+<tr><td>C</td><td>Queue triggers</td><td>rolling</td><td>a dated raw signal per prospect</td></tr>
+<tr><td>D</td><td>Batch-write hooks</td><td>~30 min, one sitting</td><td>10 hand-written <code>{{hook}}</code>s</td></tr>
+<tr><td>E</td><td>Render First Strikes</td><td>~10 min each</td><td>1 ad per priority prospect</td></tr>
+<tr><td>F</td><td>The 10-touch run</td><td>daily</td><td>10 sends, X + LinkedIn first</td></tr>
+</tbody>
+</table>
+<p><strong>Do not skip a day.</strong> Prospecting has a half-life (playbook §1.12). What you skip today shows up as a dry pipeline 90 days out.</p>
+<hr>
+<h2>A. THE WATCHLIST (50–100 ICP accounts)</h2>
+<p>The hand-checked watchlist <em>is</em> the intent-data stack on a $750 budget (playbook §2). Build it once, maintain it daily.</p>
+<p><strong>ICP, every account on the list passes all four:</strong></p>
+<ul>
+<li>[ ] DTC performance-ads operator, <strong>$20–100K/mo</strong> Meta + TikTok spend.</li>
+<li>[ ] <strong>Functional-consumables</strong> vertical (something used up and re-bought).</li>
+<li>[ ] Active in the <strong>Meta Ad Library</strong> right now (you can see live ads).</li>
+<li>[ ] Reachable on <strong>X or LinkedIn</strong> (a real operator account, not a faceless brand handle).</li>
+</ul>
+<p><strong>Tag each by archetype</strong> (sets the angle later):</p>
+<ul>
+<li>[ ] <strong>Wounded Veteran</strong> — 5–10yr operator, post-Andromeda pain, "tested everything."</li>
+<li>[ ] <strong>Volume-Player</strong> — ships 90+ creatives/wk, wants ops leverage.</li>
+<li>[ ] <strong>Lean Team</strong> — 2–3 person team, ~$200–400K/mo, already using outside creative agencies. <strong>The ideal client; weight the list toward these.</strong></li>
+</ul>
+<p><strong>Maintenance (daily, 10 min):</strong></p>
+<ul>
+<li>[ ] Add 2–5 new accounts to keep the list at 50–100.</li>
+<li>[ ] Drop any that went dark in the Ad Library (no live ads = no trigger = no value).</li>
+<li>[ ] Mark the ~10 <strong>A-tier</strong> leads (best-fit, clearest live trigger). A-tier gets the rendered First Strike first.</li>
+<li>[ ] One row per account: handle, archetype, spend signal, <strong>last touched date</strong>, current status.</li>
+</ul>
+<p><strong>Warm first.</strong> Before any cold touch, check for a 2nd-degree or community path (playbook §2). A warm intro beats cold by a wide margin.</p>
+<hr>
+<h2>B. THE META AD LIBRARY SCAN</h2>
+<p>The engine for the <code>{{hook}}</code> (playbook §3.6). One prospect at a time. You're reading their account like an operator, not a tourist.</p>
+<p><strong>Open their advertiser page in the Ad Library and read for these tells:</strong></p>
+<p><strong>1. The over-run creative (the account's load-bearing ad).</strong></p>
+<ul>
+<li>[ ] Find the ad that's been live <strong>longest</strong> and/or shows the <strong>most active duplicates</strong>.</li>
+<li>[ ] Same creative re-run across many ad sets = the account is <strong>riding one winner</strong>. That's the hook: a good ad doing too much work, about to break.</li>
+</ul>
+<p><strong>2. The fatigue tells (the Fatigue Wall, ~7 weeks — brand kit §4).</strong></p>
+<ul>
+<li>[ ] A top creative live <strong>7+ weeks</strong> with no fresh challenger behind it.</li>
+<li>[ ] <strong>Minor re-cuts</strong> of the same hero ad (new text, same footage) = hand-cutting variations off one angle, no new angle in the pipe.</li>
+<li>[ ] <strong>Thin or stale rotation</strong> — few new creatives launched recently relative to spend.</li>
+<li>[ ] A visible public post about creative fatigue or post-Andromeda pain (X/LinkedIn) — pair it with the Library read.</li>
+</ul>
+<p><strong>3. The angle carrying the account.</strong></p>
+<ul>
+<li>[ ] Sort their live ads by theme. Name the <strong>one angle</strong> doing the heavy lifting (testimonial, founder-story, problem-agitate, UGC react, etc.).</li>
+<li>[ ] That angle, named exactly, is the spine of both the hook and the First Strike.</li>
+</ul>
+<p><strong>Cross-reference their reviews / Trustpilot</strong> (playbook §3.6) for the <strong>exact pain language</strong> customers use. That phrasing becomes the ad's script. Pull 1–2 real review lines per priority prospect.</p>
+<p><strong>Cadence:</strong> scan each A-tier prospect the day you touch them; full watchlist sweep once a week. Queue what you find — don't write the hook in the same pass.</p>
+<hr>
+<h2>C. QUEUE ONE FRESH TRUE TRIGGER PER PROSPECT</h2>
+<p><strong>One signal per prospect, and it must be fresh</strong> (playbook §2). Stacking signals reads like a research report, not a conversation.</p>
+<ul>
+<li>[ ] <strong>Pick exactly ONE</strong> trigger per prospect from the Ad Library scan:
+<ul>
+<li>the over-run / load-bearing ad</li>
+<li>a fatigue tell on the hero creative</li>
+<li>the single angle carrying the account</li>
+<li>a review theme (exact pain language)</li>
+<li>a visible post about fatigue / post-Andromeda pain</li>
+</ul></li>
+<li>[ ] <strong>Verifiable only.</strong> If you can't see it on their public account, it's not a trigger. Generic = no reply.</li>
+<li>[ ] <strong>Date it.</strong> Log when you saw it. A stale signal reads as "didn't research you."</li>
+<li>[ ] <strong>Log raw, not written.</strong> One line of the literal observation into the queue (e.g. "hero = the [product] testimonial ad, live ~9 wks, 6 active dupes, no challenger"). The hook gets written in Block D, by hand.</li>
+</ul>
+<p><strong>Tool pulls the signal; a human writes the hook</strong> (playbook §3.6). Never let AI write the hook — that's the slop the whole motion avoids.</p>
+<hr>
+<h2>D. BATCH-WRITE THE {{hook}}</h2>
+<p>Write the day's 10 hooks in <strong>one sitting</strong> from the queued raw signals. Batching beats one-at-a-time.</p>
+<p><strong>The <code>{{hook}}</code> bar — all three, every time (playbook §3.5):</strong></p>
+<ul>
+<li>[ ] <strong>True</strong> — verifiable from their public account.</li>
+<li>[ ] <strong>Specific</strong> — names the actual ad / angle / review line / timeline. A number, a date, the product name.</li>
+<li>[ ] <strong>Says the quiet part</strong> — something they half-suspected and didn't want to say out loud (e.g. "the whole account is riding one ad").</li>
+</ul>
+<p><strong>Voice (brand kit §8, copy-standard.md):</strong></p>
+<ul>
+<li>[ ] Lead with <strong>them</strong>, not you. Credentials live below the signature.</li>
+<li>[ ] <strong>No pitch in the hook.</strong> The retainer, the loadout, the guarantee all wait for the reply.</li>
+<li>[ ] Specific over adjectives. <code>7 weeks</code>, <code>4 angles</code>, <code>24 variations</code>, the product name — never round-number vagueness.</li>
+<li>[ ] <strong>Never</strong> lead with volume, the word "AI," or price (brand kit §8).</li>
+<li>[ ] Earned empathy, not pity. "The game changed under you," never "I know it's been hard."</li>
+<li>[ ] Flavor (equip / wield / loadout / crit / hit rate) only where it makes the meaning <strong>clearer or stickier</strong>. Otherwise plain English. Never cheesy, no emojis, no exclamation selling.</li>
+</ul>
+<p><strong>Copy-standard pass before any hook is queued to send:</strong></p>
+<ul>
+<li>[ ] No em-dash as connector. No triads. No "not X, it's Y." No filler (leverage, unlock, seamless, supercharge, game-changer).</li>
+<li>[ ] Cut every non-load-bearing word. Target 30–60% cut.</li>
+<li>[ ] <strong>Read it aloud.</strong> If it sounds like LinkedIn, redo it.</li>
+</ul>
+<p><strong>Hook-iteration (playbook §3.8):</strong> hold the body constant, rotate <strong>3 first-lines</strong> across each ~30-send batch. Track <strong>reply rate</strong>, keep the winner, retire the other two, write a new challenger.</p>
+<p><strong>Reference exemplars:</strong> <code>copy-standard.md</code> → Example Messages #1–4 (Wounded Veteran, Lean Team, Volume-Player, the "AI is slop" reply-handler).</p>
+<hr>
+<h2>E. PRODUCE THE FIRST STRIKE (one ad, cheap, per prospect)</h2>
+<p>The <strong>First Strike</strong> is one battle-ready ad of <em>their own</em> product, rendered from their real site and reviews, before they pay a coin (playbook §5.1; brand kit §5 STEP 1). It carries the credibility the track record can't. <strong>No A-tier priority touch ships without one.</strong></p>
+<p><strong>Steps to render one (per prospect):</strong></p>
+<ol>
+<li>[ ] <strong>Pick the product</strong> — their hero SKU (the one the over-run ad sells).</li>
+<li>[ ] <strong>Pull the source assets</strong> from their public site: product shots / packaging, the name, the offer. No login, no scraping anything private.</li>
+<li>[ ] <strong>Pull 1–2 real review lines</strong> (their site or Trustpilot) for the script — their customers' exact pain language.</li>
+<li>[ ] <strong>Pick the angle</strong> — rebuild the single angle carrying their account (Block B), or the one fresh angle you'd test against their control.</li>
+<li>[ ] <strong>Write a ~15-sec script</strong> from the review language + that angle. Operator judgment picks which angle fits their AOV — that's the layer being demonstrated.</li>
+<li>[ ] <strong>Render one variation</strong> with the AI UGC tool (the <code>gooseworks</code> ad pipeline). One finished ad, not a pack. Check the mouth-sync and the product accuracy before it leaves your hands.</li>
+<li>[ ] <strong>Host it, don't attach</strong> (playbook §3.7). Link a hosted file. Attachments tank deliverability and trust.</li>
+<li>[ ] <strong>Sanity check:</strong> Is it actually <em>their</em> product, <em>their</em> pain language? Would a skeptical operator watch 15 sec and not wince? If no, re-render or cut.</li>
+</ol>
+<p><strong>Proof-Only on the render (brand kit §9):</strong></p>
+<ul>
+<li>[ ] No claimed result attached to it ("our hit rate is X"). The ad <em>is</em> the proof — let it carry itself.</li>
+<li>[ ] Sample-host watch analytics are <strong>internal only</strong>, never quoted as traction.</li>
+</ul>
+<p><strong>Optional founder edge — the video/voice weapon (playbook §3.7).</strong> For top A-tier leads, screen-record their account/site with face-cam on, 30–45 sec, 3 beats: (1) name the exact thing on their screen, (2) the First Strike you made, (3) one soft ask. Host the file. This is the un-copied edge; competitors skip it because it doesn't scale.</p>
+<hr>
+<h2>F. THE DAILY 10-TOUCH RUN (X and LinkedIn first)</h2>
+<p><strong>10 touches/day</strong>, each carrying a true hook. A-tier (rendered First Strike) goes out first.</p>
+<p><strong>Order of channels:</strong></p>
+<ol>
+<li>[ ] <strong>X DMs</strong> — operators live here, zero warmup. Warm the DM with a reply or quote-tweet on one exact post, then DM: genuine specific praise tied to one post → the hook → the artifact, want me to send it? (<code>copy-standard.md</code> #1.)</li>
+<li>[ ] <strong>LinkedIn DMs</strong> — connection request <strong>with no note</strong>. On accept, open with the hook + the made-for-them artifact, never a pitch. (<code>copy-standard.md</code> #2.) Limit: 15–25 messages/seat/day.</li>
+<li>[ ] <strong>r/FacebookAds</strong> — intel and soft presence only. Mine voice-of-customer, be the helpful operator, <strong>never pitch</strong> (playbook §4.4).</li>
+<li>[ ] <strong>Cold email</strong> — warming in parallel, <strong>not</strong> the critical path. Skip unless the rig is live.</li>
+</ol>
+<p><strong>Every send, before it leaves:</strong></p>
+<ul>
+<li>[ ] One fresh, dated, verifiable trigger attached. No trigger, no send.</li>
+<li>[ ] The hook leads. The retainer / loadout / guarantee are <strong>not</strong> mentioned (they wait for the reply).</li>
+<li>[ ] A-tier touch has its <strong>rendered First Strike linked</strong> (or the personal video for top leads).</li>
+<li>[ ] One <strong>soft, interest-based</strong> close. "Want me to send it?" / "If it holds up, that's the whole pitch." No calendar link in touch one.</li>
+<li>[ ] Ran the pre-send filter + the copy-standard read-aloud pass.</li>
+</ul>
+<p><strong>Log every touch:</strong> prospect, channel, trigger used, first-line variant (of the 3), First Strike sent (y/n), date. This feeds the §3.8 iteration loop.</p>
+<p><strong>On a reply:</strong> stop prospecting that lead, switch to the warm-reply objection tree (<code>copy-standard.md</code>) and the locked objection counters (playbook §5.1): "AI ads are slop" → show don't claim, never repeat the word; "AI does this free" → the judgment layer; "my agency disappointed me" → 24 variations every two weeks, not 4 in a month. The <strong>No-Risk Loadout</strong> guarantee ("beat your control or the next cycle's free") and the loadout mechanism enter the conversation <strong>only now</strong>, after they bite.</p>
+<hr>
+<h2>END-OF-DAY CHECK</h2>
+<ul>
+<li>[ ] 10 touches sent, X + LinkedIn first.</li>
+<li>[ ] Every A-tier touch carried a rendered First Strike + a hand-written true hook.</li>
+<li>[ ] Watchlist still at 50–100, dark accounts dropped, A-tier marked.</li>
+<li>[ ] Tomorrow's hooks queued from today's scan.</li>
+<li>[ ] Touch log updated; first-line variant performance noted.</li>
+</ul>
+<p><strong>Diagnose by symptom (playbook §3.8):</strong> silence across all 3 first-lines = the trigger source is too generic, go back to Block B. High reply + low booking = fix the offer/copy, not targeting. Replies but wrong fit = tighten the watchlist (Block A).</p>
+<hr>
+<p><strong>Sources:</strong> <code>outreach-playbook.md</code> §3.5 (artifact-first / First Strike), §3.6 (hook-sourcing engine), §3.7 (video/voice weapon), §5.1 (Adwield play); <code>adwield-brand-kit.md</code> (voice, glossary, First Strike copy, guarantee, proof-only); held throughout to <code>copy-standard.md</code>.</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

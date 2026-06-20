@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mission Control</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">Mission Control</div>
+      <nav class="nav">
+        <button class="nav-btn" data-view="sprint">Sprint</button>
+        <button class="nav-btn" data-view="deliverables">Deliverables</button>
+        <button class="nav-btn active" data-view="mission">Mission</button>
+        <button class="nav-btn" data-view="v1">Adwield</button>
+        <button class="nav-btn" data-view="v2">Tideover</button>
+        <button class="nav-btn" data-view="cadence">Cadence</button>
+        <button class="nav-btn" data-view="kpis">KPIs</button>
+        <button class="nav-btn" data-view="frameworks">Frameworks</button>
+      </nav>
+      <span id="status-strip"></span>
+      <button id="theme-toggle">Theme</button>
+    </header>
+
+    <main class="container">
+      <section id="view-sprint" class="view"></section>
+      <section id="view-deliverables" class="view"></section>
+      <section id="view-mission" class="view active"></section>
+      <section id="view-v1" class="view"></section>
+      <section id="view-v2" class="view"></section>
+      <section id="view-cadence" class="view"></section>
+      <section id="view-kpis" class="view"></section>
+      <section id="view-frameworks" class="view"></section>
+    </main>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

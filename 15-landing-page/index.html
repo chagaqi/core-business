@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI UGC ad creative for DTC functional-consumables brands. Find your next winning ad before your last one dies — 4 angles, 24 variations, every 2 weeks, launched and tagged in your account.">
+<title>Find your next winning ad before your last one dies | AI UGC for functional consumables</title>
+<style>
+  /* ============================================================
+     EDIT-ME: Brand colors live here. Adjust to taste.
+     ============================================================ */
+  :root{
+    --bg:#0d0f12;
+    --bg-soft:#14181d;
+    --bg-card:#171c22;
+    --line:#252c34;
+    --ink:#eef2f5;
+    --ink-soft:#aab4bf;
+    --ink-dim:#7b8693;
+    --accent:#d9a441;        /* chaga/amber — operator-warm, not hype */
+    --accent-ink:#1a1206;
+    --green:#3fae6a;
+    --red:#d9534f;
+    --maxw:1100px;
+    --radius:14px;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Helvetica Neue",Arial,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+
+  .wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 22px}
+  section{padding:72px 0}
+  @media(max-width:640px){section{padding:52px 0}}
+
+  h1,h2,h3{line-height:1.12;letter-spacing:-0.02em;font-weight:800}
+  h1{font-size:clamp(2rem,5.2vw,3.4rem)}
+  h2{font-size:clamp(1.6rem,3.6vw,2.4rem);margin-bottom:14px}
+  h3{font-size:1.18rem;font-weight:700;letter-spacing:-0.01em}
+  .lede{font-size:clamp(1.05rem,2vw,1.28rem);color:var(--ink-soft);font-weight:400}
+  .eyebrow{
+    display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--accent);margin-bottom:16px;
+  }
+  .muted{color:var(--ink-dim)}
+  .soft{color:var(--ink-soft)}
+  strong{color:var(--ink);font-weight:700}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    font-size:1rem;font-weight:700;padding:15px 26px;border-radius:11px;
+    border:1px solid transparent;cursor:pointer;transition:transform .12s ease,background .15s ease,border-color .15s ease;
+    text-align:center;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn-primary{background:var(--accent);color:var(--accent-ink)}
+  .btn-primary:hover{background:#eab451}
+  .btn-secondary{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn-secondary:hover{border-color:var(--ink-dim);background:var(--bg-soft)}
+  .btn-block{width:100%}
+  .btn-lg{padding:18px 32px;font-size:1.08rem}
+
+  /* ---------- Top nav ---------- */
+  header.nav{
+    position:sticky;top:0;z-index:50;background:rgba(13,15,18,.82);
+    backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--line);
+  }
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:-0.01em}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(217,164,65,.16)}
+  .nav-links{display:flex;align-items:center;gap:26px}
+  .nav-links a{font-size:.92rem;color:var(--ink-soft)}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-cta{padding:9px 16px;font-size:.9rem;border-radius:9px}
+  @media(max-width:820px){.nav-links a:not(.nav-cta){display:none}}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:84px 0 64px;
+    background:
+      radial-gradient(900px 460px at 78% -8%, rgba(217,164,65,.12), transparent 60%),
+      radial-gradient(700px 420px at 6% 10%, rgba(63,174,106,.06), transparent 55%);
+  }
+  .hero h1{max-width:14ch}
+  .hero .lede{margin:22px 0 8px;max-width:60ch}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:8px 18px;margin:26px 0 30px;font-size:.9rem;color:var(--ink-dim)}
+  .hero-meta span{display:inline-flex;align-items:center;gap:7px}
+  .tick{color:var(--accent);font-weight:800}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:4px}
+  .hero-fine{margin-top:18px;font-size:.86rem;color:var(--ink-dim)}
+  .hero-fine b{color:var(--ink-soft)}
+
+  /* ---------- Logos / vertical strip ---------- */
+  .vstrip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bg-soft)}
+  .vstrip .wrap{padding-top:24px;padding-bottom:24px}
+  .vstrip p{font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-dim);margin-bottom:12px}
+  .vstrip .tags{display:flex;flex-wrap:wrap;gap:10px 12px}
+  .vtag{font-size:.86rem;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--bg-card)}
+
+  /* ---------- Generic layout helpers ---------- */
+  .grid{display:grid;gap:20px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:880px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:680px){.g2,.g3,.g4{grid-template-columns:1fr}}
+
+  .card{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+  .card h3{margin-bottom:9px}
+  .card p{color:var(--ink-soft);font-size:.97rem}
+
+  .section-head{max-width:62ch;margin-bottom:38px}
+  .section-head .lede{margin-top:10px}
+
+  /* ---------- Problem ---------- */
+  .problem{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .problem-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start}
+  @media(max-width:820px){.problem-grid{grid-template-columns:1fr;gap:28px}}
+  .problem p{color:var(--ink-soft);font-size:1.02rem;margin-bottom:16px}
+  .problem p:last-child{margin-bottom:0}
+  .problem .punch{color:var(--ink);font-weight:700;font-size:1.08rem}
+  .painlist{list-style:none;display:flex;flex-direction:column;gap:14px}
+  .painlist li{display:flex;gap:13px;align-items:flex-start;background:var(--bg-card);border:1px solid var(--line);border-radius:11px;padding:16px 18px}
+  .painlist .x{color:var(--red);font-weight:800;flex:none;font-size:1.05rem;line-height:1.4}
+  .painlist b{display:block;margin-bottom:2px}
+  .painlist span{color:var(--ink-soft);font-size:.94rem}
+
+  /* ---------- 4x24 Framework ---------- */
+  .fw-math{
+    display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:18px;
+    margin:8px 0 40px;
+  }
+  .fw-node{
+    background:var(--bg-card);border:1px solid var(--line);border-radius:14px;
+    padding:20px 24px;text-align:center;min-width:140px;
+  }
+  .fw-node .big{font-size:2.6rem;font-weight:800;line-height:1;color:var(--accent);letter-spacing:-0.03em}
+  .fw-node .lbl{font-size:.82rem;color:var(--ink-soft);margin-top:8px;letter-spacing:.02em}
+  .fw-op{font-size:1.8rem;color:var(--ink-dim);font-weight:300}
+  .fw-node.result .big{color:var(--ink)}
+  .fw-node.result{border-color:var(--accent);box-shadow:0 0 0 1px rgba(217,164,65,.25)}
+  @media(max-width:640px){
+    .fw-math{gap:12px}
+    .fw-node{min-width:0;flex:1 1 40%;padding:16px}
+    .fw-node .big{font-size:2rem}
+    .fw-op{flex-basis:100%;transform:rotate(90deg)}
+  }
+  .loop{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+  .loop-step{flex:1 1 160px;background:var(--bg-card);border:1px solid var(--line);border-radius:11px;padding:16px 18px}
+  .loop-step .n{font-size:.78rem;font-weight:800;color:var(--accent);letter-spacing:.08em}
+  .loop-step b{display:block;margin:5px 0 3px}
+  .loop-step span{font-size:.9rem;color:var(--ink-soft)}
+  .fw-note{margin-top:26px;font-size:.95rem;color:var(--ink-dim);max-width:70ch}
+  .fw-note b{color:var(--ink-soft)}
+
+  /* ---------- What you get ---------- */
+  .deliver{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .deliver-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:14px 26px}
+  @media(max-width:680px){.deliver-list{grid-template-columns:1fr}}
+  .deliver-list li{display:flex;gap:12px;align-items:flex-start;font-size:1rem;color:var(--ink-soft)}
+  .deliver-list .c{color:var(--green);font-weight:800;flex:none}
+  .deliver-list b{color:var(--ink)}
+  .tagstrip{margin-top:34px;background:var(--bg-card);border:1px solid var(--accent);border-radius:12px;padding:20px 24px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  .tagstrip .ico{font-size:1.5rem}
+  .tagstrip p{color:var(--ink-soft);font-size:.98rem;margin:0}
+  .tagstrip b{color:var(--ink)}
+
+  /* ---------- Guarantee box ---------- */
+  .guarantee-wrap{display:flex;justify-content:center}
+  .guarantee{
+    max-width:820px;width:100%;background:linear-gradient(180deg,rgba(217,164,65,.08),rgba(217,164,65,.02));
+    border:1.5px solid var(--accent);border-radius:18px;padding:42px 40px;text-align:center;position:relative;
+  }
+  .guarantee .badge{
+    display:inline-block;font-size:.74rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent-ink);background:var(--accent);padding:6px 14px;border-radius:999px;margin-bottom:20px;
+  }
+  .guarantee .promise{font-size:clamp(1.15rem,2.4vw,1.5rem);font-weight:700;line-height:1.4;color:var(--ink);max-width:62ch;margin:0 auto}
+  .guarantee .promise em{color:var(--accent);font-style:normal}
+  .guarantee .terms{margin-top:22px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 14px}
+  .guarantee .terms span{font-size:.86rem;color:var(--ink-soft);border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:rgba(0,0,0,.2)}
+  @media(max-width:640px){.guarantee{padding:30px 22px}}
+
+  /* ---------- Proof / case studies ---------- */
+  .proof-note{margin-bottom:30px;font-size:.95rem;color:var(--ink-dim);border-left:3px solid var(--accent);padding-left:16px;max-width:72ch}
+  .cs-card{background:var(--bg-card);border:1px dashed var(--line);border-radius:var(--radius);padding:24px;position:relative}
+  .cs-card .ph{font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:7px}
+  .cs-card .ph::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  .cs-metrics{display:flex;gap:18px;margin:6px 0 16px}
+  .cs-metric .v{font-size:1.5rem;font-weight:800;color:var(--ink);letter-spacing:-0.02em}
+  .cs-metric .k{font-size:.74rem;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.05em}
+  .cs-metric .v.up{color:var(--green)}
+  .cs-card p.q{color:var(--ink-soft);font-size:.95rem;font-style:italic;border-top:1px solid var(--line);padding-top:14px;margin-top:4px}
+  .cs-card .who{margin-top:12px;font-size:.85rem;color:var(--ink-dim)}
+
+  /* ---------- Founder ---------- */
+  .founder{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .founder-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:40px;align-items:start}
+  @media(max-width:820px){.founder-grid{grid-template-columns:1fr;gap:26px}}
+  .founder-photo{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;color:var(--ink-dim);font-size:.85rem;text-align:center;padding:20px}
+  .founder p{color:var(--ink-soft);font-size:1.02rem;margin-bottom:16px}
+  .founder p strong{color:var(--ink)}
+  .fill{background:rgba(217,164,65,.14);border-bottom:1px dashed var(--accent);color:var(--accent);padding:0 4px;border-radius:3px;font-weight:600}
+  .pillars{list-style:none;margin-top:8px;display:flex;flex-direction:column;gap:12px}
+  .pillars li{display:flex;gap:12px;align-items:flex-start}
+  .pillars .n{font-weight:800;color:var(--accent);flex:none}
+  .pillars b{color:var(--ink)}
+  .pillars span{color:var(--ink-soft);font-size:.95rem}
+
+  /* ---------- Pricing ---------- */
+  .price-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:24px;align-items:stretch}
+  @media(max-width:820px){.price-grid{grid-template-columns:1fr}}
+  .price-card{background:var(--bg-card);border:1px solid var(--line);border-radius:18px;padding:34px 32px;display:flex;flex-direction:column}
+  .price-card.feature{border-color:var(--accent);box-shadow:0 0 0 1px rgba(217,164,65,.25)}
+  .price-tag{font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+  .price-amount{font-size:3rem;font-weight:800;letter-spacing:-0.03em;line-height:1}
+  .price-amount small{font-size:1rem;font-weight:600;color:var(--ink-dim);letter-spacing:0}
+  .price-sub{color:var(--ink-soft);margin:10px 0 22px;font-size:.98rem}
+  .price-card ul{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:26px}
+  .price-card ul li{display:flex;gap:10px;align-items:flex-start;font-size:.96rem;color:var(--ink-soft)}
+  .price-card ul .c{color:var(--green);font-weight:800;flex:none}
+  .price-card .spacer{flex:1}
+  .price-fine{margin-top:14px;font-size:.82rem;color:var(--ink-dim);text-align:center}
+  .ladder-note{margin-top:26px;text-align:center;font-size:.92rem;color:var(--ink-dim);max-width:72ch;margin-left:auto;margin-right:auto}
+
+  /* ---------- Scarcity ---------- */
+  .scarcity{background:linear-gradient(180deg,rgba(217,84,79,.06),transparent)}
+  .scarcity-box{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--bg-card);border:1px solid var(--line);border-radius:16px;padding:30px 34px}
+  .scarcity-box .left h3{font-size:1.4rem;margin-bottom:8px}
+  .scarcity-box .left p{color:var(--ink-soft);max-width:56ch;font-size:.98rem}
+  .slots{display:flex;gap:10px;align-items:center}
+  .slot{width:34px;height:46px;border-radius:8px;border:1.5px solid var(--line);background:var(--bg-soft)}
+  .slot.taken{background:repeating-linear-gradient(45deg,var(--line),var(--line) 4px,transparent 4px,transparent 8px);border-color:var(--line)}
+  .slot.open{border-color:var(--accent);background:rgba(217,164,65,.16);box-shadow:0 0 0 1px rgba(217,164,65,.3)}
+  .slots-cap{font-size:.82rem;color:var(--ink-dim);margin-top:8px;text-align:center}
+
+  /* ---------- FAQ ---------- */
+  .faq-list{display:flex;flex-direction:column;gap:12px;max-width:840px;margin:0 auto}
+  .faq-item{background:var(--bg-card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .faq-q{width:100%;text-align:left;background:none;border:none;color:var(--ink);font-size:1.04rem;font-weight:700;
+    padding:20px 22px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:16px;font-family:inherit}
+  .faq-q:hover{background:var(--bg-soft)}
+  .faq-q .plus{flex:none;font-size:1.4rem;font-weight:400;color:var(--accent);transition:transform .2s ease;line-height:1}
+  .faq-item.open .faq-q .plus{transform:rotate(45deg)}
+  .faq-a{max-height:0;overflow:hidden;transition:max-height .28s ease}
+  .faq-a-inner{padding:0 22px 22px;color:var(--ink-soft);font-size:.98rem}
+  .faq-a-inner p{margin-bottom:10px}
+  .faq-a-inner p:last-child{margin-bottom:0}
+  .faq-a-inner b{color:var(--ink)}
+
+  /* ---------- Lead magnet ---------- */
+  .leadmag{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .leadmag-box{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+  @media(max-width:820px){.leadmag-box{grid-template-columns:1fr;gap:26px}}
+  .leadmag h2{margin-bottom:10px}
+  .leadmag p{color:var(--ink-soft);font-size:1.02rem}
+  .lm-form{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
+  .lm-form input[type=email]{
+    flex:1 1 240px;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:11px;
+    padding:15px 16px;color:var(--ink);font-size:1rem;font-family:inherit;
+  }
+  .lm-form input[type=email]:focus{outline:none;border-color:var(--accent)}
+  .lm-fine{margin-top:12px;font-size:.82rem;color:var(--ink-dim)}
+  .lm-card{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+  .lm-card .kicker{font-size:.74rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+  .lm-card ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .lm-card ul li{display:flex;gap:10px;font-size:.94rem;color:var(--ink-soft)}
+  .lm-card ul .c{color:var(--accent);font-weight:800;flex:none}
+
+  /* ---------- Final CTA ---------- */
+  .final{
+    background:
+      radial-gradient(700px 360px at 50% 0%, rgba(217,164,65,.14), transparent 65%);
+    text-align:center;
+  }
+  .final h2{max-width:20ch;margin:0 auto 16px}
+  .final .lede{max-width:56ch;margin:0 auto 30px}
+  .final .hero-cta{justify-content:center}
+  .final .hero-fine{text-align:center}
+
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line);background:var(--bg-soft);padding:42px 0 56px}
+  .foot-grid{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap;align-items:flex-start}
+  .foot-brand{max-width:42ch}
+  .foot-brand p{color:var(--ink-dim);font-size:.9rem;margin-top:10px}
+  .foot-links{display:flex;gap:40px;flex-wrap:wrap}
+  .foot-col h4{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-dim);margin-bottom:12px;font-weight:700}
+  .foot-col a{display:block;color:var(--ink-soft);font-size:.92rem;margin-bottom:9px}
+  .foot-col a:hover{color:var(--ink)}
+  .foot-legal{margin-top:34px;padding-top:22px;border-top:1px solid var(--line);font-size:.82rem;color:var(--ink-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  /* ---------- Reveal anim ---------- */
+  .reveal{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+</style>
+</head>
+<body>
+
+<!-- ============================ NAV ============================ -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand"><span class="dot"></span>Chaga&nbsp;Chai</a>
+    <nav class="nav-links">
+      <a href="#problem">The problem</a>
+      <a href="#framework">The 4&times;24</a>
+      <a href="#pack">The pack</a>
+      <a href="#guarantee">Guarantee</a>
+      <a href="#faq">FAQ</a>
+      <!-- EDIT-ME: Stripe checkout link for the $497 pack -->
+      <a href="https://buy.stripe.com/EDIT_ME_STRIPE_CHECKOUT_LINK" class="btn btn-primary nav-cta">Get the pack &mdash; $497</a>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow reveal">AI UGC ad creative &middot; functional consumables only</span>
+    <h1 class="reveal">Find your next winning ad before your last one dies.</h1>
+    <p class="lede reveal">
+      I run <strong>4 hypothesis angles into 24 production-grade AI UGC variations every 2 weeks</strong> &mdash;
+      launched and tagged in your own account, killed and doubled on the data. I'm newer than the 10-year agencies,
+      so I prove it the only honest way: a free, made-for-you ad of your own product before you pay a cent, and the
+      risk stays on me. The volume isn't the point. It's how the winner gets found faster.
+    </p>
+
+    <div class="hero-meta reveal">
+      <span><i class="tick">&#10003;</i> For $20&ndash;100K/mo Meta + TikTok brands</span>
+      <span><i class="tick">&#10003;</i> Launched &amp; tagged in your account</span>
+      <span><i class="tick">&#10003;</i> Capped at 5 brands</span>
+    </div>
+
+    <div class="hero-cta reveal">
+      <!-- EDIT-ME: Stripe checkout link for the $497 pack -->
+      <a href="https://buy.stripe.com/EDIT_ME_STRIPE_CHECKOUT_LINK" class="btn btn-primary btn-lg">Get my 10-video pack &mdash; $497</a>
+      <!-- EDIT-ME: Calendly (or similar) booking link for the 15-min call -->
+      <a href="https://calendly.com/EDIT_ME_CALENDLY_LINK" class="btn btn-secondary btn-lg">Book a 15-min call</a>
+    </div>
+
+    <p class="hero-fine reveal">
+      <b>$497 one-time, 10 videos.</b> Under 2.5% of one month's spend. No retainer, no contract &mdash; a paid look at the work before you ever commit.
+    </p>
+  </div>
+</section>
+
+<!-- ============================ VERTICAL STRIP ============================ -->
+<div class="vstrip">
+  <div class="wrap">
+    <p>Built for one vertical &mdash; functional consumables</p>
+    <div class="tags">
+      <span class="vtag">Mushroom coffee</span>
+      <span class="vtag">Adaptogen gummies</span>
+      <span class="vtag">Functional beverages</span>
+      <span class="vtag">Greens &amp; superfood powders</span>
+      <span class="vtag">Nootropic stacks</span>
+      <span class="vtag">Mushroom chocolates</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ PROBLEM ============================ -->
+<section class="problem" id="problem">
+  <div class="wrap">
+    <div class="problem-grid">
+      <div>
+        <span class="eyebrow reveal">What actually broke</span>
+        <h2 class="reveal">You had a creative carrying the account. Then it stopped &mdash; for no reason you could find.</h2>
+        <p class="reveal">
+          Sometime after mid-February last year it quit working. Same creative, same audience, double the CPMs, no explanation.
+          You didn't change anything; it broke anyway. You'd already tried the targeting fixes, the budget restructures,
+          the consolidation, all of it. None of it was the problem &mdash; because the problem was never targeting.
+        </p>
+        <p class="reveal">
+          So now you ship maybe four tests a month and hope. Meanwhile the math is moving against you: the auction rewards
+          whoever can keep putting fresh, specific creative in front of the customer, and you can't physically produce at that
+          rate alone. You hired an agency once &mdash; expensive, slow, and they never actually learned your brand. Real money
+          you don't get back.
+        </p>
+        <p class="punch reveal">
+          You're not short on ideas or instinct. You're short on hands to produce the volume your instinct already tells you
+          the auction wants.
+        </p>
+      </div>
+      <div>
+        <ul class="painlist reveal">
+          <li><span class="x">&times;</span><div><b>The 7-week fatigue wall</b><span>Creative fatigue sets in around week 7. The campaign that should've retired then is still running at week 24, into an audience that stopped listening months ago.</span></div></li>
+          <li><span class="x">&times;</span><div><b>~4 tests a month, on guesswork</b><span>The auction is a volume-discovery game now. Four tests and a prayer can't keep pace with brands flooding it with fresh variation.</span></div></li>
+          <li><span class="x">&times;</span><div><b>No production hands</b><span>A single human-creator UGC video used to cost weeks and hundreds of dollars. Your 2&ndash;3 person team can't produce at the cadence the auction demands &mdash; and you can't justify a hire for it.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ 4x24 FRAMEWORK ============================ -->
+<section id="framework">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">The method</span>
+      <h2>The 4&times;24 Framework</h2>
+      <p class="lede">Four hypothesis angles. Twenty-four production-grade variations. Every two weeks &mdash; engineered so fresh creative is always in-auction <em>before</em> the 7-week fatigue wall hits.</p>
+    </div>
+
+    <div class="fw-math reveal">
+      <div class="fw-node">
+        <div class="big">4</div>
+        <div class="lbl">hypothesis angles<br>(I pick which leads)</div>
+      </div>
+      <div class="fw-op">&times;</div>
+      <div class="fw-node">
+        <div class="big">24</div>
+        <div class="lbl">production-grade<br>variations</div>
+      </div>
+      <div class="fw-op">/</div>
+      <div class="fw-node">
+        <div class="big">2</div>
+        <div class="lbl">week<br>cycle</div>
+      </div>
+      <div class="fw-op">=</div>
+      <div class="fw-node result">
+        <div class="big">1</div>
+        <div class="lbl">winner found<br>on a schedule</div>
+      </div>
+    </div>
+
+    <h3 class="reveal" style="margin-bottom:14px">The loop, every cycle:</h3>
+    <div class="loop reveal">
+      <div class="loop-step"><div class="n">01</div><b>You greenlight</b><span>4 angles + the claims each can substantiate. You approve direction, not 24 surprises.</span></div>
+      <div class="loop-step"><div class="n">02</div><b>I produce 24</b><span>Hooks, scripts, render, QC pass &mdash; mouth-sync, hands, brand-safety, claim language.</span></div>
+      <div class="loop-step"><div class="n">03</div><b>Launched &amp; tagged</b><span>Live in your account, in your naming convention and ad-set structure.</span></div>
+      <div class="loop-step"><div class="n">04</div><b>Read at day 14</b><span>Kill losers, double winners, load the next 4 angles. Head-to-head vs your control, on the table.</span></div>
+    </div>
+
+    <p class="fw-note reveal">
+      <b>Honest framing:</b> the name isn't the moat. "Test 4 angles, iterate" is what good operators already do. The moat is
+      <b>who picks the angles</b> (an operator's judgment, not a prompt), the <b>$200&ndash;500 all-in production economics</b> that make 24
+      affordable, and the fact that <b>I do the production-and-launch labor your 2-person team doesn't have hands for.</b>
+    </p>
+  </div>
+</section>
+
+<!-- ============================ WHAT YOU GET ($497 PACK) ============================ -->
+<section class="deliver" id="pack">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">The $497 pack</span>
+      <h2>What you get &mdash; 10 videos, launched and tagged</h2>
+      <p class="lede">A paid foot-in-door, priced below the value on purpose. Its job is to let you see the work in your own account before you ever think about a retainer.</p>
+    </div>
+
+    <ul class="deliver-list reveal">
+      <li><span class="c">&#10003;</span><span><b>10 production-grade AI UGC videos</b> for your product &mdash; product-forward, not generic slop.</span></li>
+      <li><span class="c">&#10003;</span><span><b>Angles chosen with operator judgment</b> &mdash; which hook leads for your AOV and your SKU, not a random prompt.</span></li>
+      <li><span class="c">&#10003;</span><span><b>Brand-context intake</b> &mdash; your reviews, voice, objections, and P&amp;L context feed every script.</span></li>
+      <li><span class="c">&#10003;</span><span><b>Claim-gated copy</b> &mdash; health/structure-function language screened against FTC + Meta norms before render.</span></li>
+      <li><span class="c">&#10003;</span><span><b>Pre-launch QC pass</b> &mdash; avatar/render quality, mouth-sync, hands, brand-safety. Slop never ships.</span></li>
+      <li><span class="c">&#10003;</span><span><b>You keep every video</b> &mdash; yours to run, repurpose, and re-cut, forever.</span></li>
+    </ul>
+
+    <div class="tagstrip reveal">
+      <span class="ico">&#128640;</span>
+      <p><b>Launched and tagged in your account</b> &mdash; not 24 mp4s dumped in a Drive folder. Delivered live in your naming convention and ad-set structure, ready to read against <b>your</b> metrics, not a screenshot I send you. <em>(Or handed off as files if you'd rather launch them yourself &mdash; your call.)</em></p>
+    </div>
+
+    <div class="hero-cta reveal" style="margin-top:30px">
+      <!-- EDIT-ME: Stripe checkout link for the $497 pack -->
+      <a href="https://buy.stripe.com/EDIT_ME_STRIPE_CHECKOUT_LINK" class="btn btn-primary btn-lg">Get my 10-video pack &mdash; $497</a>
+      <!-- EDIT-ME: Calendly booking link -->
+      <a href="https://calendly.com/EDIT_ME_CALENDLY_LINK" class="btn btn-secondary btn-lg">Or book a 15-min call first</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ GUARANTEE ============================ -->
+<section id="guarantee">
+  <div class="wrap guarantee-wrap">
+    <div class="guarantee reveal">
+      <span class="badge">The guarantee</span>
+      <p class="promise">
+        Within 30 days, my creative beats your current best ad on <em>hook-rate / hold-rate</em>
+        (3-second + thumbstop) <em>and your CPA holds flat or better</em> &mdash; measured against your own control,
+        in your own account, with the head-to-head data on the table. If it doesn't, <em>your next 24-variation cycle is free.</em>
+      </p>
+      <div class="terms">
+        <span>Month-to-month</span>
+        <span>Cancel anytime</span>
+        <span>Keep every video either way</span>
+        <span>Measured in your own account</span>
+      </div>
+      <p class="soft" style="margin-top:22px;font-size:.92rem;max-width:60ch;margin-left:auto;margin-right:auto">
+        It's a labor guarantee, not a cash-back gimmick. Hold-rate is creative-controllable &mdash; I actually own it &mdash; and the
+        CPA-flat clause ties the promise to the number you actually fear. No vanity metric, no downside you can't measure.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PROOF / CASE STUDIES ============================ -->
+<section>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Founding-partner proof</span>
+      <h2>The honest part: at launch, the proof ledger is filling.</h2>
+      <p class="proof-note">
+        I'd rather be straight with you than fake a number. These are the first founding-partner results going on the board.
+        Each one is a real control-vs-winner delta from a real account &mdash; no invented figures.
+        <!-- EDIT-ME: Replace each [CASE STUDY PLACEHOLDER] card below with a real, documented founding-partner result.
+             Keep the format: control %, winner %, CPA movement, one-line testimonial, anonymized brand descriptor.
+             Until a card is real, leave it clearly marked as a placeholder. NEVER paste fabricated numbers here. -->
+      </p>
+    </div>
+
+    <div class="grid g3">
+      <!-- CASE STUDY CARD 1 -->
+      <div class="card cs-card reveal">
+        <div class="ph">Case study placeholder</div>
+        <h3>[CASE STUDY PLACEHOLDER: brand category &mdash; e.g. mushroom-coffee brand]</h3>
+        <div class="cs-metrics">
+          <div class="cs-metric"><div class="v">[X.X%]</div><div class="k">Control hold-rate</div></div>
+          <div class="cs-metric"><div class="v up">[X.X%]</div><div class="k">Winner hold-rate</div></div>
+        </div>
+        <p class="soft" style="font-size:.9rem">CPA: <b style="color:var(--ink)">[flat / -X%]</b> over the 30-day window.</p>
+        <p class="q">&ldquo;[CASE STUDY PLACEHOLDER: one-line founding-partner testimonial &mdash; do not fabricate]&rdquo;</p>
+        <div class="who">[FILL: anonymized role / brand descriptor]</div>
+      </div>
+
+      <!-- CASE STUDY CARD 2 -->
+      <div class="card cs-card reveal">
+        <div class="ph">Case study placeholder</div>
+        <h3>[CASE STUDY PLACEHOLDER: brand category &mdash; e.g. adaptogen-gummy brand]</h3>
+        <div class="cs-metrics">
+          <div class="cs-metric"><div class="v">[X.X%]</div><div class="k">Control hold-rate</div></div>
+          <div class="cs-metric"><div class="v up">[X.X%]</div><div class="k">Winner hold-rate</div></div>
+        </div>
+        <p class="soft" style="font-size:.9rem">CPA: <b style="color:var(--ink)">[flat / -X%]</b> over the 30-day window.</p>
+        <p class="q">&ldquo;[CASE STUDY PLACEHOLDER: one-line founding-partner testimonial &mdash; do not fabricate]&rdquo;</p>
+        <div class="who">[FILL: anonymized role / brand descriptor]</div>
+      </div>
+
+      <!-- CASE STUDY CARD 3 -->
+      <div class="card cs-card reveal">
+        <div class="ph">Case study placeholder</div>
+        <h3>[CASE STUDY PLACEHOLDER: brand category &mdash; e.g. greens/superfood-powder brand]</h3>
+        <div class="cs-metrics">
+          <div class="cs-metric"><div class="v">[X.X%]</div><div class="k">Control hold-rate</div></div>
+          <div class="cs-metric"><div class="v up">[X.X%]</div><div class="k">Winner hold-rate</div></div>
+        </div>
+        <p class="soft" style="font-size:.9rem">CPA: <b style="color:var(--ink)">[flat / -X%]</b> over the 30-day window.</p>
+        <p class="q">&ldquo;[CASE STUDY PLACEHOLDER: one-line founding-partner testimonial &mdash; do not fabricate]&rdquo;</p>
+        <div class="who">[FILL: anonymized role / brand descriptor]</div>
+      </div>
+    </div>
+
+    <p class="ladder-note reveal" style="margin-top:28px">
+      Want to be one of the founding-partner case studies? That's the free instrumented pilot &mdash;
+      <!-- EDIT-ME: Calendly booking link -->
+      <a href="https://calendly.com/EDIT_ME_CALENDLY_LINK" style="color:var(--accent);font-weight:700">ask about a founding slot on a call.</a>
+    </p>
+  </div>
+</section>
+
+<!-- ============================ FOUNDER / WHY YOU ============================ -->
+<section class="founder">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Why me</span>
+      <h2>I won't ask you to trust a track record I don't have. I'll prove it on your own product first.</h2>
+    </div>
+    <div class="founder-grid">
+      <div class="reveal">
+        <!-- EDIT-ME: Replace this placeholder block with a real photo of Chaga.
+             Real face, plain background, operator-not-guru. No fabricated credentials, no "as seen in," no follower count.
+             <img src="chaga.jpg" alt="Chaga Chai"> -->
+        <div class="founder-photo">[Founder photo of Chaga Chai &mdash; real face, plain background. Replace this box with an &lt;img&gt;]</div>
+      </div>
+      <div class="reveal">
+        <p>
+          I'm newer to AI ad creative than the 10-year agencies &mdash; and that's exactly why the risk is on me, not you.
+          Before we ever talk money, I render one UGC ad of <strong>your</strong> product, from your real site and reviews,
+          so you can watch the output instead of reading a pitch.
+        </p>
+        <p>
+          I'm not an agency middleman, either. I built a real business of my own once &mdash; so I respect what your margin
+          costs to earn and I understand how buyers actually decide. But the thing you're hiring me for, I prove by doing:
+          a portfolio of rendered ads, published teardowns of real functional-consumables ads that show I understand
+          <em>why</em> creative wins or dies, and a real hold-rate number off an ad I built and ran with my own spend.
+          No fabricated case studies. No logo wall I don't have. Just the work, in the open.
+        </p>
+
+        <ul class="pillars">
+          <li><span class="n">1.</span><div><b>Judgment, not generation.</b> <span>Which angles, hooks, and CTAs &mdash; claim-gated to what you can substantiate. ChatGPT writes a script; it can't tell you which of 4 angles leads for your $90-AOV SKU vs your $45 one. I'll prove the call in a blind paid head-to-head: my 4 angles vs your media buyer's 4, same spend, your account.</span></div></li>
+          <li><span class="n">2.</span><div><b>Production-and-launch hands.</b> <span>24 variations every 2 weeks, launched and tagged in your account, losers killed and winners doubled. The tool was never the bottleneck &mdash; the hours were.</span></div></li>
+          <li><span class="n">3.</span><div><b>The risk is on me.</b> <span>A free made-for-you sample before you pay, a published 5-brand cap so you're never the deprioritized account, and a guarantee that puts the downside on me &mdash; beat your control's hold-rate while CPA holds flat in 30 days, or your next cycle's free. Newer than the agencies, so I earn it on your product, not on a r&eacute;sum&eacute;.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PRICING / LADDER ============================ -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="section-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
+      <span class="eyebrow">Pricing</span>
+      <h2>Start with the pack. Scale to a retainer when the creative earns it.</h2>
+      <p class="lede">The $497 pack is public and one-time &mdash; a cheap, honest way to see the work. Retainers are where the engine actually runs, quoted live on a call and scaled to your spend.</p>
+    </div>
+
+    <div class="price-grid">
+      <!-- THE PACK (public) -->
+      <div class="price-card feature reveal">
+        <div class="price-tag">Foot in the door &middot; public price</div>
+        <div class="price-amount">$497<small> one-time</small></div>
+        <div class="price-sub">The 10-video pack. No retainer, no contract &mdash; a paid look before you commit.</div>
+        <ul>
+          <li><span class="c">&#10003;</span><span>10 production-grade AI UGC videos</span></li>
+          <li><span class="c">&#10003;</span><span>Operator-chosen angles, claim-gated</span></li>
+          <li><span class="c">&#10003;</span><span>Launched &amp; tagged in your account</span></li>
+          <li><span class="c">&#10003;</span><span>Pre-launch QC pass &mdash; no slop ships</span></li>
+          <li><span class="c">&#10003;</span><span>Yours to keep, forever</span></li>
+        </ul>
+        <div class="spacer"></div>
+        <!-- EDIT-ME: Stripe checkout link for the $497 pack -->
+        <a href="https://buy.stripe.com/EDIT_ME_STRIPE_CHECKOUT_LINK" class="btn btn-primary btn-block btn-lg">Get the pack &mdash; $497</a>
+        <p class="price-fine">Under 2.5% of one month's spend for a $20&ndash;100K/mo brand.</p>
+      </div>
+
+      <!-- THE RETAINER (call-quoted) -->
+      <div class="price-card reveal">
+        <div class="price-tag">Where the engine runs</div>
+        <div class="price-amount">from $1.5K<small>/mo</small></div>
+        <div class="price-sub">The 4&times;24 retainer. Quoted live on a call, scaled to your spend and SKU mix.</div>
+        <ul>
+          <li><span class="c">&#10003;</span><span><b>24 variations every 2 weeks</b>, launched &amp; tagged</span></li>
+          <li><span class="c">&#10003;</span><span>Live iteration: kill losers, double winners</span></li>
+          <li><span class="c">&#10003;</span><span>Read in <b>your</b> dashboard, against your control</span></li>
+          <li><span class="c">&#10003;</span><span>Bi-weekly angle + claim approval loop</span></li>
+          <li><span class="c">&#10003;</span><span>Backed by the 30-day hold-rate guarantee</span></li>
+        </ul>
+        <div class="spacer"></div>
+        <!-- EDIT-ME: Calendly booking link -->
+        <a href="https://calendly.com/EDIT_ME_CALENDLY_LINK" class="btn btn-secondary btn-block btn-lg">Book a 15-min call to scope it</a>
+        <p class="price-fine">Mid / standard / premium tiers (premium adds media buying, earned after wins).</p>
+      </div>
+    </div>
+
+    <p class="ladder-note reveal">
+      The full ladder: free made-for-you sample &rarr; free instrumented pilot &rarr; <b>$497 pack</b> &rarr;
+      $1.5&ndash;2.5K/mo mid retainer &rarr; $2.5&ndash;3.5K standard &rarr; $5K+ premium with media buying. Most brands start with the pack.
+    </p>
+  </div>
+</section>
+
+<!-- ============================ SCARCITY ============================ -->
+<section class="scarcity">
+  <div class="wrap">
+    <div class="scarcity-box reveal">
+      <div class="left">
+        <h3>Taking 5 functional-consumables brands. Period.</h3>
+        <p>
+          It's a published cap, not a marketing trick. At 4 angle-families per brand per cycle, that's my honest throughput ceiling
+          for full-judgment production. Past 5, I refer out &mdash; I don't dilute your turnaround to bank another logo.
+          <!-- EDIT-ME: update slot counts honestly as you sign founding partners. -->
+        </p>
+      </div>
+      <div class="right" style="text-align:center">
+        <div class="slots">
+          <div class="slot taken" title="Filled"></div>
+          <div class="slot taken" title="Filled"></div>
+          <div class="slot taken" title="Filled"></div>
+          <div class="slot open" title="Open"></div>
+          <div class="slot open" title="Open"></div>
+        </div>
+        <div class="slots-cap"><b style="color:var(--accent)">2 founding slots left</b> of 5</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FAQ ============================ -->
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head reveal" style="text-align:center;margin-left:auto;margin-right:auto">
+      <span class="eyebrow">Straight answers</span>
+      <h2>The objections you're already thinking</h2>
+    </div>
+
+    <div class="faq-list">
+      <!-- Counter-narrative 1: AI ads are slop -->
+      <div class="faq-item reveal">
+        <button class="faq-q">&ldquo;Aren't AI ads just slop?&rdquo;<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>AI <b>alone</b> is slop. Generic outputs come from giving the model zero brand context. AI <b>plus an operator's brand-context judgment</b> is where winners come from.</p>
+          <p>I feed every script your reviews, your voice, your objections, your P&amp;L. There's a pre-launch QC pass on mouth-sync, hands, render quality, and brand-safety &mdash; anything that fails the slop bar never touches your spend. And I'll route around the genuine AI failure mode in this vertical: the &ldquo;drink-and-react&rdquo; consumption shot. Product-forward framing, hands-and-pour over face-on-sip. I won't pretend the failure mode doesn't exist &mdash; I just don't ship it.</p>
+        </div></div>
+      </div>
+
+      <!-- Counter-narrative 2: AI can do this free -->
+      <div class="faq-item reveal">
+        <button class="faq-q">&ldquo;Can't I just do this myself with ChatGPT or Arcads?&rdquo;<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Your 2-person team can license Arcads tomorrow. The reason you haven't out-tested everyone already isn't the tool &mdash; it's that nobody on your team has the hours to run angle selection, produce 24, QC them, launch, tag, and read results every 2 weeks.</p>
+          <p>ChatGPT writes a script. It <b>can't</b> tell you which of 4 angles to lead with for your $90-AOV SKU vs your $45 SKU, and it won't gate the health claim that gets your account banned. I'm the hands and the judgment. I'll even prove it with a blind paid head-to-head &mdash; my 4 angles vs your media buyer's 4, same spend, your account. Win once and we both know.</p>
+        </div></div>
+      </div>
+
+      <!-- Counter-narrative 3: agencies disappoint -->
+      <div class="faq-item reveal">
+        <button class="faq-q">&ldquo;I got burned by an agency. Why is this different?&rdquo;<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Most agencies bill you to be <b>slow</b> and make <b>you</b> the project manager &mdash; then hand you 24 files in a Drive folder. I bill myself to be fast and self-driving: <b>launched and tagged</b> in your account, with the iteration loop run against your real metrics.</p>
+          <p>And the structural fix for the betrayal scar is the published cap: <b>5 brands, month-to-month, cancel anytime, keep every video.</b> You can't become the deprioritized account on a list of 5 with a ceiling I've stated out loud.</p>
+        </div></div>
+      </div>
+
+      <!-- Practical FAQs -->
+      <div class="faq-item reveal">
+        <button class="faq-q">How much of my time does this actually take?<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Honest answer, not &ldquo;effortless&rdquo;: a one-time brand-context intake of about 2&ndash;3 hours, then roughly 30&ndash;45 minutes per cycle to greenlight 4 angles and the claims they can make. I own scripting, production, iteration, launch, and tagging. You approve direction; I do the work.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item reveal">
+        <button class="faq-q">How does the $497 pack relate to the retainer?<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>The pack is a one-time, deliberately under-priced foot-in-the-door &mdash; 10 videos so you can see the work in your own account. The retainer (from $1.5K/mo) is the actual engine: 24 variations every 2 weeks, iterated live, backed by the guarantee. Plenty of brands start with the pack and convert once the creative earns it. No pressure either way.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item reveal">
+        <button class="faq-q">What about FTC and Meta compliance on health claims?<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Every claim is substantiation-gated before render. During angle approval you tell me which claims you can back; I write only to those. Health / structure-function language is screened against FTC and Meta norms &mdash; no implied disease claims, no unsubstantiated &ldquo;clinically proven.&rdquo; For this vertical, that's not a footnote. It's part of the product.</p>
+        </div></div>
+      </div>
+
+      <div class="faq-item reveal">
+        <button class="faq-q">I spend $200K+/mo and test 90+ creatives a week. Is this for me?<span class="plus">+</span></button>
+        <div class="faq-a"><div class="faq-a-inner">
+          <p>Straight answer: at that scale I'm one angle-family of leverage, not your whole creative department &mdash; and I'll say so on the call. I'm built for the lean $20&ndash;100K/mo team that the big shops ignore. If you want one family taken off your ops team's plate, end-to-end, that's a real fit. If you want me to be your creative department, I'm not your shop, and I'll tell you that for free.</p>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ LEAD MAGNET ============================ -->
+<section class="leadmag" id="teardown">
+  <div class="wrap">
+    <div class="leadmag-box">
+      <div class="reveal">
+        <span class="eyebrow">Free, no call required</span>
+        <h2>The Functional Consumables Ad Teardown</h2>
+        <p>
+          A breakdown of what's actually working in functional-consumables UGC right now &mdash; the angles, the hooks, the
+          claim-safe ways to say what your SKU does, and the AI failure modes to route around. Written by someone who
+          tears down real ads to prove why creative wins or dies, not a content marketer.
+        </p>
+        <!-- EDIT-ME: point action= at your form handler / Typeform / ESP (e.g. ConvertKit, Beehiiv, Mailchimp embed, or a Formspree endpoint).
+             Replace the action URL below. Keep method="post". -->
+        <form class="lm-form" action="https://EDIT_ME_FORM_HANDLER_ENDPOINT" method="post">
+          <input type="email" name="email" placeholder="you@yourbrand.com" required aria-label="Email address">
+          <button type="submit" class="btn btn-primary">Send me the teardown</button>
+        </form>
+        <p class="lm-fine">One email with the teardown. No drip spam. Unsubscribe anytime.</p>
+      </div>
+      <div class="lm-card reveal">
+        <div class="kicker">Inside the teardown</div>
+        <ul>
+          <li><span class="c">&rarr;</span><span>The 4 angle families that hold attention past the 3-second wall in this vertical</span></li>
+          <li><span class="c">&rarr;</span><span>Claim-safe phrasing for adaptogen / nootropic / mushroom SKUs that Meta won't flag</span></li>
+          <li><span class="c">&rarr;</span><span>The &ldquo;drink-and-react&rdquo; trap &mdash; the one AI shot that screams slop, and what to shoot instead</span></li>
+          <li><span class="c">&rarr;</span><span>Why your week-7 winner died &mdash; and the cadence that prevents it</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FINAL CTA ============================ -->
+<section class="final">
+  <div class="wrap">
+    <span class="eyebrow reveal">2 founding slots left</span>
+    <h2 class="reveal">Find the next winner before this one dies.</h2>
+    <p class="lede reveal">
+      Start with 10 videos for $497, launched and tagged in your account. Or book 15 minutes and I'll walk you through
+      the 4&times;24 on your actual SKUs.
+    </p>
+    <div class="hero-cta reveal">
+      <!-- EDIT-ME: Stripe checkout link for the $497 pack -->
+      <a href="https://buy.stripe.com/EDIT_ME_STRIPE_CHECKOUT_LINK" class="btn btn-primary btn-lg">Get my 10-video pack &mdash; $497</a>
+      <!-- EDIT-ME: Calendly booking link -->
+      <a href="https://calendly.com/EDIT_ME_CALENDLY_LINK" class="btn btn-secondary btn-lg">Book a 15-min call</a>
+    </div>
+    <p class="hero-fine reveal">Month-to-month. Cancel anytime. Keep every video. Capped at 5 brands so you're never deprioritized.</p>
+  </div>
+</section>
+
+<!-- ============================ FOOTER ============================ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <span class="brand"><span class="dot"></span>Chaga&nbsp;Chai</span>
+        <p>AI-native UGC ad creative for DTC functional-consumables brands. The 4&times;24 Framework &mdash; 4 angles, 24 variations, every 2 weeks, launched and tagged in your account.</p>
+      </div>
+      <div class="foot-links">
+        <div class="foot-col">
+          <h4>Offer</h4>
+          <a href="#pack">The $497 pack</a>
+          <a href="#pricing">Retainers</a>
+          <a href="#guarantee">Guarantee</a>
+          <a href="#teardown">Free teardown</a>
+        </div>
+        <div class="foot-col">
+          <h4>Get started</h4>
+          <!-- EDIT-ME: Stripe + Calendly links -->
+          <a href="https://buy.stripe.com/EDIT_ME_STRIPE_CHECKOUT_LINK">Buy the pack</a>
+          <a href="https://calendly.com/EDIT_ME_CALENDLY_LINK">Book a call</a>
+          <!-- EDIT-ME: your contact email -->
+          <a href="mailto:EDIT_ME@yourdomain.com">Email me</a>
+        </div>
+        <div class="foot-col">
+          <h4>Legal</h4>
+          <!-- EDIT-ME: link real policy pages -->
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-legal">
+      <!-- EDIT-ME: legal entity name + year -->
+      <span>&copy; <span id="year">2026</span> [FILL: legal entity name]. All rights reserved.</span>
+      <span>Functional consumables only &middot; Capped at 5 brands.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ---- FAQ accordion (vanilla, no libs) ----
+  document.querySelectorAll('.faq-q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var item = btn.parentElement;
+      var panel = btn.nextElementSibling;
+      var isOpen = item.classList.contains('open');
+      // close others (single-open accordion)
+      document.querySelectorAll('.faq-item.open').forEach(function(i){
+        if(i !== item){ i.classList.remove('open'); i.querySelector('.faq-a').style.maxHeight = null; }
+      });
+      if(isOpen){
+        item.classList.remove('open');
+        panel.style.maxHeight = null;
+      } else {
+        item.classList.add('open');
+        panel.style.maxHeight = panel.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // ---- Reveal on scroll ----
+  (function(){
+    var els = document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){
+      els.forEach(function(el){ el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold:0.12, rootMargin:'0px 0px -40px 0px' });
+    els.forEach(function(el){ io.observe(el); });
+  })();
+
+  // ---- Current year in footer ----
+  document.getElementById('year').textContent = new Date().getFullYear();
+</script>
+
+</body>
+</html>

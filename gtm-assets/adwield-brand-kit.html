@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADWIELD — BRAND KIT</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">ADWIELD — BRAND KIT</span>
+    <a class="back" href="../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>ADWIELD — BRAND KIT</h1>
+<h3>The brand bible. Locks the voice for every downstream asset.</h3>
+<p><strong>Venture 1 · The AI-native ad-creative engine · Domain: adwield.com</strong><br>
+<strong>Status: SOURCE OF TRUTH for brand/voice/naming · Grounds on docs 12 (offer-locked), 13 (positioning-acp), 27 (credibility-and-trust), 37 (90-day GTM sprint)</strong></p>
+<blockquote><p><strong>How to use this doc.</strong> This is the spine every asset bends to — cold emails, landing page, sell sheet, content, DMs, decks, the LP CTAs. When a downstream asset needs a word, a tier name, a CTA, or a tone call, it comes from here. Two non-negotiables govern everything below: (1) the <strong>Proof-Only guardrail</strong> (§9) — never fabricate a result — and (2) the <strong>Voice &amp; Tone rules</strong> (§8) — premium-with-a-wink, gamer-adjacent, never cheesy. The MMO/RPG flavor is the <em>wrapper</em>; the locked offer (doc 12), the guarantee (doc 12), and the proof-only credibility system (doc 27) are the <em>substance</em>. Flavor never overrides substance. If the swagger ever outruns the proof, cut the swagger.</p></blockquote>
+<blockquote><p><strong>🔒 FRONT-END COPY RULE (hard — governs every customer-facing surface).</strong> Public copy mentions <strong>ONLY the two live paths</strong> — <strong>Hire a Maxed-Out Knight (DFY)</strong> + <strong>Build a Forge in Your Domain (DWY)</strong>. <strong>No self-serve, no "Open Your Own Forge," no "coming soon," no endgame/aspirational tiers</strong> in any customer-facing copy (landing page, sales page, cold email, sell sheet, content, DMs, decks, ads). The self-serve "Adwield Forge" / "Open Your Own Forge" software tier and any other late-stage tier (e.g. The Guild) are <strong>INTERNAL-ONLY</strong> — they live in this brand kit as strategy, never in front-end copy, because they're endgame and may never ship. If a tier isn't one of the two live paths (Knight / Forge), it does not appear in anything a prospect can read. This rule overrides any older instruction in this doc that says to "tease," "waitlist," or frame a later tier as "coming."</p></blockquote>
+<blockquote><p><strong>🔒 GAMING-METAPHOR SURFACE RULE (hard — governs where the flavor is allowed to live).</strong> The MMO/RPG metaphor stays on <strong>two surfaces only: this BRAND KIT and the WEBSITE / SALES PAGE.</strong> That means every flavor word — loadout, crit / critical strike, wield as a verb, "equip your weapon," "secret weapon," "battle-ready," S-Tier, Raid, The Fatigue Wall as a <em>sold</em> concept, The No-Risk Loadout — is for the kit and the site, nowhere else.</p>
+<p><strong>ALL outreach and sales SCRIPTS use plain operator language.</strong> DM, email, cold email, sales-call, VSL: no game vocabulary. Say it the way an operator says it. "24 ads in two weeks," "your control," "your best ad stops working around week 7," "free sample ad of your product," "beat your control or the next cycle's free."</p>
+<p><strong>The only carry-overs into scripts are proper nouns:</strong> the brand name <strong>Adwield</strong>, and the offer names <strong>First Strike</strong>, <strong>Knight</strong> (DFY), <strong>Forge</strong> (DWY). Nothing else crosses over. "Loadout," "crit," "Fatigue Wall," "S-Tier," "Raid," "No-Risk Loadout," "battle-ready," "secret weapon," "equip/wield" do <strong>not</strong> appear in any script. When in doubt, the script gets the plain word and the site gets the flavor. See <code>copy-standard.md</code> for the paste-grade script exemplars — they already hold this line.</p></blockquote>
+<hr>
+<h2>1. NAME + MEANING</h2>
+<p><strong>Adwield</strong> = <strong>ad</strong> + <strong>wield</strong>.</p>
+<ul>
+<li><strong>ad</strong> — the product: AI-native ad creative.</li>
+<li><strong>wield</strong> — the posture: you don't <em>hire</em> this, you <em>wield</em> it. A weapon in your hand, under your command, swung by you or by an operator you equip.</li>
+</ul>
+<p><strong>The name does one job:</strong> it reframes the buyer from <em>client</em> (passive, managed, billed to wait) into <em>wielder</em> (in command of a weapon). That single reframe is the whole brand. Every agency in the inbox sells you a <em>service you submit to</em>; Adwield sells you a <em>weapon you command</em>.</p>
+<p><strong>Pronunciation / styling:</strong> "AD-weeld." Always one word, capital A: <strong>Adwield</strong>. Never "Ad Wield," "AdWield," or "ADWIELD" in body copy (all-caps only for logo lockups). Domain: <strong>adwield.com</strong>.</p>
+<p><strong>The two readings of "wield" (both intended):</strong></p>
+<ul>
+<li><em>We</em> wield it for you (Done-For-You — the Maxed-Out Knight).</li>
+<li><em>You</em> wield it yourself (Done-With-You — the Forge install). <em>(A third, fully-self-serve software reading exists internally but is <strong>not for front-end copy</strong> — see the Front-End Copy Rule above and §5 STEP 3.)</em></li>
+</ul>
+<hr>
+<h2>2. THE BIG IDEA</h2>
+<blockquote><p><strong>You don't hire an agency. You equip a weapon.</strong></p></blockquote>
+<p>That is the entire positioning in six words. Hold it above everything.</p>
+<p><strong>Why it works:</strong> the buyer (a $20–100K/mo functional-consumables founder) has been <em>burned by an agency that billed him to be slow and never learned his brand</em> (doc 12, Element 3). "Hire an agency" is a scar. "Equip a weapon" is the opposite motion — fast, owned, under his command, swung on his schedule. The frame does the objection-handling before a single feature is named.</p>
+<p><strong>The flavor that carries it:</strong> MMO/RPG — <em>over proof-only substance</em>. Think a tasteful RPG-HUD/crest aesthetic. <strong>Linear-meets-loadout.</strong> A premium SaaS surface with a knowing game-flavored vocabulary layered on top. <strong>Never WoW clipart, never cheesy, never a costume.</strong> The buyers spend $20–100K/mo; the swagger has to feel <em>earned</em>, which is exactly why the free First Strike and the guarantee (not bravado) carry the proof. Flavor is the wink; proof is the handshake.</p>
+<p><strong>The one-line pitch (the Hero Line — see §3):</strong> <em>Equip us as your secret weapon — raise your hit rate, land more critical strikes in the ad auction.</em></p>
+<p><strong>The bridge to the real mechanic (say this when flavor needs grounding):</strong> every winner you ship dies on a clock — creative fatigue at ~7 weeks (doc 12, Element 5; doc 37). The weapon's whole job is to keep a <em>fresh</em> winner equipped before the last one breaks against The Fatigue Wall. The game vocabulary is just the honest mechanism, named in a way a buyer remembers.</p>
+<hr>
+<h2>3. HERO LINE + TAGLINE OPTIONS</h2>
+<h3>Hero Line (LOCKED — lead with this)</h3>
+<blockquote><p><strong>"Equip us as your secret weapon — raise your hit rate, land more critical strikes in the ad auction."</strong></p></blockquote>
+<p>Use on: landing page H1 (or H1-adjacent), the cold-email frame, deck cover, the LP hero. This is the line the brand is built on.</p>
+<h3>Taglines</h3>
+<p><strong>Primary (LOCKED):</strong></p>
+<blockquote><p><strong>"More hits. More crits. Every two weeks."</strong></p></blockquote>
+<p>The "every two weeks" is load-bearing — it carries the <strong>4×24 cadence</strong> (doc 12, Element 5). It's not decoration; it's the mechanism stated as a rhythm. Use as the standing tagline under the logo, in email sign-offs, on the LP.</p>
+<p><strong>Three approved tagline options (pick by surface):</strong></p>
+<ol>
+<li><strong>"More hits. More crits. Every two weeks."</strong> — the primary. Cadence-forward. Best default.</li>
+<li><strong>"Equip the weapon. Win the auction."</strong> — punchier, big-idea-forward. Best for the deck cover, a banner, a short ad.</li>
+<li><strong>"A fresh winner equipped before the last one breaks."</strong> — mechanism-forward, names The Fatigue Wall obliquely. Best when the audience is sophisticated and you want substance over swagger (e.g. a teardown caption, a reply to a skeptical operator).</li>
+</ol>
+<blockquote><p><strong>Rule:</strong> never stack two taglines on one surface. Hero Line + one tagline, max. Specificity beats volume of slogans (doc 13, §6).</p></blockquote>
+<hr>
+<h2>4. METRIC GLOSSARY (keep consistent everywhere)</h2>
+<p>These four terms are the brand's private language. Use them <em>consistently</em> — the same word for the same thing, every asset. They are the AIM and the MECHANIC, <strong>never a fabricated result</strong> (see §9).</p>
+<table>
+<thead>
+<tr><th>Term</th><th>In-flavor meaning</th><th>What it actually maps to</th><th>Guardrail</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Hit rate</strong></td><td>How often a creative you ship actually <em>wins</em></td><td>The rate at which a shipped variation beats the control / earns scale</td><td>A <strong>target to measure</strong>, never a claimed number. Real hit-rate figures only appear once measured in a real account.</td></tr>
+<tr><td><strong>Critical strike / crit</strong></td><td>A breakout winner that <em>scales</em></td><td>The outlier variation that becomes the account's next scaling ad</td><td>Named as the <em>aim</em> ("land more crits"), never invented ("we land 3 crits a month").</td></tr>
+<tr><td><strong>Loadout</strong></td><td>Your <strong>4 angles × 24 variations</strong> — the 4×24 Framework, per 2-week cycle</td><td>The deliverable: 4 hypothesis angles → 24 production-grade AI UGC variations, launched + tagged in your account</td><td>The 4×24 <em>is</em> the loadout. Don't let "loadout" drift to mean anything vaguer.</td></tr>
+<tr><td><strong>The Fatigue Wall</strong></td><td>The boss you outrun: creative fatigue at <strong>~7 weeks</strong></td><td>The point where a winning creative decays (doc 12: "26-week campaigns when customers disengaged at week 7")</td><td>Real, sourced, not invented. The weapon's job is to keep a fresh winner equipped <em>before</em> the last one breaks against it.</td></tr>
+</tbody>
+</table>
+<p><strong>Supporting flavor vocabulary (use sparingly, keep it tasteful):</strong></p>
+<ul>
+<li><strong>Forge</strong> — in <strong>public copy</strong>, this means only the <strong>DWY install</strong> ("Build a Forge in Your Domain"). The self-serve-software meaning of "Forge" is <strong>internal-only</strong> (§5 STEP 3) and never used in front-end copy. Double meaning leaned on hard: <em>your domain</em> = your kingdom AND your website/ad-stack.</li>
+<li><strong>Loadout</strong> doubles as the tier-pack name (see §6).</li>
+<li><strong>Equip / wield / swing</strong> — verbs for putting the weapon to work.</li>
+<li><strong>The auction</strong> — the battlefield (Meta + TikTok ad auction). Always literal, never mystified.</li>
+</ul>
+<blockquote><p><strong>Hard consistency rule:</strong> "hit rate" is one concept, "crit" is another. A <em>hit</em> is a winner; a <em>crit</em> is a winner that <em>scales</em>. Don't blur them. Loadout = 4×24, always.</p></blockquote>
+<hr>
+<h2>5. THE BIG IDEA → OFFER ARCHITECTURE</h2>
+<p>The flavor wraps the <strong>locked offer ladder</strong> (doc 12, Element 5). Nothing here changes the economics; it renames the rungs in-flavor. Below each step is <strong>ready-to-use copy.</strong></p>
+<h3>STEP 1 — FIRST STRIKE (free) · the trust spine</h3>
+<p>This IS the made-for-them sample — the single highest-trust action in the business (doc 12 Element 9; doc 27 Trust Ladder rank 1). We forge <strong>one battle-ready ad of YOUR product</strong>, free, before you spend a coin.</p>
+<blockquote><p><strong>Section header:</strong> <strong>"S-Tier Weapon Unlocked: First Strike (Free)"</strong></p>
+<p><strong>Body copy:</strong><br>
+Before you pay us a coin, we forge one battle-ready ad of your own product — pulled from your real site and your real reviews — so you watch the weapon work instead of reading a pitch. We're newer than the ten-year agencies, and that's exactly why we won't ask you to take our word for anything. The First Strike is the proof. You watch it land before you decide.</p>
+<p><strong>CTA (LOCKED):</strong> <strong>"Claim your First Strike"</strong></p></blockquote>
+<p><em>Maps to: doc 12 Ladder rung 0a ($0 made-for-you sample). Rule (doc 12 Element 9 / doc 37): never send a priority cold touch without their First Strike in it.</em></p>
+<h3>STEP 2 — CHOOSE YOUR PATH (the DFY vs DWY selector)</h3>
+<p>Two paths, one selector screen. The buyer picks who wields the weapon.</p>
+<blockquote><p><strong>Section header:</strong> <strong>"Choose Your Path"</strong></p></blockquote>
+<p><strong>Path A — HIRE A MAXED-OUT KNIGHT (Done-For-You)</strong></p>
+<blockquote><p><strong>We wield it for you.</strong> A max-level operator runs your full loadout — 4 angles × 24 variations, every two weeks — launched and tagged in your own account. You greenlight the angles; you just watch the crits land. Losers paused, winners doubled, the next loadout already in the auction before the last winner breaks against The Fatigue Wall.</p>
+<p><strong>CTA:</strong> <strong>"Hire your Knight"</strong></p></blockquote>
+<p><em>Maps to: the DFY retainer (doc 12 Ladder rungs 2–4). "Max-level operator" = the operator-judgment layer that is the actual moat (doc 12 Element 5). The Knight wields it; the founder watches.</em></p>
+<p><strong>Path B — BUILD A FORGE IN YOUR DOMAIN (Done-With-You)</strong></p>
+<blockquote><p><strong>We install the Adwield Forge inside your domain — your tools, your account, your crew — and train your team to wield it.</strong> The weapon stays yours for good. <em>(Domain = your kingdom AND your website and ad-stack — both meanings intended.)</em> You don't rent the capability. You own the forge.</p>
+<p><strong>CTA:</strong> <strong>"Build your Forge"</strong></p></blockquote>
+<p><em>Maps to: the DWY install/training motion. Lean on the "domain" double meaning. Note: DWY is a GATED expansion per the roadmap (doc 12 / doc 37) — present it as a path on the brand kit, but it goes live only after Gate-1 (3 case studies + capacity free). On a pre-launch surface, this path may read "by application" or "founding cohort."</em></p>
+<h3>STEP 3 — OPEN YOUR OWN FORGE (Self-Serve · the endgame) — 🔒 INTERNAL-ONLY · NOT FOR PUBLIC COPY</h3>
+<blockquote><p><strong>⚠️ DO NOT PUT THIS IN ANY CUSTOMER-FACING COPY.</strong> Per the Front-End Copy Rule (top of doc), the self-serve tier never appears on a landing page, sales page, cold email, sell sheet, deck, ad, or DM — no header, no body, no CTA, no "coming," no waitlist. This step is kept here as <strong>internal product/strategy concept only</strong>. It is the endgame and may never ship; teasing it publicly creates a promise the operation can't yet hold. Front-end copy presents <strong>only</strong> the two live paths (Knight / Forge).</p>
+<p><strong>Internal concept (keep, do not publish):</strong><br>
+<strong>Adwield Forge</strong> — the software brands run themselves. The same weapon, in your hands, on demand. The endgame: you don't hire the Knight and you don't wait for the install — you open the Forge and wield it yourself.</p>
+<p><strong>Internal CTA idea (never rendered publicly):</strong> ~~"Open the Forge"~~ — no public waitlist, no early-access teaser, until and unless this is real and approved for launch.</p></blockquote>
+<p><em>Maps to: the self-serve software endgame. Later-stage, gated, and <strong>internal-only</strong> for now. It does NOT go on any pre-launch (or launch) surface as "coming," "waitlist," or available. When/if it ships, this rule gets revisited deliberately — not by default.</em></p>
+<h3>The architecture in one line</h3>
+<blockquote><p><strong>Public (front-end) version — use this:</strong> <strong>First Strike (free) → Choose Your Path: a Maxed-Out Knight (we wield it) or a Forge in your domain (you wield it).</strong></p>
+<p><strong>Internal-only version (never publish — ends at the self-serve endgame):</strong> <em>First Strike (free) → Knight (we wield it) / Forge (you wield it) → Open Your Own Forge (self-serve endgame).</em> The self-serve tail is strategy, not copy.</p></blockquote>
+<hr>
+<h2>6. TIER / LOADOUT NAMING SYSTEM (in-flavor)</h2>
+<p>The flavor names for the locked price ladder (doc 12, Element 5/6). <strong>Prices and economics are unchanged</strong> — this is naming only. Where a real price is public, it's shown; retainer pricing stays quoted-live (doc 12 Element 6).</p>
+<table>
+<thead>
+<tr><th>In-flavor name</th><th>What it is</th><th>Maps to (doc 12 ladder)</th><th>Price posture</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>First Strike</strong></td><td>One free made-for-them ad</td><td>Rung 0a ($0 sample)</td><td>Free. The trust spine.</td></tr>
+<tr><td><strong>Proving Grounds</strong></td><td>The instrumented pilot</td><td>Rung 0b ($0 founding-partner pilot)</td><td>Free. Baseline-captured-first, manufactures the first case studies.</td></tr>
+<tr><td><strong>Starter Loadout</strong></td><td>The foot-in-door pack</td><td>Rung 1 ($497 10-video pack)</td><td><strong>$497, public.</strong> Lead with this as the paid entry.</td></tr>
+<tr><td><strong>Standard Tier</strong></td><td>Core retainer</td><td>Rungs 2–3 (mid / standard retainer)</td><td>Quoted live, scaled to spend.</td></tr>
+<tr><td><strong>Elite Tier</strong></td><td>Premium retainer</td><td>Rung 3–4</td><td>Quoted live. Earned after creative wins.</td></tr>
+<tr><td><strong>Raid Tier</strong></td><td>Premium <strong>+ media buying</strong></td><td>Rung 4 ($5K+, media buying gated)</td><td>Quoted live. Earned only after creative wins — never sold cold (doc 12).</td></tr>
+<tr><td><strong>The Guild</strong> 🔒</td><td>Community</td><td>Rung 5 (Skool $97/mo)</td><td>$97/mo. Month-6+ backend. <strong>INTERNAL-ONLY</strong> — not in front-end copy.</td></tr>
+<tr><td><strong>Adwield Forge</strong> 🔒</td><td>Self-serve software</td><td>The endgame</td><td><strong>INTERNAL-ONLY</strong> — never in front-end copy, no public waitlist (see Front-End Copy Rule + §5 STEP 3).</td></tr>
+</tbody>
+</table>
+<blockquote><p><strong>🔒 = INTERNAL-ONLY tier.</strong> Per the Front-End Copy Rule, only <strong>First Strike, Proving Grounds, Starter Loadout, Standard, Elite, and Raid</strong> may appear in customer-facing copy. <strong>The Guild (community)</strong> and <strong>Adwield Forge (self-serve)</strong> are kept here as internal strategy and <strong>do not appear on any public surface</strong> — no header, no CTA, no "coming," no waitlist.</p></blockquote>
+<p><strong>Naming rules:</strong></p>
+<ul>
+<li><strong>Proving Grounds</strong> = the pilot (it's where you <em>prove</em> the weapon). Always baseline-first (doc 27 §4; doc 37 S3) — no baseline, no case study.</li>
+<li><strong>Raid Tier</strong> is the only tier that includes media buying, and it is <strong>earned, never sold cold</strong> (doc 12 Element 6).</li>
+<li>Tiers are flavor labels on a <em>real</em> ladder. Never invent a tier to look bigger than the operation is (the operation caps at 5 retainer brands — doc 12 Element 5; ~2 realistic at Day 90 with V2 load — doc 37).</li>
+<li>The $497 <strong>Starter Loadout</strong> is the public anchor — do not raise it (doc 12 Element 6). Quality is signaled by the First Strike + the guarantee, not by price.</li>
+</ul>
+<hr>
+<h2>7. THE NO-RISK LOADOUT (the guarantee)</h2>
+<p>The guarantee is brand-critical: it's the proof that carries the swagger (doc 12 Element 9; doc 27 Trust Ladder rank 2). In-flavor name: <strong>The No-Risk Loadout.</strong></p>
+<blockquote><p><strong>The promise (in-flavor framing):</strong><br>
+<strong>Beat your control or the next cycle's free.</strong> We equip you, and the risk stays on us.</p></blockquote>
+<p><strong>The full, locked guarantee language (doc 12 — use verbatim where the guarantee must be precise; the in-flavor line above is the <em>headline</em>, this is the <em>substance</em>):</strong></p>
+<blockquote><p><strong>"Within 30 days, our creative beats your current best ad on hook-rate / hold-rate (3-second + thumbstop) AND your CPA holds flat or better — measured against your own control, in your own account, with the head-to-head data on the table. If it doesn't, your next 24-variation cycle is free. Month-to-month, cancel anytime, and you keep every video either way."</strong></p></blockquote>
+<p><strong>Why this guarantee, brand-side:</strong></p>
+<ul>
+<li><strong>Hook-rate / hold-rate</strong> is creative-controllable (we actually own it) and correlates downstream — not the vanity trap raw CTR is (doc 12).</li>
+<li><strong>"CPA holds flat or better"</strong> neutralizes "high-CTR creative that bled cash."</li>
+<li><strong>Labor currency (next cycle free), not cash</strong> — a small-budget solo can always honor it; it costs no cash (doc 12 Element 7). Never promise a cash/ROAS refund.</li>
+<li><strong>Month-to-month + cancel-anytime + keep-the-videos</strong> kills the counterparty doubt ("will this stranger be here next month?").</li>
+</ul>
+<blockquote><p><strong>Brand rule:</strong> the in-flavor headline ("Beat your control or the next cycle's free") may lead; the <strong>precise locked language must appear</strong> wherever the guarantee is the actual commitment (LP guarantee block, sell sheet, contract). Never let the flavor soften or overstate the real terms.</p></blockquote>
+<hr>
+<h2>8. VOICE &amp; TONE RULES</h2>
+<p><strong>The register:</strong> premium-with-a-wink. Gamer-adjacent. <strong>Never cheesy.</strong> A buyer spending $20–100K/mo must feel the swagger is <em>earned</em> — and the only thing that earns it is proof (the free First Strike + the guarantee), not bravado. The flavor is seasoning on plain, specific, operator-true copy (doc 13 §6) — never a substitute for it.</p>
+<p><strong>The test for every line:</strong> <em>Would a sharp, skeptical, burned-once founder read this and nod — or wince?</em> If the game flavor makes him wince, cut it. If a metric or claim isn't real, cut it. Confidence comes from <strong>specificity</strong>, not from slogans.</p>
+<h3>DO</h3>
+<ul>
+<li><strong>Lead with the weapon frame.</strong> "Equip," "wield," "loadout," "crit," "hit rate" — used naturally, where they clarify, not stacked for effect.</li>
+<li><strong>Stay specific — specificity is the brand</strong> (doc 13 §6). <code>4 angles</code>, <code>24 variations</code>, <code>every 2 weeks</code>, <code>7-week fatigue</code>, <code>$20–100K/mo</code>, <code>$497</code>, <code>capped at 5 brands</code>. Never round-number vagueness.</li>
+<li><strong>Make the winner the hero, volume the method</strong> (doc 12 Element 4; doc 13 §6). "Find the next winner before the last one dies" — volume is <em>how the crit gets found faster</em>, never the pitch.</li>
+<li><strong>Be honest about limits.</strong> Name the AI failure mode (consumption "drink-and-react" B-roll) before they do (doc 12 Element 5). Name the real client time cost. Honesty builds the belief the offer is short on.</li>
+<li><strong>Use earned empathy, never pity</strong> (doc 13 §6). "The game changed under you; here's the lever you couldn't pull alone" — never "I know it's been hard."</li>
+<li><strong>Let the guarantee and the free First Strike carry the credibility.</strong> Swagger is backed by risk-on-us, not by claims.</li>
+<li><strong>Keep the flavor tasteful and load-bearing.</strong> A game word earns its place only if it makes the meaning <em>clearer or stickier</em>. Otherwise, plain English.</li>
+<li><strong>Plain declarative sentences.</strong> "Ship 24 ads in two weeks," not "leverage synergistic AI workflows."</li>
+</ul>
+<h3>DON'T</h3>
+<ul>
+<li><strong>No cheese, no WoW-clipart energy.</strong> No "EPIC LOOT!", no "+5 SWORD OF ROAS," no dragon emojis, no Comic-Sans-of-the-soul. The flavor is a <em>tasteful crest</em>, not a costume.</li>
+<li><strong>No fabricated metrics, ever</strong> (see §9). Hit rate and crits are the AIM, never a claimed result.</li>
+<li><strong>Never lead with volume</strong> — it pings the slop alarm (doc 13 §6). Volume is the method.</li>
+<li><strong>Never lead with price, and never lead with the word "AI"</strong> (doc 13 §4). Lead with their First Strike (if priority), then the 7-week truth, then the mechanism, then proof-only credibility + guarantee.</li>
+<li><strong>No emojis. No exclamation-point selling.</strong> Confidence comes from specificity, not hype (doc 13 §6).</li>
+<li><strong>No banned hype words:</strong> revolutionary, game-changing, cutting-edge, synergy, death spiral, "got your nights back," outvariant, "10x" as filler, "effortless," "near-zero effort" (doc 13 §6).</li>
+<li><strong>Don't sell the community's grief back to them.</strong> Reference the post-Andromeda Meta break / 7-week fatigue as <em>shared context</em>, never paste a Reddit quote as a manipulative hook (doc 13 §6).</li>
+<li><strong>Don't claim an ad track record you don't have</strong> (doc 12 Element 9; doc 27). The home-gym business appears at most once, lightly, as <em>character</em> — never as ad-proof.</li>
+<li><strong>Don't let flavor overstate the offer.</strong> If a game metaphor makes the promise sound bigger than the locked offer delivers (creative, not whole-account ROAS), cut the metaphor.</li>
+</ul>
+<h3>Quick voice swatch (right vs wrong)</h3>
+<ul>
+<li>✅ "Equip us as your secret weapon — 4 angles, 24 variations, every two weeks, launched and tagged in your own account. Beat your control or the next cycle's free."</li>
+<li>❌ "Unleash EPIC ad POWER and 10x your ROAS with our game-changing AI weapon! 🗡️🔥"</li>
+<li>✅ "Your last winner is going to break against The Fatigue Wall around week 7. We keep a fresh one equipped before it does."</li>
+<li>❌ "Slay the algorithm boss and loot infinite sales!"</li>
+</ul>
+<hr>
+<h2>9. THE PROOF-ONLY GUARDRAIL (hard rule — governs all of the above)</h2>
+<p>This is the rule the whole kit bends to. It comes straight from doc 12 (Element 9), doc 13 (§5), and doc 27 (the entire playbook).</p>
+<blockquote><p><strong>Never fabricate metrics, case studies, testimonials, reviews, star ratings, or client logos.</strong> Every metric is a <strong>target to measure</strong>, never a claimed result.</p></blockquote>
+<p><strong>How the flavor stays honest:</strong></p>
+<ul>
+<li><strong>Hit rate + crits are the AIM and the MECHANIC</strong> — the thing we're swinging <em>for</em> — never a fabricated outcome. "Raise your hit rate" is a promise of effort and method; "our hit rate is 80%" (with no real account behind it) is a lie. Never the second one until it's real and measured.</li>
+<li><strong>Where proof would normally go, use:</strong> the <strong>free First Strike</strong> + the <strong>No-Risk Loadout guarantee</strong> + <strong>"founding / early"</strong> framing + a literal <strong><code>[CASE STUDY PLACEHOLDER]</code></strong>. The placeholder stays <em>literal</em> until a real founding-partner delta exists (doc 37 §3). The founding-slot count stays the <em>real</em> current number — never inflated (doc 37).</li>
+<li><strong>The home-gym business</strong> (the founder's real ~$2M offline company) appears <strong>at most once, lightly, as character</strong> — "a real operator who respects your margin, not an agency middleman" — and <strong>never</strong> as ad-proof. Never claim it was online, e-commerce, DTC, or that it ran paid ads (doc 27 §6).</li>
+<li><strong>No claimed ad / paid-ads track record.</strong> Trust is earned by <em>demonstration</em>: the First Strike, the teardown portfolio, one honestly-labeled real hold-rate number off the founder's own small test, the founding-partner deltas, and the guarantee (doc 27 Trust Ladder).</li>
+<li><strong>Sample-host watch analytics are an internal metric only</strong> — never quoted externally as proof or traction (doc 37 §3).</li>
+<li><strong>Zero fabrication, ever.</strong> No invented numbers, no fake logos, no "as seen in," no borrowed follower counts. In a niche flooded with fakery, the clean empty inventory is itself a trust signal (doc 27 §7).</li>
+</ul>
+<blockquote><p><strong>The reframe that powers the whole brand:</strong> newness isn't the weakness to hide — it's the <em>reason</em> the free First Strike and the guarantee exist. We prove it on your product, before you pay, with the risk on us. Confident and honest, never apologetic (doc 27).</p></blockquote>
+<hr>
+<h2>10. VISUAL IDENTITY DIRECTION</h2>
+<p><strong>The north star:</strong> <strong>tasteful RPG-HUD / crest. Linear-meets-loadout.</strong> A premium, restrained SaaS surface (clean type, generous space, sharp grid — think Linear, Vercel, Raycast) with a <em>subtle</em> game-flavored layer: a crest/sigil mark, a HUD-style stat treatment for the metric glossary, a "loadout"-style card grid for the 4×24. The game is in the <em>details and vocabulary</em>, not in the skin.</p>
+<h3>Logo / mark</h3>
+<ul>
+<li>A <strong>crest or sigil</strong> — geometric, modern, monoline or low-relief. Reads as a <em>premium guild mark</em>, not a fantasy-game logo. The "A" of Adwield can anchor it.</li>
+<li>Wordmark: clean geometric or grotesk sans, tight, confident. Lowercase or small-caps "adwield" for the wordmark; the crest carries the ceremony.</li>
+</ul>
+<h3>Palette (suggestion — tune in design)</h3>
+<ul>
+<li><strong>Base:</strong> near-black / deep charcoal (<code>#0B0D12</code>-ish) + off-white, for the premium Linear-dark feel. The product lives in dark mode comfortably.</li>
+<li><strong>Primary accent:</strong> a single sharp "equip" color — a <strong>forged steel-blue or electric cyan</strong> (the HUD glow), used <em>sparingly</em> for CTAs and the crest.</li>
+<li><strong>Crit accent (used rarely, with intent):</strong> one warm "critical-strike" highlight — a <strong>molten amber / forge-orange</strong> — reserved for moments that signify a <em>crit</em> or the First Strike unlock. Scarcity is what keeps it premium.</li>
+<li><strong>Rule:</strong> two accents, max. Restraint reads as expensive; a rainbow reads as a game-jam.</li>
+</ul>
+<h3>Type</h3>
+<ul>
+<li>One confident sans for headlines (geometric/grotesk), one clean readable sans for body. No decorative/fantasy fonts, ever. The HUD vocabulary supplies the flavor — the type stays sober.</li>
+</ul>
+<h3>Motifs that work (tasteful)</h3>
+<ul>
+<li>A <strong>HUD stat-readout</strong> treatment for the metric glossary (hit rate / crit / loadout / Fatigue Wall) — clean labels, monospace numerals, thin rules.</li>
+<li>A <strong>loadout card-grid</strong> for the 4×24 (4 angles × 24 — a tidy slotted grid reads instantly as "a loadout").</li>
+<li>A <strong>crest/sigil</strong> as the recurring brand stamp.</li>
+<li>The "Forge" rendered as a clean iconographic anvil/spark mark — minimal, not literal blacksmith art.</li>
+</ul>
+<h3>What to AVOID (hard list)</h3>
+<ul>
+<li>WoW clipart, fantasy-game UI chrome, dragons, swords-as-clipart, glowing runes, pixel-art, parchment textures, faux-leather/metal bevels, lens-flare "EPIC" energy.</li>
+<li>Loud gradients, rainbow palettes, more than two accent colors.</li>
+<li>Emoji-as-design, exclamation-mark energy, hype-sticker badges.</li>
+<li>Fake trust furniture: invented star ratings, logo walls, "as seen in" bars, fabricated testimonials (see §9 — this is a <em>visual</em> proof-only rule too).</li>
+<li>Anything that makes a $20–100K/mo buyer feel he's looking at a game and not a weapon. <strong>The test: does it look like a tool a serious operator would equip, or a costume? Equip, never costume.</strong></li>
+</ul>
+<hr>
+<h2>11. ONE-PAGE QUICK REFERENCE (for downstream assets)</h2>
+<ul>
+<li><strong>Brand:</strong> Adwield (ad + wield) · adwield.com · the AI-native ad-creative engine.</li>
+<li><strong>Big Idea:</strong> You don't hire an agency. You equip a weapon.</li>
+<li><strong>Hero Line:</strong> "Equip us as your secret weapon — raise your hit rate, land more critical strikes in the ad auction."</li>
+<li><strong>Tagline:</strong> "More hits. More crits. Every two weeks."</li>
+<li><strong>Glossary:</strong> Hit rate (a winner) · Crit (a winner that scales) · Loadout (4 angles × 24 variations) · The Fatigue Wall (~7-week creative fatigue).</li>
+<li><strong>Offer (PUBLIC):</strong> First Strike (free) → Choose Your Path: Maxed-Out Knight (DFY) / Forge in your domain (DWY). <em>(Self-serve "Open Your Own Forge" is INTERNAL-ONLY — never in front-end copy.)</em></li>
+<li><strong>Tiers (PUBLIC):</strong> First Strike (free) → Proving Grounds (free pilot) → Starter Loadout ($497) → Standard / Elite / Raid (Raid = + media buying). <em>(The Guild + Adwield Forge self-serve = 🔒 INTERNAL-ONLY, not in customer-facing copy.)</em></li>
+<li><strong>Guarantee — The No-Risk Loadout:</strong> "Beat your control or the next cycle's free." (Full locked language in §7.)</li>
+<li><strong>CTAs (PUBLIC):</strong> "Claim your First Strike" · "Hire your Knight" · "Build your Forge." <em>("Open the Forge" / self-serve waitlist = internal-only, never rendered.)</em></li>
+<li><strong>🔒 Front-End Copy Rule:</strong> public copy mentions ONLY the two live paths — Hire a Maxed-Out Knight (DFY) + Build a Forge in Your Domain (DWY). No self-serve, no "Open Your Own Forge," no "coming soon," no endgame tiers in any customer-facing copy.</li>
+<li><strong>Voice:</strong> premium-with-a-wink, gamer-adjacent, specific, winner-led, honest. Never cheesy, never hype, no emojis, no fabricated proof.</li>
+<li><strong>Hard rule:</strong> Proof-Only. Every metric is a target to measure, never a claimed result. Free First Strike + guarantee carry the proof.</li>
+</ul>
+<hr>
+<p><strong>END — ADWIELD BRAND KIT.</strong> Voice locked. Every downstream asset (cold email, LP, sell sheet, content, deck, DMs) inherits the Hero Line, the metric glossary, the offer/CTA copy, the tier names, the guarantee, the voice do/don't list, and the proof-only guardrail from this file. Flavor is the wink; proof is the substance; the substance always wins.</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

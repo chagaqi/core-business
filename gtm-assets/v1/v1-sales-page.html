@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>V1 — Long-Form Sales Page</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">V1 — Long-Form Sales Page</span>
+    <a class="back" href="../../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>V1 — Long-Form Sales Page</h1>
+<h3>Adwield — AI-native ad creative for DTC functional-consumables brands</h3>
+<p><strong>Brand: Adwield (adwield.com) · Founder: Chaga Chai · Asset: long-form sales page · Status: paste-ready</strong></p>
+<blockquote><p><strong>Brand lock.</strong> Voice, naming, CTAs, tiers, glossary inherit from <code>adwield-brand-kit.md</code>. Big idea: you don't hire an agency, you equip a weapon. Glossary: <strong>hit rate</strong> (a creative that wins), <strong>crit</strong> (a winner that scales), <strong>loadout</strong> (4 angles × 24 variations), <strong>The Fatigue Wall</strong> (~7-week fatigue). The free First Strike and the No-Risk Loadout guarantee carry the proof. Flavor is the wink; the swagger never outruns it.</p>
+<p><strong>What this is.</strong> The read-every-word page for warm traffic: replied cold emails, retargeting, the link under a teardown, the DM follow-up. Sells the <strong>Starter Loadout ($497)</strong> as the front door and the retainer as the core.</p>
+<p><strong>Locked rules:</strong> lead with the winning ad, never volume or AI. No claimed track record, case study, testimonial, or logo. Results blocks are <code>[CASE STUDY PLACEHOLDER]</code> or honest founding framing. The ~$2M home-gym company appears at most once, as character. The 5-brand cap is real. <strong>Front-end rule:</strong> public copy names only Knight (DFY) and Forge (DWY). No self-serve tier.</p>
+<p><strong>Two interchangeable openers:</strong> <em>Refuge</em> (Wounded Veteran / Track 1) and <em>Leverage</em> (Volume-Player + Lean Team / Track 2). One per audience. The shared body works for both. Never stack both heroes on one live page.</p>
+<p><strong>Merge fields</strong> are the only brackets allowed: <code>{{stripe_pack_link}}</code>, <code>{{calendly_link}}</code>, <code>{{teardown_form}}</code>, <code>{{contact_email}}</code>, <code>{{founding_slots_left}}</code>, <code>{{legal_entity}}</code>.</p></blockquote>
+<hr>
+<h1>▣ HERO — VARIANT A: "REFUGE" (Wounded Veteran / Track 1)</h1>
+<blockquote><p>For prospects gutted by the post-Andromeda fatigue spiral. Recognition, not pity.</p></blockquote>
+<hr>
+<p>&lt;span style="letter-spacing:.12em;text-transform:uppercase;font-size:.8rem;color:#d9a441"&gt;Adwield · AI-native ad creative · functional consumables only&lt;/span&gt;</p>
+<h1>You had one ad carrying the account. It hit The Fatigue Wall, and nothing you tried brought it back.</h1>
+<h3><strong>Equip us as your secret weapon. Raise your hit rate, land more crits in the auction.</strong> Your loadout: 4 angles into 24 production-grade AI UGC variations every two weeks, launched and tagged in your own account, so a fresh winner is equipped before the last one breaks. We're newer than the 10-year agencies, so we prove it the only honest way. Your <strong>First Strike</strong>: one ad of <em>your</em> product, forged free, before you spend a coin.</h3>
+<p>✓ Built for $20–100K/mo Meta + TikTok brands · ✓ Launched and tagged in your account · ✓ Capped at 5 brands</p>
+<blockquote><p><a href="{{calendly_link}}"><strong>Claim your First Strike (free) →</strong></a> &amp;nbsp;&amp;nbsp; <a href="{{stripe_pack_link}}">Or grab the Starter Loadout, $497 →</a></p></blockquote>
+<p><em>First Strike: one ad of your own product, free, before you spend a coin. You judge the output, not a pitch. The Starter Loadout is the paid foot-in-door: $497 one-time, 10 videos, under 2.5% of one month's spend. No retainer, no contract.</em></p>
+<hr>
+<p><strong>Here's what your last six months looked like. Tell me where I'm wrong.</strong></p>
+<p>You had <em>the</em> ad, the one that carried the account, the one your buyer would quietly scale on a Friday because they knew it would hold. Then, sometime after mid-February, it broke. Same creative, same audience, same offer. Double the CPMs.</p>
+<p>So you did what every competent operator does. Targeting fixes. Budget restructures. You consolidated the ad sets the way the consultants said to, broadened, narrowed, let it learn, stopped touching it. None of it was the problem. The auction changed toward the one thing a lean team can't do: produce fresh, specific creative fast enough to keep feeding it. So now you ship maybe four tests a month and you hope, and the campaign that should have retired at week 7 is limping along at week 24, because retiring it means having nothing to replace it with.</p>
+<p>You hired an agency once to fix this. They sent twenty-four files to a Drive folder and an invoice, and you became the project manager. That's the scar this is built against. You don't hire an agency. You equip a weapon.</p>
+<p>You're not short on ideas. You're short on hands. Your instinct already knows what the auction wants: more fresh, more specific, more often. You can't produce at that rate alone, you can't justify a hire for it, and the tools everyone says to "just use" don't come with the hours it takes to run them. That has a fix that needs no new budget, no new hire, no trust in a stranger's résumé. Keep reading, or <a href="{{calendly_link}}">claim your First Strike: one free ad of your own product, before we even talk</a>.</p>
+<hr>
+<hr>
+<h1>▣ HERO — VARIANT B: "LEVERAGE" (Volume-Player + Lean Team / Track 2)</h1>
+<blockquote><p>For prospects winning and wanting to widen the gap, or lean teams drowning in vendor-management. Zero grief. Lead with capacity math and workflow fit.</p></blockquote>
+<hr>
+<p>&lt;span style="letter-spacing:.12em;text-transform:uppercase;font-size:.8rem;color:#d9a441"&gt;Adwield · AI-native ad creative · functional consumables only&lt;/span&gt;</p>
+<h1>Your bottleneck isn't strategy. It's throughput per dollar. You already know it.</h1>
+<h3><strong>Equip us as your secret weapon.</strong> A max-level operator wields one angle-family end-to-end: concept, 24 production-grade AI UGC variations, iteration, launched and tagged in your taxonomy, every two weeks. Your two ops people stop being the production line. You already know volume × variation wins the auction. We're the hands that produce it, and we'll prove the angle judgment beats DIY with a blind paid head-to-head before you sign.</h3>
+<p>✓ Built for $20–100K/mo Meta + TikTok brands · ✓ Read in <em>your</em> dashboard, against <em>your</em> control · ✓ Capped at 5 brands</p>
+<blockquote><p><a href="{{calendly_link}}"><strong>Claim your First Strike (free) →</strong></a> &amp;nbsp;&amp;nbsp; <a href="{{stripe_pack_link}}">Or grab the Starter Loadout, $497 →</a></p></blockquote>
+<p><em>First Strike: one ad of your own product, free, before you spend a coin. The Starter Loadout ($497 one-time, 10 videos, under 2.5% of one month's spend) is the cheapest way to put our hands on your account and watch the throughput.</em></p>
+<hr>
+<p><strong>Skip the part where I tell you the game changed. You adapted. You're winning. Here's the actual problem.</strong></p>
+<p>You know the post-Andromeda auction is a volume-discovery game, you know whoever puts the most fresh, specific creative in front of the customer wins, and you've rebuilt your operation around that. You don't need another strategist with opinions about your account. You have a throughput problem. It's math, not knowledge.</p>
+<p>Every new angle-family you want to test means more files to brief, name, upload, more ad sets to structure, more results to reconcile. Your two ops people are, by default, your entire production line, and every hour they spend rendering and launching is an hour off the work only they can do. So you're capped. Not by strategy, budget, or offer, but by hands per dollar. You could license Arcads tomorrow for about a hundred a month. The tool was never the bottleneck. The bottleneck is that nobody on a two-person team has the hours a cycle to run angle selection, produce 24 variations, QC every one, launch, tag in your convention, and read the results, every two weeks, forever.</p>
+<p>That's the hour you can't buy back without a hire. So here's the offer in a sentence: <strong>equip a max-level operator who wields one angle-family off your plate end-to-end, handed back launched and tagged in your account.</strong> Your ops people get the throughput back without a third hire, and you approve angles and claims instead of babysitting a vendor. You don't hire an agency. You equip a weapon.</p>
+<p>I won't ask you to trust that the judgment is good. I'll prove it: <a href="{{calendly_link}}">a blind paid head-to-head, my 4 angles vs your media buyer's 4, same spend, your account</a>. Win once and we both know. Or start smaller: <a href="{{calendly_link}}">claim your First Strike, a free ad of your own product</a>, or <a href="{{stripe_pack_link}}">grab the Starter Loadout: $497, 10 videos, my hands on your account this week</a>.</p>
+<hr>
+<hr>
+<h1>▣ SHARED BODY — works for both variants</h1>
+<blockquote><p>Paste under whichever hero you chose. Never both heroes on one live page.</p></blockquote>
+<hr>
+<h2>What actually broke (and why none of your fixes touched it)</h2>
+<p><strong>Creative fatigue sets in around 7 weeks. Call it The Fatigue Wall.</strong> Your winners were never going to last. A creative crushing today is, on the auction's clock, already aging toward the wall, and the moment it breaks, performance falls off whether or not you touched a thing. An ad strategist on r/advertising put it exactly right: <em>"creative fatigue sets in at 7 weeks… we've been running 26-week campaigns when our end customers are disengaged at week 7."</em></p>
+<p>So the only real defense is fresh, specific variation, faster than fatigue can kill the winner. Not a better ad or a smarter hook, a steady supply of fresh ones. Every targeting fix you tried treated a creative-supply problem as a targeting problem. That's why none of them worked.</p>
+<table>
+<thead>
+<tr><th>What you tried</th><th>Why it didn't work</th></tr>
+</thead>
+<tbody>
+<tr><td>Targeting fixes, audience expansion</td><td>The problem was creative supply, not who saw it.</td></tr>
+<tr><td>Budget restructures, CBO/ABO consolidation</td><td>Reallocating spend across a dying creative doesn't make it un-die.</td></tr>
+<tr><td>"Let it learn / stop touching it"</td><td>The auction doesn't reward patience. It rewards fresh input.</td></tr>
+<tr><td>One more "perfect" hero ad</td><td>One ad into a flooded volume-discovery auction is one lottery ticket.</td></tr>
+<tr><td>Hiring a slow, broad agency</td><td>You got files in a folder and became the project manager.</td></tr>
+</tbody>
+</table>
+<p>You're not bad at this. The board changed, and the one lever that now wins, production volume at variation, is the one a lean team can't pull alone.</p>
+<hr>
+<h2>The fix: your loadout, the 4×24 Framework</h2>
+<p>Here's exactly what I do. Your <strong>loadout</strong> is 4 angles × 24 variations, the weapon you equip every two weeks.</p>
+<blockquote><h3><strong>4</strong> hypothesis angles <strong>×</strong> <strong>24</strong> production-grade AI UGC variations <strong>÷</strong> every <strong>2</strong> weeks <strong>=</strong> one crit, found on a schedule.</h3></blockquote>
+<p>Every two weeks, the loop runs:</p>
+<ol>
+<li><strong>You greenlight 4 angles</strong> and the specific claims each can make. You approve the direction, not 24 surprises.</li>
+<li><strong>I send the 4 hooks plus script directions</strong> per angle for sign-off <em>before</em> mass production. The 24 are variations on approved ideas.</li>
+<li><strong>I produce all 24:</strong> scripted, rendered, run through a pre-launch QC pass for mouth-sync, hands, render quality, brand-safety, claim language. Anything that fails the slop bar never touches your spend.</li>
+<li><strong>Launched and tagged in your account,</strong> in your naming convention and ad-set structure. Live, ready to read against your metrics. (Or handed off as files to launch yourself. Your call.)</li>
+<li><strong>Read at day 14.</strong> Kill the losers, double the winners, load the next 4 angles. You get a decision log: what we killed, what we're doubling, head-to-head vs your control.</li>
+</ol>
+<p>So instead of four tests a month and praying, you're running 24 production-grade variations every two weeks, keeping a fresh winner equipped before the last one breaks.</p>
+<h3>The honest part: the name isn't the moat.</h3>
+<p>"Test 4 angles, iterate" is what good operators already do. The framework name is a label, not magic. If you're a 90-tests-a-week shop telling me "that's just what we do," you're right, and you're probably not my client.</p>
+<p>So what is the moat? Three things, all honest:</p>
+<ul>
+<li><strong>Who picks the angles.</strong> ChatGPT writes a script. It can't tell you which of 4 angles leads for your $90-AOV SKU vs your $45 one, and it won't gate the health claim that bans your account. That judgment is what you're hiring.</li>
+<li><strong>The production economics.</strong> AI drops per-video cost from the weeks-and-hundreds a single human-creator UGC video used to take. One operator who spent $500K on AI-generated ads put it flatly: <em>"Production cost has reduced. Scalability increased. ROI increased."</em> That's the only reason testing 24 at a time is possible.</li>
+<li><strong>The hands.</strong> I do the production-and-launch labor your two-person team can't staff. The tool was never the bottleneck. The hours were.</li>
+</ul>
+<hr>
+<h2>S-Tier Weapon Unlocked: First Strike (Free)</h2>
+<p>I don't ask you to trust a track record. <strong>Before you spend a coin, I forge one ad of <em>your</em> product,</strong> pulled from your real site and reviews. A 15-second ad of your actual SKU that you can watch and judge. You see the weapon work instead of reading a pitch.</p>
+<p>That one forged ad kills the two doubts that kill every AI-ads pitch:</p>
+<ul>
+<li><em>"Is the AI any good, or is it slop?"</em> You're watching the output. Judge it.</li>
+<li><em>"Does this guy even know my brand?"</em> It's your product, your reviews, your voice. Not a demo reel of someone else's gummies.</li>
+</ul>
+<p>No paragraph I write outperforms a thing you can watch. That's why the First Strike is the spine of this business: the proof, the credibility, and the risk reversal in one, landing before the invoice. We're newer than the ten-year agencies, which is exactly why we won't ask you to take our word for anything.</p>
+<blockquote><p><a href="{{calendly_link}}"><strong>Claim your First Strike (free) →</strong></a></p></blockquote>
+<hr>
+<h2>Choose Your Path: who wields the weapon</h2>
+<p>After your First Strike lands, you pick who wields the loadout.</p>
+<p><strong>Path A — HIRE A MAXED-OUT KNIGHT (Done-For-You).</strong> We wield it for you. A max-level operator runs your full loadout, 4 angles × 24 variations every two weeks, launched and tagged in your own account. You greenlight the angles and watch the crits land. <em>(This is the retainer ladder below.)</em></p>
+<p><strong>Path B — BUILD A FORGE IN YOUR DOMAIN (Done-With-You).</strong> We install the Adwield Forge inside your domain, your tools, your account, your crew, and train your team to wield it. The weapon stays yours. (Domain = your kingdom and your website and ad-stack. Both meanings intended.) You don't rent the capability. You own the forge. <em>(Founding-cohort, by application at this stage. <a href="{{calendly_link}}">Ask about a Forge build on a call.</a>)</em></p>
+<h2>The offer and the ladder (the Maxed-Out Knight path)</h2>
+<p>Everything on the table, in the order most brands move through it. No hidden tiers, no "call for pricing" on the public step.</p>
+<table>
+<thead>
+<tr><th>Tier</th><th>What it is</th><th>Price</th><th>Its job</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>First Strike</strong></td><td>One battle-ready ad of <em>your</em> product, forged free</td><td><strong>$0</strong></td><td>The trust spine. Watch the weapon work first.</td></tr>
+<tr><td><strong>Proving Grounds</strong></td><td>Founding-partner pilot: an instrumented cycle, before/after captured</td><td><strong>$0</strong></td><td>Earns the account and manufactures the first real case study. Baseline-first.</td></tr>
+<tr><td><strong>Starter Loadout</strong></td><td>The 10-video pack (one-time)</td><td><strong>$497</strong></td><td><strong>← Start here. The paid foot-in-door.</strong></td></tr>
+<tr><td><strong>Standard Tier</strong></td><td>The retainer: 20 videos/mo + bi-weekly strategy call</td><td><strong>$1.5–2.5K/mo</strong></td><td>Where the weapon starts running.</td></tr>
+<tr><td><strong>Elite Tier</strong></td><td>Standard Tier + full reporting + live iteration loop</td><td><strong>$2.5–3.5K/mo</strong></td><td>The core. Where the crit gets found.</td></tr>
+<tr><td><strong>Raid Tier</strong></td><td>Premium + media buying</td><td><strong>$5K+/mo</strong></td><td>Earned only after the creative wins. Never sold cold.</td></tr>
+</tbody>
+</table>
+<p><strong>The two prices, reconciled</strong> (because you'll do the math): the <strong>$200–500/video</strong> figure is an estimate of the all-in human-creator-equivalent value, what one comparable UGC video used to cost in time and money. The <strong>$497 Starter Loadout (~$50/video)</strong> is a deliberately under-priced trust purchase, below the value of the work on purpose, because its only job is to let you watch the work land in your own account without betting much. The retainer reflects the real economics. I'm not pretending $50/video is sustainable. I'm pretending nothing.</p>
+<h3>Start with the Starter Loadout ($497)</h3>
+<p>For $497, one-time:</p>
+<ul>
+<li>✓ <strong>10 production-grade AI UGC videos</strong> for your product. Product-forward, not generic slop.</li>
+<li>✓ <strong>Angles chosen with operator judgment.</strong> Which hook leads for your AOV and SKU mix.</li>
+<li>✓ <strong>Brand-context intake.</strong> Your reviews, voice, objections, and P&amp;L context feed every script.</li>
+<li>✓ <strong>Claim-gated copy.</strong> Health/structure-function language screened against FTC and Meta norms before render.</li>
+<li>✓ <strong>Pre-launch QC pass.</strong> Render quality, mouth-sync, hands, brand-safety. Slop never ships.</li>
+<li>✓ <strong>Launched and tagged in your account,</strong> or handed off as files if you'd rather launch them.</li>
+<li>✓ <strong>You keep every video, forever.</strong> Yours to run, re-cut, repurpose.</li>
+</ul>
+<p>Under 2.5% of one month's spend for a $20–100K/mo brand. Sized to be a clear yes, not a deliberation.</p>
+<blockquote><p><a href="{{stripe_pack_link}}"><strong>Grab the Starter Loadout, $497 →</strong></a></p></blockquote>
+<h3>Then equip a Knight when the creative earns it</h3>
+<p>The Starter Loadout is the look. The <strong>retainer is where the weapon lives:</strong> the full 4×24 loadout, wielded by a max-level operator every two weeks, iterating live, backed by the No-Risk Loadout guarantee. Retainers are quoted live and scaled to your spend and SKU mix. A brand at a $90 AOV doing 3× ROAS pays a $2.5K retainer out of a single profitable day of spend. I'm not asking you to find new budget, just to point a sliver of what you already spend at landing the next crit faster.</p>
+<p>Most brands start with the Starter Loadout, see it land, and convert. No pressure either way.</p>
+<blockquote><p><a href="{{calendly_link}}"><strong>Hire your Knight: book 15 min to scope a retainer →</strong></a></p></blockquote>
+<hr>
+<h2>The No-Risk Loadout: beat your control or the next cycle's free</h2>
+<p>The risk stays on me, by design. The precise commitment:</p>
+<blockquote><h3>Within 30 days, my creative beats your current best ad on <strong>hook-rate / hold-rate</strong> (3-second + thumbstop) <strong>AND your CPA holds flat or better</strong>, measured against your own control, in your own account, with the head-to-head data on the table. If it doesn't, <strong>your next 24-variation cycle is free.</strong> Month-to-month, cancel anytime, keep every video either way.</h3></blockquote>
+<p>Every word defended, because a guarantee from an unknown is worth nothing if it's vague:</p>
+<ul>
+<li><strong>Hook-rate / hold-rate, not raw CTR.</strong> Raw CTR is gameable. Clickbait wins CTR and tanks ROAS, and you've been burned by that. Hold-rate is creative-controllable (I actually own it) and correlates downstream.</li>
+<li><strong>CPA holds flat or better.</strong> This ties the promise to the number you fear. High-hold creative that bleeds cash fails the guarantee.</li>
+<li><strong>Measured in your own account, head-to-head, data on the table.</strong> Not a screenshot I send. Your account, your control, your numbers.</li>
+<li><strong>A labor guarantee, not cash-back.</strong> If I miss, the next cycle is free. The currency is my hours, which a small honest operation can always honor.</li>
+<li><strong>Month-to-month, cancel anytime, keep every video.</strong> This answers the quiet doubt about any solo operator: will he be here next month to honor "next cycle free"? You're never locked in.</li>
+</ul>
+<hr>
+<h2>The honest part: at launch, the proof ledger is filling.</h2>
+<p>I'd rather lose the sale than fake a number. Here's exactly where I stand.</p>
+<p><strong>I have zero ad case studies right now.</strong> No client logos. No testimonials. No before/after screenshots from accounts I've run, because I haven't run them yet. The inbox you're reading this from is flooded with people who fabricate exactly that. I won't be one more. In a niche this full of fakery, a clean ledger is itself the signal.</p>
+<p>So instead of a track record, here's the proof I can stand behind, every piece real and verifiable:</p>
+<ol>
+<li><strong>The First Strike.</strong> A battle-ready ad of your own product, forged before you pay. The actual output, on the actual brand, before any money moves.</li>
+<li><strong>The teardown library.</strong> Breakdowns of real, currently-running functional-consumables ads: the hook, where hold-rate decays, which claim is load-bearing and whether it's FTC-safe, and the 4 angles I'd test against it. A case study says "it worked once for someone." A teardown says "I understand the mechanism."</li>
+<li><strong>A real number off my own spend.</strong> One ad I built and ran with my own small money, producing a real hold-rate off live auction spend. Honestly labeled. Almost no cold AI-ads outreacher has any real number with their name on it.</li>
+<li><strong>The founding-partner program,</strong> which turns this from all-demonstration into documented results, fast.</li>
+</ol>
+<h3>The founding-partner board (real deltas only, never fabricated)</h3>
+<p>I'm taking a small number of founding partners at no cost: an instrumented cycle where I capture your control baseline before we start and your winner after, so the before/after is real and yours. For the right to publish the delta and a one-line testimonial, you get founding terms I won't repeat later. You'd be one of the first deltas on the board, not the hundredth logo on a wall.</p>
+<table>
+<thead>
+<tr><th>Founding pilot</th><th>Brand category</th><th>Control → Winner (hold-rate)</th><th>CPA</th><th>Status</th></tr>
+</thead>
+<tbody>
+<tr><td>Pilot #1</td><td><code>[CASE STUDY PLACEHOLDER: e.g. mushroom-coffee brand]</code></td><td><code>[X.X% → X.X% (+XX%)]</code></td><td><code>[flat / -X%]</code></td><td>To be filled from first pilot, no fabricated numbers</td></tr>
+<tr><td>Pilot #2</td><td><code>[CASE STUDY PLACEHOLDER: e.g. adaptogen-gummy brand]</code></td><td><code>[X.X% → X.X% (+XX%)]</code></td><td><code>[flat / -X%]</code></td><td>To be filled from first pilot, no fabricated numbers</td></tr>
+<tr><td>Pilot #3</td><td><code>[CASE STUDY PLACEHOLDER: e.g. greens/superfood-powder brand]</code></td><td><code>[X.X% → X.X% (+XX%)]</code></td><td><code>[flat / -X%]</code></td><td>To be filled from first pilot, no fabricated numbers</td></tr>
+</tbody>
+</table>
+<blockquote><p><strong>Want to be a founding-partner case study?</strong> That's the free instrumented pilot. <a href="{{calendly_link}}">Ask about a founding slot on a call.</a> <code>{{founding_slots_left}}</code> of 5 founding slots left.</p></blockquote>
+<hr>
+<h2>Why me</h2>
+<p>I won't ask you to trust a track record I don't have. I'll prove it on your own product first, before we talk money. You judge that, not my résumé.</p>
+<p>I'm not an agency middleman. I built a real business of my own once, so I respect what your margin costs to earn and I know how buyers actually decide. The thing you're hiring me for, I prove by doing: published teardowns, a portfolio of rendered ads, a real hold-rate number off my own spend. No fabricated case studies. No logo wall I don't have.</p>
+<p>Three pillars, all demonstrable:</p>
+<ol>
+<li><strong>Judgment, not generation.</strong> <em>Which</em> angles, hooks, and claims, gated to what you can substantiate. Proven by the teardowns and a blind paid head-to-head: my 4 angles vs your media buyer's 4, same spend, your account.</li>
+<li><strong>Production-and-launch hands.</strong> 24 variations every two weeks, launched and tagged in your account, losers killed and winners doubled. The tool was never the bottleneck. The hours were.</li>
+<li><strong>The risk is on me.</strong> The free First Strike, the rendered portfolio, the real self-test number, the founding-partner deltas, the guarantee. Newer than the agencies, so I earn it on your product.</li>
+</ol>
+<hr>
+<h2>Taking 5 functional-consumables brands. Period.</h2>
+<p>A published cap, not a marketing trick. At 4 angle-families per brand per cycle, that's my honest throughput ceiling for full-judgment production. Past 5, I refer out. I don't dilute your turnaround to bank another logo.</p>
+<p>The cap is also the answer to the agency-betrayal scar: you can't become the deprioritized account on a list of 5 with a published ceiling. Structural protection, not a promise.</p>
+<p><code>{{founding_slots_left}}</code> founding slots left of 5.</p>
+<blockquote><p><a href="{{calendly_link}}"><strong>Claim a founding slot →</strong></a></p></blockquote>
+<hr>
+<h2>The objections you're already thinking</h2>
+<p><strong>"Aren't AI ads just slop?"</strong><br>
+AI alone is slop. The difference is the brand-context judgment fed into it: your reviews, your voice, your objections, your P&amp;L. Every variation clears a pre-launch QC pass on mouth-sync, hands, render quality, brand-safety, and anything that fails the slop bar never touches your spend. I'll even tell you where AI genuinely breaks in this vertical, the drink-and-react consumption shot, so I route around it: product-forward framing, hands-and-pour over face-on-sip. And the sample I made of your product is the test. Did that look like slop to you?</p>
+<p><strong>"Can't I just do this myself with ChatGPT or Arcads?"</strong><br>
+You can license Arcads tomorrow for about a hundred a month. The tool was never the bottleneck. ChatGPT writes a script. It can't tell you which of 4 angles leads for your $90-AOV SKU vs your $45 one, and it won't gate the health claim that bans your account. And nobody on a two-person team has the hours a cycle to run angle selection, produce 24, QC them, launch, tag, and read results, every two weeks. I'm those hands plus that judgment, and I'll prove the judgment beats DIY with a blind paid head-to-head: my 4 angles vs your media buyer's 4, same spend, your account.</p>
+<p><strong>"I got burned by an agency. Why is this different?"</strong><br>
+Most agencies bill you to be slow and turn you into the project manager, then hand you files in a folder. I deliver launched-and-tagged in your account, the iteration loop run against your real metrics. The structural fix for the scar is the published cap: 5 brands, month-to-month, cancel anytime, keep every video. You can't become the deprioritized account on a list of 5 with a ceiling I've stated out loud.</p>
+<p><strong>"You don't have any case studies yet."</strong><br>
+True. I claim none and I won't fake one, because faking exactly that is what's clogging your inbox. You already saw real work, your own product, rendered, before this. I publish teardowns that show I understand why ads work and fail, and I'll show you a real hold-rate number off an ad I built and ran with my own small spend. The guarantee puts the downside on me. You'd be one of the first founding-partner deltas on the board, not the hundredth logo on a wall.</p>
+<p><strong>"How much of my time does this take?"</strong><br>
+Not "effortless": a one-time brand-context intake of about 2–3 hours, then roughly 30–45 minutes per cycle to greenlight 4 angles and the claims they can make. I own scripting, production, iteration, launch, and tagging. Anyone who tells you it's zero effort has never been the client.</p>
+<p><strong>"What about FTC and Meta compliance on health claims?"</strong><br>
+Every claim is substantiation-gated before render. During angle approval you tell me which claims you can back, and I write only to those. Health and structure-function language is screened against FTC and Meta norms: no implied disease claims, no unsubstantiated "clinically proven." In this vertical a ban or an FTC letter costs you the whole account, so it's part of the product, not a footnote.</p>
+<p><strong>"AI looks fake to my audience."</strong><br>
+In beauty and fashion, where it's a face-centric uncanny-valley problem, yes, and I won't touch it. Functional consumables are different: the product is the star and the avatar just holds it, so the penalty is structurally low. The one genuine failure mode is the drink-and-react consumption shot, so I don't shoot it. Every variation also clears a render/mouth-sync/hands QC pass. The sample you saw is the proof. Did it read fake to you?</p>
+<p><strong>"I spend $200K+/mo and test 90+ creatives a week. Is this for me?"</strong><br>
+At that scale I'm one angle-family of leverage, not your whole creative department, and I'll say so on the call. I'm built for the lean $20–100K/mo team the big shops ignore. If you want one family taken off your ops team's plate end-to-end, that's a real fit. If you want me to be your creative department, I'm not your shop, and I'll tell you that for free.</p>
+<p><strong>"Just send me a proposal."</strong><br>
+I can, but I'd be guessing at your spend and SKU mix, and you'd get a generic PDF, which is the agency experience you're trying to avoid. Give me three minutes on a call and I'll size it to your numbers live. If you still want it in writing after, you'll have a one-pager the same day.</p>
+<p><strong>"Let me think about it."</strong><br>
+Fair. If what you want to sit with is whether the work is good, that's what the free First Strike and the $497 Starter Loadout are for. If it's whether I'll be here next month, that's what month-to-month and cancel-anytime are for. The only thing with a clock on it is the founding slots, <code>{{founding_slots_left}}</code> left.</p>
+<hr>
+<h2>Free, no call required: The Functional-Consumables Ad Teardown</h2>
+<p>A breakdown of what's working in functional-consumables UGC right now: the angles, the hooks, the claim-safe ways to say what your SKU does, and the AI failure modes to route around. Written by someone who tears down real ads to prove why creative wins or dies.</p>
+<p>Inside:</p>
+<ul>
+<li>→ The 4 angle families that hold attention past the 3-second wall in this vertical</li>
+<li>→ Claim-safe phrasing for adaptogen, nootropic, and mushroom SKUs that Meta won't flag</li>
+<li>→ The drink-and-react trap: the one AI shot that screams slop, and what to shoot instead</li>
+<li>→ Why your week-7 winner died, and the cadence that prevents it</li>
+</ul>
+<blockquote><p><a href="{{teardown_form}}"><strong>Send me the teardown →</strong></a> <em>(one email, no drip spam, unsubscribe anytime)</em></p></blockquote>
+<hr>
+<h2>Keep a fresh winner equipped before the last one breaks.</h2>
+<p>Claim your First Strike. I'll forge an ad of your actual product, free, before you spend a coin, and walk you through your loadout on your real SKUs. Or grab the Starter Loadout: 10 videos for $497, launched and tagged in your account.</p>
+<blockquote><p><a href="{{calendly_link}}"><strong>Claim your First Strike (free) →</strong></a><br>
+<a href="{{stripe_pack_link}}"><strong>Grab the Starter Loadout, $497 →</strong></a></p></blockquote>
+<p><em>Every two weeks. Month-to-month. Cancel anytime. Keep every video. Capped at 5 brands so you're never deprioritized. Functional consumables only.</em></p>
+<p>— Adwield · adwield.com · Chaga Chai · {{contact_email}}</p>
+<hr>
+<hr>
+<h1>▣ APPENDIX — Drop-in swap blocks + page meta</h1>
+<blockquote><p>Modular copy to A/B-test the page without rewriting it. Each block is final copy.</p></blockquote>
+<h3>Headline alternates (swap the Variant-A or B H1)</h3>
+<ul>
+<li><strong>"The ad that carried your account stopped working in February. Here's the lever you couldn't pull alone."</strong> <em>(Refuge)</em></li>
+<li><strong>"You didn't get worse at this. The auction changed under you, and the one fix is the one a lean team can't do alone."</strong> <em>(Refuge)</em></li>
+<li><strong>"You already know volume × variation wins. I'm the hands that produce it, one angle-family end-to-end."</strong> <em>(Leverage)</em></li>
+<li><strong>"The tool was never your bottleneck. The hours were. I'm those hours."</strong> <em>(Leverage)</em></li>
+</ul>
+<h3>Metaphor-light hero (for audiences the gaming flavor risks reading as non-native; A/B against the default)</h3>
+<blockquote><p><strong>24 finished ads of your product, every two weeks, launched and tagged in your own account.</strong> 4 angles chosen by an operator, 24 production-grade AI UGC variations, read against your control at day 14. Beat your control's hold-rate while CPA holds flat in 30 days, or the next cycle's free. Built for lean $20–100K/mo Meta and TikTok teams. Capped at 5 brands. First, free: one ad of your own product before you pay a coin.</p></blockquote>
+<h3>Risk-reversal one-liner (for sticky bars / mid-page interstitials)</h3>
+<blockquote><p><strong>The No-Risk Loadout: beat your control's hold-rate with CPA flat in 30 days, in your own account, data on the table, or your next 24-variation cycle is free. Month-to-month. Keep every video.</strong></p></blockquote>
+<h3>Page builder / SEO meta</h3>
+<ul>
+<li><strong>Page title:</strong> Adwield — equip your secret weapon | AI-native ad creative for functional consumables</li>
+<li><strong>Meta description:</strong> Adwield: AI-native ad creative for DTC functional-consumables brands at $20–100K/mo. Your loadout, 4 angles, 24 variations every two weeks, launched and tagged in your account. Beat your control or the next cycle's free. Claim your First Strike: a free ad of your own product before you spend a coin.</li>
+<li><strong>Suggested URL slug:</strong> <code>/first-strike</code></li>
+<li><strong>Section anchor IDs:</strong> <code>#problem</code>, <code>#framework</code>, <code>#sample</code>, <code>#offer</code>, <code>#guarantee</code>, <code>#proof</code>, <code>#why-me</code>, <code>#faq</code>, <code>#cta</code></li>
+</ul>
+<hr>
+<p><strong>END — V1 long-form sales page (Adwield-branded).</strong> Built within <code>adwield-brand-kit.md</code> (voice, naming, CTAs, glossary, tiers, guarantee). Proof-only throughout: zero fabricated metrics, case studies, testimonials, or logos. Hit rate and crits are the aim and mechanic, never a claimed result. The $200–500/video and 30-hour-a-cycle figures are labeled estimates, not measured results. Home-gym business used once, lightly, as character. Two interchangeable hero variants (Refuge / Leverage) over one shared body. Front-end rule honored: only Knight (DFY) and Forge (DWY) appear; no self-serve tier.</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

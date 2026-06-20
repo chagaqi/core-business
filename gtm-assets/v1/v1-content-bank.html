@@ -1,0 +1,629 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adwield — V1 Content Bank (Weeks 5–8, ready-to-post)</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">Adwield — V1 Content Bank (Weeks 5–8, ready-to-post)</span>
+    <a class="back" href="../../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>Adwield — V1 Content Bank (Weeks 5–8, ready-to-post)</h1>
+<h3>Adwield (adwield.com) · Chaga Chai · AI-native UGC ad creative for DTC functional consumables</h3>
+<p><strong>Status: BUILD-SPRINT · v1 · Net-new, additive to <code>20-content-engine.md</code></strong></p>
+<blockquote><p><strong>What this is.</strong> A standalone bank for Weeks 5–8 (Cycle 2): ~25 dated posts across the 5 pillars (X primary, LinkedIn repurpose direction noted, not re-drafted), 4 newsletter outlines, 6 DM replies, parked refill seeds. Every line is net-new. Doc 20 holds the operating system, calendar skeleton, Week-1 drafts, and welcome sequence; use this when those are spent.</p></blockquote>
+<blockquote><p><strong>Rules carried from the brand kit and standard.</strong> Proof-only: zero ad case studies at launch, every result tagged <code>[CASE STUDY PLACEHOLDER]</code>, no claimed ad or paid-ads track record. The home-gym business appears once, lightly, as character. Public copy mentions only Knight (DFY) and Forge (DWY), no self-serve. No hype, no emojis. See <code>adwield-brand-kit.md</code>, <code>copy-standard.md</code>.</p></blockquote>
+<hr>
+<h2>How to use this bank</h2>
+<p><strong>Cadence.</strong> 1 X post/day primary, 1 LinkedIn repurpose/day secondary, Mon–Fri, weekend light. The LinkedIn version is re-broken for that feed, not pasted. Each post is tagged Pillar (P1–P5) and day.</p>
+<p><strong>The 5 pillars.</strong> P1 Growth hot-takes · P2 Authority case-study/process · P3 Authority creative breakdowns · P4 DTC-operator journey · P5 Tactical tutorials.</p>
+<p><strong>The 3 counter-narratives (net-new framings, never the doc-20 wording):</strong></p>
+<ul>
+<li><strong>CN1.</strong> Volume isn't the answer. Finding the winner is. Volume just finds it faster.</li>
+<li><strong>CN2.</strong> The tool was never the bottleneck. The hours were.</li>
+<li><strong>CN3.</strong> More variations from a brand-blind vendor is faster slop. Judgment is the moat.</li>
+</ul>
+<p><strong>Andromeda</strong> gets 2 mentions across the four weeks, recognition register, never grief.</p>
+<p><strong>SKU rotation:</strong> W5 greens · W6 nootropic capsules · W7 functional beverage · W8 mushroom chocolate. Mushroom coffee and adaptogen gummies (doc-20's Week-1 lane) rest here.</p>
+<hr>
+<h1>WEEK 5 — greens / super-greens powder</h1>
+<h3>W5 · MON · P1 Growth</h3>
+<p><strong>Hot take. The "we just need a better hook" trap.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>Most greens brands think they have a hook problem.
+
+You have a 4th hook. The auction wants your 40th.
+
+A better hook is one bet. Post-Andromeda, the auction pays whoever runs the most structured bets before the fatigue clock empties the table around week 7.
+
+You're not under-creative. You're under-produced.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(same spine, longer setup on "every greens founder is hunting the hook that finally works," close on "production-volume problem, different fix.")</em></p>
+<hr>
+<h3>W5 · TUE · P2 Authority — case-study / process</h3>
+<p><strong>Thread (4). How a greens cycle gets built. <code>[CASE STUDY PLACEHOLDER]</code> on any delta.</strong></p>
+<p><strong>X (thread):</strong></p>
+<pre><code>[1/4]
+How I'd build a 2-week creative cycle for a super-greens powder at $40K/mo on Meta: 4 angles, 24 variations, launched and tagged in the brand's own account.
+
+Not "make 24 green-smoothie videos." Here's the walk-through.</code></pre>
+<pre><code>[2/4]
+The 4 angles are 4 reasons someone buys greens:
+- the "I never eat vegetables and I know it" guilt-fix
+- the bloat angle
+- the replace-my-$9-juice-bar math
+- the one-scoop-before-the-morning-chaos routine anchor
+
+Four hypotheses about why. Not four hooks.</code></pre>
+<pre><code>[3/4]
+Claims get gated before anything renders.
+
+"Supports your daily greens intake" survives. "Detoxes your gut" gets a supplement account pulled. That gate is the line between scaling and getting banned.</code></pre>
+<pre><code>[4/4]
+6 variations per angle = 24. Hooks, first frames, CTAs differ. The approved concept doesn't.
+
+QC every frame, launch into the account, tag to their convention, read at day 14. Kill losers, double winners, load the next 4.
+
+[CASE STUDY PLACEHOLDER — real control→winner hold-rate delta drops here once a founding-partner cycle closes.]</code></pre>
+<p><strong>LinkedIn:</strong> <em>(one post: lead on the angle list, keep the claim-gate beat, close on the day-14 read. Same placeholder.)</em></p>
+<hr>
+<h3>W5 · WED · P4 Personal — build-in-public</h3>
+<p><strong>Why one vertical, not "DTC brands."</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>I get asked why I only do functional consumables. "You'd have a bigger market taking any DTC brand."
+
+Sure. And I'd be worse at all of them.
+
+A greens founder doesn't want an AI ads guy. They want someone who knows the claim that gets a supplement account banned and the angle that beats the guilt-fix.
+
+I'd rather be the obvious choice for 5 brands than a maybe for 500.
+
+Building this in public, from zero. Narrow on purpose.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(same answer, expanded with the specific tells of vertical knowledge: which claim language pulls a supplement account, why the face-on-sip shot breaks AI UGC for a powder, why the guilt angle out-tests "superfood." Close on "narrow is the strategy, capped at 5 brands.")</em></p>
+<hr>
+<h3>W5 · THU · P5 Tactical — tutorial</h3>
+<p><strong>Thread (4). The QC checklist that keeps AI off the slop line.</strong></p>
+<p><strong>X (thread):</strong></p>
+<pre><code>[1/4]
+The unglamorous step that decides whether your AI UGC reads real or off: the QC pass. Here's the checklist every variation clears before it touches a dollar.
+
+Skip it and the auction teaches your audience that your brand looks fake.</code></pre>
+<pre><code>[2/4]
+Mouth-sync. Watch the last word of every sentence. AI drifts on hard consonants and trailing words. One bad sync flags "fake" before the viewer can name why.</code></pre>
+<pre><code>[3/4]
+The consumption shot. The face-on-sip "drink-and-react" is where AI breaks in this category. I route around it: hands-and-pour, product-forward, reaction lives in voiceover, never on a rendered face mid-gulp. The scoop-and-pour is the highest-risk frame for a powder, so it gets watched hardest.</code></pre>
+<pre><code>[4/4]
+Claim language checked against what the brand can substantiate. Logo, packaging, on-screen text correct.
+
+Fails the bar, doesn't ship. 10 clean variations beat 30 with one uncanny clip. The bad clip becomes your prospect's proof that "AI is slop."</code></pre>
+<p><strong>LinkedIn:</strong> <em>(numbered-list post. Open: "the hard part of AI UGC isn't the render, it's the QC." Then the points, close on the one-bad-clip line.)</em></p>
+<hr>
+<h3>W5 · FRI · P1 Growth + lead-gen · ENGAGEMENT-BAIT</h3>
+<p><strong>Post + magnet (the greens angle map).</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>Most greens brands test 3 angles and call it a strategy: superfood, energy, a discount.
+
+There are at least 10 buying angles in this category, and the discount one is the weakest.
+
+I mapped the 10 I'd test for a super-greens SKU: the guilt-fix, the bloat angle, the price-vs-juice-bar math, and 7 more.
+
+Comment GREENS and I'll DM it. (Functional consumables only.)</code></pre>
+<p><strong>LinkedIn:</strong> <em>(same offer, longer setup on the "everyone runs the same 3 angles" problem. Reply publicly and in DM, per doc 20.)</em></p>
+<hr>
+<h3>W5 · SAT (light) · P3 Authority — creative breakdown</h3>
+<p><strong>Teardown, structural, no client data.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>A greens ad I'd study:
+
+It opens on a sink full of dishes and a voiceover: "I haven't eaten a vegetable since Tuesday." No product, no logo. You've already self-identified as the customer.
+
+The product enters at second 4 as the fix, not the star of frame one.
+
+The claim is structure-function safe: "an easy way to cover my greens." No detox language, so it can scale instead of getting pulled.
+
+That's a structure you can run on purpose, 24 at a time. [CASE STUDY PLACEHOLDER]</code></pre>
+<hr>
+<h1>WEEK 6 — nootropic / focus capsules</h1>
+<h3>W6 · MON · P1 Growth · CN1</h3>
+<p><strong>Contrarian take. CN1.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>"Just make more ads" is the worst advice in DTC.
+
+More ads from someone who's never read your reviews, can't name your buyer, doesn't know your CPA? That's faster noise, and the auction charges you for every impression.
+
+The job was never more. It's finding the one ad that beats your control. Volume finds it fastest. Brand-blind volume finds nothing faster.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(same distinction, expanded: volume from a brand-blind source is faster slop you pay CPM for, the goal was always the winner that beats control before the fatigue wall, 24 informed bets bury 4 careful ones and 24 random ones. Close on "a slop pipeline with a retainer.")</em></p>
+<hr>
+<h3>W6 · TUE · P3 Authority — creative breakdown</h3>
+<p><strong>Thread (4). One variable: the hold-rate decay curve.</strong></p>
+<p><strong>X (thread):</strong></p>
+<pre><code>[1/4]
+The number no targeting fix brings back: hold-rate after fatigue.
+
+Here's how I read the decay curve on a nootropic ad, and the point where I'd already have the replacement loaded.</code></pre>
+<pre><code>[2/4]
+Week 1–3: 3-second hold sits flat. The hook works, the audience is fresh. The window everyone enjoys and nobody plans around.</code></pre>
+<pre><code>[3/4]
+Week 4–6: hold-rate softens before ROAS moves. That's the tell. ROAS lags. The day the hold curve bends is the day the replacement should already be in testing, not the day you start scripting it.</code></pre>
+<pre><code>[4/4]
+Week 7+: hold collapses, frequency climbs, CPMs follow, and the dashboard tells a "Meta is broken" story. Meta isn't broken. The refresh cadence is.
+
+If the next 4 angles were already loaded, this is a non-event. That's the point of the 24-every-2-weeks cadence. [CASE STUDY PLACEHOLDER]</code></pre>
+<p><strong>LinkedIn:</strong> <em>(one post: name the decay phases, land "hold-rate leads ROAS," close on "if the replacement was loaded, week 7 is a non-event.")</em></p>
+<hr>
+<h3>W6 · WED · P4 Personal — why the risk is on me</h3>
+<p><strong>The flooded-inbox honesty.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>Your inbox is full of people claiming the credential I don't have.
+
+"Scaled 40 brands to 7 figures." "200 winning ads." Half are invented and you can't tell which half.
+
+So I won't claim a track record. I'll render one UGC ad of your product, free, before we talk money. You watch the output instead of reading my résumé.
+
+Newer than the agencies, and that's exactly why the risk stays on me.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(same frame, then the three things that carry trust instead: (1) a free rendered ad of their product before money, the #1 trust mechanism; (2) published teardowns proving judgment before any case study; (3) the guarantee — beat your control on hold-rate while CPA holds flat in 30 days, in your own account, or the next cycle is free. One line of operator character: sold physical product to real buyers for years, knows what margin costs to earn. Close on "newer than the agencies, honest about it.")</em></p>
+<hr>
+<h3>W6 · THU · P5 Tactical — tutorial</h3>
+<p><strong>Thread (4). The brand-context intake doc.</strong></p>
+<p><strong>X (thread):</strong></p>
+<pre><code>[1/4]
+AI gives you slop because of the empty brief, not the model. Here's the brand-context intake I build before a single script. The doc that separates "looks AI" from "looks like your customer."</code></pre>
+<pre><code>[2/4]
+Reviews. Not the 5-star ones. The 3-star ones. That's where the real objection lives, in the customer's own words. "I wanted to like it but..." is a script.</code></pre>
+<pre><code>[3/4]
+AOV, CPA, the P&amp;L line. A $90-AOV nootropic and a $35 one need different CTAs and a different first-purchase ask. The model can't make that call. The operator does, off the numbers.</code></pre>
+<pre><code>[4/4]
+Voice, plus the "do-not-say" claims that get this category banned.
+
+Feed all of it in and the "AI slop" mostly disappears. The tool was never the problem. The empty brief was. Steal the intake. That part's free.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(reframe as "AI slop is a brief problem, not a model problem." The intake list, close on CN3 framing without naming it.)</em></p>
+<hr>
+<h3>W6 · FRI · P1 Growth + lead-gen · ENGAGEMENT-BAIT</h3>
+<p><strong>Post + magnet (the claim-gate cheat sheet for cognition claims).</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>The fastest way to kill a nootropic account isn't a bad ad. It's a cognition claim you can't back.
+
+"Boosts focus" is risky. "Cures brain fog" is account-ending. "Supports mental clarity" is usually fine. The line is specific and most brands don't know where it sits.
+
+I made a claim-screening cheat sheet for functional consumables: what you can say, what you can't, and how to rewrite the risky ones so they still sell.
+
+Comment CLAIMS and I'll DM it.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(same, plus one line on why this is the gate every script passes through anyway, not a giveaway gimmick.)</em></p>
+<hr>
+<h3>W6 · SAT (light) · P1 Growth · Andromeda #1</h3>
+<p><strong>Refuge track, recognition register.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>Some time after mid-February 2025, a lot of you watched a winning ad break with no change to targeting, budget, or audience.
+
+You didn't do anything wrong. The auction started demanding fresh creative faster than a lean team could physically make it.
+
+That's not a strategy failure. It's a production-capacity failure. Different problem, different fix.</code></pre>
+<hr>
+<h1>WEEK 7 — functional beverage (RTD / sparkling)</h1>
+<h3>W7 · MON · P1 Growth</h3>
+<p><strong>Hot take. The agency math, beverage edition.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>Your beverage brand pays a $6K/mo agency for 4 videos a month.
+
+The auction fatigues a winner around week 7. 4 a month can't outrun a 7-week clock. Not close.
+
+So what's the $6K buying? You're the project manager: you write the brief, chase revisions, upload the files, name them, reconcile them against your data.
+
+You're not paying for speed. You're paying to do the last mile yourself.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(expand the workflow audit: the retainer isn't buying refresh velocity, it's billing you to be slow then handing you the upload-and-reconcile homework, and they run beauty and supplements off the same template because broad keeps their lights on. Close on "a slow vendor with a retainer and a homework assignment.")</em></p>
+<hr>
+<h3>W7 · TUE · P2 Authority — case-study / process</h3>
+<p><strong>Thread (4). Process for a beverage SKU. <code>[CASE STUDY PLACEHOLDER]</code>.</strong></p>
+<p><strong>X (thread):</strong></p>
+<pre><code>[1/4]
+How I'd run a cycle for a functional sparkling beverage at $60K/mo, where the product photographs great but the "react to a sip" shot is exactly where AI UGC dies.
+
+The whole craft is routing around one shot.</code></pre>
+<pre><code>[2/4]
+4 angles for an RTD functional drink:
+- swap your afternoon soda or energy drink
+- tastes like a treat, works like a supplement
+- the gut / clean-ingredients angle
+- the cooler-at-the-party occasion
+
+Four reasons to reach for the can. Not four hooks.</code></pre>
+<pre><code>[3/4]
+The format trap: a beverage ad wants a face-on-sip-and-react. That's the single shot AI renders worst. Uncanny mouths, weird swallows.
+
+So I build product-forward: the can, the pour, the condensation, the crack of the tab. Reaction lives in voiceover. The thing that "looks AI" never gets framed.</code></pre>
+<pre><code>[4/4]
+6 variations × 4 angles = 24. QC every frame, launch and tag in the account, read at day 14, kill/double/reload.
+
+The volume isn't the point. Routing around the one broken shot, at scale, on schedule, is. [CASE STUDY PLACEHOLDER]</code></pre>
+<p><strong>LinkedIn:</strong> <em>(one post: lead on "a beverage ad wants the exact shot AI is worst at," the 4 angles, the product-forward routing, close on the day-14 loop.)</em></p>
+<hr>
+<h3>W7 · WED · P4 Personal — operator respect</h3>
+<p><strong>The home-gym note, used once across the social bank.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>I built a real business of my own once, to about $2M in its first year.
+
+It didn't teach me your ad account. It taught me what your margin costs to earn, and how an actual buyer decides.
+
+So I don't treat your budget like a sandbox. Every variation is a bet I'd want to win with my own money. I already respect the P&amp;L. The ad judgment, I prove on your product, free, before you pay.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(same note, expanded but kept honest: it was a home-gym company, not a DTC paid-social operation, and won't be dressed up as one. What it gave: respect for what margin costs to earn, and how buyers decide from selling to them directly. The ad track record is being built in the open, proven by a free rendered ad first.)</em></p>
+<hr>
+<h3>W7 · THU · P5 Tactical — tutorial</h3>
+<p><strong>Thread (4). Angle vs variation, worked beverage example.</strong></p>
+<p><strong>X (thread):</strong></p>
+<pre><code>[1/4]
+Your creative testing feels random because you're testing variations while you think you're testing angles. They aren't the same, and confusing them is why you can't reload a winner when it dies.</code></pre>
+<pre><code>[2/4]
+An ANGLE is a hypothesis about why someone buys.
+"People reach for this drink to replace the 3pm energy-drink crash."
+
+A VARIATION is one execution of that angle: a hook, a presenter, a first 3 seconds.</code></pre>
+<pre><code>[3/4]
+Test 24 variations of ONE angle and you learn which execution wins. You've tested one reason to buy.
+
+Test 4 angles × 6 variations and you learn which reason moves your audience AND which execution lands. A win you understand, you reload at week 7. A win you stumbled into, you lose again.</code></pre>
+<pre><code>[4/4]
+So the structure is always a small number of real angles, 4 is workable, with many variations each.
+
+Not a volume flex. The only way to learn the why, not just the that. Steal the framework. It works without me.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(reframe: open on "your testing feels random because you're confusing two things," define angle vs variation with the beverage example, close on "a win you understand, you can reload.")</em></p>
+<hr>
+<h3>W7 · FRI · P1 Growth + lead-gen · ENGAGEMENT-BAIT · CN2</h3>
+<p><strong>Post + magnet (the tool-vs-hours self-audit). CN2.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>Your media buyer can license Arcads tomorrow for ~$110. They still won't out-test anyone.
+
+To run 24 properly every 2 weeks: write 4 angles, gate the claims, lock concepts, render, QC every frame, launch, tag, read the data, reload. That's the job. The $110 software is step 5 of 9.
+
+The tool was never the bottleneck. The hours were.
+
+I made a one-page self-audit: where your real bottleneck sits, tool vs hours. Comment AUDIT and I'll DM it.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(same, expanded: walk the 9 steps, point out the tool is one of them, then the AUDIT magnet. CN2 explicit, unbranded.)</em></p>
+<hr>
+<h3>W7 · SAT (light) · P3 Authority — creative breakdown</h3>
+<p><strong>Teardown. Variable: the CTA matched to SKU economics.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>Same beverage ad, same avatar, one word changed in the CTA, and only one version scaled.
+
+The loser closed "Shop now." Generic, and it fires a hard buy at someone who met the brand 8 seconds ago.
+
+The winner closed "Grab a 12-pack and see if 3pm changes." Specific, matched to the considered-purchase AOV, named the moment the product solves.
+
+The CTA isn't a button. It's the last and cheapest variable to test, and the one most brands never touch. [CASE STUDY PLACEHOLDER]</code></pre>
+<hr>
+<h1>WEEK 8 — mushroom chocolate / functional snack</h1>
+<h3>W8 · MON · P1 Growth · CN3</h3>
+<p><strong>Myth-buster. CN3.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>"AI ads look like slop." Sometimes. Not because they're AI.
+
+They look like slop when you feed the model nothing. No reviews, no objections, no P&amp;L, no brand voice. Garbage brief in, uncanny ad out.
+
+Feed it your real customer's words and a human who knows which of 4 angles to lead with, and the "AI slop" problem mostly evaporates.
+
+More variations from a brand-blind vendor is faster slop. Judgment is the moat. Generation is a commodity.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(expand: the empty brief produces uncanny output every time, but that's a property of the brief, not of AI. Scaling a bad brief multiplies it and you pay CPM for every multiplied impression. Anyone licenses the tool for ~$110; the moat is feeding it real customer language plus an operator who knows which angle leads for a $90 SKU vs a $35 one. Close on "judgment is the product.")</em></p>
+<hr>
+<h3>W8 · TUE · P2 Authority — case-study / process</h3>
+<p><strong>Thread (4). Process for a functional-snack SKU. <code>[CASE STUDY PLACEHOLDER]</code>.</strong></p>
+<p><strong>X (thread):</strong></p>
+<pre><code>[1/4]
+How I'd build a cycle for a mushroom-chocolate brand at $30K/mo, a category fighting two things: "is this a drug?" skepticism and the AI-eating shot.
+
+The angles and the gate matter more here than almost anywhere.</code></pre>
+<pre><code>[2/4]
+4 angles for functional chocolate:
+- "calm without the edible," the sober-curious angle
+- the afternoon-ritual, treat-with-a-function angle
+- "tastes like chocolate, not dirt," the taste-objection angle
+- the gifting / discovery angle
+
+Four buying reasons, each pre-handling a different objection.</code></pre>
+<pre><code>[3/4]
+The claim gate does heavy lifting here. Anything implying intoxication, a medical benefit, or a regulated compound is account-ending. "A calmer afternoon ritual" survives. Specific effect claims don't.
+
+For functional mushroom products that gate is the difference between a scaling account and a dead one.</code></pre>
+<pre><code>[4/4]
+The eating shot has the sip-shot problem. Route around it: the snap of the bar, the unwrap, the hands, the ritual, reaction in voiceover. Never a rendered face mid-chew.
+
+24 variations, QC'd, launched, tagged, read at day 14. [CASE STUDY PLACEHOLDER]</code></pre>
+<p><strong>LinkedIn:</strong> <em>(one post: name the two-front problem, skepticism plus the eating shot, then the angles, the gate, the routing.)</em></p>
+<hr>
+<h3>W8 · WED · P4 Personal — building the proof ledger</h3>
+<p><strong>Posting the scoreboard while it's empty.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>I'm doing what most people in my position hide: posting the scoreboard while it's still mostly empty.
+
+No case studies yet. A handful of teardowns published. A few rendered samples in the portfolio. Founding-partner slots open.
+
+Why post an empty board? In 90 days the timeline itself is the proof that I'm real, consistent, still here. The fly-by-night AI-ads guy can't fake 90 days of showing the work.
+
+Watch it fill. The risk of betting on me stays on me.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(same choice, expanded: the honest inventory stated out loud, the bet that in 90 days the visible record of teardowns, renders, real numbers off small tests, and slots filling becomes proof a fly-by-night can't back-date. Close on "free sample first, guarantee on the work.")</em></p>
+<hr>
+<h3>W8 · THU · P5 Tactical — tutorial</h3>
+<p><strong>Thread (4). Naming + tagging so creative is readable in the account.</strong></p>
+<p><strong>X (thread):</strong></p>
+<pre><code>[1/4]
+What separates "24 mp4s in a Drive folder" from a creative system you can learn from is one boring thing: the naming and tagging convention. Here's mine.</code></pre>
+<pre><code>[2/4]
+Every variation gets named [SKU]_[Angle]_[Hook#]_[Cycle]_[Date].
+
+So "GREENS_GuiltFix_H3_C2_0614" tells you the product, the hypothesis, which hook, which cycle, and when, at a glance, six weeks later, without opening the file.</code></pre>
+<pre><code>[3/4]
+Why it matters: when a winner shows up you need to know which angle and which hook won, instantly, so you can load 6 more of that family next cycle. Unnamed files make every win unrepeatable.</code></pre>
+<pre><code>[4/4]
+Tagged in the brand's account taxonomy, structured into ad sets, read against their own dashboard. Not a screenshot I email.
+
+Launched-and-tagged is the deliverable. 24 files in a folder is homework I refuse to hand back to you.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(reframe: open on "the boring step that turns 24 ads into a learning system," show the naming schema, close on "launched-and-tagged is the deliverable, not a Drive folder.")</em></p>
+<hr>
+<h3>W8 · FRI · P1 Growth + lead-gen · ENGAGEMENT-BAIT</h3>
+<p><strong>Post + magnet (the 2-week-cycle planner).</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>"24 ads every 2 weeks" sounds like a lot until you see it as a schedule instead of a scramble.
+
+I built a one-page planner for one 2-week cycle: which day you lock angles, gate claims, render, QC, launch, and read. Production as a calendar, not a panic.
+
+If you ship 4 tests a month and want to see what a real cadence looks like on paper, comment CYCLE and I'll DM it.</code></pre>
+<p><strong>LinkedIn:</strong> <em>(same, with a line framing it for the founder running production in-house: steal the cadence, run it yourself, the planner works without me.)</em></p>
+<hr>
+<h3>W8 · SAT (light) · P4 Personal · Andromeda #2</h3>
+<p><strong>Bridges to the method, Refuge track.</strong></p>
+<p><strong>X:</strong></p>
+<pre><code>The Feb-2025 break is the exact thing this engine is built against.
+
+When the auction demands fresh creative faster than a lean team can produce it, no targeting tweak saves you. One thing does: a bench of variations already loaded before the current winner dies.
+
+I didn't invent a clever hack. I built the production capacity the new auction quietly started requiring.</code></pre>
+<hr>
+<h1>4 NEWSLETTER OUTLINES — <em>The Fatigue Wall</em>, issues 5–8</h1>
+<blockquote><p>Continue the newsletter from doc 20 (welcome sequence, Issue #1). Each is a full outline, draft to ~700 words. Operator voice, one useful thing per issue, proof-only, soft CTA at close, hard 5-brand-cap line in the footer. All deltas <code>[CASE STUDY PLACEHOLDER]</code>.</p></blockquote>
+<h3>Issue #5 — "Hold-rate is the only metric you control"</h3>
+<p><strong>Subject:</strong> the one ad metric that's actually yours<br>
+<strong>Preview:</strong> ROAS depends on 9 things you don't own. This depends on one you do.</p>
+<ul>
+<li><strong>Lead.</strong> ROAS moves with price, offer, landing page, audience, seasonality, and the auction's mood. Hold-rate (3-second hold / thumbstop) is almost entirely creative-controllable. The one performance number with your fingerprints on it. <em>(Audit note: the page leans hold-rate hard. Frame it as the metric I'd build around and ask whether it's the one they'd actually buy on, not one they already trust.)</em></li>
+<li><strong>Body 1 — why hold-rate leads.</strong> It softens before ROAS craters. Watching ROAS to time a refresh is watching the lagging indicator.</li>
+<li><strong>Body 2 — the 3 things that move hold-rate, in order.</strong> The first frame (problem, not logo). The first spoken line (specific, not "hey guys"). Caption pacing on the first 3 seconds. None require budget. They're craft.</li>
+<li><strong>Body 3 — the test.</strong> Put a fatigue clock on your top ad, log its 3-second hold weekly. The day the line bends, the replacement should already be in testing. <code>[CASE STUDY PLACEHOLDER]</code></li>
+<li><strong>Close + soft CTA.</strong> "Track this yourself starting today. If the gap is having the hands to produce replacements at cadence, that's what I fill. Reply HOLD for the tracking sheet."</li>
+<li><strong>Footer.</strong> Hard cap of 5 brands, functional consumables only. The notes are free and stay free.</li>
+</ul>
+<h3>Issue #6 — "The 4 angles I'd test on almost any functional-consumables SKU"</h3>
+<p><strong>Subject:</strong> four reasons people actually buy (and why you're only testing one)<br>
+<strong>Preview:</strong> Most brands test variations of a single reason-to-buy. Here are four.</p>
+<ul>
+<li><strong>Lead.</strong> The angle/variation confusion costs more than any targeting mistake. Define both in two sentences: angle = why, variation = which execution.</li>
+<li><strong>Body — the 4 reusable angle families</strong> (SKU-agnostic skeleton):
+<ol>
+<li><strong>The replacement</strong> — swap the thing you already do (the 3pm coffee, the soda, the juice bar). Lowest-friction opener in this category.</li>
+<li><strong>The objection-killer</strong> — lead with the top 3-star-review complaint and dismantle it.</li>
+<li><strong>The price math</strong> — per-serving cost vs the alternative they already buy. Strong for considered-purchase AOVs.</li>
+<li><strong>The ritual</strong> — anchor the product to a specific moment in the day. Builds the habit that builds LTV.</li>
+</ol></li>
+<li><strong>Body 2 — how to pick which leads.</strong> Off the AOV and the top objection, not off taste. Worked example contrasting a $90 SKU and a $35 SKU.</li>
+<li><strong>Close + soft CTA.</strong> "Pick the 3 or 4 that fit your SKU and you've got a cycle of tests. Reply PACK for the 10-script template these expand into."</li>
+<li><strong>Footer.</strong> 5-brand cap line.</li>
+</ul>
+<h3>Issue #7 — "The claim that gets your account banned (and how to rewrite it)"</h3>
+<p><strong>Subject:</strong> the line that kills supplement accounts<br>
+<strong>Preview:</strong> It's not a bad ad that gets you pulled. It's one sentence.</p>
+<ul>
+<li><strong>Lead.</strong> For functional consumables the existential risk isn't a low-performing ad. It's a claim you can't substantiate. The FTC and Meta act on language. One sentence takes down an account.</li>
+<li><strong>Body 1 — the 3 claim tiers, with examples</strong> per category (greens / nootropic / beverage / mushroom): safe structure-function ("supports," "helps maintain"); risky (specific effect claims, "boosts," "clinically" with no study on file); account-ending (disease claims, implied intoxication, "cures").</li>
+<li><strong>Body 2 — the rewrite move.</strong> Keep the persuasion, drop the flagged language. Three before/after rewrites that preserve the sell.</li>
+<li><strong>Body 3 — the gate as a process.</strong> Every script screened before render. Why a brand-blind vendor skips this and why that's a liability you inherit.</li>
+<li><strong>Close + soft CTA.</strong> "Paste a claim you're unsure about and I'll tell you which side of the line it's on. Or reply CLAIMS for the cheat sheet."</li>
+<li><strong>Footer.</strong> 5-brand cap. This is the gate every script of mine passes anyway.</li>
+</ul>
+<h3>Issue #8 — "Why I post the scoreboard while it's still empty"</h3>
+<p><strong>Subject:</strong> the most honest pitch I can make from zero<br>
+<strong>Preview:</strong> No case studies yet. Here's why I'm showing you that on purpose.</p>
+<ul>
+<li><strong>Lead.</strong> State the real inventory out loud: no ad case studies yet, some teardowns, some renders, founding slots open. Then never apologize for it again.</li>
+<li><strong>Body 1 — why newness is the reason the offer exists, not a flaw to hide.</strong> The free made-for-you sample and the guarantee exist because there's no track record. Features of honesty, not patches over weakness.</li>
+<li><strong>Body 2 — the 90-day proof ledger.</strong> What a buyer watches accumulate: teardowns, renders, a real hold-rate number off my own small spend, founding slots filling. The timeline becomes the proof a fly-by-night can't fake. <code>[CASE STUDY PLACEHOLDER]</code></li>
+<li><strong>Body 3 — the one character note, used once.</strong> "I built a real business of my own once, so I respect your margin," then demote it: not ad-proof, and I won't headline it like the inbox does.</li>
+<li><strong>Close + soft CTA.</strong> "Founding-partner slots are open, free instrumented pilot, risk on me. Reply if you want the details. Otherwise the notes stay free."</li>
+<li><strong>Footer.</strong> 5-brand cap.</li>
+</ul>
+<hr>
+<h1>6 ENGAGEMENT-BAIT DM REPLIES (net-new)</h1>
+<blockquote><p>For the NEW magnets in this bank (GREENS / CLAIMS-nootropic / AUDIT / CYCLE / HOLD) plus the objection-handling variants the playbook flags. Operating rule (doc 20 + outreach playbook): reply publicly in the comment and in the DM; the DM delivers the asset, then offers ONE small piece of free judgment; never pitch the retainer on first contact; the asset must exist before the post runs.</p></blockquote>
+<p><strong>Reply 1 — magnet handoff (GREENS / CLAIMS / AUDIT / CYCLE / HOLD, swap the asset line):</strong></p>
+<pre><code>Here's the [asset]: [LINK].
+
+[One line on the useful part — e.g. for CLAIMS: "the rewrite column is the one that matters, it keeps the persuasion while dropping the language that flags a supplement account."]
+
+Tell me your SKU and AOV and I'll flag the 2 angles I'd lead with. No pitch. I just like this problem.</code></pre>
+<p><strong>Reply 2 — hold-rate, runway-aware (HOLD):</strong></p>
+<pre><code>Here's the hold-rate tracking sheet: [LINK].
+
+Log your top ad's 3-second hold weekly. The day the line bends is your early warning. Act on the slide, not the ROAS crash weeks later.
+
+What's the current frequency on your top ad? I can tell you roughly how much runway it's got left.</code></pre>
+<p><strong>Reply 3 — "we run this in-house already":</strong></p>
+<pre><code>Here's the [asset]: [LINK]. Should still be useful even in-house.
+
+Most lean teams running cycles internally bottleneck on the QC and launch-and-tag last mile, not the ideas. If that's where your hours go, that's the slice I take off a plate. Asset's yours either way.</code></pre>
+<p><strong>Reply 4 — skeptic ("is this just AI slop?"):</strong></p>
+<pre><code>Fair question. Sent the [asset]: [LINK].
+
+AI reads like slop when it's fed nothing. The whole asset is the brand-context brief that fixes that. If you want, send me your product page and I'll render one short UGC ad of your own product, free, so you judge the output instead of the category. No money talk attached.</code></pre>
+<p><strong>Reply 5 — "can I see examples?":</strong></p>
+<pre><code>Here you go: [LINK to asset]. And the actual output: [LINK to portfolio reel + a published teardown].
+
+I'm newer than the 10-year shops, so instead of a case-study wall I'd rather show you the work. If you run a functional-consumables brand, I'll add one of your own product to the pile, free.</code></pre>
+<p><strong>Reply 6 — soft re-engage for a warm DM gone quiet:</strong></p>
+<pre><code>No pressure. Just circling back with the thing I promised: [LINK].
+
+If it's useful and you ever want a second pair of eyes on a specific ad or claim, my DMs are open. I cap at 5 brands so I'm not chasing anyone.</code></pre>
+<hr>
+<h1>PILLAR REFILL SEEDS (parked for Cycle 3)</h1>
+<blockquote><p>Per doc 20's "refill from the same 5 pillars" loop. Ready hooks beyond the 4 weeks above, so the bank never drops below 10. Each is a one-line seed with a number already attached (doc-20 rule). All net-new.</p></blockquote>
+<p><strong>P1 Growth:</strong></p>
+<ul>
+<li>"You don't have a worse product than your competitor. You have fewer shots on goal. They run 24 to your 4."</li>
+<li>"ROAS is a team sport played by 9 players. Hold-rate is the one you actually coach."</li>
+<li>"Your 'creative slump' is a calendar problem. The winner died at week 7 and nobody loaded a replacement."</li>
+<li>"A $110/mo tool didn't democratize ad creative. It democratized making slop faster."</li>
+<li>"If your agency runs your mushroom coffee, a face serum, and a pet brand off one template, none of them gets its best work."</li>
+</ul>
+<p><strong>P2 Authority — case-study / process (all <code>[CASE STUDY PLACEHOLDER]</code>):</strong></p>
+<ul>
+<li>"How I'd structure cycle 2 once cycle 1's winner is known: 6 more of the winning family, 3 fresh angles, 3 retests. The reload math."</li>
+<li>"The day-14 read: the 5 numbers I check before I kill or double a variation."</li>
+<li>"Why I send 4 concept locks before rendering 24. Approve directions, not surprises."</li>
+<li>"How I'd run a head-to-head: my 4 angles vs your media buyer's 4, same spend, your account, blind."</li>
+</ul>
+<p><strong>P3 Authority — creative breakdown:</strong></p>
+<ul>
+<li>"Why this ad's hook works with zero face on screen for the first 4 seconds, and why that's a deliberate AI-routing choice."</li>
+<li>"Same ad, two CTAs: 'shop now' vs 'try it for one week.' Only one matched the AOV."</li>
+<li>"Where this competitor's hold-rate is leaking. The dead second between hook and proof you can see without their data."</li>
+<li>"The claim doing the heavy lifting in this ad, and why it's substantiation-safe when 3 obvious alternatives aren't."</li>
+</ul>
+<p><strong>P4 Personal — journey (proof-only):</strong></p>
+<ul>
+<li>"Slot 3 of 5 is the one I think about most. Past that, the SLA math gets honest and I'd rather cap than degrade."</li>
+<li>"The free sample is the most expensive marketing I do, and the only one I trust."</li>
+<li>"I publish the misses too. The render that came out uncanny and why I cut it from the reel."</li>
+<li>"Newer than the agencies isn't the apology. It's the reason the guarantee exists."</li>
+</ul>
+<p><strong>P5 Tactical — tutorials:</strong></p>
+<ul>
+<li>"The first-frame test: if your ad's frame 1 has a logo, you've already lost the hold. The fix."</li>
+<li>"How to write 6 hooks for one angle without writing 6 versions of the same hook. The variation matrix."</li>
+<li>"The 3-star-review mining method: turning your worst reviews into your best hooks."</li>
+<li>"How to structure 24 variations into ad sets so the day-14 read is readable, not a tangle."</li>
+</ul>
+<hr>
+<h1>COMPLIANCE + VOICE AUDIT</h1>
+<p><strong>Coverage.</strong> ~25 dated posts (Weeks 5–8, X drafted + LinkedIn direction noted) + 4 newsletter outlines + 6 DM replies + parked refill seeds. Fully additive to doc 20. All five pillars appear every week; no two same-pillar posts land back-to-back.</p>
+<p><strong>Counter-narratives.</strong> CN1 (W6 Mon), CN2 (W7 Fri), CN3 (W8 Mon). None reuse doc-20 wording.</p>
+<p><strong>Andromeda metered.</strong> Exactly 2 mentions (W6 Sat, W8 Sat), recognition not grief, Refuge-track, never tied to a false personal-store claim.</p>
+<p><strong>Honesty constraint, verified clean.</strong></p>
+<ul>
+<li>Zero fabricated metrics. Every delta tagged <code>[CASE STUDY PLACEHOLDER]</code>.</li>
+<li>Zero claimed ad / e-commerce / paid-ads history.</li>
+<li>Home-gym business named once in the social bank (W7 Wed), lightly, and that post demotes it. The $2M figure appears only there; Newsletter #8 carries one demoted echo on the email channel.</li>
+<li>No follower counts, fake logos, or invented testimonials.</li>
+<li>Real Reddit pain (7-week fatigue, Andromeda, agency-burn, AI-slop) is shared context, never pasted verbatim as a hook.</li>
+<li>Every magnet is a real, buildable asset and must exist before its post runs.</li>
+</ul>
+<p><strong>Assumption discipline (per <code>v1-sales-page-assumption-audit.md</code>).</strong> Claims the audit tags ASSUMPTION are kept as method or target framing, never buyer fact: AI-UGC-works-in-vertical, hold-rate-as-trusted-metric (Newsletter #5 carries the caveat), the "4 tests a month" cadence (a contrast the prospect self-corrects, never asserted as their number), the drink-and-react insight (my analysis, not their stated belief). First Strike and guarantee carry the trust; no paragraph claims a result.</p>
+<p><strong>Public-copy rule (brand kit).</strong> Two paths only: Knight (DFY) and Forge (DWY). No self-serve, no "coming soon," in any post, reply, or outline.</p>
+<p><strong>Voice.</strong> Specific over round throughout ($30–100K/mo, 4 angles, 24 variations, week 7, ~$110 tool, $90 vs $35 AOV, 5-brand cap). Volume demoted to method, winner the hero. No hype, no freedom-lifestyle angle, no emojis. AI failure mode named before the prospect can.</p>
+<p><strong>Hard prerequisite before publishing (doc 20 + the audit).</strong> The free First Strike must be genuinely deliverable, and at least one rendered sample plus 2 or 3 published teardowns must be live, so credibility carries on demonstration.</p>
+<hr>
+<p><strong>END — Adwield V1 Content Bank.</strong> Net-new, additive to <code>20-content-engine.md</code>. Proof-only throughout. Source of truth: <code>gtm-assets/adwield-brand-kit.md</code>, <code>12-offer-locked.md</code>, <code>13-positioning-acp.md</code>, <code>27-credibility-and-trust.md</code>.<br>
+&lt;/content&gt;<br>
+&lt;/invoke&gt;</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

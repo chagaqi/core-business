@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adwield — Equip your secret weapon in the ad auction</title>
+<meta name="description" content="Adwield is an AI-native ad-creative engine for functional-consumables brands. More hits. More crits. Every two weeks.">
+<style>
+  :root{
+    --bg:#070A12;
+    --bg-1:#0A0F1A;
+    --panel-a:rgba(20,29,47,0.82);
+    --panel-b:rgba(11,17,29,0.88);
+    --frame:rgba(150,190,225,0.24);
+    --frame-soft:rgba(150,190,225,0.14);
+    --frame-glow:rgba(110,170,225,0.18);
+    --gold:#E3C778;
+    --gold-dim:rgba(227,199,120,0.5);
+
+    --equip:#5EC8E6;
+    --equip-deep:#2E7E96;
+    --epic:#A879F0;
+    --crit:#F4A23B;
+    --danger:#F2666B;
+    --buff:#7CE0B0;
+
+    --equip-glow:rgba(94,200,230,0.5);
+    --crit-glow:rgba(244,162,59,0.5);
+    --epic-glow:rgba(168,121,240,0.5);
+    --gold-glow:rgba(227,199,120,0.4);
+
+    --ink:#E9ECF3;
+    --ink-soft:#AEB8C8;
+    --ink-mute:#76819A;
+
+    --maxw:1140px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+
+    /* gold corner brackets */
+    --cTL:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cpath d='M1.5 7V1.5H7' fill='none' stroke='%23E3C778' stroke-width='1.4'/%3E%3C/svg%3E");
+    --cTR:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cpath d='M16.5 7V1.5H11' fill='none' stroke='%23E3C778' stroke-width='1.4'/%3E%3C/svg%3E");
+    --cBL:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cpath d='M1.5 11v5.5H7' fill='none' stroke='%23E3C778' stroke-width='1.4'/%3E%3C/svg%3E");
+    --cBR:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18'%3E%3Cpath d='M16.5 11v5.5H11' fill='none' stroke='%23E3C778' stroke-width='1.4'/%3E%3C/svg%3E");
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    font-size:17px;line-height:1.6;letter-spacing:-0.005em;-webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;overflow-x:hidden;padding-bottom:96px;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:
+      radial-gradient(1200px 560px at 50% -280px,rgba(94,200,230,0.10),transparent 70%),
+      radial-gradient(1000px 700px at 100% 4%,rgba(168,121,240,0.06),transparent 70%),
+      linear-gradient(180deg,#0A1322 0%,#070A12 40%,#070A12 100%);
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.6;
+    background-image:linear-gradient(rgba(120,170,225,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(120,170,225,0.025) 1px,transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(circle at 50% 26%,#000,transparent 78%);
+            mask-image:radial-gradient(circle at 50% 26%,#000,transparent 78%);
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px;position:relative;z-index:2}
+  section{position:relative;z-index:2}
+  a{color:inherit}
+  h1,h2,h3{margin:0;letter-spacing:-0.025em;font-weight:700;line-height:1.05}
+  h2{font-size:clamp(28px,4.4vw,42px)}
+  h3{font-size:20px;letter-spacing:-0.02em}
+  p{margin:0}
+  ::selection{background:rgba(94,200,230,0.3);color:#fff}
+  :focus-visible{outline:2px solid var(--equip);outline-offset:3px;border-radius:5px}
+
+  .mono{font-family:var(--mono)}
+  .eyebrow{font-family:var(--mono);font-size:12.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-mute)}
+
+  /* ============ FFXIV WINDOW PANEL ============ */
+  .panel{
+    position:relative;border:1px solid var(--frame);border-radius:5px;
+    background:
+      var(--cTL) top 5px left 5px / 18px 18px no-repeat,
+      var(--cTR) top 5px right 5px / 18px 18px no-repeat,
+      var(--cBL) bottom 5px left 5px / 18px 18px no-repeat,
+      var(--cBR) bottom 5px right 5px / 18px 18px no-repeat,
+      linear-gradient(180deg,var(--panel-a),var(--panel-b));
+    box-shadow:
+      0 0 0 1px rgba(0,0,0,0.55),
+      inset 0 1px 0 rgba(190,220,255,0.10),
+      inset 0 0 22px rgba(60,110,170,0.06),
+      0 26px 60px -28px rgba(0,0,0,0.85);
+    backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
+  }
+  .win-title{
+    display:flex;align-items:center;gap:11px;padding:11px 16px;
+    border-bottom:1px solid var(--frame-soft);
+    background:linear-gradient(180deg,rgba(46,64,98,0.5),rgba(46,64,98,0));
+    font-family:var(--mono);font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--gold);
+  }
+  .win-title .gem{width:9px;height:9px;flex:none;background:var(--gold);transform:rotate(45deg);box-shadow:0 0 9px var(--gold-glow)}
+  .win-title .right{margin-left:auto;color:var(--ink-mute);letter-spacing:0.12em;display:flex;align-items:center;gap:8px}
+
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--equip);box-shadow:0 0 10px var(--equip-glow);animation:pulse 2.6s ease-out infinite}
+  .dot.crit{background:var(--crit);box-shadow:0 0 10px var(--crit-glow)}
+  .dot.epic{background:var(--epic);box-shadow:0 0 10px var(--epic-glow)}
+  .dot.danger{background:var(--danger);box-shadow:0 0 10px rgba(242,102,107,.5)}
+  .dot.gold{background:var(--gold);box-shadow:0 0 10px var(--gold-glow)}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,200,230,0.4)}70%{box-shadow:0 0 0 7px rgba(94,200,230,0)}100%{box-shadow:0 0 0 0 rgba(94,200,230,0)}}
+
+  /* ============ Buttons (skill-button feel) ============ */
+  .btn{
+    position:relative;display:inline-flex;align-items:center;justify-content:center;gap:9px;
+    font-family:var(--sans);font-weight:650;font-size:15px;letter-spacing:-0.005em;
+    padding:13px 22px;border-radius:8px;border:1px solid transparent;cursor:pointer;
+    text-decoration:none;white-space:nowrap;overflow:hidden;
+    transition:transform .14s cubic-bezier(.2,.9,.3,1.3),background .15s,border-color .15s,box-shadow .15s;
+  }
+  .btn::after{content:"";position:absolute;top:0;left:-120%;width:55%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,0.5),transparent);transform:skewX(-18deg);transition:left .55s ease}
+  .btn:hover::after{left:135%}
+  .btn:active{transform:translateY(1px) scale(.985)}
+  .btn-primary{background:linear-gradient(180deg,#74d3ee,var(--equip));color:#04222C;border-color:rgba(255,255,255,0.25);box-shadow:0 1px 0 rgba(255,255,255,0.35) inset,0 0 0 1px rgba(0,0,0,.3),0 10px 30px -12px var(--equip-glow)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,0.35) inset,0 0 0 1px rgba(0,0,0,.3),0 16px 40px -12px var(--equip-glow),0 0 22px -4px var(--equip-glow)}
+  .btn-ghost{background:linear-gradient(180deg,rgba(40,55,85,0.5),rgba(20,28,44,0.5));color:var(--ink);border-color:var(--frame)}
+  .btn-ghost:hover{border-color:var(--epic);color:#fff;box-shadow:0 0 24px -8px var(--epic-glow)}
+  .btn-crit{background:linear-gradient(180deg,#f7b258,var(--crit));color:#2A1604;border-color:rgba(255,255,255,0.28);box-shadow:0 1px 0 rgba(255,255,255,0.4) inset,0 0 0 1px rgba(0,0,0,.3),0 10px 30px -12px var(--crit-glow)}
+  .btn-crit:hover{transform:translateY(-2px);box-shadow:0 1px 0 rgba(255,255,255,0.4) inset,0 0 0 1px rgba(0,0,0,.3),0 16px 44px -12px var(--crit-glow),0 0 22px -2px var(--crit-glow)}
+  .btn-lg{padding:16px 28px;font-size:16px}
+  .link-quiet{display:inline-flex;align-items:center;gap:7px;color:var(--ink-soft);text-decoration:none;font-size:15px;font-weight:550;border-bottom:1px solid transparent;padding-bottom:1px}
+  .link-quiet:hover{color:#fff;border-bottom-color:var(--frame)}
+  .arrow{transition:transform .15s ease}
+  .link-quiet:hover .arrow{transform:translateX(4px)}
+
+  /* ============ TOP HUD / NAV ============ */
+  .nav{position:sticky;top:0;z-index:60;background:rgba(8,11,18,0.82);backdrop-filter:saturate(150%) blur(16px);-webkit-backdrop-filter:saturate(150%) blur(16px);border-bottom:1px solid var(--frame-soft);box-shadow:0 1px 0 rgba(0,0,0,0.5)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:66px;gap:16px}
+  .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink)}
+  .crest{filter:drop-shadow(0 0 8px rgba(94,200,230,0.45))}
+  .wordmark{font-weight:720;font-size:18px;letter-spacing:-0.03em}
+  /* player plate */
+  .plate{display:flex;align-items:center;gap:11px;padding:5px 12px 5px 8px;border:1px solid var(--frame-soft);border-radius:8px;background:linear-gradient(180deg,rgba(40,55,85,0.4),rgba(16,23,38,0.4))}
+  .lvl-ring{width:34px;height:34px;flex:none;border-radius:8px;border:1px solid var(--gold-dim);background:radial-gradient(circle at 50% 30%,rgba(227,199,120,0.18),rgba(16,23,38,0.6));display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;transition:transform .25s,box-shadow .25s}
+  .lvl-ring .t{font-family:var(--mono);font-size:7px;letter-spacing:0.1em;color:var(--gold);opacity:.8}
+  .lvl-ring .n{font-family:var(--mono);font-size:14px;font-weight:700;color:#fff}
+  .lvl-ring.flash{transform:scale(1.16);box-shadow:0 0 22px var(--gold-glow)}
+  .plate-bars{display:flex;flex-direction:column;gap:4px;width:120px}
+  .pb-row{display:flex;align-items:center;gap:7px}
+  .pb-lab{font-family:var(--mono);font-size:8px;letter-spacing:0.12em;color:var(--ink-mute);width:18px}
+  .pb-track{flex:1;height:6px;border-radius:4px;background:rgba(0,0,0,0.5);border:1px solid rgba(0,0,0,0.6);overflow:hidden;box-shadow:inset 0 1px 1px rgba(0,0,0,0.6)}
+  .pb-fill{height:100%;width:0;transition:width .14s linear}
+  .pb-fill.xp{background:linear-gradient(90deg,var(--gold-dim),var(--gold));box-shadow:0 0 10px var(--gold-glow)}
+  .pb-fill.hp{background:linear-gradient(90deg,#2E7E96,var(--equip));width:100%}
+  .nav-links{display:flex;align-items:center;gap:24px}
+  .nav-links a{color:var(--ink-soft);text-decoration:none;font-size:14px;font-weight:500}
+  .nav-links a:hover{color:#fff}
+  .nav-cta{display:flex;align-items:center;gap:14px}
+
+  /* cast-bar style scroll progress */
+  .castbar{position:sticky;top:66px;z-index:55;height:6px;background:rgba(0,0,0,0.55);overflow:hidden;border-bottom:1px solid rgba(0,0,0,0.5)}
+  .castbar::before{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 38px,rgba(0,0,0,0.45) 38px,rgba(0,0,0,0.45) 40px);z-index:2;pointer-events:none}
+  .castfill{height:100%;width:0;background:linear-gradient(90deg,var(--equip-deep),var(--equip) 70%,#cdf3ff);box-shadow:0 0 14px var(--equip-glow);transition:width .12s linear}
+
+  /* ============ QUEST RAIL ============ */
+  .rail{position:fixed;left:24px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column}
+  .rail-node{display:flex;align-items:center;gap:11px;text-decoration:none;height:42px;position:relative;color:var(--ink-mute)}
+  .rail-node::before{content:"";position:absolute;left:7px;top:-21px;height:21px;width:2px;background:var(--frame-soft)}
+  .rail-node:first-child::before{display:none}
+  .rail-tick{width:16px;height:16px;flex:none;background:var(--bg-1);border:2px solid var(--frame);transform:rotate(45deg);transition:all .3s ease;position:relative;z-index:2}
+  .rail-label{font-family:var(--mono);font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;opacity:0;transform:translateX(-6px);transition:all .25s ease;white-space:nowrap}
+  .rail-node:hover .rail-label{opacity:1;transform:none;color:var(--ink-soft)}
+  .rail-node.done .rail-tick{border-color:var(--gold);background:var(--gold);box-shadow:0 0 12px var(--gold-glow)}
+  .rail-node.done::before{background:var(--gold-dim)}
+  .rail-node.active .rail-tick{border-color:var(--equip);box-shadow:0 0 0 4px rgba(94,200,230,0.16),0 0 16px var(--equip-glow)}
+  .rail-node.active .rail-label{opacity:1;transform:none;color:#fff}
+  @media(max-width:1360px){.rail{display:none}}
+
+  /* ============ reveal ============ */
+  html.has-js .rv{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);transition-delay:calc(var(--i,0)*70ms)}
+  html.has-js .rv.in{opacity:1;transform:none}
+
+  /* ============ Quest-marker section header ============ */
+  .qhead{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+  .qmarker{width:30px;height:30px;flex:none;position:relative;display:flex;align-items:center;justify-content:center}
+  .qmarker svg{filter:drop-shadow(0 0 7px var(--gold-glow))}
+  .qchip{display:flex;flex-direction:column;gap:2px}
+  .qchip .q{font-family:var(--mono);font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold)}
+  .qchip .s{font-family:var(--mono);font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink-mute)}
+
+  .lede{font-size:18.5px;color:var(--ink-soft);max-width:60ch;margin-top:18px;line-height:1.6}
+  .lede strong{color:var(--ink);font-weight:600}
+  .cu{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+  /* ============ HERO ============ */
+  .hero{padding:64px 0 30px}
+  .hero h1{font-size:clamp(33px,5.7vw,60px);line-height:1.03;letter-spacing:-0.03em;font-weight:740;max-width:18ch;margin:20px 0 0}
+  .hero h1 .equip{color:var(--equip);text-shadow:0 0 26px rgba(94,200,230,0.35)}
+  .kicker{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-soft);padding:6px 13px;border:1px solid var(--frame-soft);border-radius:7px;background:linear-gradient(180deg,rgba(40,55,85,0.4),rgba(16,23,38,0.4))}
+  .tagline{font-family:var(--mono);font-size:14px;letter-spacing:0.04em;color:var(--ink-soft);margin-top:20px;display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .tagline .sep{color:var(--gold)}
+  .hero-sub{font-size:18px;color:var(--ink-soft);max-width:50ch;margin-top:22px;line-height:1.55}
+  .hero-cta{display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:30px}
+  .norisk{margin-top:18px;font-size:14px;color:var(--ink-mute);display:flex;align-items:flex-start;gap:9px;max-width:62ch}
+  .norisk svg{flex:none;margin-top:3px;color:var(--equip)}
+
+  /* ============ EQUIPMENT SLOTS (4 terms) ============ */
+  .gear{margin-top:54px}
+  .gear-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--frame-soft)}
+  .slot-item{position:relative;background:linear-gradient(180deg,rgba(20,29,47,0.7),rgba(11,17,29,0.8));padding:18px;cursor:default;transition:background .2s,box-shadow .2s;overflow:hidden}
+  .slot-item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--rare,var(--equip))}
+  .slot-item:hover{background:linear-gradient(180deg,rgba(28,40,64,0.85),rgba(14,21,35,0.9));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--rare) 40%,transparent),inset 0 0 30px -8px var(--rare)}
+  .slot-head{display:flex;align-items:center;gap:11px}
+  .slot-ic{width:40px;height:40px;flex:none;border-radius:8px;border:1px solid color-mix(in srgb,var(--rare) 45%,transparent);background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--rare) 22%,transparent),rgba(11,17,29,0.7));display:flex;align-items:center;justify-content:center;color:var(--rare,var(--equip));box-shadow:0 0 16px -6px var(--rare)}
+  .slot-rare{font-family:var(--mono);font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--rare,var(--equip))}
+  .slot-name{font-size:16px;font-weight:680;letter-spacing:-0.02em;margin-top:3px}
+  .slot-rule{height:1px;background:var(--frame-soft);margin:13px 0}
+  .slot-stat{font-size:13.5px;color:var(--ink-soft);line-height:1.5}
+  .slot-flavor{font-size:12.5px;color:color-mix(in srgb,var(--rare,var(--equip)) 72%,#9aa3b2);font-style:italic;margin-top:10px;line-height:1.45}
+
+  /* ============ generic section ============ */
+  .section{padding:88px 0;border-top:1px solid var(--frame-soft)}
+
+  /* ============ Fatigue ============ */
+  .fatigue-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:46px;align-items:center;margin-top:42px}
+  .fatigue-points{margin-top:24px;display:flex;flex-direction:column;gap:14px;max-width:46ch}
+  .fpt{display:flex;gap:13px;font-size:15.5px;color:var(--ink-soft)}
+  .fpt b{color:var(--ink);font-weight:600}
+  .fpt .mk{flex:none;width:24px;height:24px;border:1px solid rgba(242,102,107,0.4);display:flex;align-items:center;justify-content:center;color:var(--danger);font-family:var(--mono);font-size:11px;margin-top:1px;transform:rotate(45deg)}
+  .fpt .mk span{transform:rotate(-45deg)}
+  .chart-inner{padding:16px}
+  .chart-head{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:6px}
+  .enemy-hp{display:flex;align-items:center;gap:9px;margin-top:14px;font-family:var(--mono);font-size:10.5px;color:var(--ink-mute);letter-spacing:.1em;text-transform:uppercase}
+  .ehp-track{flex:1;height:11px;background:rgba(0,0,0,0.55);border:1px solid rgba(0,0,0,0.6);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,0.6);position:relative}
+  .ehp-track::after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 24px,rgba(0,0,0,0.4) 24px,rgba(0,0,0,0.4) 25px)}
+  .ehp-fill{height:100%;width:28%;background:linear-gradient(90deg,var(--danger),#ff9a5b);box-shadow:0 0 12px rgba(242,102,107,.4);transition:width 1.4s cubic-bezier(.2,.8,.2,1)}
+
+  /* ============ Loadout ============ */
+  .loadout{margin-top:42px}
+  .loadout-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 18px;border-bottom:1px solid var(--frame-soft);font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute);flex-wrap:wrap}
+  .loadout-bar .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--frame-soft);border-radius:100px;padding:4px 12px;color:var(--ink-soft)}
+  .angles{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--frame-soft)}
+  .angle{background:linear-gradient(180deg,rgba(16,23,38,0.7),rgba(10,15,26,0.8));padding:18px;transition:background .25s}
+  .angle:hover{background:linear-gradient(180deg,rgba(24,34,54,0.8),rgba(12,18,30,0.85))}
+  .angle-id{font-family:var(--mono);font-size:11px;letter-spacing:0.1em;color:var(--epic);text-transform:uppercase}
+  .angle-h{font-size:15.5px;font-weight:680;letter-spacing:-0.01em;margin-top:8px}
+  .angle-sub{font-size:13px;color:var(--ink-mute);margin-top:5px;line-height:1.45}
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:16px}
+  .slot{aspect-ratio:1/1;border:1px solid var(--frame-soft);background:linear-gradient(180deg,rgba(28,38,58,0.5),rgba(10,15,26,0.6));display:flex;align-items:flex-end;padding:6px;font-family:var(--mono);font-size:9px;color:var(--ink-mute);position:relative;transition:transform .15s,border-color .15s,box-shadow .15s;box-shadow:inset 0 1px 0 rgba(190,220,255,0.06)}
+  .slot::before{content:"";position:absolute;top:6px;left:6px;right:6px;height:1px;background:rgba(190,220,255,0.06)}
+  .slot:hover{transform:translateY(-3px) scale(1.05);border-color:var(--equip);box-shadow:0 8px 20px -10px var(--equip-glow),inset 0 0 14px -4px var(--equip-glow);z-index:2;color:var(--equip)}
+  .slot.crit{border-color:rgba(244,162,59,0.6);background:linear-gradient(180deg,rgba(244,162,59,0.16),rgba(20,15,8,0.6));color:var(--crit);animation:critpulse 2.4s ease-in-out infinite}
+  @keyframes critpulse{0%,100%{box-shadow:0 0 0 0 rgba(244,162,59,0)}50%{box-shadow:0 0 22px -4px var(--crit-glow),inset 0 0 14px -4px var(--crit-glow)}}
+  .loadout-note{padding:16px 18px;border-top:1px solid var(--frame-soft);font-size:13.5px;color:var(--ink-mute);line-height:1.55}
+  .loadout-note b{color:var(--ink-soft);font-weight:600}
+
+  /* ============ First Strike ============ */
+  .firststrike{border-top:1px solid var(--frame-soft);background:radial-gradient(900px 400px at 16% 0%,rgba(244,162,59,0.10),transparent 64%)}
+  .legendary-tag{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--crit);border:1px solid rgba(244,162,59,0.45);background:rgba(244,162,59,0.08);padding:5px 12px;border-radius:7px}
+  .fs-card{margin-top:40px;border-color:rgba(244,162,59,0.4)!important;display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .fs-card .win-title{color:var(--crit);background:linear-gradient(180deg,rgba(244,162,59,0.16),transparent)}
+  .fs-card .win-title .gem{background:var(--crit);box-shadow:0 0 9px var(--crit-glow)}
+  .fs-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;padding:30px}
+  .steps{display:flex;flex-direction:column}
+  .step{display:flex;gap:15px;padding:14px 0;border-bottom:1px solid var(--frame-soft)}
+  .step:last-child{border-bottom:none}
+  .step .n{flex:none;width:34px;height:34px;border:1px solid rgba(244,162,59,0.5);color:var(--crit);font-family:var(--mono);font-size:13px;display:flex;align-items:center;justify-content:center;font-weight:600;background:rgba(244,162,59,0.07);transform:rotate(45deg)}
+  .step .n span{transform:rotate(-45deg)}
+  .step b{display:block;font-size:15px;font-weight:600;margin-bottom:3px}
+  .step span.t{font-size:14px;color:var(--ink-soft);line-height:1.5}
+  .fs-cta{display:flex;flex-direction:column;align-items:flex-start;gap:14px;border-left:1px solid var(--frame-soft);padding-left:36px}
+  .fs-cta .h{font-size:22px;font-weight:700;letter-spacing:-0.02em;line-height:1.15}
+  .fs-cta p{font-size:14px;color:var(--ink-soft)}
+
+  /* ============ Paths / classes ============ */
+  .paths{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:42px}
+  .path{padding:0;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+  .path:hover{transform:translateY(-4px)}
+  .knight:hover{box-shadow:0 0 0 1px rgba(0,0,0,0.55),inset 0 1px 0 rgba(190,220,255,0.10),0 26px 60px -30px var(--equip-glow)}
+  .forge:hover{box-shadow:0 0 0 1px rgba(0,0,0,0.55),inset 0 1px 0 rgba(190,220,255,0.10),0 26px 60px -30px var(--epic-glow)}
+  .path-body{padding:24px;display:flex;flex-direction:column;flex:1}
+  .class-row{display:flex;align-items:center;gap:13px}
+  .class-emblem{width:46px;height:46px;flex:none;border:1px solid var(--frame);display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 30%,rgba(40,55,85,0.6),rgba(11,17,29,0.7));transform:rotate(45deg)}
+  .class-emblem svg{transform:rotate(-45deg)}
+  .knight .class-emblem{color:var(--equip);box-shadow:0 0 22px -8px var(--equip-glow)}
+  .forge .class-emblem{color:var(--epic);box-shadow:0 0 22px -8px var(--epic-glow)}
+  .path-tag{font-family:var(--mono);font-size:10.5px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink-mute)}
+  .path h3{font-size:22px;margin-top:3px;letter-spacing:-0.025em}
+  .path .quip{font-size:15px;font-weight:600;margin-top:14px}
+  .knight .quip{color:var(--equip)}
+  .forge .quip{color:var(--epic)}
+  .path p{font-size:14.5px;color:var(--ink-soft);margin-top:12px;line-height:1.58}
+  .path .foot{margin-top:auto;padding-top:22px}
+  .path .meta{font-family:var(--mono);font-size:11px;color:var(--ink-mute);letter-spacing:0.04em;margin-top:14px;display:flex;align-items:center;gap:8px}
+
+  /* ============ Guarantee ============ */
+  .guarantee{border-top:1px solid var(--frame-soft)}
+  .buff-tag{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--buff);border:1px solid rgba(124,224,176,0.4);background:rgba(124,224,176,0.07);padding:5px 12px;border-radius:7px}
+  .quote{margin-top:34px;padding:0}
+  .quote .win-title{color:var(--buff);background:linear-gradient(180deg,rgba(124,224,176,0.12),transparent)}
+  .quote .win-title .gem{background:var(--buff);box-shadow:0 0 9px rgba(124,224,176,.5)}
+  .quote-body{padding:28px 32px;position:relative}
+  .quote-body::before{content:"";position:absolute;left:0;top:24px;bottom:24px;width:3px;background:var(--buff);box-shadow:0 0 16px rgba(124,224,176,.5)}
+  .quote-body p{font-size:18.5px;line-height:1.62;color:var(--ink);letter-spacing:-0.01em;padding-left:18px}
+  .quote-body .em{color:var(--buff);font-weight:600}
+  .guar-pts{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px}
+  .gpt{padding:20px}
+  .gpt .l{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--buff);display:flex;align-items:center;gap:8px}
+  .gpt p{font-size:14px;color:var(--ink-soft);margin-top:11px;line-height:1.5}
+
+  /* ============ Proof ============ */
+  .proof-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:40px;align-items:stretch}
+  .proof-card{padding:26px}
+  .proof-card .l{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:14px}
+  .num-honest{display:flex;align-items:baseline;gap:14px}
+  .num-honest .v{font-family:var(--mono);font-size:46px;font-weight:600;letter-spacing:-0.02em;color:var(--gold);text-shadow:0 0 20px var(--gold-glow)}
+  .num-honest .u{font-size:14px;color:var(--ink-soft)}
+  .num-note{font-size:13px;color:var(--ink-mute);margin-top:14px;line-height:1.5}
+  .placeholder-block{margin-top:22px;border:1px dashed var(--frame);background:repeating-linear-gradient(135deg,transparent,transparent 11px,rgba(190,220,255,0.02) 11px,rgba(190,220,255,0.02) 22px);padding:30px;text-align:center;border-radius:5px}
+  .placeholder-block .tag{font-family:var(--mono);font-size:13px;letter-spacing:0.14em;color:var(--gold);text-transform:uppercase}
+  .placeholder-block p{font-size:14px;color:var(--ink-mute);margin-top:12px;max-width:60ch;margin-inline:auto;line-height:1.55}
+
+  /* ============ FAQ ============ */
+  .faq{margin-top:36px}
+  details{border-bottom:1px solid var(--frame-soft)}
+  details:first-child{border-top:1px solid var(--frame-soft)}
+  summary{list-style:none;cursor:pointer;padding:20px 16px;display:flex;align-items:center;gap:14px;font-size:17px;font-weight:600;letter-spacing:-0.02em;transition:color .15s,background .15s}
+  summary:hover{color:#fff;background:rgba(40,55,85,0.18)}
+  summary::-webkit-details-marker{display:none}
+  summary .qm{flex:none;width:18px;height:18px;color:var(--gold);transform:rotate(45deg);border:1px solid var(--gold-dim);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px}
+  summary .qm span{transform:rotate(-45deg)}
+  summary .txt{flex:1}
+  summary .pm{flex:none;width:22px;height:22px;position:relative;color:var(--ink-mute);transition:color .15s}
+  summary:hover .pm{color:var(--equip)}
+  summary .pm::before,summary .pm::after{content:"";position:absolute;background:currentColor;border-radius:2px}
+  summary .pm::before{left:4px;right:4px;top:10px;height:2px}
+  summary .pm::after{top:4px;bottom:4px;left:10px;width:2px;transition:transform .2s,opacity .2s}
+  details[open] summary .pm::after{transform:scaleY(0);opacity:0}
+  details[open] summary{color:#fff;background:rgba(40,55,85,0.12)}
+  .faq-a{padding:0 16px 22px 48px;font-size:15px;color:var(--ink-soft);max-width:80ch;line-height:1.62}
+  .faq-a b{color:var(--ink)}
+
+  /* ============ Final ============ */
+  .final{border-top:1px solid var(--frame-soft);text-align:center;background:radial-gradient(720px 360px at 50% 120%,rgba(94,200,230,0.12),transparent 70%)}
+  .final-panel{padding:44px 32px}
+  .final h2{max-width:18ch;margin:0 auto}
+  .final p{font-size:18px;color:var(--ink-soft);max-width:54ch;margin:18px auto 0}
+  .final-cta{display:flex;flex-wrap:wrap;gap:18px;justify-content:center;align-items:center;margin-top:32px}
+  .final .tagline{justify-content:center;margin-top:28px}
+
+  /* ============ Footer ============ */
+  footer{border-top:1px solid var(--frame-soft);background:rgba(8,12,20,0.6);padding:60px 0 36px;margin-top:10px}
+  .foot-top{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
+  .foot-brand .tagline{margin-top:18px;font-size:13px}
+  .foot-brand p{font-size:13.5px;color:var(--ink-mute);margin-top:16px;max-width:34ch;line-height:1.55}
+  .foot-col h4{font-family:var(--mono);font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);margin:0 0 16px;font-weight:500}
+  .foot-col a{display:block;color:var(--ink-soft);text-decoration:none;font-size:14px;padding:5px 0}
+  .foot-col a:hover{color:#fff}
+  .legal{margin-top:46px;padding-top:24px;border-top:1px solid var(--frame-soft);font-size:12px;color:var(--ink-mute);line-height:1.65;max-width:96ch}
+  .legal .copy{display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;margin-top:20px;font-family:var(--mono);letter-spacing:0.04em}
+
+  /* ============ HOTBAR (action bar) ============ */
+  .hotbar{
+    position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:70;
+    display:flex;align-items:center;gap:8px;padding:9px 11px;border-radius:8px;
+    background:
+      var(--cTL) top 4px left 4px / 16px 16px no-repeat,
+      var(--cTR) top 4px right 4px / 16px 16px no-repeat,
+      var(--cBL) bottom 4px left 4px / 16px 16px no-repeat,
+      var(--cBR) bottom 4px right 4px / 16px 16px no-repeat,
+      linear-gradient(180deg,rgba(14,20,34,0.92),rgba(8,12,20,0.94));
+    border:1px solid var(--frame);
+    box-shadow:0 0 0 1px rgba(0,0,0,0.55),0 18px 50px -18px rgba(0,0,0,0.9),inset 0 1px 0 rgba(190,220,255,0.08);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  }
+  .hb-label{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-mute);writing-mode:vertical-rl;transform:rotate(180deg);margin-right:2px}
+  .skill{
+    position:relative;width:54px;height:54px;flex:none;border-radius:7px;border:1px solid var(--frame-soft);
+    background:linear-gradient(180deg,rgba(34,46,72,0.7),rgba(12,18,30,0.85));
+    display:flex;align-items:center;justify-content:center;color:var(--ink-soft);text-decoration:none;
+    transition:transform .14s cubic-bezier(.2,.9,.3,1.3),border-color .15s,box-shadow .15s,color .15s;
+    box-shadow:inset 0 1px 0 rgba(190,220,255,0.08);
+  }
+  .skill .key{position:absolute;top:2px;left:5px;font-family:var(--mono);font-size:9px;color:var(--ink-mute)}
+  .skill .nm{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-family:var(--mono);font-size:7px;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink-mute);transition:color .15s}
+  .skill:hover{transform:translateY(-4px);border-color:var(--equip);color:#fff;box-shadow:0 10px 24px -10px var(--equip-glow),inset 0 0 16px -6px var(--equip-glow)}
+  .skill:hover .nm{color:var(--equip)}
+  .skill .tip{position:absolute;bottom:64px;left:50%;transform:translateX(-50%) translateY(6px);background:rgba(8,12,20,0.96);border:1px solid var(--frame);color:var(--ink);font-size:11.5px;font-family:var(--sans);font-weight:600;white-space:nowrap;padding:6px 11px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;box-shadow:0 10px 24px -10px rgba(0,0,0,0.8)}
+  .skill:hover .tip{opacity:1;transform:translateX(-50%) translateY(0)}
+  .skill.primary{border-color:var(--gold);color:var(--gold);background:linear-gradient(180deg,rgba(227,199,120,0.18),rgba(40,30,10,0.6));box-shadow:0 0 18px -4px var(--gold-glow),inset 0 1px 0 rgba(255,240,200,0.2);animation:ready 2.6s ease-in-out infinite}
+  .skill.primary:hover{color:#fff;border-color:var(--gold);box-shadow:0 12px 28px -8px var(--gold-glow),inset 0 0 18px -4px var(--gold-glow)}
+  @keyframes ready{0%,100%{box-shadow:0 0 14px -4px var(--gold-glow),inset 0 1px 0 rgba(255,240,200,0.2)}50%{box-shadow:0 0 26px 0 var(--gold-glow),inset 0 1px 0 rgba(255,240,200,0.25)}}
+  .hb-sep{width:1px;height:38px;background:var(--frame-soft);flex:none}
+  @media(max-width:720px){.hb-label{display:none}.skill .nm{display:none}}
+  @media(max-width:560px){
+    body{padding-bottom:84px}
+    .hotbar{gap:6px;padding:7px 8px;bottom:10px}
+    .skill{width:46px;height:46px}
+  }
+
+  /* ============ Toasts (FFXIV log) ============ */
+  .toasts{position:fixed;right:20px;top:88px;z-index:80;display:flex;flex-direction:column;gap:10px;align-items:flex-end;pointer-events:none}
+  .toast{
+    position:relative;display:flex;align-items:center;gap:13px;min-width:248px;max-width:340px;
+    border:1px solid var(--frame);border-left:3px solid var(--equip);
+    background:
+      var(--cTR) top 3px right 3px / 13px 13px no-repeat,
+      var(--cBR) bottom 3px right 3px / 13px 13px no-repeat,
+      linear-gradient(180deg,rgba(16,23,38,0.95),rgba(9,13,22,0.96));
+    backdrop-filter:blur(12px);border-radius:5px;padding:12px 15px;
+    box-shadow:0 18px 50px -18px rgba(0,0,0,0.8),0 0 0 1px rgba(0,0,0,0.4);
+    transform:translateX(120%);opacity:0;transition:transform .45s cubic-bezier(.2,.9,.3,1.2),opacity .45s;
+  }
+  .toast.show{transform:none;opacity:1}
+  .toast.rare-crit{border-left-color:var(--crit)}
+  .toast.rare-epic{border-left-color:var(--epic)}
+  .toast.rare-danger{border-left-color:var(--danger)}
+  .toast.rare-buff{border-left-color:var(--buff)}
+  .toast.rare-gold{border-left-color:var(--gold)}
+  .toast-ic{width:36px;height:36px;flex:none;border:1px solid var(--frame-soft);display:flex;align-items:center;justify-content:center;color:var(--equip);background:rgba(255,255,255,0.03);transform:rotate(45deg)}
+  .toast-ic svg{transform:rotate(-45deg)}
+  .toast.rare-crit .toast-ic{color:var(--crit)}.toast.rare-epic .toast-ic{color:var(--epic)}
+  .toast.rare-danger .toast-ic{color:var(--danger)}.toast.rare-buff .toast-ic{color:var(--buff)}.toast.rare-gold .toast-ic{color:var(--gold)}
+  .toast-body{flex:1;min-width:0}
+  .toast-k{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ink-mute)}
+  .toast-t{font-size:13.5px;font-weight:600;letter-spacing:-0.01em;margin-top:2px;line-height:1.25}
+  .toast-xp{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--gold);flex:none}
+
+  .xpfloat{position:fixed;z-index:90;font-family:var(--mono);font-weight:800;font-size:17px;color:var(--gold);pointer-events:none;text-shadow:0 0 12px var(--gold-glow),0 1px 2px #000;animation:xpfloat 1s ease-out forwards}
+  @keyframes xpfloat{0%{opacity:0;transform:translateY(0) scale(.7)}15%{opacity:1;transform:translateY(-4px) scale(1.15)}100%{opacity:0;transform:translateY(-50px) scale(1)}}
+
+  /* ============ responsive ============ */
+  @media(max-width:900px){
+    .gear-grid{grid-template-columns:repeat(2,1fr)}
+    .fatigue-grid{grid-template-columns:1fr;gap:30px}
+    .angles{grid-template-columns:repeat(2,1fr)}
+    .fs-card{grid-template-columns:1fr}.fs-grid{grid-template-columns:1fr;gap:26px}
+    .fs-cta{border-left:none;border-top:1px solid var(--frame-soft);padding-left:0;padding-top:26px}
+    .paths{grid-template-columns:1fr}
+    .guar-pts{grid-template-columns:1fr}
+    .proof-grid{grid-template-columns:1fr}
+    .foot-top{grid-template-columns:1fr 1fr}
+    .nav-links{display:none}
+    .plate-bars{display:none}
+  }
+  @media(max-width:560px){
+    body{font-size:16px}
+    .wrap{padding:0 16px}
+    .section{padding:60px 0}
+    .hero{padding:40px 0 20px}
+    .gear-grid{grid-template-columns:1fr}
+    .angles{grid-template-columns:1fr}
+    .quote-body{padding:22px 18px}.quote-body p{font-size:16.5px}
+    .toasts{right:10px;top:80px;left:10px;align-items:stretch}
+    .toast{max-width:none}
+    .nav-cta .btn{padding:11px 14px;font-size:13.5px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+    html.has-js .rv{opacity:1 !important;transform:none !important}.toast{transform:none;opacity:1}
+  }
+</style>
+<script>document.documentElement.className += ' has-js';</script>
+</head>
+
+<body>
+
+<!-- ============ TOP HUD / NAV ============ -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="brand" aria-label="Adwield home">
+      <svg class="crest" width="27" height="27" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+        <path d="M16 2.5 L28 9 V23 L16 29.5 L4 23 V9 Z" stroke="#5EC8E6" stroke-width="1.4" stroke-linejoin="round"></path>
+        <path d="M16 9 L22 22 H19.2 L16 14.6 L12.8 22 H10 Z" fill="#5EC8E6"></path>
+        <path d="M13 19 H19" stroke="#0B0D12" stroke-width="1.4"></path>
+      </svg>
+      <span class="wordmark">adwield</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#fatigue">The Fatigue Wall</a>
+      <a href="#loadout">The Loadout</a>
+      <a href="#paths">Choose Your Path</a>
+      <a href="#guarantee">Guarantee</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <div class="nav-cta">
+      <div class="plate">
+        <div class="lvl-ring" id="lvlRing"><span class="t">LVL</span><span class="n" id="lvlNum">1</span></div>
+        <div class="plate-bars" aria-hidden="true">
+          <div class="pb-row"><span class="pb-lab">HP</span><span class="pb-track"><span class="pb-fill hp"></span></span></div>
+          <div class="pb-row"><span class="pb-lab">XP</span><span class="pb-track"><span class="pb-fill xp" id="xpPlate"></span></span></div>
+        </div>
+      </div>
+      <a href="#first-strike" class="btn btn-primary" data-xp="50">Claim First Strike</a>
+    </div>
+  </div>
+</header>
+<div class="castbar" aria-hidden="true"><div class="castfill" id="castfill"></div></div>
+
+<!-- ============ QUEST RAIL ============ -->
+<nav class="rail" aria-label="Page progress">
+  <a class="rail-node" href="#top"><span class="rail-tick"></span><span class="rail-label">Start</span></a>
+  <a class="rail-node" href="#fatigue"><span class="rail-tick"></span><span class="rail-label">The Fatigue Wall</span></a>
+  <a class="rail-node" href="#loadout"><span class="rail-tick"></span><span class="rail-label">The Loadout</span></a>
+  <a class="rail-node" href="#first-strike"><span class="rail-tick"></span><span class="rail-label">First Strike</span></a>
+  <a class="rail-node" href="#paths"><span class="rail-tick"></span><span class="rail-label">Choose Your Path</span></a>
+  <a class="rail-node" href="#guarantee"><span class="rail-tick"></span><span class="rail-label">Guarantee</span></a>
+  <a class="rail-node" href="#proof"><span class="rail-tick"></span><span class="rail-label">Honest Proof</span></a>
+  <a class="rail-node" href="#faq"><span class="rail-tick"></span><span class="rail-label">FAQ</span></a>
+</nav>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" data-quest="The Quest Begins" data-rare="gold" data-xp="25" data-kicker="Quest accepted">
+    <div class="wrap">
+      <span class="kicker rv"><span class="dot" aria-hidden="true"></span>The AI-native ad-creative engine · functional consumables</span>
+      <h1 class="rv" style="--i:1">Equip us as your secret weapon — raise your hit rate, land more <span class="equip">critical strikes</span> in the ad auction.</h1>
+      <div class="tagline mono rv" style="--i:2"><span>More hits.</span><span class="sep">·</span><span>More crits.</span><span class="sep">·</span><span>Every two weeks.</span></div>
+      <p class="hero-sub rv" style="--i:3">You don't hire an agency. You equip a weapon. A fresh loadout of production-grade creative ships into your own account on a two-week clock — so a new winner is always armed before the last one breaks.</p>
+      <div class="hero-cta rv" style="--i:4">
+        <a href="#first-strike" class="btn btn-primary btn-lg" data-xp="50">Claim your First Strike</a>
+        <a href="#loadout" class="link-quiet">See how the loadout works <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <p class="norisk rv" style="--i:5">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 1.5 13.5 4v4c0 3.4-2.4 5.6-5.5 6.5C4.9 13.6 2.5 11.4 2.5 8V4Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"></path><path d="m5.8 8 1.6 1.6L10.4 6.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        No card. No pitch deck. One battle-ready ad of your product, before you spend a coin.
+      </p>
+
+      <!-- equipment slots -->
+      <div class="gear rv">
+        <div class="panel">
+          <div class="win-title"><span class="gem" aria-hidden="true"></span>Character · Equipped Kit<span class="right"><span class="dot" aria-hidden="true"></span>hover to inspect</span></div>
+          <div class="gear-grid">
+            <div class="slot-item" style="--rare:var(--equip)">
+              <div class="slot-head"><span class="slot-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.5"></circle><circle cx="12" cy="12" r="1" fill="currentColor"></circle></svg></span>
+              <div><div class="slot-rare">Uncommon · the aim</div><div class="slot-name">Hit rate</div></div></div>
+              <div class="slot-rule"></div>
+              <div class="slot-stat">How often a shipped creative actually wins — beats your control in your own account.</div>
+              <div class="slot-flavor">"The rate we swing for. Never a number we promise."</div>
+            </div>
+            <div class="slot-item" style="--rare:var(--crit)">
+              <div class="slot-head"><span class="slot-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path></svg></span>
+              <div><div class="slot-rare">Legendary · the breakout</div><div class="slot-name">Critical strike</div></div></div>
+              <div class="slot-rule"></div>
+              <div class="slot-stat">A breakout winner that scales. The goal of every cycle — not a quota we claim to fill.</div>
+              <div class="slot-flavor">"We hunt the crit. We don't bill three a month."</div>
+            </div>
+            <div class="slot-item" style="--rare:var(--epic)">
+              <div class="slot-head"><span class="slot-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2 22 8.5v7L12 22 2 15.5v-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M12 7v10M7 9.5v5M17 9.5v5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path></svg></span>
+              <div><div class="slot-rare">Epic · the system</div><div class="slot-name">Loadout</div></div></div>
+              <div class="slot-rule"></div>
+              <div class="slot-stat">4 angles × 24 variations every two weeks — launched and tagged in your own account.</div>
+              <div class="slot-flavor">"Equip. Read at two weeks. Reload sharper."</div>
+            </div>
+            <div class="slot-item" style="--rare:var(--danger)">
+              <div class="slot-head"><span class="slot-ic" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3 22 20H2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M12 9v5M12 16.5v.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg></span>
+              <div><div class="slot-rare">Debuff · the timer</div><div class="slot-name">The Fatigue Wall</div></div></div>
+              <div class="slot-rule"></div>
+              <div class="slot-stat">Creative fatigue around week 7. Every winner dies on a clock.</div>
+              <div class="slot-flavor">"Keep a fresh one armed before the last one breaks."</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FATIGUE WALL ============ -->
+  <section class="section" id="fatigue" data-quest="Debuff detected" data-rare="danger" data-xp="100" data-kicker="Threat sighted">
+    <div class="wrap">
+      <div class="qhead rv">
+        <span class="qmarker" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M15 3 26 21H4z" stroke="#E3C778" stroke-width="1.6" stroke-linejoin="round"></path><path d="M15 10v5M15 17.5v.5" stroke="#E3C778" stroke-width="1.8" stroke-linecap="round"></path></svg></span>
+        <div class="qchip"><span class="q">Quest 01</span><span class="s">The Problem</span></div>
+      </div>
+      <h2 class="rv" style="--i:1">Every winning ad dies on a clock.</h2>
+      <div class="fatigue-grid">
+        <div class="rv" style="--i:2">
+          <p class="lede">Your best creative isn't permanent. Performance decays, and around <strong>week <span class="cu" data-to="7">0</span></strong> a winner stops beating its own past self — that's the Fatigue Wall. A two-person team can't produce fresh, tested creative fast enough to stay ahead of it.</p>
+          <div class="fatigue-points">
+            <div class="fpt"><span class="mk mono"><span>01</span></span><span><b>It's a clock, not a coin flip.</b> The winner you have today is already decaying. The only question is what's armed when it breaks.</span></div>
+            <div class="fpt"><span class="mk mono"><span>02</span></span><span><b>You're short on hands, not ideas.</b> A lean team runs out of production capacity long before it runs out of angles.</span></div>
+            <div class="fpt"><span class="mk mono"><span>03</span></span><span><b>The wall doesn't wait.</b> Miss one refresh and CPA drifts up while you scramble to shoot the next thing.</span></div>
+          </div>
+        </div>
+        <div class="panel rv" style="--i:3" aria-hidden="true">
+          <div class="win-title"><span class="gem" style="background:var(--danger);box-shadow:0 0 9px rgba(242,102,107,.5)" aria-hidden="true"></span>Combat Log · Creative vs. Control</div>
+          <div class="chart-inner">
+            <div class="chart-head"><span>Performance over time</span><span>0 → 10 wk</span></div>
+            <svg viewBox="0 0 460 240" width="100%" role="img" aria-label="Decay curve: a winning ad fades by week 7, with a fresh creative re-equipped to stay above control.">
+              <defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(94,200,230,0.2)"></stop><stop offset="1" stop-color="rgba(94,200,230,0)"></stop></linearGradient></defs>
+              <g stroke="rgba(150,190,225,0.07)" stroke-width="1">
+                <line x1="40" y1="30" x2="40" y2="200"></line><line x1="40" y1="200" x2="440" y2="200"></line>
+                <line x1="40" y1="155" x2="440" y2="155"></line><line x1="40" y1="110" x2="440" y2="110"></line><line x1="40" y1="65" x2="440" y2="65"></line>
+              </g>
+              <line x1="40" y1="155" x2="440" y2="155" stroke="rgba(190,220,255,0.3)" stroke-width="1.5" stroke-dasharray="4 5"></line>
+              <text x="44" y="148" fill="#76819A" font-size="10" font-family="ui-monospace,monospace">CONTROL</text>
+              <path d="M40 152 C 110 64, 150 54, 200 64 C 250 74, 280 108, 320 158 C 350 190, 390 204, 440 210 L440 200 L40 200 Z" fill="url(#fade)"></path>
+              <path d="M40 152 C 110 64, 150 54, 200 64 C 250 74, 280 108, 320 158 C 350 190, 390 204, 440 210" fill="none" stroke="#5EC8E6" stroke-width="2.4" stroke-linecap="round"></path>
+              <line x1="320" y1="30" x2="320" y2="200" stroke="rgba(244,162,59,0.5)" stroke-width="1.2" stroke-dasharray="3 4"></line>
+              <circle cx="320" cy="158" r="3.5" fill="#F4A23B"></circle>
+              <text x="320" y="24" fill="#F4A23B" font-size="10" font-family="ui-monospace,monospace" text-anchor="middle">~WK 7</text>
+              <path d="M300 182 C 340 116, 380 86, 440 84" fill="none" stroke="#5EC8E6" stroke-width="2.2" stroke-dasharray="2 5" stroke-linecap="round" opacity="0.85"></path>
+              <circle cx="300" cy="182" r="3" fill="#5EC8E6"></circle>
+              <text x="356" y="76" fill="#AEB8C8" font-size="10" font-family="ui-monospace,monospace">FRESH RELOAD</text>
+            </svg>
+            <div class="enemy-hp"><span>Winner HP</span><span class="ehp-track"><span class="ehp-fill" id="hpFill"></span></span><span style="color:var(--danger)">28%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LOADOUT ============ -->
+  <section class="section" id="loadout" data-quest="Loadout decoded" data-rare="epic" data-xp="120" data-kicker="Schematic acquired">
+    <div class="wrap">
+      <div class="qhead rv">
+        <span class="qmarker" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M15 4 25 9.5v11L15 26 5 20.5v-11z" stroke="#E3C778" stroke-width="1.6" stroke-linejoin="round"></path><path d="M15 9v12M9.5 12v6M20.5 12v6" stroke="#E3C778" stroke-width="1.3" stroke-linecap="round"></path></svg></span>
+        <div class="qchip"><span class="q">Quest 02</span><span class="s">The Mechanism · 4×24 Framework</span></div>
+      </div>
+      <h2 class="rv" style="--i:1">Four angles in. Twenty-four production-grade variations out.</h2>
+      <p class="lede rv" style="--i:2">Every two weeks: <strong>4</strong> hypothesis angles become <strong><span class="cu" data-to="24">0</span></strong> ready-to-run variations, launched and tagged in your account. We read results at the two-week mark, keep what wins, and reload — so the next loadout is sharper than the last.</p>
+
+      <div class="loadout panel rv" style="--i:3">
+        <div class="loadout-bar">
+          <span>Inventory · Cycle Loadout · 4 × 24</span>
+          <span class="pill"><span class="dot" aria-hidden="true"></span>Launch → Read @ 2 wk → Reload</span>
+        </div>
+        <div class="angles">
+          <div class="angle">
+            <div class="angle-id">Angle 01</div><div class="angle-h">Mechanism</div><div class="angle-sub">Why it works, shown not claimed.</div>
+            <div class="slots" aria-hidden="true"><div class="slot">v01</div><div class="slot">v02</div><div class="slot">v03</div><div class="slot">v04</div><div class="slot">v05</div><div class="slot">v06</div></div>
+          </div>
+          <div class="angle">
+            <div class="angle-id">Angle 02</div><div class="angle-h">Identity</div><div class="angle-sub">Who this is for, in their words.</div>
+            <div class="slots" aria-hidden="true"><div class="slot">v07</div><div class="slot crit" title="Critical strike">CRIT</div><div class="slot">v09</div><div class="slot">v10</div><div class="slot">v11</div><div class="slot">v12</div></div>
+          </div>
+          <div class="angle">
+            <div class="angle-id">Angle 03</div><div class="angle-h">Objection</div><div class="angle-sub">The doubt that stalls the buy.</div>
+            <div class="slots" aria-hidden="true"><div class="slot">v13</div><div class="slot">v14</div><div class="slot">v15</div><div class="slot">v16</div><div class="slot">v17</div><div class="slot">v18</div></div>
+          </div>
+          <div class="angle">
+            <div class="angle-id">Angle 04</div><div class="angle-h">Proof</div><div class="angle-sub">Reviews and results, screened.</div>
+            <div class="slots" aria-hidden="true"><div class="slot">v19</div><div class="slot">v20</div><div class="slot">v21</div><div class="slot">v22</div><div class="slot">v23</div><div class="slot">v24</div></div>
+          </div>
+        </div>
+        <div class="loadout-note"><b>One honest note:</b> the edge is operator judgment, unit economics, and real production hands — not the name on the framework. Volume is the method, never the pitch. Every produced claim is FTC/Meta-screened before it ships.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FIRST STRIKE ============ -->
+  <section class="section firststrike" id="first-strike" data-quest="Legendary drop: First Strike" data-rare="crit" data-xp="200" data-kicker="Rare reward obtained">
+    <div class="wrap">
+      <div class="qhead rv">
+        <span class="legendary-tag"><span class="dot crit" aria-hidden="true"></span>First Strike · Free</span>
+      </div>
+      <h2 class="rv" style="--i:1">One battle-ready ad of <span style="color:var(--crit)">your</span> product. Free, before you pay anything.</h2>
+      <p class="lede rv" style="--i:2">We pull from your real site and your real reviews and build one made-for-you ad — the same production grade as a paid cycle. You watch it before any money changes hands. The free ad is the pitch.</p>
+
+      <div class="panel fs-card rv" style="--i:3;display:block">
+        <div class="win-title"><span class="gem" aria-hidden="true"></span>Reward · First Strike (Free)<span class="right"><span class="dot crit" aria-hidden="true"></span>no card · no pitch</span></div>
+        <div class="fs-grid">
+          <div class="steps">
+            <div class="step"><span class="n mono"><span>1</span></span><span class="b-wrap"><b>You point us at your product.</b><span class="t">Just the URL. We read your site, your reviews, and what your buyers actually say.</span></span></div>
+            <div class="step"><span class="n mono"><span>2</span></span><span class="b-wrap"><b>We build one battle-ready ad.</b><span class="t">A real, production-grade creative of your product — angle, hook, and edit, not a mockup.</span></span></div>
+            <div class="step"><span class="n mono"><span>3</span></span><span class="b-wrap"><b>You watch it, free.</b><span class="t">No card, no call required. If it's not sharp, you've lost nothing but the link you sent.</span></span></div>
+          </div>
+          <div class="fs-cta">
+            <div class="h">See the weapon before you equip it.</div>
+            <p>The clean way to judge us: one real ad of your product, on the table, at zero cost.</p>
+            <a href="https://cal.com/bookthecall/firststrike" class="btn btn-crit btn-lg" data-xp="200">Claim your First Strike</a>
+            <a href="https://cal.com/bookthecall/firststrike" class="link-quiet">Book a call instead <span class="arrow" aria-hidden="true">→</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHOOSE YOUR PATH ============ -->
+  <section class="section" id="paths" data-quest="Choose your class" data-rare="gold" data-xp="120" data-kicker="A fork in the road">
+    <div class="wrap">
+      <div class="qhead rv">
+        <span class="qmarker" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M15 3.5 26.5 10v10L15 26.5 3.5 20V10z" stroke="#E3C778" stroke-width="1.6" stroke-linejoin="round"></path><path d="M11 15h8M15 11v8" stroke="#E3C778" stroke-width="1.5" stroke-linecap="round"></path></svg></span>
+        <div class="qchip"><span class="q">Quest 03</span><span class="s">Choose Your Path</span></div>
+      </div>
+      <h2 class="rv" style="--i:1">Two ways to wield it.</h2>
+      <p class="lede rv" style="--i:2">One weapon, two operators. Have us run the full loadout for you, or install it inside your own domain and own it outright.</p>
+
+      <div class="paths">
+        <div class="panel path knight rv" style="--i:3">
+          <div class="win-title"><span class="gem" aria-hidden="true"></span>Class A · Done-For-You</div>
+          <div class="path-body">
+            <div class="class-row">
+              <span class="class-emblem" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2 19 5v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M12 7v8M8.5 11h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></span>
+              <div><span class="path-tag">Path A</span><h3>Hire a Maxed-Out Knight</h3></div>
+            </div>
+            <div class="quip">We wield it for you.</div>
+            <p>A max-level operator runs the full loadout inside your account — angles, production, launch, and reads. You greenlight the angles and watch the crits land. No hiring, no new headcount, no learning curve.</p>
+            <div class="foot">
+              <a href="https://cal.com/bookthecall/firststrike" class="btn btn-primary" data-xp="80">Hire your Knight</a>
+              <div class="meta"><span class="dot" aria-hidden="true"></span>Retainer quoted live · capped at 5 brands</div>
+            </div>
+          </div>
+        </div>
+        <div class="panel path forge rv" style="--i:4">
+          <div class="win-title"><span class="gem" style="background:var(--epic);box-shadow:0 0 9px var(--epic-glow)" aria-hidden="true"></span>Class B · Done-With-You</div>
+          <div class="path-body">
+            <div class="class-row">
+              <span class="class-emblem" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 14h16l-2 7H6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M9 14c0-3 1.5-4 1.5-6S9 5 9 5M14.5 14c0-2.5 1.2-3.4 1.2-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></span>
+              <div><span class="path-tag">Path B</span><h3>Build a Forge in Your Domain</h3></div>
+            </div>
+            <div class="quip">The weapon stays yours.</div>
+            <p>We install the Adwield Forge inside your domain — your tools, your account, your crew — and train your team to wield it. Domain cuts both ways: your kingdom and your website and ad-stack. When we're done, the capability doesn't leave with us.</p>
+            <div class="foot">
+              <a href="https://cal.com/bookthecall/firststrike" class="btn btn-ghost" data-xp="80">Build your Forge — by application</a>
+              <div class="meta"><span class="dot epic" aria-hidden="true"></span>Founding cohort · opens after the first documented wins</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GUARANTEE ============ -->
+  <section class="section guarantee" id="guarantee" data-quest="Buff active: No-Risk Loadout" data-rare="buff" data-xp="150" data-kicker="Protection granted">
+    <div class="wrap">
+      <div class="qhead rv"><span class="buff-tag"><span class="dot" aria-hidden="true" style="background:var(--buff);box-shadow:0 0 10px rgba(124,224,176,.5)"></span>The No-Risk Loadout</span></div>
+      <h2 class="rv" style="--i:1">Beat your control or the next cycle's free.</h2>
+      <div class="panel quote rv" style="--i:2">
+        <div class="win-title"><span class="gem" aria-hidden="true"></span>Active Buff · No-Risk Loadout<span class="right">duration · 30 days</span></div>
+        <div class="quote-body">
+          <p>“Within 30 days, our creative beats your current best ad on <span class="em">hook-rate / hold-rate</span> (3-second + thumbstop) <span class="em">AND</span> your CPA holds flat or better — measured against your own control, in your own account, with the head-to-head data on the table. If it doesn't, your next 24-variation cycle is free. Month-to-month, cancel anytime, and you keep every video either way.”</p>
+        </div>
+      </div>
+      <div class="guar-pts">
+        <div class="panel gpt rv" style="--i:3"><div class="l"><span class="dot" aria-hidden="true" style="background:var(--buff);box-shadow:0 0 10px rgba(124,224,176,.5)"></span>The metric we control</div><p>Hook-rate and hold-rate — 3-second views and thumbstop — are what creative actually moves. That's the bar we hold ourselves to.</p></div>
+        <div class="panel gpt rv" style="--i:4"><div class="l"><span class="dot" aria-hidden="true" style="background:var(--buff);box-shadow:0 0 10px rgba(124,224,176,.5)"></span>CPA holds, measured</div><p>Your cost per acquisition stays flat or better against your own control, read in your own account — not a dashboard you can't see.</p></div>
+        <div class="panel gpt rv" style="--i:5"><div class="l"><span class="dot" aria-hidden="true" style="background:var(--buff);box-shadow:0 0 10px rgba(124,224,176,.5)"></span>You keep every video</div><p>Win, lose, or cancel, the work is yours. Month-to-month, no lock-in, and nothing leaves with us.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HONEST PROOF ============ -->
+  <section class="section" id="proof" data-quest="Inspecting the data" data-rare="gold" data-xp="90" data-kicker="Records examined">
+    <div class="wrap">
+      <div class="qhead rv">
+        <span class="qmarker" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><circle cx="13" cy="13" r="8" stroke="#E3C778" stroke-width="1.6"></circle><path d="m19 19 6 6" stroke="#E3C778" stroke-width="1.6" stroke-linecap="round"></path></svg></span>
+        <div class="qchip"><span class="q">Quest 04</span><span class="s">Honest Proof</span></div>
+      </div>
+      <h2 class="rv" style="--i:1">New enough that the free ad and the guarantee have to be real.</h2>
+      <p class="lede rv" style="--i:2">We're not going to wave a logo wall at you. The reason the First Strike is free and the guarantee is locked is that we'd rather show you than tell you. The First Strike is the proof. Judgment shows up in the teardowns. And here's the one real number we have, labeled honestly.</p>
+
+      <div class="proof-grid">
+        <div class="panel proof-card rv" style="--i:3">
+          <div class="l">Hold-rate · my own test, run on my own dollar</div>
+          <div class="num-honest"><span class="v">—%</span><span class="u">3-second hold-rate, single creative</span></div>
+          <p class="num-note">No portfolio, no borrowed results. I'm putting my own money on a test — the real number lands here, labeled honestly, the day it exists. Until then, the First Strike is the proof.</p>
+        </div>
+        <div class="panel proof-card rv" style="--i:4">
+          <div class="l">How we show judgment</div>
+          <div class="num-honest"><span class="v mono" style="font-size:30px;letter-spacing:-0.01em;color:var(--equip);text-shadow:0 0 20px var(--equip-glow)">Teardowns</span></div>
+          <p class="num-note">Before there's a track record, judgment is the product. We read your account and your competitors' creative out loud — what's winning, what's fatiguing, and the angle we'd swing first. You see how we think before you decide.</p>
+        </div>
+      </div>
+
+      <div class="placeholder-block rv" style="--i:5">
+        <div class="tag">[ CASE STUDY PLACEHOLDER ]</div>
+        <p>Founding-partner deltas land here — control vs. winner on hook-rate, hold-rate, and CPA-flat, baseline measured first. Founding slots are limited and real; once the wins are documented, the proof replaces this block.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section" id="faq" data-quest="Lore unlocked" data-rare="gold" data-xp="80" data-kicker="Codex updated">
+    <div class="wrap">
+      <div class="qhead rv">
+        <span class="qmarker" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 30 30" fill="none"><path d="M8 5h14v12H13l-5 5z" stroke="#E3C778" stroke-width="1.6" stroke-linejoin="round"></path><path d="M12 9.5c0-1.4 1.2-2.2 3-2.2s3 .9 3 2.4c0 1.2-1 1.8-2.2 2.2-.6.2-.8.5-.8 1.1" stroke="#E3C778" stroke-width="1.4" stroke-linecap="round" fill="none"></path><circle cx="15" cy="15.5" r=".9" fill="#E3C778"></circle></svg></span>
+        <div class="qchip"><span class="q">Quest 05</span><span class="s">For the skeptical operator</span></div>
+      </div>
+      <h2 class="rv" style="--i:1">Questions a sharp founder asks.</h2>
+      <div class="faq rv" style="--i:2">
+        <details><summary><span class="qm" aria-hidden="true"><span>?</span></span><span class="txt">Isn't this just AI slop?</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a">No. The model is a production tool, not the strategist. Every loadout starts from a human hypothesis — a real angle about why a buyer acts — and ends with a human edit and an FTC/Meta-screened claim. The volume is there to test ideas fast, not to flood your account with filler. You greenlight the angles before anything ships.</div></details>
+        <details><summary><span class="qm" aria-hidden="true"><span>?</span></span><span class="txt">Why trust a newer shop?</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a">You shouldn't trust it on faith — that's exactly why the First Strike is free and the guarantee is locked. You see one real ad of your product before you pay, and the first paid cycle has to beat your control or the next one's free. We carry the risk because we're new, not in spite of it.</div></details>
+        <details><summary><span class="qm" aria-hidden="true"><span>?</span></span><span class="txt">How do you make 24 ads off 4 approvals?</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a">The 4 are <b>angles</b> — distinct hypotheses about why someone buys. Each angle becomes 6 production variations: different hooks, openers, edits, and formats testing the same idea. You approve the four directions; the 24 are the disciplined ways we pressure-test each one in the auction.</div></details>
+        <details><summary><span class="qm" aria-hidden="true"><span>?</span></span><span class="txt">How much of my time does this take?</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a">On the Knight (Done-For-You) path, roughly a greenlight call every two weeks. You approve angles and read results; we handle production, launch, tagging, and the read. The whole point of equipping a weapon instead of hiring is that you don't add a workflow.</div></details>
+        <details><summary><span class="qm" aria-hidden="true"><span>?</span></span><span class="txt">What does it cost?</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a">The First Strike is free — no card. The Knight retainer is quoted live against your volume and economics, month-to-month, capped at 5 brands so attention stays high. The Forge (Done-With-You) install is by application. Price isn't the lead; the winner is — we'd rather earn the retainer with a free ad first.</div></details>
+        <details><summary><span class="qm" aria-hidden="true"><span>?</span></span><span class="txt">What if I already run 90 creatives a week?</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a">Then volume isn't your problem — hit rate is. The question isn't how many you ship, it's how many actually beat your control before they fatigue. We're built to raise the rate of winners inside your existing pace, not to add noise to it. The First Strike will show you the difference on one ad.</div></details>
+        <details><summary><span class="qm" aria-hidden="true"><span>?</span></span><span class="txt">Do I own the work — and which vertical is this for?</span><span class="pm" aria-hidden="true"></span></summary><div class="faq-a">You own every video, win or lose, on every path. This is built for functional-consumables brands at roughly $20–100K/mo — mushroom coffee, adaptogen gummies, functional beverages, greens, nootropics. It's a deliberately narrow focus: the judgment and economics are tuned to that buyer, not spread thin across everything.</div></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="section final" data-quest="Final boss: equip the weapon" data-rare="crit" data-xp="250" data-kicker="One decision left">
+    <div class="wrap">
+      <div class="panel final-panel rv">
+        <span class="eyebrow">One decision</span>
+        <h2 style="margin-top:16px">Watch one battle-ready ad of your product, free, before you spend a coin.</h2>
+        <p>No card. No pitch deck. You point us at your product; we build one real ad and put it on the table.</p>
+        <div class="final-cta">
+          <a href="https://cal.com/bookthecall/firststrike" class="btn btn-primary btn-lg" data-xp="250">Claim your First Strike</a>
+          <a href="https://cal.com/bookthecall/firststrike" class="link-quiet">Book a call instead <span class="arrow" aria-hidden="true">→</span></a>
+        </div>
+        <div class="tagline mono"><span>More hits.</span><span class="sep">·</span><span>More crits.</span><span class="sep">·</span><span>Every two weeks.</span></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <a href="#top" class="brand" aria-label="Adwield home">
+          <svg class="crest" width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 2.5 L28 9 V23 L16 29.5 L4 23 V9 Z" stroke="#5EC8E6" stroke-width="1.4" stroke-linejoin="round"></path><path d="M16 9 L22 22 H19.2 L16 14.6 L12.8 22 H10 Z" fill="#5EC8E6"></path><path d="M13 19 H19" stroke="#0B0D12" stroke-width="1.4"></path></svg>
+          <span class="wordmark">adwield</span>
+        </a>
+        <div class="tagline mono"><span>More hits.</span><span class="sep">·</span><span>More crits.</span><span class="sep">·</span><span>Every two weeks.</span></div>
+        <p>An AI-native ad-creative engine for functional-consumables brands. You don't hire an agency — you equip a weapon.</p>
+      </div>
+      <div class="foot-col">
+        <h4>The Weapon</h4>
+        <a href="#fatigue">The Fatigue Wall</a><a href="#loadout">The Loadout</a><a href="#guarantee">The Guarantee</a><a href="#proof">Honest Proof</a>
+      </div>
+      <div class="foot-col">
+        <h4>Get Equipped</h4>
+        <a href="https://cal.com/bookthecall/firststrike">Claim First Strike</a><a href="https://cal.com/bookthecall/firststrike">Hire your Knight</a><a href="https://cal.com/bookthecall/firststrike">Build your Forge</a><a href="https://cal.com/bookthecall/firststrike">Book a call</a>
+      </div>
+      <div class="foot-col">
+        <h4>Contact</h4>
+        <a href="mailto:{{contact_email}}">{{contact_email}}</a><a href="#faq">FAQ</a><a href="#top">adwield.com</a>
+      </div>
+    </div>
+    <div class="legal">
+      Hit rate and crits describe the aim and the mechanism, not a guaranteed or past result. Every figure on this page is a target to measure, in your own account, against your own control. No prior paid-ads track record is claimed. Where a guarantee applies, the terms in the guarantee section govern. Adwield works with functional-consumables brands only. Produced-creative claims are substantiation-gated and FTC/Meta-screened before they ship.
+      <div class="copy"><span>© 2026 Adwield · adwield.com</span><span>Functional consumables · capped at 5 brands</span></div>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ HOTBAR ============ -->
+<nav class="hotbar" aria-label="Quick actions">
+  <span class="hb-label" aria-hidden="true">Action Bar</span>
+  <a class="skill primary" href="#first-strike" data-xp="40"><span class="key">1</span><span class="tip">Claim First Strike — free</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"></path></svg><span class="nm">Strike</span></a>
+  <span class="hb-sep" aria-hidden="true"></span>
+  <a class="skill" href="#fatigue"><span class="key">2</span><span class="tip">The Fatigue Wall</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3 22 20H2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M12 9v5M12 16.5v.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path></svg><span class="nm">Wall</span></a>
+  <a class="skill" href="#loadout"><span class="key">3</span><span class="tip">The Loadout — 4×24</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2 22 8.5v7L12 22 2 15.5v-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M12 7v10M7 9.5v5M17 9.5v5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"></path></svg><span class="nm">Loadout</span></a>
+  <a class="skill" href="#paths"><span class="key">4</span><span class="tip">Hire a Knight (DFY)</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2 19 5v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V5Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M12 7v8M8.5 11h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg><span class="nm">Knight</span></a>
+  <a class="skill" href="#paths"><span class="key">5</span><span class="tip">Build a Forge (DWY)</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 14h16l-2 7H6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="M9 14c0-3 1.5-4 1.5-6S9 5 9 5M14.5 14c0-2.5 1.2-3.4 1.2-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg><span class="nm">Forge</span></a>
+  <a class="skill" href="#guarantee"><span class="key">6</span><span class="tip">The No-Risk Loadout</span><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 2 19 5v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="m9 11 2 2 4-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="nm">Buff</span></a>
+</nav>
+
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<!-- Cal.com element-click embed -->
+<script type="text/javascript">
+  (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if(typeof namespace === "string"){cal.ns[namespace] = cal.ns[namespace] || api;p(cal.ns[namespace], ar);p(cal, ["initNamespace", namespace]);} else p(cal, ar); return;} p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+  Cal("init", "firststrike", {origin:"https://app.cal.com"});
+  Cal.config = Cal.config || {};
+  Cal.config.forwardQueryParams = true;
+  Cal.ns.firststrike("ui", {"cssVarsPerTheme":{"light":{"cal-brand":"#292525"}},"hideEventTypeDetails":false,"layout":"month_view"});
+  document.querySelectorAll('a[href="https://cal.com/bookthecall/firststrike"]').forEach(function(el){
+    el.setAttribute('data-cal-link','bookthecall/firststrike');
+    el.setAttribute('data-cal-namespace','firststrike');
+    el.setAttribute('data-cal-config','{"layout":"month_view","useSlotsViewOnSmallScreen":"true"}');
+  });
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var root = document.documentElement;
+  var rvs = [].slice.call(document.querySelectorAll('.rv'));
+  var castfill = document.getElementById('castfill');
+  var xpPlate = document.getElementById('xpPlate');
+  if (reduce) { rvs.forEach(function(el){ el.classList.add('in'); el.__in = true; }); }
+
+  function countUp(el){
+    var to = parseFloat(el.getAttribute('data-to'))||0;
+    var suffix = el.getAttribute('data-suffix')||'';
+    if(reduce){ el.textContent = to + suffix; return; }
+    var dur = 900, start = null;
+    function step(ts){ if(!start) start = ts; var t = Math.min(1,(ts-start)/dur); var e = 1-Math.pow(1-t,3); el.textContent = Math.round(to*e)+suffix; if(t<1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  var cus = [].slice.call(document.querySelectorAll('.cu'));
+  var hp = document.getElementById('hpFill');
+  var hpDone = false;
+  var railNodes = [].slice.call(document.querySelectorAll('.rail-node'));
+  var questEls = [].slice.call(document.querySelectorAll('[data-quest]'));
+
+  var toasts = document.getElementById('toasts');
+  var lvlRing = document.getElementById('lvlRing');
+  var lvlNum = document.getElementById('lvlNum');
+  var level = 1;
+  var icons = {
+    'gold':'<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.5 5.2 5.5.7-4 3.9 1 5.5L12 15.6 6.9 18.3l1-5.5-4-3.9 5.5-.7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    '':'<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.5 5.2 5.5.7-4 3.9 1 5.5L12 15.6 6.9 18.3l1-5.5-4-3.9 5.5-.7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    'crit':'<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    'epic':'<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2 22 8.5v7L12 22 2 15.5v-7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+    'danger':'<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 3 22 20H2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 9v5M12 16.5v.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>',
+    'buff':'<svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M12 2 19 5v6c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="m9 11 2 2 4-4.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  };
+  function flashLevel(){ level++; lvlNum.textContent = level; if(reduce) return; lvlRing.classList.add('flash'); setTimeout(function(){ lvlRing.classList.remove('flash'); }, 380); }
+  function toast(o){
+    var rare = o.rare || '';
+    var el = document.createElement('div');
+    el.className = 'toast' + (rare ? ' rare-'+rare : '');
+    el.innerHTML = '<div class="toast-ic">'+(icons[rare]||icons[''])+'</div><div class="toast-body"><div class="toast-k">'+o.kicker+'</div><div class="toast-t">'+o.title+'</div></div>'+(o.xp?'<div class="toast-xp">+'+o.xp+'</div>':'');
+    toasts.appendChild(el);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.classList.add('show'); }); });
+    setTimeout(function(){ el.classList.remove('show'); setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 500); }, 3400);
+    while(toasts.children.length > 4){ toasts.removeChild(toasts.firstChild); }
+  }
+  var fired = {};
+
+  function vh(){ return window.innerHeight || root.clientHeight || 800; }
+  var ticking = false;
+  function update(){
+    ticking = false;
+    var H = vh();
+    var max = root.scrollHeight - root.clientHeight;
+    var sc = window.pageYOffset || root.scrollTop || document.body.scrollTop || 0;
+    var p = max > 0 ? sc/max : 0;
+    var w = Math.min(100, Math.max(0, p*100)).toFixed(2) + '%';
+    if(castfill) castfill.style.width = w;
+    if(xpPlate) xpPlate.style.width = w;
+    if(!reduce){
+      for(var i=0;i<rvs.length;i++){ var el=rvs[i]; if(!el.__in && el.getBoundingClientRect().top < H*0.92){ el.classList.add('in'); el.__in=true; (function(node){ setTimeout(function(){ node.style.opacity='1'; node.style.transform='none'; }, 820); })(el); } }
+    }
+    for(var j=0;j<cus.length;j++){ var c=cus[j]; if(!c.__done && c.getBoundingClientRect().top < H*0.85){ c.__done=true; countUp(c); } }
+    if(hp && !hpDone){ var hr=hp.getBoundingClientRect(); if(hr.top < H*0.85 && hr.bottom > 0){ hpDone=true; if(reduce){ hp.style.width='28%'; } else { hp.style.width='100%'; setTimeout(function(){ hp.style.width='28%'; }, 120); } } }
+    for(var k=0;k<questEls.length;k++){ var q=questEls[k]; var key=q.getAttribute('data-quest'); if(fired[key]) continue; var qr=q.getBoundingClientRect(); if(qr.top < H*0.62 && qr.bottom > 0){ fired[key]=true; toast({ kicker:q.getAttribute('data-kicker')||'Quest update', title:key, rare:q.getAttribute('data-rare')||'', xp:parseInt(q.getAttribute('data-xp'),10)||0 }); flashLevel(); } }
+    var activeIdx = -1;
+    for(var r=0;r<railNodes.length;r++){ var id=(railNodes[r].getAttribute('href')||'').replace('#',''); var sec=document.getElementById(id); if(sec && sec.getBoundingClientRect().top <= H*0.42){ activeIdx=r; } }
+    for(var s2=0;s2<railNodes.length;s2++){ railNodes[s2].classList.toggle('active', s2===activeIdx); railNodes[s2].classList.toggle('done', s2<activeIdx); }
+  }
+  function onScroll(){ if(ticking) return; ticking=true; requestAnimationFrame(update); }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  update();
+  var safetyTicks = 0;
+  var safetyIv = setInterval(function(){ update(); if(++safetyTicks > 10) clearInterval(safetyIv); }, 320);
+
+  document.addEventListener('click', function(ev){
+    var a = ev.target.closest ? ev.target.closest('[data-xp]') : null;
+    if(!a) return; var amt = a.getAttribute('data-xp'); if(!amt || reduce) return;
+    var f = document.createElement('div'); f.className='xpfloat'; f.textContent='+'+amt+' XP';
+    f.style.left = ev.clientX+'px'; f.style.top = (ev.clientY-10)+'px';
+    document.body.appendChild(f); setTimeout(function(){ if(f.parentNode) f.parentNode.removeChild(f); }, 1000);
+  }, true);
+})();
+</script>
+
+
+</body></html>

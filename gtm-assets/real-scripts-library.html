@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REAL SCRIPTS LIBRARY</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">REAL SCRIPTS LIBRARY</span>
+    <a class="back" href="../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>REAL SCRIPTS LIBRARY</h1>
+<p>Proven outreach scripts, captured verbatim from operators who ran them at scale. This is the receipts file: every script below is real, published, and linked. Our own Adwield and Tideover copy is not invented. It converges on what these people already proved.</p>
+<p>Compiled 2026-06-19 from the verbatim captures in <code>_real-scripts/</code>. Script text inside each quote block is the operator's literal words. Connective notes follow <code>copy-standard.md</code>. Any weak, gated, or paraphrased source is marked.</p>
+<hr>
+<h2>How to read this</h2>
+<p><strong>What maps to our own scripts.</strong> Our Adwield and Tideover copy in <code>copy-standard.md</code> isn't a new theory. It's the same playbook these operators run, with the hype stripped and one upgrade.</p>
+<ul>
+<li><strong>Our "no calendar link cold" rule</strong> = Welsh, Ruiz, McKenna. None drop a booking link in a first touch.</li>
+<li><strong>Our warm-reply objection tree (ask, dig, dig, soft ask)</strong> = Marcos Ruiz's $3M DM flow, almost beat for beat.</li>
+<li><strong>Our "defer the price to value, never quote blind"</strong> = Miner's Commitment questions and the Prospeo "I'll think about it" rebuttal. Three sources land on it.</li>
+<li><strong>Our "no dead openers" kill-list</strong> = Josh Braun and Sam Nelson both ban "just checking in / following up / bumping this" by name. Operator consensus, not our quirk.</li>
+<li><strong>Our re-engage ("no chase, one useful thing")</strong> = Braun's ghost re-write and Nelson's breakup #1. Lower the ask, remove the obligation.</li>
+<li><strong>Our artifact-first move (send the built ad, not "some ideas")</strong> = the upgrade. Every agency operator below opens with a claim ("I have some ideas," "I help businesses fix that"). Adwield opens with the finished ad. Same move-2 in their frameworks, stronger version.</li>
+</ul>
+<p><strong>The 2-3 patterns that repeat across all the real scripts:</strong></p>
+<ol>
+<li><strong>One specific researched observation, then one named result.</strong> Not three adjectives. A funding round (Welsh), a hiring post (Lavender), a competitor's review count (Prospeo), a named client win (Berman, Nelson). The proof is concrete or it isn't there.</li>
+<li><strong>The ask is a question about interest, not a meeting demand.</strong> "Would you be interested in speaking?" (Abraham). "Worth a quick chat?" (HubSpot). "Are you interested in...?" (Nemo). Lower the friction of the first reply.</li>
+<li><strong>On a stall, clarify it. Don't fight it.</strong> Miner, Prospeo, and Braun all answer "think about it / send me an email" by naming the real objection out loud instead of pushing. Removing the obligation is what unsticks the reply.</li>
+</ol>
+<p><strong>Source-quality marks used below:</strong> <code>[VERBATIM]</code> operator's literal published words. <code>[WEAK]</code> vendor library or self-reported number, usable but not a proven operator's own call. <code>[PARAPHRASE]</code> reconstruction, exact wording not confirmed; kept out of the quote where possible and never sold as verbatim.</p>
+<hr>
+<h2>Cold Email</h2>
+<h3>1. Daniel Fazio — 3-email sequence <code>[VERBATIM]</code></h3>
+<blockquote><p>Subject: Quick question about @ [[InstagramUsername]]</p>
+<p>Hey [[First Name]]. Saw you popping up on my Instagram Explore Page. You're killin it! [[Or some other variation of a compliment that you've done personal research on them]]</p>
+<p>Do you need [[Benefit your service provides]]?</p>
+<p>I've helped [[# of other businesses in target niche]] get [[benefit your service provides]].</p>
+<p>Got time for a quick call this week?</p></blockquote>
+<p>Email 2 (3 days later):</p>
+<blockquote><p>Subject: Re: Quick question about @ [[InstagramUsername]]</p>
+<p>Hey [[First Name]]. Would you like to see a case study from [[Actual business you provided results for]]?</p></blockquote>
+<p>Email 3 (3 more days later):</p>
+<blockquote><p>Subject: Re: Quick question about @ [[InstagramUsername]]</p>
+<p>Hey [[First Name]]. Here is exactly how you can achieve [[benefit your service provides]], even If you don't work with us. [Info provided] If you change your mind, let me know if you've got time this week for a quick phone call.</p></blockquote>
+<p>Source: Daniel Fazio ("Cold Email Wizard," co-founder Client Ascension and ListKit) — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e — states he's sent "well over 100,000 cold emails" and made "hundreds of variations." His own template, not a course teaser. Skews SMB/creator, so adapt the structure for B2B-ops.</p>
+<h3>2. HubSpot library — "100 best customers" <code>[WEAK]</code></h3>
+<blockquote><p>Hello [Prospect Name],</p>
+<p>I have an idea that I can explain in 10 minutes that can get [company] its next 100 best customers.</p>
+<p>I recently used this idea to help our client [SaaS company/competitor] almost triple their monthly run rate.</p>
+<p>[First name], let's schedule a quick 10-minute call so I can share the idea with you. When works best for you?</p>
+<ul>
+<li>[Your Name]</li>
+</ul></blockquote>
+<p>Source: HubSpot Sales Blog, the circulated Bryan Kreuzberger / Breakthrough Email script — https://blog.hubspot.com/sales/the-cold-email-template-that-won-16-new-b2b-customers-1 — documented on-page: 57% open rate, 21% response rate, 16 new customers acquired. Vendor library, but with hard numbers and a long track record.</p>
+<h3>3. Jason Bay — "Past Employee / Current Client" referral opener <code>[VERBATIM]</code></h3>
+<blockquote><p>Hey Katie, noticed you were Director of Sales at Zoom back in 2018. We're working with Jason Bay over there right now to help them increase the percentage of meetings scheduled from their cold outreach from 1-9%. Thought their learnings could help with the work you're doing at Medallia.</p></blockquote>
+<p>Source: Jason Bay (founder/CEO, Outbound Squad) — https://www.getmagical.com/templates/jbays-cold-email-starter-pack (method via https://tactics.30mpc.com/steal-the-cold-email-campaign-that-gets-15-replies) — co-ran the 30MPC/Outbound Squad webinar on a drip that gets "15%+ reply rate." His own worked example of the "noticed you were [title] at [old company]" play.</p>
+<h3>4. Will Allred / Lavender — "Mouse Trap with Context" <code>[VERBATIM]</code></h3>
+<blockquote><p>Will, looks like you're hiring reps. Would it be helpful to get a more granular look at how they're ramping on email? Our in-inbox email coach, Lavender, helps teams ramp faster.</p></blockquote>
+<p>Source: Will Allred (co-founder, Lavender) — https://www.lavender.ai/blog/sales-email-frameworks — Lavender markets on having analyzed "millions"/"billions" of sales emails; Allred is a 280k+ followed sales-email voice. Published as a "framework, not a template," so it's a body opener to adapt; no subject paired.</p>
+<h3>5. Josh Braun — "Poke the Bear" line <code>[VERBATIM]</code></h3>
+<blockquote><p>We know that around 50% of cold emails land in spam. How are you reducing the risk of emails landing in spam today?</p></blockquote>
+<p>Source: Josh Braun (founder, Braun Sales Academy; ex-Jellyvision sales leader) — https://joshbraun.com/poke-generator/ — ~284k LinkedIn followers, long track record teaching B2B outbound. A neutral question that surfaces a problem instead of pitching. His own published example.</p>
+<h3>6. Smartlead library — SaaS trigger-first template <code>[WEAK]</code></h3>
+<blockquote><p>Subject: quick Q about your outbound stack</p>
+<p>Hi {{first_name}},</p>
+<p>Noticed {{company}} is running HubSpot sequences for outbound — most SaaS teams at your stage (Series B, ~50 reps) hit a wall when sequences become the SDR's whole job.</p>
+<p>We help teams like yours separate the outbound execution layer so your SDRs spend time on conversations, not sequence management. {{Customer_name}} cut SDR admin time by 60% in the first 30 days.</p>
+<p>Worth a 15-minute call this week?</p>
+<p>{{your_name}}</p></blockquote>
+<p>Source: Smartlead blog (cold-email sending/warmup platform) — https://www.smartlead.ai/blog/cold-email-templates — page cites one team hitting 4.1% reply with personalized vertical emails vs 0.3% generic. Vendor library, clean and current, but not a named operator's own call.</p>
+<blockquote><p>Also in source, not lifted here: ColdSend's written reconstruction of Nick Abraham's 3-layer framework is <code>[PARAPHRASE]</code> (ColdSend's words illustrating Nick's structure, not Nick's copy) — https://www.coldsend.pro/playbooks/nick-abraham-hyper-personalization-framework. Use the structure (intent signal + colleague-uncertainty line + size/hiring personalization), not the sentences. Nick's verbatim agency line lives under Agency-specific below.</p></blockquote>
+<hr>
+<h2>LinkedIn / X DM</h2>
+<h3>1. Justin Welsh — passive cold DM after a funding round <code>[VERBATIM]</code></h3>
+<blockquote><p>Congrats on the recent round, {{FirstName}}. I'm a healthcare technology veteran (ZocDoc/PatientPop) and love what you're doing. Following you all from way over here in Los Angeles.</p></blockquote>
+<p>His own math, verbatim from the same page:</p>
+<blockquote><p>Even if I got a 10% response rate, I was putting 50+ new prospects at an average deal size of $25,000 into my pipeline each year.<br>
+That's $1.25M in annual pipeline for spending 15 minutes on Friday mornings.</p></blockquote>
+<p>Source: Justin Welsh (solo creator, ex-VP Sales at PatientPop, $5M+ solo business, 700k+ LinkedIn followers) — https://www.justinwelsh.me/newsletter/how-to-find-more-customers-on-linkedin — shared free in his own newsletter. No pitch, no calendar link, pure acknowledgment plus soft credential. The $1.25M is his self-reported math, not audited.</p>
+<h3>2. Marcos Ruiz — $3M LinkedIn DM flow <code>[VERBATIM]</code></h3>
+<blockquote><p>Hey [Name], really appreciate the connection. I'm curious - are you looking to [desired outcome] or mostly just following along with the content?</p></blockquote>
+<p>Dig on the reply:</p>
+<blockquote><p>What do you mean specifically by [their answer]?</p></blockquote>
+<p>Deeper qualify:</p>
+<blockquote><p>What part of [their goal] do you feel you need the most guidance with right now?</p></blockquote>
+<p>The ask, after 3-4 exchanges:</p>
+<blockquote><p>Let me know if this is something you'd be interested in—I can set up a call with my team who can break down exactly how this would work for you.</p></blockquote>
+<p>Source: Marcos Ruiz (claims $3M+ via LinkedIn DMs over 18 months) — https://www.thebirdhouse.email/p/steal-this-3m-linkedin-dm-script — <code>[WEAK]</code> proof: real revenue claim but self-reported and less publicly verifiable than Welsh. The mechanic is the gold: ask, dig, dig, soft ask, never a raw calendar link cold. This maps almost exactly onto our warm-reply tree.</p>
+<h3>3. Jed Mahrle — "Ask for Feedback" DM <code>[VERBATIM]</code></h3>
+<blockquote><p>Hey [First Name]. Let me preface this by saying I'm not trying to sell you anything or book a meeting. I was hoping to get some feedback from you as someone I would normally sell to. I'm building the sales team at [My Company]. We compete with tools like [Competitors]- I'm sure your team uses one of those. I'm genuinely curious what, if anything, would it take to for you to consider an alternative? Any feedback would be greatly appreciated. Thank you!</p></blockquote>
+<p>Source: Jed Mahrle ("Practical Prospecting," ex-Head of Outbound Sales at Mailshake) — https://www.getmagical.com/templates/jed-mahrles-top-7-email-templates — templates he runs and teaches, given away free with no course gate. Cold-email tone, but the feedback frame ports straight to DM.</p>
+<h3>4. Jed Mahrle — "Breakup" DM <code>[VERBATIM]</code></h3>
+<blockquote><p>Hey [first name] - seems like my emails missed the mark for you. No worries! Can you let me know where I wasn't relevant and/or how I might be able to improve in the future? Thanks a ton — [my.fullName]</p></blockquote>
+<p>Source: Jed Mahrle — https://www.getmagical.com/templates/jed-mahrles-top-7-email-templates — same pack, same proof. The "where did I miss?" ask costs the prospect nothing and flatters them as the expert.</p>
+<h3>5. Jack Reamer / Salesbread — post-connection cold message <code>[VERBATIM]</code></h3>
+<blockquote><p>Good to connect [First Name]. By the way, what are your favorite hiking spots these days?</p></blockquote>
+<p>And the transparent-intent variant:</p>
+<blockquote><p>Good to connect [First Name]. To be transparent, I do [XYZ] and we help with [pain point].</p></blockquote>
+<p>Source: Jack Reamer (CEO, Salesbread B2B lead-gen agency) — https://salesbread.com/cold-linkedin-message-templates/ (connection notes: https://salesbread.com/60-linkedin-connection-request-message-templates/) — <code>[WEAK]</code> self-reported: tested 1M+ invites, ~47% acceptance, ~36% positive reply across the program. Believable scale, not audited, and the stats are aggregate, not tied to any one line. These softeners are weaker and more generic than Welsh's specificity.</p>
+<h3>6. Sam McKenna — "Show Me You Know Me" human opener <code>[PARAPHRASE]</code> body, <code>[VERBATIM]</code> line</h3>
+<p>The full email body is gated behind her playbook. What is confirmed verbatim is one humanizing line from her published SMYKM example and her own design checklist for it.</p>
+<p>Verbatim humanizing line:</p>
+<blockquote><p>I see Roy pop up in your posts all the time - my mom was a cat fanatic and I grew up with Persians (and so much cat hair...); while I'm more of a dog person, hopefully we can still be friends</p></blockquote>
+<p>Verbatim design checklist she states about that email:</p>
+<blockquote><p>It's long, It's personal, It shows my personality (hello human connection!), It teaches her, It demonstrates our thinking</p></blockquote>
+<p>Source: Sam McKenna (founder/CEO #samsales Consulting, ex-Head of Enterprise Sales at LinkedIn) — https://www.linkedin.com/posts/samsalesli_smykm-samsales-activity-7082345704769122304-zjgr — post shows 140 reactions, 85 comments (a real skeptical thread). SMYKM cited at ~13x reply rate vs average. <code>[PARAPHRASE]</code> flag: the full body is NOT verbatim; only the cat line and checklist are. The usable takeaway: open with a specific, real, non-business observation; no calendar link in the first touch.</p>
+<blockquote><p>Note: John Nemo's permission-gate DM ("Are you interested in using LinkedIn to find new clients?" then "reply with the word 'YES'") is real and verbatim (https://www.linkedin.com/pulse/my-best-copy-and-paste-sales-script-john-nemo) but it drops a funnel link, wrong altitude for our DFY play. Steal the "reply YES" permission gate, not the funnel.</p></blockquote>
+<hr>
+<h2>Sales Call</h2>
+<h3>Discovery</h3>
+<h3>1. Jeremy Miner (NEPQ) — discovery questions <code>[VERBATIM]</code></h3>
+<p>Problem Awareness:</p>
+<blockquote><p>Can you walk me through the biggest challenges you're dealing with right now?<br>
+What's happening in your business that made you start looking for help?<br>
+How long has this been going on?<br>
+What's been the impact on your day-to-day or your team?</p></blockquote>
+<p>Consequence:</p>
+<blockquote><p>What happens if nothing changes in the next 6-12 months?<br>
+What would it mean for your business if this problem continues?<br>
+What's the worst-case scenario if this goes unresolved?</p></blockquote>
+<p>Commitment:</p>
+<blockquote><p>What would you need to see to feel confident moving forward?<br>
+If we could solve [problem], would that be worth it for you?</p></blockquote>
+<p>His best-practice rule, verbatim:</p>
+<blockquote><p>Listen 80%, talk 20%. Let the questions do the selling.</p></blockquote>
+<p>Source: Jeremy Miner (founder/CEO, 7th Level) — https://irp.cdn-website.com/3b74b76a/files/uploaded/NEPQ+SALES+SECRETS+CHEAT+SHEET.pdf (hub: https://7thlevelhq.com/nepq-cheat-sheet2/) — straight from his company's own free cheat-sheet PDF. Claims 351,000+ salespeople trained across 37 countries (checkable); the $33M personal-sales figure is self-reported marketing.</p>
+<h3>2. Chris Voss — calibrated questions <code>[VERBATIM]</code></h3>
+<blockquote><p>How am I supposed to do that?<br>
+What is the biggest challenge you face?<br>
+What about this is important to you?<br>
+How can I help to make this better for us?<br>
+What are we trying to accomplish here?</p></blockquote>
+<p>Tactical-empathy labels:</p>
+<blockquote><p>It seems like…<br>
+It sounds like…<br>
+It looks like…</p></blockquote>
+<p>"No"-oriented questions (he wants a "no" to give the other side control):</p>
+<blockquote><p>Is now a bad time to talk?<br>
+Have you given up on this project?</p></blockquote>
+<p>Source: Chris Voss (24-year FBI veteran, former lead international kidnapping negotiator; founder, Black Swan Group; author, <em>Never Split the Difference</em>) — https://www.masterclass.com/articles/how-to-use-calibrated-questions-to-negotiate-strategically (book notes: https://grahammann.net/book-notes/never-split-the-difference-chris-voss) — highest pedigree here, real FBI negotiator. The literal questions he teaches, widely reproduced identically; sourced from a book-notes page rather than the book text.</p>
+<h3>3. Alex Hormozi (CLOSER) — discovery sequence <code>[VERBATIM]</code> questions</h3>
+<p>Clarify (why they're on the call):</p>
+<blockquote><p>What made you take this call?<br>
+What's your goal right now?<br>
+Why is that important to you?</p></blockquote>
+<p>Label (mirror the goal):</p>
+<blockquote><p>So it sounds like… [X] is your goal.<br>
+Does that sound about right?</p></blockquote>
+<p>Overview (their past attempts):</p>
+<blockquote><p>What have you tried so far to accomplish this?<br>
+How did that work for you?<br>
+Why do you think that didn't work?</p></blockquote>
+<p>Source: Alex Hormozi (founder, Acquisition.com; author, <em>$100M Offers</em>/<em>$100M Leads</em>; portfolio stated $100M+/yr) — https://www.jointhefollowup.com/p/alex-hormozis-closer-sales-framework (also https://medium.com/@facurubinn/alex-hormozis-closer-method-to-close-35-000-usd-in-sales-in-less-than-7-days-47ac2b8f06a9; his episode "I Taught 115+ Salesmen My Closing Framework": https://www.deciphr.ai/podcast/i-taught-115-salesmen-my-closing-framework-ep-306) — his own framework, ran closers on it. Questions verbatim via two agreeing third-party breakdowns, not a Hormozi-hosted script page; the long-form Overview line ("tell me a little bit about what you've done so far...") is <code>[PARAPHRASE]</code> until matched to a clip.</p>
+<h3>4. Prospeo (SMMA) — discovery questions <code>[WEAK]</code></h3>
+<blockquote><p>Most [niche] owners deal with one of three things — inconsistent leads, wasted ad spend, or no time to post consistently. Which one hits closest?<br>
+How are you getting new customers right now — referrals or paid campaigns?<br>
+What have you tried before that didn't work?<br>
+What's a new customer worth over 12 months?<br>
+If you could get 10 qualified leads a month, what would that do for revenue?<br>
+What happens if nothing changes in 6 months?</p></blockquote>
+<p>Source: Prospeo.io "SMMA Sales Script" — https://prospeo.io/s/smma-sales-script — <code>[WEAK]</code>: vendor content piece (email-finder SaaS), not one operator's battle-tested call. Included because the wording is agency-specific and directly relevant to the ads agency. Treat as a clean template, not proof a closer ran it to a number.</p>
+<h3>Close</h3>
+<h3>5. Prospeo (SMMA) — gap-creation cold-call frame <code>[WEAK]</code></h3>
+<p>Bridge:</p>
+<blockquote><p>Out of curiosity — are you handling your marketing in-house, or do you have someone running it?</p></blockquote>
+<p>Gap:</p>
+<blockquote><p>So where would you want to be in terms of leads per month if everything was working?</p></blockquote>
+<p>CTA:</p>
+<blockquote><p>I've got a few ideas on how to close that gap for [niche] businesses. Can we grab 15 minutes Thursday so I can walk you through what's working for [similar client]?</p></blockquote>
+<p>Source: Prospeo.io — https://prospeo.io/s/smma-sales-script — same <code>[WEAK]</code> vendor flag. The gap move (where are you / where do you want to be / I can close that gap) is the reusable close structure; it matches Cole Gordon's "sell the gap" concept (https://www.youtube.com/watch?v=ix1qdS5a26Y), which is <code>[PARAPHRASE]</code> only — no clean verbatim was pulled from Gordon's videos.</p>
+<h3>Objections</h3>
+<h3>6. Jeremy Miner &amp; Prospeo — "I need to think about it" / "I'll think about it"</h3>
+<p>Miner's signature move, <code>[PARAPHRASE]</code> (structure is unmistakably his, repeated across sources; not quoted from one authoritative transcript):</p>
+<blockquote><p>When you say [think] about it, what specific parts of what we went over would you be [thinking] about?</p></blockquote>
+<p>Prospeo's agency-specific version, <code>[VERBATIM]</code>:</p>
+<blockquote><p>Totally fair. What specifically do you want to think through? I'd rather address it now than have you wondering about something I could answer in 30 seconds.</p></blockquote>
+<p>Prospeo's price objection, <code>[VERBATIM]</code>:</p>
+<blockquote><p>Depends on what we'd build. My clients in [niche] invest $X-Y/mo and see [result]. Let's do 15 minutes so I can give you a real number.</p></blockquote>
+<p>Source: Jeremy Miner — https://7thlevelhq.com/the-top-52-objections/ (demo: https://www.tiktok.com/@jeremy_miner/video/7279650401584975146); Prospeo — https://prospeo.io/s/smma-sales-script. Two independent sources land on the same move: clarify the stall, don't fight it. The price-defer ("give you a real number" only after value) matches our own warm-reply tree.</p>
+<hr>
+<h2>Follow-up + Reply-handling</h2>
+<h3>1. Josh Braun — "send me an email" defuse <code>[VERBATIM]</code></h3>
+<p>First response:</p>
+<blockquote><p>To make sure I don't do a disservice by sending you an email that's not relevant, would it be okay if I asked you a couple of quick questions?</p></blockquote>
+<p>If they still deflect:</p>
+<blockquote><p>I might be misreading here, but typically when people ask me to send them anything, it's just a nice way of saying they're not interested, which is not a problem at all. I know you didn't ask me to call you. Is that the case here?</p></blockquote>
+<p>Source: Josh Braun (founder, Josh Braun Sales Training; ex-Jellyvision sales-training co-founder) — https://joshbraun.com/send-me-an-email/ (and https://joshbraun.com/how-to-defuse-send-me-a-email/) — runs the 100k+ "Badass B2B Growth Guide" list. Names the polite brush-off out loud so the prospect re-engages or frees you. Works on DM/chat replies, not just calls.</p>
+<h3>2. Josh Braun — "not interested / not right now" reply <code>[VERBATIM]</code></h3>
+<blockquote><p>Jim - It seems like you have a lot on your plate and need to focus on what matters most. Here's my ask. (And I know it's a big ask because you don't owe me anything) We create educational content for Directors of Rev Ops about trends affecting sales compensation. Here's an article on how Albert Wong, Director of Rev Ops at Gong, uses SPIIFS to motivate reps. Would it be alright if I add you to our email list? You can unsubscribe anytime. Either way, I understand you're extremely busy, so thank you for responding.</p></blockquote>
+<p>Source: Josh Braun — https://www.linkedin.com/posts/josh-braun_josh-a-prospect-responded-to-my-cold-email-activity-7074138982707556352-T9Cm — post shows 156 reactions, 5 comments. Drops the meeting-ask, trades it for one useful article and list permission. "You don't owe me anything" removes the pressure that triggers a hard no.</p>
+<h3>3. Josh Braun — three follow-ups that replace "just checking in" <code>[VERBATIM]</code></h3>
+<p>Value-bump (data hook):</p>
+<blockquote><p>John, we analyzed 937 cold calls that booked meetings. And have a slideshow on what each of those calls has in common. Is this something you'd like to see?</p></blockquote>
+<p>Genuine-compliment bump:</p>
+<blockquote><p>John, I enjoyed your two cents on building a winning sales culture. It was interesting to hear your thoughts on making time for coaching and why it matters. You rock.</p></blockquote>
+<p>Relevant-resource bump:</p>
+<blockquote><p>John, thought you'd enjoy this HBR article on building a productive sales culture. In particular the bit about 'firing' customers that, despite all attempts, remain unprofitable accounts.</p></blockquote>
+<p>Source: Josh Braun — https://joshbraun.com/how-to-write-follow-up-emails/ — he explicitly bans the same dead openers our copy-standard does. Every bump is a deposit (data, praise, resource), never a bare "any update?", and none mention the prior email.</p>
+<h3>4. Josh Braun — shame-free ghost re-engage <code>[VERBATIM]</code></h3>
+<blockquote><p>Hey Josh - I know you're crazy busy. There are lots of people competing for your time and resources. Plus, on top of that, you have the Saleshacker webinar coming up. Here's my ask (and I know it's a big ask because you don't owe me a response.) Would you like to hit the pause button on expanding reach on TikTok? Either way, keep up the great work on the podcast. The 2 minute episodes are so easy to digest.</p></blockquote>
+<p>Source: Josh Braun — https://www.linkedin.com/posts/josh-braun_heres-a-cold-email-follow-up-message-i-received-activity-7085234104606019584--Egj — post shows 466 likes, 75 comments (skeptical commenters debating it). Zero guilt-trip; acknowledges a specific real thing on the prospect's plate, then a one-line low-friction ask. Same shape as our "no chase" re-engage.</p>
+<h3>5. Sam Nelson — Agoge breakup #1, "the new rep, what went wrong?" <code>[VERBATIM]</code></h3>
+<blockquote><p>Subject: is {{work_phone}} the best number for you?<br>
+Hey {{first_name}},<br>
+I'm pretty new here and I'm trying to figure out why I haven't been able to get a hold of you. {{account.name}} was identified as a company that would get an extremely high ROI from Outreach and I'm trying to find out where I went wrong.<br>
+We're both in sales here and I'm sure you've been in a similar situation where you've done everything possible and still can't get the attention of a high-priority prospect.<br>
+For my own growth as a salesperson, would you be so kind as to just tell me why you have not responded?<br>
+Thanks for any help,<br>
+{{sender.first_name}}</p></blockquote>
+<p>Source: Sam Nelson (built the SDR org at Outreach.io; founder, SDRLeader.com / Agoge) — https://blog.contactout.io/wp-content/uploads/2023/10/30MPC-x-Sam-Nelsons-Agoge-Sequence.pdf — 15-touch sequence published free via 30MPC. The humble "help me learn why" ask gets replies because it costs the prospect nothing and flatters them as the expert. Swap the Outreach product name.</p>
+<h3>6. Sam Nelson — Agoge reply-bumps <code>[VERBATIM]</code></h3>
+<p>The one-line bumps (reply on the original thread so the first email stays visible):</p>
+<blockquote><p>"Any thoughts?"<br>
+"Just seeing if you got this..."<br>
+"What do you think?"</p></blockquote>
+<p>The "wrong contact?" bump:</p>
+<blockquote><p>Hey {{first_name}},<br>
+I want to be absolutely sure I have the right contact. If I missed the mark here, I apologize.<br>
+If you've been busy, but are the appropriate person, could we put a few minutes on the calendar to discuss Outreach in the near future?<br>
+If not, I'd appreciate your passing me along.<br>
+Thanks in advance,<br>
+{{sender.first_name}}</p></blockquote>
+<p>Source: Sam Nelson — https://blog.contactout.io/wp-content/uploads/2023/10/30MPC-x-Sam-Nelsons-Agoge-Sequence.pdf — same Agoge doc. The bump's job is to resurface, not re-pitch; the one-liners reply on the original thread to keep the first email visible. Mechanic to steal, not the copy.</p>
+<blockquote><p>Honest gap: no top-tier operator's <em>verbatim</em> "what's your pricing?" reply was found (only template-farm blogs, excluded). Our own warm-reply pricing-defer in <code>copy-standard.md</code> stands as the house answer until a real one surfaces.</p></blockquote>
+<hr>
+<h2>Agency-specific</h2>
+<h3>1. Nick Abraham — Leadbird "if I could / risk minimizer" formula <code>[VERBATIM]</code></h3>
+<blockquote><p>The worst cold email pitch of all time: (I don't know how people still use this) "Are you taking on more clients?" It just sounds so scammy. Any client worth having wouldn't respond. Qualifying the leads would be a nightmare. You're much better off strictly focusing on providing value. Instead of baiting them into saying yes, say: If I could {generate X result} {risk minimizer} would you be interested in speaking? For example, for my lead generation agency, the script would say: If I could generate meeting-ready leads on a performance basis, would you be interested in speaking? Sending emails that bait prospects into replying wastes your time and theirs.</p></blockquote>
+<p>The template isolated:</p>
+<blockquote><p>If I could {generate X result} {risk minimizer} would you be interested in speaking?</p></blockquote>
+<p>His filled-in version:</p>
+<blockquote><p>If I could generate meeting-ready leads on a performance basis, would you be interested in speaking?</p></blockquote>
+<p>Source: Nick Abraham (founder, Leadbird) — https://www.linkedin.com/posts/nick-abraham_coldemail-prospecting-b2bsales-activity-7119728772051832833-dVJm — Leadbird "sends 1 to 1.5 million cold emails per month" with "over 150 active clients," positioned ~$10M lead-gen agency. Highest-signal entry here. The <code>{risk minimizer}</code> slot ("on a performance basis") is the load-bearing move, the same thing Adwield does by leading with a built artifact instead of a promise.</p>
+<h3>2. Josh Nelson — Seven Figure Agency opener <code>[VERBATIM]</code></h3>
+<blockquote><p>My name is Josh. I recently helped [Client Company] increase revenue by 229% and generate 397 leads in one month. I have some ideas that could work for your business too.</p></blockquote>
+<p>Paired close:</p>
+<blockquote><p>Do you have 15-25 minutes to chat this week or next?</p></blockquote>
+<p>Source: Josh Nelson (Seven Figure Agency; scaled his own Plumbing &amp; HVAC SEO agency to "$7M annual revenue," states he's "helped 128 agencies scale to seven figures") — https://sevenfigureagency.com/master-cold-outreach/ — only the opener and close are genuinely verbatim; the rest of the template is gated behind an opt-in. Tight, specific numbers, one ask. "I have some ideas" is the weak line, and exactly what Adwield beats by sending the built ad.</p>
+<h3>3. Estefa — Naked Sales LinkedIn agency email <code>[VERBATIM]</code></h3>
+<blockquote><p>Hi {{firstName}},</p>
+<p>Saw you've built an audience of 1,500 on your LinkedIn page – that's awesome, I assume you're looking to attract warm leads organically?</p>
+<p>Something we typically see in other recruiting companies is they post regularly – check ✅</p>
+<p>However, they struggle to get engagement (comments and DMs) from their content.</p>
+<p>We've helped other CEOs generate +30 warm conversations every month with content strategies that help virality and interaction.</p>
+<p>Would you be open to hear more about it?</p>
+<p>Best,<br>
+{{Name}}<br>
+{{URL}}<br>
++50 Personal Brands Powered through Meaningful Content</p></blockquote>
+<p>Source: Estefa (CEO, Naked Sales lead-gen agency) — https://www.lemlist.com/blog/how-to-write-a-cold-email-that-sells-smma — <code>[WEAK]</code> proof: smaller operator, proof is the agency claim ("+50 Personal Brands Powered"), not large independent revenue. The observation → "check ✅" → "however" structure is clean, and the signature line doubling as a proof stat is a low-cost move worth stealing.</p>
+<h3>4. Alex Berman — X27 full agency email <code>[VERBATIM]</code></h3>
+<blockquote><p>Subject Line: Question about &lt;company&gt;</p>
+<p>Hey &lt;name&gt;!</p>
+<p>I came across &lt;company&gt; on &gt;channel&gt; and I'm seriously impressed with what you're doing, congrats on working with &lt;portfolio item&gt;! I run x27 and I'm in charge of growing the number of clients agencies like &lt;company&gt; get.</p>
+<p>We do this by putting together a team of specialist marketers with interest and experience in your niche. So in the case of &lt;company&gt;, we'd get the best in design and development to sky-rocket the number of clients you get – even if you don't have a gazillion dollars to spend on marketing.</p>
+<p>Our service has been carefully designed and tested rigorously so firms like yours can sky-rocket their inbound leads. To date, we've helped our clients to reach over $10 million worth of business.</p>
+<p>I'd love to learn what you're doing right now to find clients- you're structured very closely to our other agency clients- I'm sure we can help you double or triple the amount of client you're getting (Just as we helped Dom &amp; Tom to get McDonald's as a client in less than a month – We're also working with Fueled, Faction, Bluewhale &amp; Maxburst).</p>
+<p>If you're ready to get more clients, just get in touch with me directly and I'll set up a quick call 🙂 I'm also more than happy to answer any questions you might have about agency marketing.</p>
+<p>Thanks and have an awesome day!<br>
+Alex</p>
+<p>p.s. I love your website- it's really slick!</p></blockquote>
+<p>Source: Alex Berman (founder, X27/Experiment 27; co-author <em>The Cold Email Manifesto</em>) — https://x27marketing.com/insights/tutorial-cold-email-template/ — cites "~15%" book rate and "way over $10,000 in revenue" from 40 emails on that page. Longer and more hype-heavy than our standard allows ("sky-rocket" twice, "gazillion dollars"), and he's also a course-seller. Keep as a what-real-agencies-send reference; the named-client proof line and the p.s. are the working parts. Our copy-standard would cut the body ~40%.</p>
+<h3>5. Prospeo — "reviews vs competitor" agency cold email <code>[WEAK]</code></h3>
+<blockquote><p>Subject: [Business Name]'s Google reviews vs [Competitor]<br>
+Hey [Name], I compared [Business Name] to [Competitor] in [city] - they're getting 2x the review volume and ranking higher in local search. I help [niche] businesses fix that in 30-60 days. Worth a 15-min call this week?</p></blockquote>
+<p>Source: Prospeo.io SMMA blog — https://prospeo.io/s/smma-sales-script — <code>[WEAK]</code> publisher template, not an operator's own call. Strongest line in its section: a specific, checkable comparison the prospect can't ignore. Same energy as sending a built ad.</p>
+<blockquote><p>Proof-only, no clean verbatim (do not quote as their words): <strong>Charlie Morgan</strong> (states "$10.8 million with cold email alone," 350+ clients) gates the template behind a DM/course — https://www.linkedin.com/posts/charliemorganuk_choosing-the-way-you-structure-your-emails-activity-7160667928411971584-K_y7. <strong>Joel Kaplan</strong> ("0 to $65,000 a month") publishes only as video/course — https://www.youtube.com/watch?v=EU4h8nBiKls. <strong>Jordan Platten</strong> (Affluent Academy): the clean line-by-line "5-step" floating around is a third-party illustration (https://www.linkedin.com/posts/ashok-k-kammara-8571b625_salestips-coldcalling-outboundsales-activity-7357055729674997760-JCTV), <code>[PARAPHRASE]</code>; his real words are gated in video (https://www.youtube.com/watch?v=Gozs98J534Q). All three confirm the channel works at scale; none give usable verbatim.</p></blockquote>
+<hr>
+<h2>What this proves</h2>
+<p>Every credible agency operator lands on the same four moves: one specific researched observation, one named result, the agency does the work, one ~15-min ask, no deck. The only difference is how much hype they pad around it. Our <code>copy-standard.md</code> strips the hype and makes one upgrade: where they all open with a claim ("I have some ideas," "I help businesses fix that"), Adwield opens with the finished ad already built. The artifact replaces the claim. That's a stronger version of their move-2, and none of these operators do it. Tideover's free teardown is the same move for presale support. The convergence is the point: we're not inventing, we're running the proven play one notch sharper.</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

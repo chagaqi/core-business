@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tideover — Calm the wait. Keep the sale.</title>
+  <meta name="description" content="Tideover bolts onto the Gorgias, Tidio, or Intercom you already run and takes only your presale tickets — answering the long 60–120 day wait with calm, human, timeline-aware reassurance so 'where's my order?' doesn't become a refund.">
+
+  <!-- One premium Google Font: Fraunces (serif headings) + Inter (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <a href="#main" class="skip">Skip to content</a>
+
+  <!-- ============ NAV ============ -->
+  <nav class="nav" aria-label="Primary">
+    <div class="nav__inner">
+      <a href="#main" class="brand">
+        <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <path d="M2 23 Q9 17 16 23 T30 23" stroke="#0E5366" stroke-width="2.1" fill="none" stroke-linecap="round"></path>
+          <path d="M5 17 Q11 12 16 17 T27 17" stroke="#0E5366" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.6"></path>
+          <path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#0E5366" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.34"></path>
+        </svg>
+        <span class="brand__name">Tideover</span>
+      </a>
+      <div class="nav__links">
+        <a href="#wait"  class="nav__link nav__link--hide-sm">The long wait</a>
+        <a href="#how"   class="nav__link nav__link--hide-sm">How it works</a>
+        <a href="#pilot" class="nav__link nav__link--hide-sm">The pilot</a>
+        <a href="#faq"   class="nav__link nav__link--hide-sm">FAQ</a>
+        <a href="{{book_call}}" class="btn btn--primary btn--md">Free teardown<span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main">
+
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <div class="hero__tide" aria-hidden="true"></div>
+    <div class="hero__inner">
+
+      <!-- left -->
+      <div class="hero__left">
+        <div class="pills reveal">
+          <span class="pill">For 60–120 day presale waits</span>
+          <span class="pill">Built for Kickstarter &amp; BackerKit graduates</span>
+        </div>
+
+        <h1 class="reveal" data-delay="1">Calm the wait. Keep the sale.</h1>
+
+        <p class="hero__sub reveal" data-delay="1">Tideover plugs into the Gorgias, Tidio, or Intercom you already use, knows each order's real production timeline, and answers the long wait with calm, human, timeline-aware reassurance — so "where's my order?" doesn't become a refund.</p>
+
+        <div class="hero__cta reveal" data-delay="2">
+          <a href="{{book_call}}" class="btn btn--primary btn--lg">Get a free 15-min presale-support teardown<span class="arrow" aria-hidden="true">→</span></a>
+          <a href="#how" class="btn btn--text"><span class="ul">See how it works</span><span aria-hidden="true">→</span></a>
+        </div>
+
+        <div class="reassure reveal" data-delay="2">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 2 4 6v6c0 4.4 3.2 7.6 8 10 4.8-2.4 8-5.6 8-10V6l-8-4Z" stroke="#D9762F" stroke-width="1.7" fill="rgba(201,122,74,0.08)" stroke-linejoin="round"></path>
+            <path d="M9 12l2 2 4-4.5" stroke="#D9762F" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          <p><strong>No new helpdesk to install.</strong> Nothing to rip out. We work inside the tools you already have.</p>
+        </div>
+      </div>
+
+      <!-- right: reassurance reply card -->
+      <div class="hero__right">
+        <div class="reply-card reveal" data-delay="1">
+          <div class="reply-card__head">
+            <div class="reply-card__who">
+              <span class="avatar">D</span>
+              <div>
+                <div class="reply-card__name">Dana — order #4821</div>
+                <div class="reply-card__meta">Presale · backer pledge</div>
+              </div>
+            </div>
+            <span class="day-tag">Day 58</span>
+          </div>
+          <div class="reply-card__body">
+            <div class="bubble bubble--in">I ordered back in March and it's been almost two months. Starting to wonder if this is actually coming, or if I should just ask for a refund.</div>
+            <div class="bubble bubble--out">Hey Dana — totally fair to wonder after this long, and I'm really glad you reached out. Your order's in the production batch that's <strong>currently tracking to ship late July</strong>. You're on the list and nothing's stuck. I'll check back in the moment anything shifts.</div>
+            <div class="reply-card__note">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 4 6v6c0 4.4 3.2 7.6 8 10 4.8-2.4 8-5.6 8-10V6l-8-4Z" stroke="#D9762F" stroke-width="1.8" fill="none"></path></svg>
+              timeline-aware · human-approved · no hard date promised
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ============ THE LONG WAIT ============ -->
+  <section id="wait" class="wrap section-pad">
+    <div class="section-head reveal">
+      <div class="eyebrow">The long wait</div>
+      <h2>It isn't one ticket. It's a months-long emotional journey.</h2>
+      <p class="lede">You collected the cash today and ship in 60 to 120 days. In that gap a confident buyer slowly turns into an anxious one — and an anxious one turns into a refund request.</p>
+    </div>
+
+    <!-- timeline -->
+    <ol class="timeline">
+      <li class="tl reveal">
+        <div class="tl__head"><span class="tl__dot" style="background:#7FB0A6"></span><span class="tl__day">DAY 7</span></div>
+        <h3>Still excited</h3>
+        <p>The confirmation-email glow. They tell friends. No questions yet.</p>
+      </li>
+      <li class="tl reveal" data-delay="1">
+        <div class="tl__head"><span class="tl__dot" style="background:#E1C07A"></span><span class="tl__day">DAY 30</span></div>
+        <h3>First doubt</h3>
+        <p>The excitement fades. "Wait — when is this actually coming?"</p>
+      </li>
+      <li class="tl reveal" data-delay="2">
+        <div class="tl__head"><span class="tl__dot" style="background:#D89A6A"></span><span class="tl__day">DAY 60</span></div>
+        <h3>Anxious</h3>
+        <p>No update in weeks. They Google your name with "scam" and start screenshotting.</p>
+      </li>
+      <li class="tl tl--alert reveal" data-delay="3">
+        <div class="tl__head"><span class="tl__dot" style="background:#C0603A"></span><span class="tl__day tl__day--alert">DAY 89</span></div>
+        <h3>Ready to bail</h3>
+        <p>One unanswered message away from a refund request — or a chargeback.</p>
+      </li>
+    </ol>
+
+    <!-- stakes -->
+    <div class="grid grid--auto-260">
+      <div class="card card--sand card--pad reveal">
+        <h3>Chargebacks hit more than revenue</h3>
+        <p>A refund is a lost sale. A chargeback is a dispute on your record — and enough of them put your Stripe or PayPal standing at risk.</p>
+      </div>
+      <div class="card card--sand card--pad reveal" data-delay="1">
+        <h3>WISMO floods the inbox</h3>
+        <p>"Where's my order?" arrives in waves for months, burying the tickets that actually need you.</p>
+      </div>
+      <div class="card card--sand card--pad reveal" data-delay="2">
+        <h3>"Scam" reviews stick</h3>
+        <p>An anxious buyer left in the dark writes the review first and asks questions later. That page outlives the wait.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section id="how" class="how">
+    <div class="wrap section-pad">
+      <div class="section-head reveal">
+        <div class="eyebrow">The presale-specialist layer</div>
+        <h2>A calm layer on top of the stack you already run.</h2>
+        <p class="lede">We don't replace your helpdesk. We bolt on, take the presale tickets, and answer the long wait — while everything else stays exactly as it is.</p>
+      </div>
+
+      <!-- 4 points -->
+      <div class="grid grid--auto-250" style="margin-bottom:44px">
+        <div class="card card--pad feature reveal">
+          <span class="icon-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="8" height="7" rx="2" stroke="#0E5366" stroke-width="1.7"></rect><rect x="13" y="13" width="8" height="7" rx="2" stroke="#0E5366" stroke-width="1.7"></rect><path d="M11 7.5h4a2 2 0 0 1 2 2V13" stroke="#0E5366" stroke-width="1.7" fill="none"></path></svg></span>
+          <h3>Plugs into your existing stack</h3>
+          <p>We bolt onto the Gorgias, Tidio, or Intercom you already run. No migration, no second inbox, no infra change.</p>
+        </div>
+        <div class="card card--pad feature reveal" data-delay="1">
+          <span class="icon-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0E5366" stroke-width="1.7"></circle><path d="M12 7v5l3.5 2" stroke="#0E5366" stroke-width="1.7" fill="none" stroke-linecap="round"></path></svg></span>
+          <h3>Knows each order's real timeline</h3>
+          <p>Tideover reads order data and your production schedule, so every reply is grounded in where that specific order actually is.</p>
+        </div>
+        <div class="card card--pad feature reveal" data-delay="2">
+          <span class="icon-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5h16v11H8l-4 3V5Z" stroke="#0E5366" stroke-width="1.7" fill="none" stroke-linejoin="round"></path><path d="M8 10h8M8 13h5" stroke="#0E5366" stroke-width="1.7" stroke-linecap="round"></path></svg></span>
+          <h3>Timeline-aware, day-stage replies</h3>
+          <p>A Day 20 nudge and a Day 80 worry need different words. Replies meet the buyer at the emotional stage they're in.</p>
+        </div>
+        <div class="card card--pad feature reveal" data-delay="3">
+          <span class="icon-badge"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3.4" stroke="#0E5366" stroke-width="1.7"></circle><path d="M5.5 19.5a6.5 6.5 0 0 1 13 0" stroke="#0E5366" stroke-width="1.7" fill="none" stroke-linecap="round"></path><path d="M16.5 8.5l1.6 1.6 2.4-2.6" stroke="#D9762F" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg></span>
+          <h3>Every novel reply is human-approved</h3>
+          <p>Nothing auto-fires a promise. New situations get a real person's eyes before they ever reach your customer.</p>
+        </div>
+      </div>
+
+      <!-- diagram -->
+      <div class="diagram reveal">
+        <div class="diagram__title">How the bolt-on routes</div>
+        <div class="diagram__row">
+          <!-- inputs -->
+          <div class="diagram__col">
+            <div class="diagram__label">Your data</div>
+            <div class="chip chip--in">Order data</div>
+            <div class="chip chip--in">Production timeline</div>
+            <div class="chip chip--in">Backer &amp; preorder list</div>
+          </div>
+          <span class="diagram__arrow" aria-hidden="true">→</span>
+          <!-- tideover node -->
+          <div class="diagram__node">
+            <svg width="34" height="34" viewBox="0 0 32 32" fill="none" aria-hidden="true" style="margin:0 auto 8px"><path d="M2 23 Q9 17 16 23 T30 23" stroke="#F4F9F9" stroke-width="2.1" fill="none" stroke-linecap="round"></path><path d="M5 17 Q11 12 16 17 T27 17" stroke="#F4F9F9" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.66"></path><path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#F4F9F9" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.4"></path></svg>
+            <div class="diagram__node-name">Tideover</div>
+            <div class="diagram__node-sub">presale layer · routes WISMO only</div>
+          </div>
+          <span class="diagram__arrow" aria-hidden="true">→</span>
+          <!-- outputs -->
+          <div class="diagram__col">
+            <div class="diagram__label">Your helpdesk</div>
+            <div class="chip chip--out">Gorgias</div>
+            <div class="chip chip--out">Tidio</div>
+            <div class="chip chip--out">Intercom</div>
+            <div class="diagram__foot">stays exactly as it is</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- comparison table -->
+      <div class="compare reveal">
+        <div class="compare__scroll">
+          <table>
+            <caption>Generic helpdesk vs. Tideover</caption>
+            <thead>
+              <tr>
+                <th scope="col" class="col-empty"></th>
+                <th scope="col">Generic helpdesk<br><span>Gorgias / Tidio / Intercom</span></th>
+                <th scope="col" class="col-us">Tideover</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">Knows it's a preorder</th>
+                <td>Treats it like any ticket</td>
+                <td class="us">Built for it</td>
+              </tr>
+              <tr>
+                <th scope="row">Knows the real timeline</th>
+                <td>No production context</td>
+                <td class="us">Reads each order's schedule</td>
+              </tr>
+              <tr>
+                <th scope="row">Handles the 60–120 day journey</th>
+                <td>One reply, then silence</td>
+                <td class="us">Day-stage reassurance</td>
+              </tr>
+              <tr>
+                <th scope="row">Tone</th>
+                <td>Canned &amp; transactional</td>
+                <td class="us">Warm, human, calm</td>
+              </tr>
+              <tr>
+                <th scope="row">Your stack</th>
+                <td>Is the stack</td>
+                <td class="us">Plugs in — nothing to replace</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PILOT ============ -->
+  <section id="pilot" class="pilot">
+    <div class="wrap wrap--narrow section-pad">
+      <div class="pilot__head reveal">
+        <div class="eyebrow">The founding-partner pilot</div>
+        <h2>We'll run your presale support by hand for one cycle. Free.</h2>
+        <p>Concierge first. The founder and our drafting system run your presale support manually, inside your own helpdesk — capturing the day-by-day reassurance language that works, measured against a clean baseline.</p>
+      </div>
+
+      <div class="grid grid--auto-300">
+        <!-- included card -->
+        <div class="glass reveal">
+          <div class="tag-free">Free · one full cycle</div>
+          <h3>What's included</h3>
+          <ul class="check-list">
+            <li><span class="ck">✓</span>Works inside your helpdesk — nothing to migrate.</li>
+            <li><span class="ck">✓</span>Timeline-aware, human-approved replies in two fixed daily windows.</li>
+            <li><span class="ck">✓</span>A day-by-day reassurance playbook, built from your real tickets.</li>
+            <li><span class="ck">✓</span>Leading-indicator measurement vs. your own clean baseline.</li>
+            <li><span class="ck">✓</span>Logged "saves" — anxious buyers who stayed aboard.</li>
+            <li><span class="ck">✓</span>Founder-led, by hand, for one full presale cycle.</li>
+          </ul>
+          <a href="{{first_strike_form}}" class="btn btn--on-dark btn--block" style="margin-top:26px;padding:16px 24px;font-size:16px">Apply for a founding-partner pilot<span class="arrow" aria-hidden="true">→</span></a>
+        </div>
+
+        <!-- ladder + guarantee -->
+        <div class="glass-stack">
+          <div class="glass glass--sm reveal" data-delay="1">
+            <h3>A simple value ladder</h3>
+            <div class="ladder">
+              <span class="ladder__free">Free pilot</span>
+              <span class="ladder__arrow" aria-hidden="true">→</span>
+              <span class="ladder__rung">$199–$499/mo on proof</span>
+              <span class="ladder__arrow" aria-hidden="true">→</span>
+              <span class="ladder__rung">$799–$999+/mo as it scales</span>
+            </div>
+            <p class="ladder__note">Any performance fee is deferred until a real case study exists.</p>
+          </div>
+
+          <div class="glass glass--sm guarantee reveal" data-delay="2">
+            <div class="guarantee__head">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2 4 6v6c0 4.4 3.2 7.6 8 10 4.8-2.4 8-5.6 8-10V6l-8-4Z" stroke="#E9B486" stroke-width="1.7" fill="none" stroke-linejoin="round"></path></svg>
+              <h3>An honest guarantee</h3>
+            </div>
+            <p>We measure leading indicators — faster first response, fewer WISMO tickets, logged saves — against your own baseline. If the pilot doesn't move them, you don't pay. The full refund-reduction picture takes a complete 60–120 day cycle; we report it after the first cohort finishes, and we're telling you that up front.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HONEST FIT ============ -->
+  <section id="fit" class="wrap wrap--narrow section-pad">
+    <div class="fit__head reveal">
+      <div class="eyebrow">Honest fit</div>
+      <h2>We'd rather tell you now if this isn't for you.</h2>
+    </div>
+    <div class="grid grid--auto-290">
+      <div class="fit-card fit-card--yes reveal">
+        <h3>A strong fit if…</h3>
+        <ul class="fit-list fit-list--yes">
+          <li><span class="mk">✓</span>You're graduating a Kickstarter, Indiegogo, or BackerKit campaign onto Shopify.</li>
+          <li><span class="mk">✓</span>You sell hardware, design, or made-to-order goods with 60–120 day waits.</li>
+          <li><span class="mk">✓</span>You're juggling backers, late pledges, and fresh preorders at once.</li>
+          <li><span class="mk">✓</span>Your inbox floods with "where's my order?" for months.</li>
+          <li><span class="mk">✓</span>You'd rather keep the sale than fight a chargeback.</li>
+        </ul>
+      </div>
+      <div class="fit-card fit-card--no reveal" data-delay="1">
+        <h3>Probably not yet if…</h3>
+        <ul class="fit-list fit-list--no">
+          <li><span class="mk">—</span>You ship in-stock orders within a few days.</li>
+          <li><span class="mk">—</span>You want to replace your whole helpdesk.</li>
+          <li><span class="mk">—</span>You sell regulated or supplement goods with timeline liability.</li>
+          <li><span class="mk">—</span>You only have a handful of orders to cover.</li>
+          <li><span class="mk">—</span>You want a bot that auto-fires delivery promises.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ OPERATOR ============ -->
+  <section id="operator" class="operator">
+    <div class="wrap wrap--narrow2 section-pad">
+      <div class="eyebrow reveal">The operator behind it</div>
+      <blockquote class="reveal">
+        <p>"I ran a physical-goods company that did around <strong>$2M a year</strong> — our own warehouse, our own shipping, our own fulfillment. I spent years in the inbox writing the 'where's my order?' replies during long waits. I'm not a vendor who read about this problem. I lived it from your side of the counter."</p>
+      </blockquote>
+
+      <div class="card pledge reveal" data-delay="1">
+        <h3>A plain-spoken proof pledge</h3>
+        <p>No invented metric. No fake testimonial. No borrowed logo. No unearned star rating. Every number on this page is a target measured against your own baseline — and the full refund-reduction case study lands only after a real cohort completes.</p>
+        <div class="placeholder">[CASE STUDY PLACEHOLDER — refund-reduction delta, post first completed cohort]</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section id="faq" class="wrap wrap--faq section-pad">
+    <div class="faq__head reveal">
+      <div class="eyebrow">Questions</div>
+      <h2>Answered plainly.</h2>
+    </div>
+    <div>
+      <details class="qa reveal">
+        <summary>Do I switch helpdesks or install anything?<span class="tgl" aria-hidden="true">+</span></summary>
+        <div class="qa__body">No. Tideover bolts onto the Gorgias, Tidio, or Intercom you already run. Nothing to rip out, no second inbox, no infra change — we work inside your existing setup and handle the presale tickets specifically.</div>
+      </details>
+      <details class="qa reveal">
+        <summary>How is this different from the bot already in my helpdesk?<span class="tgl" aria-hidden="true">+</span></summary>
+        <div class="qa__body">A generic bot doesn't know an order is a preorder, doesn't know its real production timeline, and answers a Day 80 panic the same as a Day 5 hello. Tideover is built only for the 60–120 day wait, with replies tied to where each order actually is.</div>
+      </details>
+      <details class="qa reveal">
+        <summary>Will you make promises you can't keep?<span class="tgl" aria-hidden="true">+</span></summary>
+        <div class="qa__body">Never. We use honest confidence bands — "currently tracking for late July," not a hard date. Every novel reply is human-approved before it sends. A false delivery promise is the most damaging thing we could say, so we don't.</div>
+      </details>
+      <details class="qa reveal">
+        <summary>What does the free pilot involve?<span class="tgl" aria-hidden="true">+</span></summary>
+        <div class="qa__body">For one full presale cycle, we run your presale support by hand inside your helpdesk — timeline-aware, human-approved replies in two daily windows — and build a day-by-day reassurance playbook from your real tickets, measured against your baseline.</div>
+      </details>
+      <details class="qa reveal">
+        <summary>What can you prove, and what can't you yet?<span class="tgl" aria-hidden="true">+</span></summary>
+        <div class="qa__body">Right now we can show leading indicators — faster first response, fewer WISMO tickets, logged saves. The full refund-reduction delta needs a complete 60–120 day cycle to be real, so we report it after the first cohort finishes. We'd rather tell you that than invent a number.</div>
+      </details>
+      <details class="qa reveal">
+        <summary>What does it cost after the pilot?<span class="tgl" aria-hidden="true">+</span></summary>
+        <div class="qa__body">The pilot is free. On proof, it's roughly $199–$499/mo, scaling to $799–$999+/mo as volume grows. Any performance fee waits until there's a real case study to stand on.</div>
+      </details>
+      <details class="qa reveal">
+        <summary>I'm a crowdfunding creator juggling backers and preorders — does that fit?<span class="tgl" aria-hidden="true">+</span></summary>
+        <div class="qa__body">That's exactly who this is for. Backers, late pledges, and new preorders all bring their own long waits, and Tideover handles that mixed presale load without you switching a thing.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============ FINAL CTA ============ -->
+  <section class="final">
+    <div class="final__inner">
+      <svg class="final__crest" width="44" height="44" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 23 Q9 17 16 23 T30 23" stroke="#E9B486" stroke-width="2.1" fill="none" stroke-linecap="round"></path><path d="M5 17 Q11 12 16 17 T27 17" stroke="#E9B486" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.66"></path><path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#E9B486" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.4"></path></svg>
+      <h2 class="reveal">The tide always comes in. Their order is coming.</h2>
+      <p class="final__sub reveal" data-delay="1">Start with a free 15-minute presale-support teardown — a real operator looking at your real support, no pitch. We'll tell you honestly whether we can help.</p>
+      <a href="{{book_call}}" class="btn btn--on-dark btn--lg reveal" data-delay="1" style="padding:17px 34px">Get a free 15-min presale-support teardown<span class="arrow" aria-hidden="true">→</span></a>
+      <div class="final__trust reveal" data-delay="2">
+        <span><span class="dot">●</span>No new helpdesk to install</span>
+        <span><span class="dot">●</span>Free founding-partner pilot</span>
+        <span><span class="dot">●</span>Talk to the operator, not a queue</span>
+      </div>
+    </div>
+  </section>
+
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__top">
+        <div class="footer__brand">
+          <div class="footer__brand-row">
+            <svg width="28" height="28" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M2 23 Q9 17 16 23 T30 23" stroke="#E9F2F1" stroke-width="2.1" fill="none" stroke-linecap="round"></path><path d="M5 17 Q11 12 16 17 T27 17" stroke="#E9F2F1" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.6"></path><path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#E9F2F1" stroke-width="2.1" fill="none" stroke-linecap="round" opacity="0.35"></path></svg>
+            <span class="footer__brand-name">Tideover</span>
+          </div>
+          <p>The support layer that tides your customers over until their order ships.</p>
+          <a href="https://tideover.app" class="footer__link">tideover.app</a>
+        </div>
+        <a href="{{book_call}}" class="footer__btn">Get a free teardown<span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <p class="footer__fine">Every figure on this page is a target to measure against your own baseline — never a claimed result. We never make hard delivery promises; confidence bands only.</p>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+</html>

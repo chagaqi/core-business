@@ -1,0 +1,481 @@
+{
+  "phases": [
+    {
+      "name": "P0 — Skill-Gate Starve",
+      "window": "Day 0–14 (Sun Jun 14 → Sun Jun 28)",
+      "trigger": "Today",
+      "v1Share": "~85% (≈4.5–6 hrs incl. protected AM drills)",
+      "v2Share": "~15% / ≤20–90 min",
+      "v2Mode": "Mode A — agent-only (scout, pain-mine, draft, domain warmup); ≤20 min/day human approvals"
+    },
+    {
+      "name": "P1 — Ignite V1 Cash",
+      "window": "~Day 14–35 (Sun Jun 28 → ~Sun Jul 19)",
+      "trigger": "S0 graduation clears",
+      "v1Share": "~80% (≈5.5–6.5 hrs: renders + DMs + first calls + first delivery)",
+      "v2Share": "~20% / ≤45 min",
+      "v2Mode": "Mode A continues — agents keep staging; warmup matures; NO human outreach yet"
+    },
+    {
+      "name": "P2 — Stagger V2 In",
+      "window": "~Day 35–60 (~Sun Jul 19 → Thu Aug 13)",
+      "trigger": "V1 first cash banked ($3–5K) OR Day-45 backstop (Wed Jul 29) with ≥3 free hrs/day",
+      "v1Share": "~65% (≈5 hrs)",
+      "v2Share": "~35% / ≤2.5 hrs",
+      "v2Mode": "Mode B opens — V2 S0→S1: partner hunt, interviews, concierge onboarding of 1 live partner"
+    },
+    {
+      "name": "P3 — Two Engines Live",
+      "window": "~Day 60–90 (Thu Aug 13 → Sat Sep 12)",
+      "trigger": "V1 at ~$6K MRR / retainers stacking",
+      "v1Share": "~55–60% (≈4.5–5 hrs)",
+      "v2Share": "~40–45% / ≤3 hrs",
+      "v2Mode": "Mode B steady — V2 S1/S2 concierge + first leading-indicator win; S3a scaffold async via dev agent"
+    }
+  ],
+  "dailyTemplates": [
+    {
+      "name": "Variant A — Skill-Phase Day",
+      "whenPhase": "P0 (and any day still drilling)",
+      "total": "≈5.0–5.5 hrs (deliberately under ceiling — the gate needs a fresh brain, not a maxed one; the slack is recovery that protects render quality)",
+      "blocks": [
+        {
+          "block": "AM ritual",
+          "time": "10 min",
+          "engine": "SHARED",
+          "what": "Overnight agent review (both dashboards); clear V2 AM SLA if live; name today's drill",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "AM — DRILLS (PROTECTED, do not move)",
+          "time": "~3 hr",
+          "engine": "V1",
+          "what": "The next drill in the D1→D8 ladder (no skipping). Log every render's 8-pt rubric verdict before watching the next.",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "Midday — infra (review-only)",
+          "time": "~1 hr",
+          "engine": "V1",
+          "what": "Review/confirm ONE Week-1 critical-path infra item; agent drafted the DNS/config, you click-confirm",
+          "tag": "[AGENT+REVIEW]"
+        },
+        {
+          "block": "PM — DM network warm + skill admin",
+          "time": "~30 min",
+          "engine": "V1",
+          "what": "Comment+follow 5 named A-tier founders; compute hit-rate; name tomorrow's deliberate-practice target",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "PM — V2 approvals",
+          "time": "≤20 min",
+          "engine": "V2",
+          "what": "Approve the day's Mode-A agent output (scout rows, pain quotes, a drafted asset). One approval, hands off.",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "PM close",
+          "time": "10 min",
+          "engine": "SHARED",
+          "what": "Stamp practice log + V1 tracker; queue tomorrow's drill",
+          "tag": "[HUMAN]"
+        }
+      ]
+    },
+    {
+      "name": "Variant B — Outreach-Phase Day",
+      "whenPhase": "P1/P2 — selling V1, staggering V2 in",
+      "total": "Without V2 ≈ 6–7 hrs (V1-only, P1); with V2 ≈ 7.5–8.5 hrs (P2/P3). If the V2 GATE hasn't fired, V2 collapses to the ≤20-min approval block from Variant A.",
+      "blocks": [
+        {
+          "block": "AM ritual",
+          "time": "10 min",
+          "engine": "SHARED",
+          "what": "Overnight review; clear V2 AM SLA window; name today's #1 V1 action",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "1. SAMPLE-RENDER (FLEX — first cut)",
+          "time": "60–90 min",
+          "engine": "V1",
+          "what": "Batch 4–6 made-for-them prospect samples (15s, templatized). Protect A-tier: re-render until it clears the bar.",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "2. OUTREACH",
+          "time": "60 min",
+          "engine": "V1",
+          "what": "DM/send the day's priority leads (sample-backed); check + route reply inbox AM (rule in §2B of doc 37). Inbox to zero unactioned.",
+          "tag": "[AGENT+REVIEW]"
+        },
+        {
+          "block": "3. BOOKED-CALL slots (PROTECTED)",
+          "time": "2× 30 min held",
+          "engine": "V1",
+          "what": "Run the 15-min discovery script: spend-branch → Track → pain-dig → pitch → live quote → close. Log verdict.",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "V2 — concentrated human block (gate-fired days only)",
+          "time": "≤2 hr",
+          "engine": "V2",
+          "what": "The week's V2 [HUMAN] work that lands today: a partner interview (batched PM), an onboard, script craft, or the paid ask. Capped 180 min.",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "4. CONTENT (FLEX — second cut)",
+          "time": "60 min",
+          "engine": "SHARED",
+          "what": "Doc-20 engine: pull idea → long → X → LI → queue → reply to 5–10 ICP posts. 3×/wk until first cash, daily after.",
+          "tag": "[AGENT+REVIEW]"
+        },
+        {
+          "block": "5. CLIENT-DELIVERY (FLOORED ≥2.5 hr — never cut)",
+          "time": "≥2.5 hr",
+          "engine": "V1",
+          "what": "Active pilot/retainer cycle: angle lock → 24 variations → QC every clip → launch → Day-14 read. Baseline FIRST on any new pilot.",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "PM ritual + V2 PM SLA",
+          "time": "20 min",
+          "engine": "SHARED",
+          "what": "Clear V2 PM SLA window; stamp both trackers; queue tomorrow",
+          "tag": "[HUMAN]"
+        }
+      ]
+    },
+    {
+      "name": "Variant C — Delivery-Phase Day",
+      "whenPhase": "P3 — both engines have live obligations",
+      "total": "≈7.5–9 hrs (the ceiling-pressing day). If combined load >~6 hrs/day for 3+ consecutive days, FREEZE new V1 selling and onboard no new V2 live partner until it clears.",
+      "blocks": [
+        {
+          "block": "AM ritual + V2 AM SLA window",
+          "time": "~45 min",
+          "engine": "SHARED",
+          "what": "Overnight review; approve AI-drafted novel presale replies in the fixed AM window (agent auto-handled holding templates overnight)",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "1. CLIENT-DELIVERY (FLOORED ≥2.5 hr — never cut)",
+          "time": "≥2.5 hr",
+          "engine": "V1",
+          "what": "Cycle work across live brands; QC every clip; capacity-alarm if >2 brands (see §6 kill-line)",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "2. BOOKED-CALL slots (PROTECTED)",
+          "time": "up to 2× 30 min",
+          "engine": "V1",
+          "what": "Discovery / pilot→retainer conversion calls — the highest-ROI V1 phase",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "3. OUTREACH (lean)",
+          "time": "30–45 min",
+          "engine": "V1",
+          "what": "Maintain sends + route replies; lead list never starves (+10/wk floor)",
+          "tag": "[AGENT+REVIEW]"
+        },
+        {
+          "block": "V2 — weekly human block (only on its day)",
+          "time": "≤90 min",
+          "engine": "V2",
+          "what": "The S3 weekly 90-min app-review block OR script-versioning OR the paid ask — only on the one weekday it's scheduled",
+          "tag": "[HUMAN]"
+        },
+        {
+          "block": "4. SAMPLE-RENDER + CONTENT (FLEX)",
+          "time": "0–60 min",
+          "engine": "SHARED",
+          "what": "Whatever survives after the above; first to be cut entirely on a hot day",
+          "tag": "[AGENT+REVIEW]"
+        },
+        {
+          "block": "PM — V2 PM SLA window + close",
+          "time": "~45 min",
+          "engine": "SHARED",
+          "what": "Approve novel presale replies in the fixed PM window; stamp both trackers; queue tomorrow",
+          "tag": "[HUMAN]"
+        }
+      ]
+    }
+  ],
+  "weekly": [
+    {
+      "day": "Mon",
+      "v1": "Outreach + 1–2 held calls; delivery cycle",
+      "v2": "Partner sync calls (15 min ×1–2) + AM-window queue review",
+      "shared": "Growth post (X+LI)"
+    },
+    {
+      "day": "Tue",
+      "v1": "Samples + sends + calls; delivery",
+      "v2": "Live-ticket approval in 2 SLA windows; refine weak scripts",
+      "shared": "Authority teardown post"
+    },
+    {
+      "day": "Wed",
+      "v1": "Samples + sends + calls; delivery",
+      "v2": "Author/version 3–5 new day-stage scripts from real tickets",
+      "shared": "Capture session (20 min, refill Idea Bank ≥10) + creative teardown"
+    },
+    {
+      "day": "Thu",
+      "v1": "Samples + sends + calls; delivery",
+      "v2": "ZERO-[HUMAN]-V2 DAY — agent builds the before/after win table async; Chaga only sanity-checks baseline method if flagged",
+      "shared": "Authority tutorial post"
+    },
+    {
+      "day": "Fri",
+      "v1": "Samples + sends; +10 new leads (surge +40 if unworked <30); Day-14 reads",
+      "v2": "Log refund/dispute \"saves\"; ask 1 happy partner for experience-only testimonial",
+      "shared": "V1 lead-gen block (2 hr) + Newsletter QUEUED + KPI packet [A]-prepped (Review-Prepper)"
+    },
+    {
+      "day": "Sat",
+      "v1": "—",
+      "v2": "—",
+      "shared": "HARD REST — no client work, no calls, no sends, no tickets, either venture"
+    },
+    {
+      "day": "Sun",
+      "v1": "Light/optional; queue next week",
+      "v2": "Weekly gate review against the active V2 stage's exit criteria",
+      "shared": "Newsletter SEND (auto/queued) + combined weekly KPI scoreboard review (§5)"
+    }
+  ],
+  "triage": [
+    {
+      "rank": 1,
+      "task": "Any booked V1 call (discovery / pilot→retainer)",
+      "engine": "V1",
+      "why": "A no-show burns a scarce A-tier lead and the closest cash; calls don't reschedule cheaply",
+      "floor": "always #1 if one is booked"
+    },
+    {
+      "rank": 2,
+      "task": "V1 client-delivery on a live cycle (QC + ship today's clips)",
+      "engine": "V1",
+      "why": "Paid, contractually-guaranteed work; the reputation the whole offer protects",
+      "floor": "the FLOOR — never cut"
+    },
+    {
+      "rank": 3,
+      "task": "V2 live-ticket approval in the 2 SLA windows (if a partner is live)",
+      "engine": "V2",
+      "why": "An anxious presale customer left hanging = a chargeback + \"scam\" review; SLA was promised",
+      "floor": "only the SLA windows, ≤90 min total"
+    },
+    {
+      "rank": 4,
+      "task": "The UGC drill (only while in P0 — the gate)",
+      "engine": "V1",
+      "why": "Until it clears, nothing else produces V1 cash; it IS the bottleneck",
+      "floor": "protected in P0; n/a after graduation"
+    },
+    {
+      "rank": 5,
+      "task": "V1 outreach + reply-routing (DMs/sends, inbox to zero)",
+      "engine": "V1",
+      "why": "Feeds calls #1; replies left cold go stale fast",
+      "floor": "do at least the reply-routing"
+    },
+    {
+      "rank": 6,
+      "task": "The single most time-critical V2 human block of the week (an interview, an onboard, or the paid ask — only if today is its scheduled day)",
+      "engine": "V2",
+      "why": "Low-frequency but date-anchored; skipping slips the whole V2 stage",
+      "floor": "only on its scheduled weekday"
+    },
+    {
+      "rank": 7,
+      "task": "V1 sample-render batch (FLEX)",
+      "engine": "V1",
+      "why": "Fuels future outreach but not today's cash; templatized, easily batched tomorrow",
+      "floor": "first thing cut"
+    },
+    {
+      "rank": 8,
+      "task": "Content + ICP engagement (FLEX)",
+      "engine": "SHARED",
+      "why": "Compounds slowly; an agent can draft it; a skipped day is survivable",
+      "floor": "second thing cut"
+    },
+    {
+      "rank": 9,
+      "task": "V2 next-cohort scouting, pain-mining, asset drafts",
+      "engine": "V2",
+      "why": "Pure [AGENT] work — costs Chaga ~0 min; let it run unattended",
+      "floor": "hand entirely to agents"
+    }
+  ],
+  "timeline": [
+    {
+      "day": "Day 0",
+      "date": "Wed Jun 17",
+      "v1": "Buy domains; set up practice log; continue drill ladder; warmup long-pole prep begins",
+      "v2": "Mode-A prep: approve roadmap; buy domain + start 21-day warmup; stand up Scout/Pain-Miner; ≤20 min total",
+      "split": "~85 / 15"
+    },
+    {
+      "day": "Day 7",
+      "date": "Wed Jun 24",
+      "v1": "Drills D1–D6 done; D6 24-pack wall-clock logged; portfolio render starts; agent rig (Scout/Dispatcher/Pipeline) live",
+      "v2": "Mode A: 100-row prospect sheet built; pain bank filling; playbook drafted; warmup maturing",
+      "split": "~85 / 15"
+    },
+    {
+      "day": "Day 14",
+      "date": "Wed Jul 1",
+      "v1": "⭐ GRADUATION (honest baseline) — S0 clears; switch to selling. Top-10 A-tier samples render; DM ignition",
+      "v2": "Mode A continues — still agent-only; no human outreach yet",
+      "split": "~80 / 20"
+    },
+    {
+      "day": "Day 30",
+      "date": "Fri Jul 17",
+      "v1": "First $497 packs landing; first pilots committing → baselines captured FIRST; first retainer quoted live",
+      "v2": "Mode A: prospect list at 100; warmup complete (deliverable); staged and waiting for the GATE",
+      "split": "~80 / 20"
+    },
+    {
+      "day": "Day 35",
+      "date": "Wed Jul 22 (illustrative)",
+      "v1": "★ V1 FIRST CASH BANKED ($3–5K) — THE RATIO-FLIP. This fires the V2 GATE.",
+      "v2": "Mode B opens — V2 S0 begins: partner hunt + problem interviews (GATE-relative)",
+      "split": "~65 / 35"
+    },
+    {
+      "day": "Day 45",
+      "date": "Sat Aug 1",
+      "v1": "1–2 retainers landing; first case-study delta documented; S2 email engine at volume",
+      "v2": "V2 S0→S1: ≥3 partners committed; onboard partner #1 live; concierge SLA windows begin; (Day-45 backstop checkpoint)",
+      "split": "~65 / 35"
+    },
+    {
+      "day": "Day 60",
+      "date": "Sun Aug 16",
+      "v1": "~$3–5K MRR; 2nd case study forming; pilots converting; capacity guard watch begins",
+      "v2": "V2 S1→S2: 1–2 partners live; rolling baselines captured; chasing first leading-indicator win (FRT cut)",
+      "split": "~55–60 / 40–45"
+    },
+    {
+      "day": "Day 75",
+      "date": "Mon Aug 31",
+      "v1": "3rd case study landing; outreach flips proof-first; ASP quoted at standard",
+      "v2": "V2 S2→S3: first documented leading-indicator win banked → S3b unlocked; App-Builder encodes proven scripts",
+      "split": "~55–60 / 40–45"
+    },
+    {
+      "day": "Day 90",
+      "date": "Tue Sep 15",
+      "v1": "$6–9K MRR (realistic ~2 brands), 3 case studies, replenishing pipeline, PL 6→8",
+      "v2": "1–2 partners live + ≥1 documented win + (stretch) first paid conversion; S3 app reading live order data; listing may slip just past 90",
+      "split": "~55–60 / 40–45"
+    },
+    {
+      "day": "Day 90+",
+      "date": "preview",
+      "v1": "S5: lift ASP + hire first Post/Editor VA → path to $15–20K (~Day 150–180)",
+      "v2": "GATE+90: 3–5 partners, first paid MRR, App Store listing; refund case study scheduled post-cohort",
+      "split": "dial keeps turning toward V2"
+    }
+  ],
+  "splitNote": "Never 50/50, even at the end: V1 stays the larger share all 90 days because it is the cash engine carrying personal burn (~$3,000 CAD/mo) and its remaining human work — sales calls and client-delivery QC — cannot be offloaded and scales with each retainer signed. V2's human work is genuinely lower-frequency (a few weekly blocks + twice-daily SLA windows), so a 40–45% slice is enough to move it. The dial starts pinned at V1 (the skill gate can't be shared with anything) and turns toward V2 in two discrete clicks: first when the gate clears (freeing the deep AM block — but that capacity goes into V1 selling, not V2 yet), then when V1 first cash lands (which both proves V1's engine and fires the doc-36 GATE that unlocks V2's human motion). If the gate or first cash slips, every V2 phase slips with it — V2 is the shock absorber, never V1.",
+  "kpis": [
+    {
+      "n": 1,
+      "engine": "V1",
+      "indicator": "UGC drill hit-rate (while in P0)",
+      "band": "≥80% over last 25; 10-streak building",
+      "redFlag": "<60% after ~40 → fix the most-failed rubric point, not volume"
+    },
+    {
+      "n": 2,
+      "engine": "V1",
+      "indicator": "Priority sample-backed touches out / wk (DM pre-warmup, then email)",
+      "band": "150–250/wk post-warmup; 10 priority DMs in ignition week",
+      "redFlag": "sends drop → lead list starving (see #4)"
+    },
+    {
+      "n": 3,
+      "engine": "V1",
+      "indicator": "All-reply rate on ≥200 sends",
+      "band": "≥10%",
+      "redFlag": "5–9% → hand-rebuild 10 hooks on worst Track; <5% → rebuild 20, stop scaling"
+    },
+    {
+      "n": 4,
+      "engine": "V1",
+      "indicator": "Unworked qualified-lead count",
+      "band": "never <30; replenish +10/wk",
+      "redFlag": "<30 → surge +40 THIS week (silent killer)"
+    },
+    {
+      "n": 5,
+      "engine": "V1",
+      "indicator": "Discovery calls booked / wk",
+      "band": "≥2–3 once selling",
+      "redFlag": "0 booked with replies coming → tighten the call-booking ask"
+    },
+    {
+      "n": 6,
+      "engine": "V1",
+      "indicator": "Pilots committed → baselines captured",
+      "band": "100% of pilots baselined BEFORE ship",
+      "redFlag": "a pilot shipped with no baseline = wasted proof"
+    },
+    {
+      "n": 7,
+      "engine": "V1",
+      "indicator": "Production hrs/wk vs brands live",
+      "band": "< two-venture ceiling (~2 brands solo+V2)",
+      "redFlag": "over ceiling → STOP selling, trigger VA hire"
+    },
+    {
+      "n": 8,
+      "engine": "V2",
+      "indicator": "Prospects scouted / contacted (Mode A → B)",
+      "band": "100 named by S0; 75 touches",
+      "redFlag": "agent stalled → check Scout brief + gooseworks"
+    },
+    {
+      "n": 9,
+      "engine": "V2",
+      "indicator": "Design partners verbally committed",
+      "band": "≥3 by GATE+14 (1–2 live concurrent)",
+      "redFlag": "0–1 by GATE+14 → pivot beachhead (don't build)"
+    },
+    {
+      "n": 10,
+      "engine": "V2",
+      "indicator": "Partner clears ticket-volume floor",
+      "band": "≥1 partner ≥30 presale tickets/wk",
+      "redFlag": "none by GATE+40 → measurement-risk flag"
+    },
+    {
+      "n": 11,
+      "engine": "V2",
+      "indicator": "Median FRT vs partner's own baseline",
+      "band": "cut ≥50% OR <1 hr (the larger win)",
+      "redFlag": "no movement → the script, not the tool, is wrong"
+    },
+    {
+      "n": 12,
+      "engine": "V2",
+      "indicator": "AI cost per resolved presale ticket",
+      "band": "<$1.50 (alert $0.50/draft)",
+      "redFlag": ">$3.00 sustained → re-engineer prompt/model before scaling"
+    },
+    {
+      "n": 13,
+      "engine": "BOTH",
+      "indicator": "Combined founder focused-hrs/day (7-day avg)",
+      "band": "≤8; ≤6 of it \"live-obligation\" (calls/delivery/tickets)",
+      "redFlag": ">6 live-obligation for 3+ days → FREEZE new V1 selling + no new V2 live partner"
+    }
+  ]
+}

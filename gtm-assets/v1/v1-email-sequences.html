@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adwield — Cold Email Sequences (v1)</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">Adwield — Cold Email Sequences (v1)</span>
+    <a class="back" href="../../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>Adwield — Cold Email Sequences (v1)</h1>
+<p><strong>Brand: Adwield (adwield.com) · Founder: Chaga Chai · Smartlead-ready · Proof-only</strong><br>
+<strong>Bar: <code>copy-standard.md</code>. Spine: <code>outreach-playbook.md</code> §3.5 / §4.1. Voice: <code>adwield-brand-kit.md</code>.</strong><br>
+<strong>Structure-matched to <code>real-scripts-library.md</code>. Each template names the real parent it mirrors in its note layer.</strong></p>
+<blockquote><p><strong>What this rebuild is.</strong> Every template below is structure-matched to a proven, published, real operator script in <code>real-scripts-library.md</code> (or the playbook VSL arc). The send-ready copy stays clean; the <strong>rationale note under each template names the real parent + the link</strong>. We didn't invent a sequence. We ran the proven play one notch sharper.</p>
+<p><strong>Our one upgrade — ARTIFACT-FIRST (explicit).</strong> Every real agency operator in the library opens with a <em>claim</em>: Fazio "I've helped X get Y," Josh Nelson "I have some ideas," Berman "I'm in charge of growing the number of clients," Abraham "If I could generate X." We open with the <strong>finished, made-for-them ad</strong> instead of the claim. The artifact replaces the promise. That is the whole upgrade, and it's the one thing none of the real parents do (<code>outreach-proof.md</code> Tactic 10, the most-corroborated pattern in the file, 9 sources).</p>
+<p><strong>Hard prerequisite.</strong> No priority cold email goes out unless a rendered First Strike already exists for that lead. <code>{{sampleLink}}</code> resolves <em>before</em> the first send. The sample carries the trust; the copy is the frame.</p>
+<p><strong>Permission-first default (per <code>outreach-proof.md</code> Tactic 10 / divergence 1).</strong> Email 1 <em>asks</em> ("I built you a 15-second ad of {{product}} — want me to send it?") and delivers the link on the "yes." It does not embed the link. Every documented Loom/sample case converts higher asking first than dropping the link cold. An embedded-link variant is kept per sequence, but only as an explicit A/B; permission-first is the favored default. Track reply-then-send-rate, not opens.</p>
+<p><strong>Cadence (§4.1, per <code>outreach-proof.md</code> Tactic 4).</strong> 3 to 5 emails over a ~20-day window. First touch under 80 words. Each follow-up adds new info, never "just bumping this." <strong>The first follow-up is the single most valuable message after the opener — make it the most value-dense email in the sequence</strong>, never a thin "did it come through." One soft interest-based CTA per email. In-thread, blank subject after touch 1. Stop after the last email. Never drift to 8 to 12 touches or a compressed few-day burn.</p>
+<p><strong>Proof state.</strong> Zero case studies at launch. No fabricated numbers. <code>[CASE STUDY PLACEHOLDER]</code> marks where a real founding-partner delta goes once cycle 1 ships, never before. The WEAKER-flagged stats in <code>real-scripts-library.md</code> and <code>outreach-proof.md</code> (HubSpot's 57%/21%, the 34%/22%/30% Loom rates, Josh Nelson's 41% close, anyone's revenue) are <strong>theirs, never restated as ours</strong>. Founding-slot count is the true current number or the clause is cut. The home-gym business never appears in cold copy.</p>
+<p><strong>Merge fields.</strong> <code>{{firstName}}</code>, <code>{{brand}}</code>, <code>{{product}}</code>, <code>{{sampleLink}}</code>, <code>{{hook}}</code>. The two that make or break the send: a true, specific, says-the-quiet-part <code>{{hook}}</code>, and a hand-cleaned lowercase <code>{{product}}</code>. <strong>The hook is human-written, always (per <code>outreach-proof.md</code> Tactic 3 / the non-negotiable): a tool pulls the raw signal, a human writes the hook. AI-written personalization now converts worse than none.</strong> Auto-generate either field and you've built slop.</p>
+<p><strong>Front-end rule.</strong> Public copy names only two paths: hire a Knight (DFY) and build a Forge (DWY). No self-serve tier, ever.</p></blockquote>
+<hr>
+<h2>How the sequences map to their real parents</h2>
+<table>
+<thead>
+<tr><th>Sequence</th><th>Track</th><th>Hook</th><th>Emails</th><th>Email-1 real parent (structure)</th></tr>
+</thead>
+<tbody>
+<tr><td>Seq A — the ad past its clock</td><td>1 (Wounded Veteran)</td><td>A specific stale ad still running</td><td>4</td><td>Fazio 3-email sequence</td></tr>
+<tr><td>Seq B — the review you're not running</td><td>1 (Wounded Veteran)</td><td>A 5-star theme their ads ignore</td><td>4</td><td>Prospeo "reviews vs competitor"</td></tr>
+<tr><td>Seq C — your 4 angles vs theirs</td><td>2 (Volume-Player)</td><td>The blind paid head-to-head</td><td>4</td><td>Nick Abraham "If I could / risk-minimizer"</td></tr>
+<tr><td>Seq D — handed back launched</td><td>2 (Lean Team)</td><td>The launch-and-tag ops drain</td><td>4</td><td>Lavender "Mouse Trap with Context"</td></tr>
+<tr><td>Reactivation</td><td>match original</td><td>A genuinely new asset, 30 to 45 days later</td><td>3</td><td>Josh Braun shame-free ghost re-engage</td></tr>
+</tbody>
+</table>
+<p><strong>Shared parents across all four sequences:</strong> Email 2 (send-on-yes + heaviest value) mirrors <strong>Fazio Email 2</strong> (the proof/case-study offer 3 days after the opener) crossed with the <strong>permission-then-sample</strong> pattern (<code>outreach-proof.md</code> Tactic 10). Email 3 (the standing arrangement) mirrors the <strong>Lavender Mouse Trap</strong> (signal → "would it be helpful?" → the mechanism). Email 4 (breakup) mirrors <strong>Sam Nelson's Agoge breakup #1</strong> ("I'll close your file / tell me where I went wrong"). Links live in each template's note.</p>
+<p><strong>Routing.</strong> One lead gets one sequence per outreach window. The B/C/D sequences give a different true door for a re-approach and angle variety across a batch. Pick the sequence whose <code>{{hook}}</code> you can write true for that lead.</p>
+<p><strong>How each sequence is built.</strong> Email 1 is the <strong>permission-ask</strong> (default): the hook, then "want me to send it?" — no link. Email 2 is the <strong>send-on-yes + value</strong> touch: it delivers <code>{{sampleLink}}</code> <em>and</em> carries the heaviest single piece of new info, because the first follow-up is the most valuable message in the sequence. Email 3 deepens the mechanism. Email 4 is the useful breakup. Each sequence also lists an <strong>embedded-link A/B variant of Email 1</strong> for the explicit test against permission-first.</p>
+<hr>
+<hr>
+<h1>SEQ A — TRACK 1 — the ad past its clock</h1>
+<h3>Hook: a specific ad of theirs still running long past week-7 fatigue.</h3>
+<p><strong>Routing:</strong> <code>track = 1</code>. 5 to 10yr operators gutted by the Feb-2025 Andromeda update.<br>
+<strong>Use when:</strong> your <code>{{hook}}</code> research names a specific stale ad. Same creative dominating their Meta Ad Library, a dated hook, a seasonal angle out of season.<br>
+<strong>Voice:</strong> open on the wound, pivot fast to the production lever. No grief marinade.</p>
+<hr>
+<h3>Email 1 — first touch, permission-ask (under 80 words)</h3>
+<p><strong>Send:</strong> Day 0<br>
+<em>Default. No link. Asks first, delivers on the yes (per <code>outreach-proof.md</code> divergence 1).</em></p>
+<pre><code>Subject: {{brand}}'s ad has been running a while
+
+{{firstName}}, {{hook}}. That one should've retired around week 7.
+The auction stopped rewarding it no matter how good it was.
+
+So I built its replacement. A 15-second UGC ad of {{product}}, pulled
+from your own site and reviews. Not a mockup.
+
+I'd rather build it than claim it, so I made the ad first. Want me
+to send it over?</code></pre>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>{{brand}}'s ad has been running a while</code></li>
+<li><code>the {{product}} ad that won't die</code></li>
+<li><code>built {{brand}} a replacement</code></li>
+</ol>
+<blockquote><p><strong>Structure: Daniel Fazio 3-email sequence — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e</strong> (<code>[VERBATIM]</code>, 100k+ sends). Fazio's opener = a researched observation about them, then a soft single ask. We hold his shape (researched line → easy ask) and apply the <strong>artifact-first upgrade</strong>: where Fazio's move-2 is the <em>claim</em> "I've helped [#] businesses get [benefit]," we replace the claim with the <strong>finished ad we already built for them</strong> and ask permission to send it. The honesty ("I'd rather build it than claim it") sits late, as the reason for the free sample, never as an opener admission.</p></blockquote>
+<blockquote><p><strong>Email 1 — embedded-link A/B variant (test against the permission-ask, not the default).</strong> Replaces the last two lines with the link in-message:</p>
+<pre><code>I'd rather build it than claim it, so I made the ad first. Watch
+the pour shot: {{sampleLink}}</code></pre></blockquote>
+<hr>
+<h3>Email 2 — send-on-yes + the value (the most important message in the sequence)</h3>
+<p><strong>Send:</strong> Day 3 (or immediately on a "yes" to Email 1)<br>
+<em>The first follow-up carries the most new info AND delivers the sample. Two paths below by whether they said yes.</em></p>
+<pre><code>Subject: (re: the {{product}} ad)
+
+Here it is: {{sampleLink}}
+
+Context on why I rebuilt that one specifically. After mid-February
+last year the rules changed under you. A creative carrying the
+account stopped working, same audience, double the CPMs, no reason.
+Targeting fixes never touched it, because targeting was never the
+problem.
+
+The auction now rewards whoever keeps fresh creative in front of
+the customer faster than it fatigues. You can't produce at that
+rate by hand. That's the lever you couldn't pull alone. The ad I
+sent is one of 24 I'd run off that angle.
+
+15 seconds, then tell me if I read the account wrong.</code></pre>
+<blockquote><p><strong>Structure: Fazio 3-email sequence, Email 2 — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e</strong> ("Would you like to see a case study?" 3 days after the opener), crossed with the <strong>permission-then-sample</strong> pattern in <code>outreach-proof.md</code> Tactic 10 (the 150-brand video case: permission-ask first, deliver the asset on the yes). Fazio's Email 2 <em>offers proof</em>; ours <em>delivers the proof</em> (the rendered ad), because the artifact is the case study we don't yet have. Proof-only: no Loom-case numbers restated as ours.</p></blockquote>
+<blockquote><p><strong>If they didn't reply to Email 1 (no yes yet),</strong> open the same email with the ask still live instead of the link:</p>
+<pre><code>Subject: (re: the {{product}} ad)
+
+Offer still stands. I'll send the {{product}} replacement the
+second you say go.</code></pre>
+<p>then keep the same "why I rebuilt that one" body, ending: <em>"15 seconds once it's in your inbox, then tell me if I read the account wrong."</em></p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>(re: the {{product}} ad)</code></li>
+<li><code>the replacement, + why it broke</code></li>
+</ol>
+<hr>
+<h3>Email 3 — value (new info: the standing arrangement)</h3>
+<p><strong>Send:</strong> Day 7</p>
+<pre><code>Subject: what a full cycle actually looks like
+
+{{firstName}}, the ad I sent is one variation. Here's the rest of
+it.
+
+4 angles, 24 variations every two weeks, launched and tagged in
+your own account, not handed to you as files. You greenlight the
+angles and the claims you can back. I produce, launch, read at day
+14, kill losers, double winners, reload.
+
+Every claim gets gated to what you can substantiate before it
+renders, so nothing I ship risks your account with FTC or Meta. You
+keep strategy and approvals. I own production and launch.
+
+Want me to map a full cycle on {{brand}}?</code></pre>
+<blockquote><p><strong>Structure: Will Allred / Lavender "Mouse Trap with Context" — https://www.lavender.ai/blog/sales-email-frameworks</strong> (<code>[VERBATIM]</code>). Lavender's shape: name the signal → "would it be helpful to get a more granular look?" → name the mechanism that delivers it. We run it exactly: the sample they've now seen is the signal, the cycle (4×24, launched and tagged) is the mechanism, and the close is the soft "would it be helpful" ask ("want me to map a full cycle?").</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>what a full cycle actually looks like</code></li>
+<li><code>24 variations every two weeks, launched</code></li>
+</ol>
+<hr>
+<h3>Email 4 — breakup</h3>
+<p><strong>Send:</strong> Day 12</p>
+<pre><code>Subject: closing your file, {{firstName}}
+
+I'll stop so I'm not another inbox you manage.
+
+The {{product}} sample stays live if it's useful later:
+{{sampleLink}}
+
+I cap at 5 functional-consumables brands so no account gets
+deprioritized. Founding partners get a full cycle at no cost. In
+return I publish the before/after.
+
+[CASE STUDY PLACEHOLDER: control hold-rate to winner hold-rate, CPA
+flat, named founding partner. Inserted once cycle 1 ships.]
+
+If the timing's wrong, no reply needed. If it's not, reply "show
+me" and I'll walk you through a cycle.
+
+— Chaga</code></pre>
+<blockquote><p><strong>Structure: Sam Nelson Agoge breakup #1 — https://blog.contactout.io/wp-content/uploads/2023/10/30MPC-x-Sam-Nelsons-Agoge-Sequence.pdf</strong> (<code>[VERBATIM]</code>, the 15-touch Agoge sequence). Nelson's breakup closes the file and invites a no-cost "tell me where I went wrong" reply. We hold the file-closing frame and the low-friction terminal ask, swapping his self-deprecation for the <strong>leave-the-artifact-live</strong> move. The honest "newer shop" reason for the free founding cycle lives here, late, never in the opener. <code>[CASE STUDY PLACEHOLDER]</code> stays literal until a real delta exists.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>closing your file, {{firstName}}</code></li>
+<li><code>should I close this out?</code></li>
+</ol>
+<hr>
+<hr>
+<h1>SEQ B — TRACK 1 — the review you're not running</h1>
+<h3>Hook: a repeated 5-star theme their current creative ignores.</h3>
+<p><strong>Routing:</strong> <code>track = 1</code>.<br>
+<strong>Use when:</strong> <code>{{hook}}</code> research surfaces a strong, repeated review theme their ads aren't using as an angle. The most gift-shaped Track-1 door. A winner hiding in their own reviews.<br>
+<strong>Voice:</strong> recognition, then the production lever. No grief.</p>
+<hr>
+<h3>Email 1 — first touch, permission-ask (under 80 words)</h3>
+<p><strong>Send:</strong> Day 0<br>
+<em>Default. No link. Asks first, delivers on the yes (per <code>outreach-proof.md</code> divergence 1).</em></p>
+<pre><code>Subject: the {{brand}} review you're not running
+
+{{firstName}}, {{hook}}. Your reviews keep saying it. Your ads
+don't.
+
+Turning a review theme into a tested angle means briefing,
+producing, naming, and launching. That's the part there's never
+time for. So I did it: a 15-second UGC ad of {{product}} built on
+that exact angle, from your own site and reviews.
+
+I made the ad instead of pitching you. Want me to send it?</code></pre>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>the {{brand}} review you're not running</code></li>
+<li><code>your customers already wrote this ad</code></li>
+<li><code>made an ad out of your reviews</code></li>
+</ol>
+<blockquote><p><strong>Structure: Prospeo "reviews vs competitor" agency cold email — https://prospeo.io/s/smma-sales-script</strong> (<code>[WEAK]</code>, vendor template). Prospeo's load-bearing move is a <em>specific, checkable comparison the prospect can't ignore</em> ("[Business] vs [Competitor]: 2x review volume"). We borrow the checkable-from-their-own-data hook and aim it inward: the angle is hiding <strong>in their own reviews</strong>, verifiable in one click. <strong>Artifact-first upgrade:</strong> Prospeo's move-2 is the claim "I help [niche] fix that in 30-60 days"; we replace it with the <strong>ad already built on that review angle</strong> and ask to send it. Prospeo's stat is theirs, not restated as ours.</p></blockquote>
+<blockquote><p><strong>Email 1 — embedded-link A/B variant (test against the permission-ask, not the default).</strong> Replaces the last line with the link in-message:</p>
+<pre><code>I made the ad instead of pitching you. Watch the mouth-sync:
+{{sampleLink}}</code></pre></blockquote>
+<hr>
+<h3>Email 2 — send-on-yes + the value (the most important message in the sequence)</h3>
+<p><strong>Send:</strong> Day 3 (or immediately on a "yes" to Email 1)<br>
+<em>The first follow-up carries the most new info AND delivers the sample.</em></p>
+<pre><code>Subject: (re: the {{product}} ad)
+
+Here it is: {{sampleLink}}
+
+Why this angle, specifically. After mid-February last year the
+auction changed under you. The ad carrying the account died for no
+reason, targeting fixes didn't touch it, and now you ship a handful
+of tests a month and hope. Ideas were never the bottleneck. Your
+reviews are full of angles. You can't produce and launch enough of
+them to find the winner before fatigue kills the last test.
+
+The review-angle ad I sent is one of 24 I'd run. The volume is how
+the winner hiding in your reviews gets found and scaled.
+
+15 seconds, then tell me if that angle's worth testing or if I read
+it wrong.</code></pre>
+<blockquote><p><strong>Structure: Fazio 3-email sequence, Email 2 — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e</strong>, crossed with the permission-then-sample pattern (<code>outreach-proof.md</code> Tactic 10). The proof offer becomes a proof <em>delivery</em>: the rendered review-angle ad lands here, with the heaviest new info (why this angle, why volume finds the winner). Proof-only.</p></blockquote>
+<blockquote><p><strong>If they didn't reply to Email 1 (no yes yet),</strong> open with the ask still live instead of the link:</p>
+<pre><code>Subject: (re: the {{product}} ad)
+
+Still happy to send the review-angle ad whenever you want it.</code></pre>
+<p>then keep the same "why this angle" body, ending: <em>"15 seconds once it's in your inbox, then tell me if that angle's worth testing."</em></p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>(re: the {{product}} ad)</code></li>
+<li><code>the review angle, + why it works</code></li>
+</ol>
+<hr>
+<h3>Email 3 — value (new info: the standing arrangement)</h3>
+<p><strong>Send:</strong> Day 7</p>
+<pre><code>Subject: the angle's there. the hands aren't.
+
+{{firstName}}, your reviews are full of angles. The bottleneck was
+never ideas. Here's how the rest works.
+
+4 angles, 24 variations every two weeks, launched and tagged in
+your own account, not a folder of files. You greenlight the angles
+and the claims you can back. I produce, launch, read at day 14,
+kill losers, double winners, reload.
+
+Every claim gets gated to what you can substantiate before it
+renders, so nothing I ship risks your account. You keep strategy
+and approvals. I own production and launch.
+
+Want a full cycle mapped on {{brand}}?</code></pre>
+<blockquote><p><strong>Structure: Lavender "Mouse Trap with Context" — https://www.lavender.ai/blog/sales-email-frameworks</strong> (<code>[VERBATIM]</code>). Signal (the review angles they own) → "would it be helpful?" → the mechanism (the cycle) → soft ask. Same shape as Seq A Email 3.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>the angle's there. the hands aren't.</code></li>
+<li><code>24 variations every two weeks, launched</code></li>
+</ol>
+<hr>
+<h3>Email 4 — breakup</h3>
+<p><strong>Send:</strong> Day 12</p>
+<pre><code>Subject: closing your file, {{firstName}}
+
+I'll stop so I'm not noise in your inbox.
+
+The {{product}} sample stays live: {{sampleLink}}
+
+I cap at 5 functional-consumables brands so no account gets
+deprioritized. Founding partners get a full cycle at no cost. In
+return I publish the before/after.
+
+[CASE STUDY PLACEHOLDER: control hold-rate to winner hold-rate, CPA
+flat, named founding partner. Inserted once cycle 1 ships.]
+
+If the timing's off, no reply needed. If it's not, reply "show me"
+and I'll map a cycle on {{brand}}.
+
+— Chaga</code></pre>
+<blockquote><p><strong>Structure: Sam Nelson Agoge breakup #1 — https://blog.contactout.io/wp-content/uploads/2023/10/30MPC-x-Sam-Nelsons-Agoge-Sequence.pdf</strong> (<code>[VERBATIM]</code>). File-closing frame, low-friction terminal ask, artifact left live. <code>[CASE STUDY PLACEHOLDER]</code> literal until a real delta exists.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>closing your file, {{firstName}}</code></li>
+<li><code>door stays open</code></li>
+</ol>
+<hr>
+<hr>
+<h1>SEQ C — TRACK 2 — your 4 angles vs theirs</h1>
+<h3>Hook: a blind paid head-to-head, led from email 1.</h3>
+<p><strong>Routing:</strong> <code>track = 2</code>. Volume-Players ($200 to 500K/mo) and lean teams who respect a bet.<br>
+<strong>Use when:</strong> the lead is clearly winning and bets on judgment. Lead with the wager.<br>
+<strong>Voice:</strong> zero grief. Capacity math plus a wager. Never "the dashboard is lying." They're winning.</p>
+<hr>
+<h3>Email 1 — first touch, permission-ask (under 80 words)</h3>
+<p><strong>Send:</strong> Day 0<br>
+<em>Default. No link. Leads with the wager, asks first (per <code>outreach-proof.md</code> divergence 1).</em></p>
+<pre><code>Subject: my 4 angles vs your buyer's 4
+
+{{firstName}}, {{hook}}. So here's the trade I'd put money on: a
+blind paid head-to-head. My 4 angles against your media buyer's 4.
+Same spend, your account.
+
+That's the thing ChatGPT can't do. It writes a script. It can't
+tell you which of 4 angles leads for your AOV.
+
+I already built one of the 4. A UGC ad of {{product}} from your own
+site and reviews. Want me to send it?</code></pre>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>my 4 angles vs your buyer's 4</code></li>
+<li><code>a {{product}} ad + a bet</code></li>
+</ol>
+<blockquote><p><strong>Structure: Nick Abraham "If I could {result}{risk minimizer} would you be interested in speaking?" — https://www.linkedin.com/posts/nick-abraham_coldemail-prospecting-b2bsales-activity-7119728772051832833-dVJm</strong> (<code>[VERBATIM]</code>, Leadbird, 10M+ emails). Abraham's load-bearing slot is the <code>{risk minimizer}</code> ("on a performance basis"). Our blind head-to-head IS the risk-minimizer: same spend, your account, lose nothing but a slice of test budget. <strong>Artifact-first upgrade:</strong> Abraham still opens with the <em>promise</em> "If I could generate X"; we open with the <strong>bet plus one of the four angles already rendered</strong> and ask to send it. The artifact makes the wager credible before the reply.</p></blockquote>
+<blockquote><p><strong>Email 1 — embedded-link A/B variant (test against the permission-ask, not the default).</strong> Replaces the last line with the link in-message:</p>
+<pre><code>I already built one of the 4, a UGC ad of {{product}} from your
+own site and reviews: {{sampleLink}}</code></pre></blockquote>
+<hr>
+<h3>Email 2 — send-on-yes + the value (the most important message in the sequence)</h3>
+<p><strong>Send:</strong> Day 3 (or immediately on a "yes" to Email 1)<br>
+<em>The first follow-up delivers the sample AND lays out the bet in full.</em></p>
+<pre><code>Subject: (re: the {{product}} ad)
+
+Here it is: {{sampleLink}}
+
+I send the ad first because your team could license Arcads tomorrow.
+The tool was never the bottleneck. The render is the judgment
+applied to your product, which is the whole bet.
+
+How the head-to-head runs: my 4 angles, your buyer's 4, same spend,
+your account, blind. We read hold-rate and CPA at day 14. If mine
+don't beat the control, you've lost nothing but a slice of test
+budget and you keep every video. If they do, you've found the angle
+your team didn't have time to test.
+
+15 seconds on the render, then I'll set it up if you want to run it.</code></pre>
+<blockquote><p><strong>Structure: Fazio Email 2 — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e</strong> (proof 3 days after the opener) crossed with Abraham's risk-minimizer made explicit (<code>outreach-proof.md</code> Tactic 10). Delivers the sample, then states the bet in full with the downside-protection spelled out ("lost nothing but a slice of test budget, keep every video"). No fabricated win rates.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>(re: the {{product}} ad)</code></li>
+<li><code>the head-to-head, in full</code></li>
+</ol>
+<hr>
+<h3>Email 3 — value (new info: what the standing arrangement is)</h3>
+<p><strong>Send:</strong> Day 7</p>
+<pre><code>Subject: what runs after you win the bet
+
+{{firstName}}, say my 4 beat your buyer's 4. Here's what's behind
+it.
+
+I own one angle-family completely. 4 hypothesis angles, 24
+variations every two weeks, launched and tagged in your naming
+convention and ad-set structure, read against your metrics. Not 24
+files in a Drive folder. Launched.
+
+Your ops people get that throughput back without a third hire. You
+keep strategy and approvals. I do the briefing, producing, naming,
+uploading, and reading. Every claim gets gated to what you can
+substantiate before it renders, so nothing I ship risks your
+account with FTC or Meta.
+
+Want me to map one family on {{brand}}, or run the head-to-head
+first?</code></pre>
+<blockquote><p><strong>Structure: Lavender "Mouse Trap with Context" — https://www.lavender.ai/blog/sales-email-frameworks</strong> (<code>[VERBATIM]</code>). Signal (winning the bet) → the mechanism (the owned angle-family, launched not handed off) → soft two-option ask. Holds the "would it be helpful" altitude.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>what runs after you win the bet</code></li>
+<li><code>launched and tagged, not a Drive folder</code></li>
+</ol>
+<hr>
+<h3>Email 4 — breakup</h3>
+<p><strong>Send:</strong> Day 12</p>
+<pre><code>Subject: last one, {{firstName}}
+
+I'll close your file so I'm not noise in your day.
+
+The {{product}} sample stays live: {{sampleLink}}
+
+I cap at 5 functional-consumables brands so the turnaround never
+degrades when I sign the next one. Month-to-month, you keep every
+video, and the guarantee is in labor not cash. Beat your control's
+hold-rate while CPA holds flat in 30 days, or the next cycle is
+free.
+
+[CASE STUDY PLACEHOLDER: founding-partner delta, control vs winner
+hold-rate, CPA flat. Inserted once cycle 1 ships.]
+
+Reply "run it" and I'll set up the head-to-head. Otherwise, all
+good.
+
+— Chaga</code></pre>
+<blockquote><p><strong>Structure: Sam Nelson Agoge breakup #1 — https://blog.contactout.io/wp-content/uploads/2023/10/30MPC-x-Sam-Nelsons-Agoge-Sequence.pdf</strong> (<code>[VERBATIM]</code>). File-closing frame; terminal ask is the wager re-stated ("run it"). The guarantee is in labor not cash, stated as terms, never as a claimed result.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>last one, {{firstName}}</code></li>
+<li><code>the bet stays open</code></li>
+</ol>
+<hr>
+<hr>
+<h1>SEQ D — TRACK 2 — handed back launched</h1>
+<h3>Hook: the launch-and-tag ops drain on a lean team.</h3>
+<p><strong>Routing:</strong> <code>track = 2</code>, lean team / solo. The ideal client.<br>
+<strong>Use when:</strong> a 2 to 3 person team juggling agencies and vendors. The pain is the drudgery of getting creative from concept to launched, not strategy.<br>
+<strong>Voice:</strong> offloaded ownership. Zero grief. I drive the engine, you don't babysit a vendor.</p>
+<hr>
+<h3>Email 1 — first touch, permission-ask (under 80 words)</h3>
+<p><strong>Send:</strong> Day 0<br>
+<em>Default. No link. Asks first, delivers on the yes (per <code>outreach-proof.md</code> divergence 1).</em></p>
+<pre><code>Subject: one angle-family, handed back launched
+
+{{firstName}}, {{hook}}. On a 2 to 3 person team the bottleneck
+isn't strategy. It's that getting one angle-family from brief to
+launched eats your ops people alive.
+
+So I took one end-to-end and rendered it. A real UGC ad of
+{{product}}. One variation of one family.
+
+Want me to send it over?</code></pre>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>one angle-family, handed back launched</code></li>
+<li><code>a {{product}} ad, already off your plate</code></li>
+</ol>
+<blockquote><p><strong>Structure: Lavender "Mouse Trap with Context" — https://www.lavender.ai/blog/sales-email-frameworks</strong> (<code>[VERBATIM]</code>). Lavender's exact shape was a capacity signal ("looks like you're hiring reps") → "would it be helpful?" → the tool that solves it. Ours: the lean-team capacity drain (the <code>{{hook}}</code>) → "want me to send it?" → the artifact that proves the drain is offloadable. <strong>Artifact-first upgrade:</strong> Lavender names a <em>tool that could help</em>; we hand over <strong>one family already taken end-to-end and rendered</strong>, then ask permission.</p></blockquote>
+<blockquote><p><strong>Email 1 — embedded-link A/B variant (test against the permission-ask, not the default).</strong> Replaces the last two lines with the link in-message:</p>
+<pre><code>So I took one end-to-end and rendered it. A real UGC ad of
+{{product}}: {{sampleLink}}
+
+One variation of one family. Watch the pour and the mouth-sync.</code></pre></blockquote>
+<hr>
+<h3>Email 2 — send-on-yes + the value (the most important message in the sequence)</h3>
+<p><strong>Send:</strong> Day 3 (or immediately on a "yes" to Email 1)<br>
+<em>The first follow-up delivers the sample AND lays out the cadence.</em></p>
+<pre><code>Subject: (re: the {{product}} ad)
+
+Here it is: {{sampleLink}}
+
+Your team could license a generator tomorrow. The tool was never
+the bottleneck. The hours were. The sample is what those hours
+produce when someone else owns them end-to-end.
+
+The cadence: 24 variations every two weeks, launched and tagged in
+your naming convention, read at day 14, losers killed, winners
+doubled. Your ops people get those hours back without a third hire.
+You approve the angles, about 30 to 45 minutes a cycle. That's the
+whole ask on your side.
+
+15 seconds on the render, then I'll walk you through it if it's
+useful.</code></pre>
+<blockquote><p><strong>Structure: Fazio Email 2 — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e</strong> (proof 3 days after the opener) crossed with the permission-then-sample pattern (<code>outreach-proof.md</code> Tactic 10). Delivers the sample, carries the heaviest new info (the cadence + the small real ask on their side). Proof-only.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>(re: the {{product}} ad)</code></li>
+<li><code>the hours were the bottleneck, not the tool</code></li>
+</ol>
+<hr>
+<h3>Email 3 — value (new info: the ownership frame, the cap as protection)</h3>
+<p><strong>Send:</strong> Day 7</p>
+<pre><code>Subject: you approve angles. I do the rest.
+
+{{firstName}}, here's the part that matters for a lean team.
+
+You don't manage me like a vendor chasing files. You approve the
+direction, I own the production and the launch end-to-end. No status
+calls, no "where's the asset" Slack threads, no half-finished Drive
+folder you have to chase to the finish line.
+
+I cap at 5 functional-consumables brands, published, so you never
+become the deprioritized account on a list. Every claim gets gated
+to what you can substantiate before it renders, so nothing I ship
+risks your account with FTC or Meta.
+
+Want me to map one family on {{brand}}?</code></pre>
+<blockquote><p><strong>Structure: Lavender "Mouse Trap with Context" — https://www.lavender.ai/blog/sales-email-frameworks</strong> (<code>[VERBATIM]</code>). Signal (the lean-team vendor-babysitting pain) → the mechanism (offloaded ownership, the cap as protection) → soft "would it be helpful" ask.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>you approve angles. I do the rest.</code></li>
+<li><code>no third hire, no babysitting a vendor</code></li>
+</ol>
+<hr>
+<h3>Email 4 — breakup</h3>
+<p><strong>Send:</strong> Day 12</p>
+<pre><code>Subject: closing this out, {{firstName}}
+
+I'll stop so I'm not another vendor in your inbox.
+
+The {{product}} sample stays live: {{sampleLink}}
+
+I cap at 5 functional-consumables brands so the turnaround never
+degrades when I sign the next one. Month-to-month, you keep every
+video, and the guarantee is in labor not cash. Beat your control's
+hold-rate while CPA holds flat in 30 days, or the next cycle is
+free.
+
+[CASE STUDY PLACEHOLDER: founding-partner delta, control vs winner
+hold-rate, CPA flat. Inserted once cycle 1 ships.]
+
+Reply "send the cycle plan" and I'll get it to you. Otherwise, all
+good.
+
+— Chaga</code></pre>
+<blockquote><p><strong>Structure: Sam Nelson Agoge breakup #1 — https://blog.contactout.io/wp-content/uploads/2023/10/30MPC-x-Sam-Nelsons-Agoge-Sequence.pdf</strong> (<code>[VERBATIM]</code>). File-closing frame, artifact left live, low-friction terminal ask ("send the cycle plan"). Guarantee stated as terms, never claimed as a result.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>closing this out, {{firstName}}</code></li>
+<li><code>the slot stays open</code></li>
+</ol>
+<hr>
+<hr>
+<h1>REACTIVATION — no-reply revival</h1>
+<h3>Re-open a dead thread 30 to 45 days after the original sequence closed.</h3>
+<p><strong>Routing:</strong> any lead that ran a full sequence, never replied, and was a genuine fit. <strong>Wait 30 to 45 days</strong> after the breakup. This is a fresh approach, not a fifth follow-up.<br>
+<strong>The rule:</strong> bring something new and true. A freshly rendered sample of a different SKU or angle, a new <code>{{hook}}</code>, or a real proof asset that didn't exist last time. Never re-open with "just following up." If you have nothing new and true, don't send.<br>
+<strong>Track-aware:</strong> keep the Track voice the lead was originally routed to.<br>
+<strong>Length:</strong> 3 emails.</p>
+<hr>
+<h3>Email 1 — new-proof re-open</h3>
+<p><strong>Send:</strong> Day 0 (of the reactivation window)</p>
+<p><strong>Variant A — new sample of a different SKU/angle (permission-ask default, no link):</strong></p>
+<pre><code>Subject: made you a different one, {{firstName}}
+
+{{firstName}}, {{hook}}, so I built you a fresh {{product}} render.
+New angle, new SKU. I won't re-pitch the one you already passed on.
+
+A render is the only credential that counts before we've worked
+together, so I lead with it. If this one holds up where the last
+didn't, that's worth 15 seconds. Want me to send it?
+
+— Chaga</code></pre>
+<blockquote><p><strong>Structure: Josh Braun shame-free ghost re-engage — https://www.linkedin.com/posts/josh-braun_heres-a-cold-email-follow-up-message-i-received-activity-7085234104606019584--Egj</strong> (<code>[VERBATIM]</code>). Braun's re-engage has zero guilt-trip, acknowledges the silence plainly, then makes one low-friction ask. We hold that exact shape and replace his "hit the pause button?" ask with a <strong>brand-new artifact</strong> (different SKU/angle) — the artifact-first upgrade applied to revival. No chase, no "just following up."</p></blockquote>
+<blockquote><p><strong>Variant A — embedded-link A/B variant.</strong> Replaces the last paragraph with the link in-message: <em>"...so I built a different one. New angle, new SKU: {{sampleLink}}. I lead with the render because it's the only credential that matters before we've worked together. Watch the pour shot."</em></p></blockquote>
+<p><strong>Variant B — a real proof asset now exists (teardown):</strong></p>
+<pre><code>Subject: broke down {{brand}}'s ad, {{firstName}}
+
+{{firstName}}, I tore down the ad {{brand}} is running now: the
+hook, where the hold-rate likely drops, whether the main claim is
+FTC-safe, and the 4 angles I'd test against it.
+
+If the read's sharp, you'll know in 2 minutes whether the angle
+judgment is worth a conversation. Want me to send the teardown over?
+
+— Chaga</code></pre>
+<blockquote><p><strong>Structure: Josh Braun follow-ups that replace "just checking in," the relevant-resource bump — https://joshbraun.com/how-to-write-follow-up-emails/</strong> (<code>[VERBATIM]</code>), crossed with the Prospeo teardown energy. Braun's rule: every bump is a <em>deposit</em> (data, a resource), never "any update?" Our teardown is the deposit. Permission-gated per <code>outreach-proof.md</code> Tactic 10. Only run when the teardown genuinely exists and is sharp.</p></blockquote>
+<blockquote><p>Variant B's teardown is a hosted asset behind <code>{{sampleLink}}</code>. Permission-ask is the default here too; deliver the link on the yes (Email 2). An embedded-link A/B is allowed but permission-first is favored, consistent with the rest of the file.</p>
+<p><strong>Variant C — once a real founding-partner delta exists (NOT before):</strong> open with the real documented delta in place of <code>[CASE STUDY PLACEHOLDER]</code>, then offer the same made-for-them sample. Do not draft fabricated numbers, and never quote the WEAKER-flagged stats from the library or <code>outreach-proof.md</code> as ours. Until a real delta exists, use A or B.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>made you a different one, {{firstName}}</code></li>
+<li><code>broke down {{brand}}'s ad, {{firstName}}</code></li>
+</ol>
+<hr>
+<h3>Email 2 — send-on-yes + the value</h3>
+<p><strong>Send:</strong> Day 4 (or immediately on a "yes" to Email 1)<br>
+<em>Delivers the asset and gives the one reason it's worth the click.</em></p>
+<pre><code>Subject: (re: {{brand}})
+
+Here it is: {{sampleLink}}
+
+I came back because I had something new and true to show. {{hook}},
+and the render answers it on your actual product. 15 seconds tells
+you if the angle's worth a real conversation or if the timing's just
+wrong. Either's a fine answer.</code></pre>
+<blockquote><p><strong>Structure: Fazio Email 2 — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e</strong> (proof delivery a few days after the re-open) crossed with the permission-then-sample pattern (<code>outreach-proof.md</code> Tactic 10). "Either's a fine answer" lowers the ask to a yes/no, per the soft-CTA consensus (Tactic 5).</p></blockquote>
+<blockquote><p><strong>If they didn't reply to Email 1 (no yes yet),</strong> open with the ask still live: <em>"Offer holds. I'll send the new {{product}} render the moment you want it."</em> then keep the same body.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>(re: {{brand}})</code></li>
+<li><code>worth 15 sec?</code></li>
+</ol>
+<hr>
+<h3>Email 3 — final close</h3>
+<p><strong>Send:</strong> Day 8</p>
+<pre><code>Subject: I'll leave it here, {{firstName}}
+
+Last one from me. I won't keep landing in your inbox.
+
+The samples stay live if they're ever useful: {{sampleLink}}
+
+I'm still capped at 5 functional-consumables brands, and [FILL: real
+current count] founding slots are open. If the timing's finally
+right, reply "show me" and I'll map a cycle on {{brand}}.
+
+If not, no reply needed. I'll leave you to it.
+
+— Chaga</code></pre>
+<blockquote><p><strong>Structure: Sam Nelson Agoge breakup #1 — https://blog.contactout.io/wp-content/uploads/2023/10/30MPC-x-Sam-Nelsons-Agoge-Sequence.pdf</strong> (<code>[VERBATIM]</code>). The final file-close, artifact left live, terminal ask is one low-friction word ("show me"). <code>[FILL: real current count]</code> is the true slot number at send. Never inflate. If zero slots remain, cut that clause rather than fabricate scarcity.</p></blockquote>
+<p><strong>A/B subjects:</strong></p>
+<ol>
+<li><code>I'll leave it here, {{firstName}}</code></li>
+<li><code>closing the loop on {{brand}}</code></li>
+</ol>
+<hr>
+<hr>
+<h1>OPERATING NOTES</h1>
+<h3>Timing &amp; structure</h3>
+<table>
+<thead>
+<tr><th>Sequence</th><th>Emails</th><th>Structure (Day)</th><th>Terminal ask</th><th>Real parents (Email 1 / 2 / 3 / 4)</th></tr>
+</thead>
+<tbody>
+<tr><td>Seq A — ad past its clock</td><td>4</td><td>ask 0 / send+value 3 / arrangement 7 / breakup 12</td><td>"show me"</td><td>Fazio / Fazio-E2 / Lavender / Nelson</td></tr>
+<tr><td>Seq B — review you're not running</td><td>4</td><td>ask 0 / send+value 3 / arrangement 7 / breakup 12</td><td>"show me"</td><td>Prospeo / Fazio-E2 / Lavender / Nelson</td></tr>
+<tr><td>Seq C — 4 angles vs theirs</td><td>4</td><td>ask 0 / send+value 3 / arrangement 7 / breakup 12</td><td>"run it"</td><td>Abraham / Fazio-E2 / Lavender / Nelson</td></tr>
+<tr><td>Seq D — handed back launched</td><td>4</td><td>ask 0 / send+value 3 / arrangement 7 / breakup 12</td><td>"send the cycle plan"</td><td>Lavender / Fazio-E2 / Lavender / Nelson</td></tr>
+<tr><td>Reactivation</td><td>3</td><td>ask 0 / send+value 4 / close 8 (≥30 to 45d after prior breakup)</td><td>"show me"</td><td>Braun ghost / Fazio-E2 / Nelson</td></tr>
+</tbody>
+</table>
+<p><strong>Real-parent links (one place):</strong></p>
+<ul>
+<li>Daniel Fazio 3-email sequence — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e</li>
+<li>Nick Abraham "If I could / risk-minimizer" — https://www.linkedin.com/posts/nick-abraham_coldemail-prospecting-b2bsales-activity-7119728772051832833-dVJm</li>
+<li>Prospeo "reviews vs competitor" — https://prospeo.io/s/smma-sales-script</li>
+<li>Will Allred / Lavender "Mouse Trap with Context" — https://www.lavender.ai/blog/sales-email-frameworks</li>
+<li>Sam Nelson Agoge breakup #1 — https://blog.contactout.io/wp-content/uploads/2023/10/30MPC-x-Sam-Nelsons-Agoge-Sequence.pdf</li>
+<li>Josh Braun shame-free ghost re-engage — https://www.linkedin.com/posts/josh-braun_heres-a-cold-email-follow-up-message-i-received-activity-7085234104606019584--Egj</li>
+<li>Josh Braun follow-ups that replace "just checking in" — https://joshbraun.com/how-to-write-follow-up-emails/</li>
+</ul>
+<p>3 to 5 touches over a ~20-day window — hold this. Never pad past 6, never compress to a few-day burn (per <code>outreach-proof.md</code> Tactic 4: every dataset contradicts the 8-12-touch advice). <strong>Email 1 asks; Email 2 is the send-on-yes and the most value-dense message in the sequence</strong> — the first follow-up is the single highest-value touch after the opener, so it never reads "did it come through." One ask per email. Follow-ups reply in-thread, blank subject. Stop after the final email. Never run two sequences on one lead in the same window. Post-reply machinery (discovery-call follow-up, pilot-to-retainer) lives in the sales-call asset, not here.</p>
+<h3>The artifact-first upgrade (the one thing every real parent does NOT do)</h3>
+<p>Every real Email-1 parent opens with a <strong>claim</strong>: Fazio "I've helped [#] businesses get [benefit]," Prospeo "I help [niche] fix that," Abraham "If I could generate [result]," Lavender "our tool helps teams ramp faster." We replace the claim with the <strong>finished, made-for-them ad</strong> and permission-gate it ("want me to send it?"). The artifact is the credential the claim was reaching for, delivered up front. The honest "newer shop" admission never opens a message; it lives late, in the breakup, as the <em>reason</em> the First Strike and the founding cycle are free. That single substitution is the upgrade — and per <code>outreach-proof.md</code> Tactic 10 (9 sources, the most-corroborated pattern in the file), it's a stronger version of the exact move-2 these operators already run.</p>
+<h3>First-line rotation (§3.8)</h3>
+<p>Hold the body constant. Rotate the 3 A/B subjects across each batch of ~30 sends. Read reply rate, not opens. Keep the winner, retire the rest, write a new challenger. Diagnose by symptom: high reply + low booking = fix copy/offer; high bounce = data hygiene; silence across all three = the trigger source is too generic. Heavy spintax has a detectable signature and torches domains. Don't use it.</p>
+<h3>Pre-send GATE (hard — outbound does not start until all are true)</h3>
+<ul>
+<li>[ ] <strong>The rendered First Strike exists and <code>{{sampleLink}}</code> resolves <em>before</em> the first send.</strong> Email 1 asks; the link is delivered on the yes (Email 2). No sample, no send.</li>
+<li>[ ] <strong>Sender/profile carries the offer + visible proof before any send</strong> (per <code>outreach-proof.md</code> divergence 2). The reply-to identity, signature, and any linked profile name one offer and show real proof (the First Strike portfolio / teardown), not an empty shell. A "yes" buys a click on you; that surface has to close. Verify live.</li>
+</ul>
+<h3>Pre-send QA (run before any sequence goes live)</h3>
+<ul>
+<li>[ ] <strong>Permission-first is the live variant by default.</strong> Email 1 has no embedded link unless the embedded-link A/B is deliberately turned on for that batch as the explicit test.</li>
+<li>[ ] <code>{{hook}}</code> is <strong>human-written</strong> (a tool pulled the signal, a person wrote the line), true, specific, says-the-quiet-part. No generic filler. <strong>No AI-generated hook, ever</strong> — it now converts worse than none (<code>outreach-proof.md</code> Tactic 3).</li>
+<li>[ ] <code>{{product}}</code> reads as natural lowercase mid-sentence, not a scraped title.</li>
+<li>[ ] First touch under 80 words. Plain text. Email 1 default = no link; the link lives in Email 2.</li>
+<li>[ ] <strong>Email 2 is the most value-dense message in the sequence</strong>, delivers the sample, and adds real new info — never "did it come through."</li>
+<li>[ ] No fabricated numbers anywhere. <code>[CASE STUDY PLACEHOLDER]</code> only in breakups, only until a real delta exists. <strong>The WEAKER-flagged stats in the library and <code>outreach-proof.md</code> (HubSpot 57%/21%, the 34%/22%/30% Loom rates, Josh Nelson's 41% close, anyone's revenue) are never stated as our results.</strong></li>
+<li>[ ] Founding-slot count is the true current number, or the clause is cut.</li>
+<li>[ ] Cadence is 3 to 5 touches over ~20 days. Not padded past 6, not compressed to a burst.</li>
+<li>[ ] No dead openers ("hope this finds you," "quick question," "just following up / circling back / bumping") and no bare "Not a pitch." sign-off. At most one earned reassurance per message.</li>
+<li>[ ] Track voice correct. No Wounded-Veteran grief to a winning Volume-Player. No "dashboard is lying" to anyone.</li>
+<li>[ ] Home-gym business does not appear. No self-serve tier named. Only Knight and Forge.</li>
+<li>[ ] Spam-trigger words avoided (<code>free</code>/<code>guarantee</code> in subject, <code>$$$</code>, ALL-CAPS, <code>!!!</code>, <code>click here</code>). Open-tracking pixels off, click-tracking on the sample host only.</li>
+<li>[ ] Reactivation only fires ≥30 to 45 days after the prior breakup, with a genuinely new true asset in hand.</li>
+<li>[ ] <strong>Each template's note layer still names its real parent + link.</strong> The send-ready copy stays clean; the citation lives in the note.</li>
+</ul>
+<hr>
+<p><strong>END — Adwield Cold Email Sequences v1.</strong> Four 4-email cold sequences (2 per track) plus a 3-email reactivation, each template structure-matched to a proven real parent in <code>real-scripts-library.md</code> and cited in its note layer: Email 1 = Fazio / Prospeo / Abraham / Lavender by sequence; Email 2 = Fazio's proof-offer turned proof-delivery; Email 3 = the Lavender Mouse Trap; Email 4 = Nelson's Agoge breakup; Reactivation = Braun's shame-free ghost re-engage. Permission-first by default: Email 1 asks, Email 2 delivers the sample and carries the heaviest new info, with an embedded-link A/B kept per sequence. The one upgrade is explicit and held everywhere: <strong>artifact-first</strong> — where the real operators open with a claim, we open with the finished made-for-them ad. 3 to 5 touches over ~20 days, first touch under 80 words, one soft CTA per email. The <code>{{hook}}</code> is human-written, always. Proof-only: zero fabricated metrics, WEAKER-flagged stats never claimed as ours, <code>[CASE STUDY PLACEHOLDER]</code> intact, founding-slot count gated to the true number. Front-end rule held: Knight and Forge only.<br>
+&lt;/content&gt;<br>
+&lt;/invoke&gt;</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

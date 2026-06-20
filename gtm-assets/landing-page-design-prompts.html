@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LANDING-PAGE DESIGN PROMPTS — paste-ready briefs for Claude (Artifacts)</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">LANDING-PAGE DESIGN PROMPTS — paste-ready briefs for Claude (Artifacts)</span>
+    <a class="back" href="../mission-control/index.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>LANDING-PAGE DESIGN PROMPTS — paste-ready briefs for Claude (Artifacts)</h1>
+<blockquote><p><strong>What this file is.</strong> Two complete, copy-whole prompts you paste into Claude's artifact/design feature to generate a redesigned, <strong>single self-contained HTML file</strong> landing page — one for <strong>ADWIELD</strong>, one for <strong>TIDEOVER</strong>.</p>
+<p><strong>How to use.</strong> Copy everything between the <code>=== ... DESIGN PROMPT ===</code> line and the next <code>=== END ... ===</code> line. Paste it into a fresh Claude chat. That's the whole instruction — it's written so Claude needs nothing else.</p>
+<p><strong>The one rule both prompts enforce, hard:</strong> PROOF-ONLY. Claude must never invent a metric, case study, testimonial, review, star rating, or client logo. Every number is a <em>target to measure</em>. Where proof would go, it uses the free offer + the guarantee + "founding/early" framing + literal <code>[CASE STUDY PLACEHOLDER]</code>s. Merge fields like <code>{{first_strike_form}}</code> stay as literal placeholders.</p>
+<p><strong>The design brief in both:</strong> lead with ONE clear value prop, cut clutter, value lands in ~5 seconds. Simplicity is the explicit goal — fewer sections, less copy per section, one decision per screen.</p></blockquote>
+<hr>
+<p>=== ADWIELD DESIGN PROMPT ===</p>
+<p>You are designing a premium, conversion-optimized landing page. Output <strong>one single self-contained HTML file</strong> — all CSS in a <code>&lt;style&gt;</code> block in the <code>&lt;head&gt;</code>, no external assets, no frameworks, no CDN links, no external fonts (system font stack only). Any JS must be tiny and progressive-enhancement only; the page must be fully functional and readable with JS disabled. The page must be fully responsive (mobile-first, looking great from 360px to 1440px+) and accessible (semantic HTML, proper heading order, focus-visible states, alt/aria where needed, prefers-reduced-motion respected).</p>
+<h2>THE BRAND</h2>
+<p><strong>Adwield</strong> (always one word, capital A — never "Ad Wield," "AdWield," or all-caps in body). Domain: adwield.com. It's an <strong>AI-native ad-creative engine</strong> for $20–100K/mo functional-consumables brands (mushroom coffee, adaptogen gummies, functional beverages, greens, nootropics).</p>
+<p><strong>One-line positioning (the whole brand in six words):</strong> <em>You don't hire an agency. You equip a weapon.</em></p>
+<p><strong>Hero line (lead with this, verbatim or near-verbatim):</strong> "Equip us as your secret weapon — raise your hit rate, land more critical strikes in the ad auction."</p>
+<p><strong>Tagline (use once, under the hero or in the footer, not stacked):</strong> "More hits. More crits. Every two weeks."</p>
+<h2>THE AESTHETIC / VIBE — read this carefully, it's the hardest part</h2>
+<p>Premium, modern, restrained SaaS surface — think <strong>Linear / Vercel / Raycast</strong>: clean geometric/grotesk type, generous whitespace, a sharp grid, dark-mode-native. Onto that surface, layer a <strong>tasteful RPG-HUD / crest</strong> wink — "linear-meets-loadout." The game flavor lives in the <em>vocabulary and a few precise details</em>, NOT in the skin.</p>
+<ul>
+<li><strong>A crest/sigil mark</strong> (geometric, monoline, modern — reads as a premium guild mark, with the "A" able to anchor it). Use it in nav + footer.</li>
+<li><strong>A HUD-style stat readout</strong> for the four brand terms (clean labels, monospace numerals, thin rules, one small glowing dot accent).</li>
+<li><strong>A "loadout" card-grid</strong> motif for the 4×24 (a tidy slotted grid reads instantly as "a loadout").</li>
+<li><strong>Palette:</strong> near-black / deep charcoal base (around <code>#0B0D12</code>) + off-white text. <strong>Exactly two accents, max:</strong> one "equip" color — a forged steel-blue / electric cyan (~<code>#5EC8E6</code>), used sparingly for CTAs and the crest; and one "crit" color — a molten amber / forge-orange (~<code>#F4A23B</code>), used RARELY, only to signify a crit or the free First Strike. Scarcity of the amber is what keeps it premium.</li>
+<li><strong>Type:</strong> one confident sans for headlines, one clean sans for body, monospace only for HUD/labels/numerals. No decorative or fantasy fonts, ever.</li>
+</ul>
+<p><strong>HARD "DO NOT" list (this is a $20–100K/mo buyer — it must look like a weapon a serious operator equips, not a costume):</strong> no WoW clipart, no dragons, no swords-as-clipart, no glowing runes, no pixel-art, no parchment/leather/metal-bevel textures, no lens-flare "EPIC" energy, no emoji, no exclamation-mark hype, no rainbow gradients, no more than two accent colors, no hype-sticker badges. The test for every visual and every line: <em>would a sharp, skeptical, burned-once founder nod, or wince?</em> If a game element makes him wince, cut it. The swagger has to feel <strong>earned</strong> — and only the free offer + the guarantee earn it.</p>
+<h2>VOICE</h2>
+<p>Premium-with-a-wink, gamer-adjacent, <strong>never cheesy</strong>. Plain declarative sentences. Specificity is the brand: use the real numbers — <code>4 angles</code>, <code>24 variations</code>, <code>every 2 weeks</code>, <code>~7-week fatigue</code>, <code>$20–100K/mo</code>, <code>$497</code>, <code>capped at 5 brands</code>. Make the winner the hero and volume the method (never lead with volume, never lead with price, never lead with the word "AI"). No banned hype words (revolutionary, game-changing, cutting-edge, synergy, 10x-as-filler, effortless). Confidence comes from specificity, not slogans.</p>
+<h2>SIMPLIFIED VALUE HIERARCHY — the most important instruction</h2>
+<p>The founder wants MORE SIMPLICITY than a typical SaaS page. <strong>Lead with ONE clear value prop. The visitor must "get it" in about 5 seconds.</strong> Cut clutter ruthlessly.</p>
+<ul>
+<li>The hero does ONE job: state the weapon frame + the single promise, with ONE primary CTA dominant. Keep the hero sub-copy to ~2 short sentences.</li>
+<li>Below the hero, a compact HUD stat-readout of the four terms (Hit rate / Critical strike / Loadout / The Fatigue Wall) — short definitions only, this IS the explainer, so the rest of the page can stay lean.</li>
+<li>Each section after that makes ONE point and gets out. Short paragraphs. No section should require scrolling-while-reading to grasp.</li>
+<li>One decision per screen. Don't make the visitor weigh five things at once.</li>
+</ul>
+<h2>THE FOUR BRAND TERMS (use consistently — these are the AIM/MECHANIC, never a claimed result)</h2>
+<ul>
+<li><strong>Hit rate</strong> — how often a shipped creative actually wins (beats the control). The aim we swing for.</li>
+<li><strong>Critical strike / crit</strong> — a breakout winner that <em>scales</em>. The aim, never "we land 3 crits a month."</li>
+<li><strong>Loadout</strong> — your 4 angles × 24 variations per 2-week cycle (the 4×24 Framework), launched + tagged in your own account.</li>
+<li><strong>The Fatigue Wall</strong> — creative fatigue at ~7 weeks; the weapon keeps a fresh winner equipped before the last one breaks against it.</li>
+</ul>
+<h2>PAGE SECTION ORDER (build exactly this, top to bottom)</h2>
+<ol>
+<li><strong>Sticky nav</strong> — crest + "adwield" wordmark, a few anchor links, one primary CTA button ("Claim First Strike").</li>
+<li><strong>Hero</strong> — eyebrow ("The AI-native ad-creative engine · functional consumables"), the hero line as H1, the tagline once, ~2 sentences of sub-copy, the dominant primary CTA + one quiet secondary link, a one-line no-risk note ("No card. No pitch deck. One battle-ready ad of your product, before you spend a coin."). Then the <strong>HUD stat-readout</strong> of the four terms.</li>
+<li><strong>The Fatigue Wall</strong> — the problem section. One tight argument: every winning ad dies on a clock (~week 7); a two-person team can't produce fresh creative fast enough; you're short on hands, not ideas. A simple, restrained decay-curve illustration (inline SVG, not clipart) is welcome.</li>
+<li><strong>The Loadout (the 4×24 mechanism)</strong> — one section: 4 hypothesis angles → 24 production-grade variations → launched, read at 2 weeks, reloaded. Show it with a clean loadout card-grid (4 angle cards, slotted variation grid, an occasional amber "crit" slot). One honest note: the edge is operator judgment + economics + production hands, not the name; claims are FTC/Meta-screened.</li>
+<li><strong>First Strike (Free)</strong> — the trust spine. One free, made-for-them ad of THEIR product, pulled from their real site + reviews, before they pay anything. Short "how it works" steps. Amber-accented (this is a crit moment). Primary CTA: "Claim your First Strike."</li>
+<li><strong>Choose Your Path</strong> — the DFY-vs-DWY selector, TWO cards only:
+<ul>
+<li><strong>Path A — Hire a Maxed-Out Knight (Done-For-You):</strong> "We wield it for you." A max-level operator runs the full loadout in your account; you greenlight angles and watch the crits land. CTA: <strong>"Hire your Knight."</strong> Tag: retainer quoted live, capped at 5 brands.</li>
+<li><strong>Path B — Build a Forge in Your Domain (Done-With-You):</strong> "We install the Adwield Forge inside your domain — your tools, your account, your crew — and train your team to wield it; the weapon stays yours." Lean on the domain double-meaning (your kingdom AND your website/ad-stack). CTA: <strong>"Build your Forge — by application"</strong> (founding cohort / opening after the first documented wins).</li>
+</ul></li>
+<li><strong>The No-Risk Loadout (guarantee)</strong> — headline: "Beat your control or the next cycle's free." Then the FULL locked guarantee language, verbatim, in a quoted block: <em>"Within 30 days, our creative beats your current best ad on hook-rate / hold-rate (3-second + thumbstop) AND your CPA holds flat or better — measured against your own control, in your own account, with the head-to-head data on the table. If it doesn't, your next 24-variation cycle is free. Month-to-month, cancel anytime, and you keep every video either way."</em> Three short supporting points (metric we control / CPA holds / you keep every video).</li>
+<li><strong>Honest proof</strong> — frame newness as the <em>reason</em> the free First Strike + guarantee exist. The First Strike is the proof; judgment shown via teardowns; ONE real hold-rate number off the founder's own small test, honestly labeled. Then a literal <strong><code>[CASE STUDY PLACEHOLDER]</code></strong> block where founding-partner deltas will go (control vs. winner on hook-rate, hold-rate, CPA-flat, baseline-first). State founding slots are limited and real.</li>
+<li><strong>FAQ</strong> — 6–7 sharp-operator questions (Isn't this AI slop? / Why trust a newer shop? / How do you make 24 ads off 4 approvals? / How much of my time? / What does it cost? / What if I already run 90 creatives a week? / Do I own the work + which vertical?).</li>
+<li><strong>Final CTA</strong> — restate the single offer: watch one battle-ready ad of your product, free, before you spend a coin. Primary CTA "Claim your First Strike" + quiet "Book a call instead." Tagline once.</li>
+<li><strong>Footer</strong> — crest, tagline, link columns, and a legal/honesty line: hit rate and crits describe the aim and mechanism, not a guaranteed or past result; every figure is a target to measure; no prior paid-ads track record claimed; the guarantee terms in the guarantee section govern; functional-consumables only; produced-creative claims are substantiation-gated and FTC/Meta-screened.</li>
+</ol>
+<h2>THE EXACT CTAs (use these words)</h2>
+<ul>
+<li>Primary, free: <strong>"Claim your First Strike"</strong> (free — no card, no pitch).</li>
+<li>The selector: <strong>"Choose Your Path"</strong> → <strong>Knight (DFY)</strong> and <strong>Forge (DWY)</strong>, with button labels <strong>"Hire your Knight"</strong> and <strong>"Build your Forge."</strong></li>
+<li>Quiet secondary where appropriate: "Book a call instead."</li>
+</ul>
+<h2>ABSOLUTE PROHIBITION — DO NOT include any self-serve / endgame tier</h2>
+<p><strong>Do NOT</strong> add, mention, tease, or design any third path, self-serve software tier, "Open Your Own Forge," "Open the Forge," "Adwield Forge software," waitlist for self-serve, or any "endgame" tier. The page presents EXACTLY TWO paths: Knight (DFY) and Forge (DWY). There is no third option anywhere on the page — not in the path section, not in any tier ladder, not in the footer, not in the nav. If you feel an urge to add an "and there's also a self-serve version coming" line, do not.</p>
+<h2>PROOF-ONLY — HARD RULE (governs everything)</h2>
+<p><strong>Never fabricate metrics, case studies, testimonials, reviews, star ratings, or client logos.</strong> No logo wall, no "as seen in," no invented star ratings, no fake quotes. Every metric (hit rate, crits, hold-rate, CPA) is a <strong>target to measure</strong>, never a claimed number. Keep all merge fields literal: <code>{{first_strike_form}}</code>, <code>{{book_call}}</code>, <code>{{contact_email}}</code>. Keep <code>[CASE STUDY PLACEHOLDER]</code> literal where proof would normally sit. The home-gym / past-business background may appear at most once, lightly, as character — never as ad-proof, never as an online/DTC/paid-ads track record. In this niche, the clean empty proof inventory is itself a trust signal — leave it honest.</p>
+<p>Now generate the complete single-file HTML landing page.</p>
+<p>=== END ADWIELD DESIGN PROMPT ===</p>
+<hr>
+<p>=== TIDEOVER DESIGN PROMPT ===</p>
+<p>You are designing a warm, trustworthy, conversion-optimized landing page. Output <strong>one single self-contained HTML file</strong> — all CSS in a <code>&lt;style&gt;</code> block in the <code>&lt;head&gt;</code>, no external assets, no frameworks, no CDN links, no external fonts (system font stack only; a system serif for headings is welcome). Any JS must be tiny and progressive-enhancement only; the page must be fully functional with JS disabled. The page must be fully responsive (mobile-first, beautiful from 360px to 1440px+) and accessible (semantic HTML, correct heading order, focus-visible states, alt/aria where needed, prefers-reduced-motion respected).</p>
+<h2>THE BRAND</h2>
+<p><strong>Tideover</strong> (tideover.app) — from "to tide someone over": to sustain a person through a hard in-between stretch until things get better. It's a <strong>presale-specialist customer-support layer for the long wait</strong>. Presale/preorder brands collect cash today and ship in 60–120 days; that gap is an emotional liability where anxious buyers turn into refund requests and chargebacks. Tideover keeps those buyers calm and aboard until their order ships.</p>
+<p><strong>One-line positioning:</strong> <em>The support layer that tides your customers over until their order ships.</em></p>
+<p><strong>Hero headline (lead with this):</strong> "Keep your presale buyers calm — and aboard — through the long wait."</p>
+<p><strong>Subhead:</strong> Tideover plugs into the Gorgias, Tidio, or Intercom you already use, knows each order's real production timeline, and answers the long wait with calm, human, timeline-aware reassurance — so "where's my order?" doesn't become a refund.</p>
+<h2>THE AESTHETIC / VIBE</h2>
+<p><strong>Warm, calm, human, trustworthy, soft, reassuring.</strong> This is a trust + empathy brand — the visual opposite of a cold helpdesk. It should feel like a steady, reassuring person, not a SaaS dashboard.</p>
+<ul>
+<li><strong>Palette:</strong> warm paper/sand background (off-white cream, ~<code>#FBF8F2</code>), deep calm teal/sea as the primary (~<code>#1F5B6B</code>), a pale tide tint, soft sand, and a warm terracotta accent (~<code>#C97A4A</code>) used sparingly. Soft, low-contrast shadows; generous rounded corners; nothing harsh, neon, or high-contrast.</li>
+<li><strong>Type:</strong> a warm system serif for headlines (calm, human, settled), a clean sans for body. Comfortable line-height, never cramped.</li>
+<li><strong>Texture/feel:</strong> soft radial "tide / horizon" gradient washes in the hero, gentle rounded cards, pill-shaped buttons. Calm and unhurried. No hard edges, no aggressive motion.</li>
+<li><strong>A small wave/tide crest mark</strong> for nav + footer (simple, soft, friendly — concentric waves, not a logo-contest mark).</li>
+</ul>
+<p><strong>DO NOT:</strong> no MMO/gaming/gamified theme, no winking-at-the-reader cleverness, no hype, no exclamation-point energy, no "🚀 revolutionary," no growth-hack tone, no cold/clinical/corporate buzzword voice, no emoji. This brand never winks. Every element either builds calm or it doesn't ship.</p>
+<h2>VOICE</h2>
+<p>Five pillars: <strong>Warm. Calm. Reassuring. Human. Steady.</strong> Write like a real person who genuinely cares the customer isn't left in the dark — contractions, plain words, short settled sentences. Acknowledge the feeling before the fact. Use honest confidence bands ("currently tracking for [month]," "ETA band X–Y"), never invented exact ship dates. Speak to the merchant peer-to-peer, as a fellow operator who's "been in your inbox." No jargon, no "leverage/synergy/cutting-edge." Quietly confident — let the calm carry the authority.</p>
+<h2>SIMPLIFIED VALUE HIERARCHY — the most important instruction</h2>
+<p>The founder wants MORE SIMPLICITY than a typical SaaS page. <strong>Lead with ONE clear value prop. The visitor must "get it" in about 5 seconds:</strong> <em>Your presale buyers wait 60–120 days and bail; Tideover keeps them calm and aboard, plugging into the helpdesk you already have.</em> Cut clutter ruthlessly.</p>
+<ul>
+<li>The hero does ONE job: name the pain (paid but waiting) + the relief (calm, aboard) + the single low-friction CTA. Keep hero copy tight — headline, ~2-sentence subhead, one note. A small, calm "reassurance reply" example card beside the copy is welcome (it shows the product in one glance — but keep its text short).</li>
+<li>Frame value on <strong>revenue protection</strong> (keeping the sale, no refund, no chargeback, preserved brand trust), NOT on "cheaper tickets / save money." Refunds and chargebacks threaten the merchant's Stripe/PayPal standing — that's the pain worth paying to remove.</li>
+<li>Each section makes ONE point and gets out. One decision per screen.</li>
+</ul>
+<h2>THE BOLT-ON ANGLE — make this PROMINENT (it's a top objection-killer)</h2>
+<p>Surface this clearly and more than once, including high in the hero and in the final CTA: <strong>No new helpdesk to install. Nothing to rip out. No second inbox. We bolt onto the Gorgias, Tidio, or Intercom you already run — no infra change.</strong> Tideover is a specialist <em>layer</em> on top of the merchant's existing stack; it doesn't replace it. It routes/handles presale tickets specifically — the long-wait reassurance — while everything else stays exactly as it is. Use a simple "plugs-into-your-stack" diagram (order data + timeline + backer list → Tideover → your Gorgias/Tidio/Intercom). This zero-integration-risk, bolt-on, routes-only-presale framing is a load-bearing selling point — give it visual weight.</p>
+<h2>PAGE SECTION ORDER (build exactly this, top to bottom)</h2>
+<ol>
+<li><strong>Sticky nav</strong> — soft wave crest + "Tideover" wordmark, a few anchor links, one primary CTA ("Free teardown").</li>
+<li><strong>Hero</strong> — two-column on desktop: left = a couple of trust pills ("For 60–120 day presale waits," "Built for Kickstarter &amp; BackerKit graduates"), the H1, the subhead, the primary CTA + a quiet "See how it works," and a prominent bolt-on note ("No new helpdesk to install. Nothing to rip out. We work inside the tools you already have."). Right = a calm reassurance-reply example card (an anxious "where's my order?" message at day ~60, and Tideover's warm, timeline-aware reply with an honest ETA band, footnoted "timeline-aware · human-approved · no hard date promised"). Keep the card's copy short.</li>
+<li><strong>The long wait</strong> — the problem, as a months-long emotional journey, not a one-off ticket. A simple 4-step timeline (Day 7 excited → Day 30 first doubt → Day 60 anxious → Day 89 ready to bail / chargeback). Then 3 compact "stakes" cards: chargebacks threaten your Stripe/PayPal standing; WISMO floods your inbox; "scam" reviews stick. Anchor on revenue/standing, not cost.</li>
+<li><strong>The presale-specialist layer (how it works)</strong> — the bolt-on mechanism. 4 short points: plugs into your existing stack (no migration); knows each order's real production timeline; timeline-aware, emotionally-intelligent day-stage replies; every novel reply is human-approved (never an auto-fired promise). Include the plugs-into-your-stack diagram here. Then a compact comparison table: Generic helpdesk (Gorgias/Tidio/Intercom) vs. Tideover across — knows it's a preorder / knows the real timeline / handles the 60–120 day journey / tone / replaces-vs-plugs-in.</li>
+<li><strong>The founding-partner pilot (the offer)</strong> — a calm, darker "sea" section. Headline: "We'll run your presale support by hand for one cycle. Free." Concierge-first: the founder + drafting system run presale support manually inside the partner's own helpdesk, capturing the day-by-day reassurance language, measured against a clean baseline. A free offer card listing what's included (works inside your helpdesk — nothing to migrate; timeline-aware human-approved replies in two fixed daily windows; a day-by-day reassurance playbook; leading-indicator measurement vs. your baseline; logged "saves"; founder-led). A simple value-ladder line (Free pilot → $199–$499/mo on proof → $799–$999+/mo as it scales; performance fee deferred until a real case study exists). An <strong>honest guarantee</strong> block (leading indicators — faster first response, fewer WISMO tickets, logged saves — measured against your own baseline; if the pilot doesn't move them, you don't pay; the full refund-reduction picture takes a complete 60–120 day cycle and is reported after the first cohort completes, said up front). CTA: "Apply for a founding-partner pilot."</li>
+<li><strong>Honest fit</strong> — two columns: "A strong fit if…" (Kickstarter/Indiegogo/BackerKit graduate onto Shopify; hardware/design/made-to-order with 60–120 day waits; juggling backers + late-pledges + new preorders; inbox floods with WISMO; would rather keep the sale than fight a chargeback) and "Probably not yet if…" (ship in-stock in days; want a full helpdesk replacement; regulated/supplement timeline-liability goods; only a handful of orders; want a bot that auto-fires promises).</li>
+<li><strong>The operator behind it</strong> — the war story (peer-to-peer credibility). The founder ran a real ~$2M/yr physical-goods company — warehouse, in-house shipping, fulfillment, and the "where's my order?" comms during long waits — and lived this exact problem from the merchant side. A plain-spoken proof pledge: no invented metric, fake testimonial, borrowed logo, or unearned star rating; every number is a target measured against the partner's own baseline; the full refund-reduction case study lands after a real cohort completes — with a literal <strong><code>[CASE STUDY PLACEHOLDER — refund-reduction delta, post first completed cohort]</code></strong>.</li>
+<li><strong>FAQ</strong> — 7 plainly-answered questions (Do I switch helpdesks or install anything? / How is this different from the bot in my helpdesk? / Will you make promises you can't keep? / What does the free pilot involve? / What can you prove and what can't you yet? / What does it cost after the pilot? / I'm a crowdfunding creator juggling backers + preorders — does that fit?).</li>
+<li><strong>Final CTA</strong> — calm "sea" section: "The tide always comes in. Their order is coming." Restate the free 15-min presale-support teardown (a real operator looking at your real support, no pitch). Reassurance row repeating: no new helpdesk to install · free founding-partner pilot · talk to the operator, not a queue.</li>
+<li><strong>Footer</strong> — wave crest, the one-liner, tideover.app, a teardown button, and an honesty line: every figure on this page is a target to measure, never a claimed result.</li>
+</ol>
+<h2>THE EXACT CTAs (use these words)</h2>
+<ul>
+<li>Primary, front-door: <strong>"Get a free 15-min presale-support teardown"</strong> (a helpful operator looking at <em>your</em> presale support — not a demo-pitch).</li>
+<li>The pilot offer: <strong>"Apply for a founding-partner pilot"</strong> — we run your presale support by hand for one cycle, free.</li>
+<li>Keep the bolt-on / no-infra-change / routes-only-presale framing visible near the CTAs.</li>
+</ul>
+<h2>PROOF-ONLY — HARD RULE (governs everything)</h2>
+<p><strong>Never fabricate metrics, case studies, testimonials, reviews, star ratings, or client logos.</strong> No "trusted by thousands," no logo wall, no invented refund-reduction percentage, no fake quotes. Where proof would sit, use: the free founding-partner pilot, the leading-indicator guarantee, "founding/early partner" framing, or a literal <code>[CASE STUDY PLACEHOLDER]</code>. The verbatim merchant-pain quote about pre-orders may be used ONLY as a cited community quote, never as a Tideover result. Reserve the "$2M" figure for the war story as character, not a number-led flex. Never make hard delivery promises or guarantee exact dates anywhere — confidence bands only; a false promise is the most damaging thing the brand can say. Keep all merge fields literal: <code>{{book_call}}</code>, <code>{{first_strike_form}}</code>. Every metric is a <strong>target to measure</strong> against the partner's own clean baseline.</p>
+<p>Now generate the complete single-file HTML landing page.</p>
+<p>=== END TIDEOVER DESIGN PROMPT ===</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

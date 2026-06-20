@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tideover — Keep your presale buyers calm and aboard through the long wait</title>
+<meta name="description" content="Tideover is the presale-specialist support layer that bolts onto your Gorgias, Tidio, or Intercom — taking only your presale tickets, so nothing else changes — knows each order's real production timeline, and turns the anxious 60–120 day wait into calm, human reassurance, so buyers stay aboard instead of demanding refunds.">
+<style>
+  :root{
+    /* Warm, calm, premium palette — sand, deep sea, soft tide */
+    --ink:#1f2a33;
+    --ink-soft:#3c4a55;
+    --muted:#5d6b76;
+    --faint:#8593a0;
+    --line:#e3ddd2;
+    --line-soft:#efeae0;
+    --paper:#fbf8f2;
+    --paper-2:#f5f0e6;
+    --card:#ffffff;
+    --sea:#1f5b6b;        /* deep calm teal */
+    --sea-deep:#15454f;
+    --sea-soft:#3d7e8d;
+    --tide:#cfe3e3;        /* pale tide */
+    --sand:#e8dcc4;
+    --accent:#c97a4a;      /* warm terracotta, used sparingly */
+    --accent-soft:#e9cdb6;
+    --ok:#2f7d5c;
+    --shadow:0 1px 2px rgba(31,42,51,.04), 0 8px 28px rgba(31,42,51,.06);
+    --shadow-lg:0 2px 6px rgba(31,42,51,.06), 0 18px 50px rgba(21,69,79,.10);
+    --radius:16px;
+    --radius-sm:11px;
+    --maxw:1080px;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Times New Roman", serif;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:var(--font);
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.62;
+    font-size:18px;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
+  h1,h2,h3{line-height:1.18; color:var(--ink); margin:0 0 .5em; letter-spacing:-.012em;}
+  h1{font-family:var(--serif); font-weight:600; font-size:clamp(2.05rem,4.4vw,3.35rem); letter-spacing:-.02em;}
+  h2{font-family:var(--serif); font-weight:600; font-size:clamp(1.6rem,3vw,2.3rem);}
+  h3{font-weight:650; font-size:1.18rem;}
+  p{margin:0 0 1em;}
+  a{color:var(--sea); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  strong{color:var(--ink); font-weight:650;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  section{padding:84px 0;}
+  .eyebrow{
+    display:inline-block; font-size:.78rem; font-weight:700; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--sea-soft); margin-bottom:14px;
+  }
+  .lede{font-size:1.18rem; color:var(--ink-soft); max-width:64ch;}
+  .center{text-align:center;}
+  .center .lede{margin-left:auto; margin-right:auto;}
+
+  /* ---------- Buttons ---------- */
+  .btn{
+    display:inline-flex; align-items:center; gap:10px; cursor:pointer;
+    font-family:var(--font); font-size:1.02rem; font-weight:650; line-height:1;
+    padding:15px 26px; border-radius:999px; border:1px solid transparent;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease, color .15s ease;
+    text-decoration:none;
+  }
+  .btn:hover{text-decoration:none; transform:translateY(-1px);}
+  .btn-primary{
+    background:var(--sea); color:#fff;
+    box-shadow:0 1px 2px rgba(21,69,79,.25), 0 10px 24px rgba(21,69,79,.22);
+  }
+  .btn-primary:hover{background:var(--sea-deep); box-shadow:0 2px 6px rgba(21,69,79,.3), 0 16px 34px rgba(21,69,79,.26);}
+  .btn-ghost{background:transparent; color:var(--sea); border-color:var(--line);}
+  .btn-ghost:hover{border-color:var(--sea-soft); background:#fff;}
+  .btn-light{background:#fff; color:var(--sea-deep); box-shadow:var(--shadow);}
+  .btn-light:hover{background:var(--paper-2);}
+  .btn-sm{padding:11px 18px; font-size:.92rem;}
+  .btn svg{flex:0 0 auto;}
+
+  /* ---------- Nav ---------- */
+  .nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(251,248,242,.86);
+    backdrop-filter:saturate(140%) blur(10px);
+    -webkit-backdrop-filter:saturate(140%) blur(10px);
+    border-bottom:1px solid var(--line-soft);
+  }
+  .nav-inner{display:flex; align-items:center; justify-content:space-between; height:68px;}
+  .wordmark{display:flex; align-items:center; gap:11px; font-family:var(--serif); font-weight:600; font-size:1.32rem; color:var(--ink); letter-spacing:-.01em;}
+  .wordmark:hover{text-decoration:none;}
+  .wordmark .crest{flex:0 0 auto;}
+  .nav-links{display:flex; align-items:center; gap:30px;}
+  .nav-links a.navlink{color:var(--ink-soft); font-size:.96rem; font-weight:550;}
+  .nav-links a.navlink:hover{color:var(--sea); text-decoration:none;}
+  @media (max-width:860px){ .nav-links .navlink{display:none;} }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative; overflow:hidden;
+    background:
+      radial-gradient(1100px 520px at 78% -8%, rgba(207,227,227,.55), transparent 60%),
+      radial-gradient(800px 460px at 8% 8%, rgba(232,220,196,.45), transparent 62%),
+      linear-gradient(180deg, var(--paper) 0%, var(--paper) 60%, var(--paper-2) 100%);
+    padding-top:74px; padding-bottom:30px;
+  }
+  .hero-grid{display:grid; grid-template-columns:1.15fr .85fr; gap:56px; align-items:center;}
+  @media (max-width:900px){ .hero-grid{grid-template-columns:1fr; gap:34px;} }
+  .hero h1 .accent{color:var(--sea-deep);}
+  .hero .sub{font-size:1.22rem; color:var(--ink-soft); max-width:54ch; margin-top:6px;}
+  .hero-cta{display:flex; flex-wrap:wrap; gap:14px; margin-top:30px; align-items:center;}
+  .hero-note{margin-top:18px; font-size:.92rem; color:var(--muted); display:flex; align-items:center; gap:8px;}
+  .hero-note svg{flex:0 0 auto; color:var(--sea-soft);}
+  .pill-row{display:flex; flex-wrap:wrap; gap:9px; margin-bottom:24px;}
+  .pill{
+    display:inline-flex; align-items:center; gap:7px; font-size:.82rem; font-weight:600;
+    color:var(--sea-deep); background:rgba(255,255,255,.7); border:1px solid var(--line);
+    padding:7px 13px; border-radius:999px;
+  }
+  .pill svg{color:var(--sea-soft);}
+
+  /* Hero art — a calm "tide / horizon" card */
+  .hero-art{
+    background:var(--card); border:1px solid var(--line); border-radius:22px;
+    box-shadow:var(--shadow-lg); padding:22px; position:relative;
+  }
+  .art-head{display:flex; align-items:center; justify-content:space-between; padding:2px 4px 14px; border-bottom:1px solid var(--line-soft); margin-bottom:14px;}
+  .art-head .who{display:flex; align-items:center; gap:10px;}
+  .avatar{width:34px; height:34px; border-radius:50%; background:linear-gradient(135deg,var(--sea-soft),var(--sea)); display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:.86rem; flex:0 0 auto;}
+  .art-head .meta{font-size:.82rem; color:var(--muted); line-height:1.3;}
+  .art-head .meta b{display:block; color:var(--ink); font-weight:650; font-size:.92rem;}
+  .stage-tag{font-size:.72rem; font-weight:700; letter-spacing:.04em; color:var(--sea-deep); background:var(--tide); padding:5px 10px; border-radius:999px;}
+  .bubble{font-size:.96rem; line-height:1.5; padding:13px 15px; border-radius:14px; margin-bottom:11px; max-width:92%;}
+  .bubble.them{background:var(--paper-2); color:var(--ink-soft); border:1px solid var(--line-soft);}
+  .bubble.us{background:var(--sea); color:#eef6f6; margin-left:auto; border-bottom-right-radius:5px;}
+  .bubble.us .eta{display:inline-block; margin-top:6px; font-size:.8rem; color:#cfe3e3; font-weight:600;}
+  .art-foot{display:flex; align-items:center; gap:8px; font-size:.78rem; color:var(--faint); padding-top:6px;}
+  .art-foot .dot{width:7px; height:7px; border-radius:50%; background:var(--ok);}
+
+  /* ---------- Generic section helpers ---------- */
+  .section-head{max-width:60ch;}
+  .section-head.center{margin-left:auto; margin-right:auto;}
+  .alt{background:var(--paper-2);}
+  .ink-section{background:var(--sea-deep); color:#e7eeee;}
+  .ink-section h2,.ink-section h3{color:#fff;}
+  .ink-section .eyebrow{color:var(--tide);}
+  .ink-section .lede{color:#cdddde;}
+  .ink-section p{color:#c4d6d7;}
+
+  /* ---------- The long wait — timeline ---------- */
+  .timeline{display:grid; grid-template-columns:repeat(4,1fr); gap:18px; margin-top:42px;}
+  @media (max-width:880px){ .timeline{grid-template-columns:1fr 1fr;} }
+  @media (max-width:520px){ .timeline{grid-template-columns:1fr;} }
+  .tcard{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 20px; box-shadow:var(--shadow); position:relative;
+  }
+  .tcard .day{font-family:var(--serif); font-size:1.5rem; color:var(--sea-deep); font-weight:600; letter-spacing:-.01em;}
+  .tcard .mood{font-size:.78rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--accent); margin:8px 0 10px;}
+  .tcard p{font-size:.96rem; color:var(--muted); margin:0;}
+  .tcard .quote{font-style:italic; color:var(--ink-soft); border-left:2px solid var(--accent-soft); padding-left:12px; margin-top:12px; font-size:.92rem;}
+  .stakes{margin-top:40px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+  @media (max-width:760px){ .stakes{grid-template-columns:1fr;} }
+  .stake{display:flex; gap:13px; align-items:flex-start; background:var(--card); border:1px solid var(--line); border-radius:var(--radius-sm); padding:18px;}
+  .stake svg{flex:0 0 auto; color:var(--accent); margin-top:2px;}
+  .stake h3{font-size:1.02rem; margin:0 0 3px;}
+  .stake p{font-size:.92rem; color:var(--muted); margin:0;}
+
+  /* ---------- Mechanism ---------- */
+  .mech-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:48px; align-items:center; margin-top:18px;}
+  @media (max-width:900px){ .mech-grid{grid-template-columns:1fr; gap:34px;} }
+  .mech-list{list-style:none; margin:24px 0 0; padding:0;}
+  .mech-list li{display:flex; gap:15px; padding:16px 0; border-bottom:1px solid var(--line-soft);}
+  .mech-list li:last-child{border-bottom:0;}
+  .mech-ic{flex:0 0 auto; width:42px; height:42px; border-radius:12px; background:var(--tide); display:flex; align-items:center; justify-content:center; color:var(--sea-deep);}
+  .mech-list h3{margin:0 0 3px; font-size:1.06rem;}
+  .mech-list p{margin:0; color:var(--muted); font-size:.96rem;}
+
+  /* plug-in diagram */
+  .plug{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    box-shadow:var(--shadow-lg); padding:26px;
+  }
+  .plug-row{display:flex; align-items:center; gap:14px; flex-wrap:wrap; justify-content:center;}
+  .plug-stack{display:flex; gap:9px; flex-wrap:wrap; justify-content:center;}
+  .chip{font-size:.86rem; font-weight:650; color:var(--ink-soft); background:var(--paper-2); border:1px solid var(--line); border-radius:10px; padding:9px 13px;}
+  .plug-arrow{color:var(--sea-soft); display:flex; align-items:center; justify-content:center; padding:6px 0;}
+  .plug-core{
+    text-align:center; background:linear-gradient(160deg,var(--sea),var(--sea-deep)); color:#fff;
+    border-radius:14px; padding:18px; box-shadow:0 12px 30px rgba(21,69,79,.22);
+  }
+  .plug-core b{font-family:var(--serif); font-size:1.18rem; display:block; font-weight:600;}
+  .plug-core span{font-size:.86rem; color:#cfe3e3;}
+  .plug-cap{text-align:center; font-size:.84rem; color:var(--faint); margin-top:14px;}
+
+  /* comparison table */
+  .compare{margin-top:46px; background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow);}
+  .compare table{width:100%; border-collapse:collapse;}
+  .compare th,.compare td{text-align:left; padding:15px 18px; font-size:.95rem; border-bottom:1px solid var(--line-soft); vertical-align:top;}
+  .compare thead th{background:var(--paper-2); font-size:.82rem; letter-spacing:.03em; text-transform:uppercase; color:var(--muted); font-weight:700;}
+  .compare thead th.us{color:var(--sea-deep);}
+  .compare td.feat{font-weight:600; color:var(--ink); width:34%;}
+  .compare td.us{color:var(--sea-deep); font-weight:600;}
+  .compare tr:last-child td{border-bottom:0;}
+  .cmark{display:inline-flex; align-items:center; gap:7px;}
+  .cmark.no{color:var(--faint);}
+  @media (max-width:680px){ .compare th,.compare td{padding:12px 12px; font-size:.86rem;} }
+
+  /* ---------- Offer ---------- */
+  .offer-card{
+    background:var(--card); border:1px solid var(--line); border-radius:22px; box-shadow:var(--shadow-lg);
+    padding:40px; margin-top:30px; position:relative; overflow:hidden;
+  }
+  .offer-card::before{content:""; position:absolute; inset:0 0 auto 0; height:5px; background:linear-gradient(90deg,var(--sea),var(--sea-soft),var(--sand));}
+  .offer-top{display:flex; flex-wrap:wrap; align-items:baseline; gap:14px; margin-bottom:6px;}
+  .offer-price{font-family:var(--serif); font-size:2rem; font-weight:600; color:var(--sea-deep);}
+  .offer-price small{font-size:1rem; color:var(--muted); font-weight:400; font-family:var(--font);}
+  .badge{font-size:.74rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:#fff; background:var(--accent); padding:5px 11px; border-radius:999px;}
+  .offer-list{list-style:none; margin:24px 0; padding:0; display:grid; grid-template-columns:1fr 1fr; gap:13px 26px;}
+  @media (max-width:680px){ .offer-list{grid-template-columns:1fr;} }
+  .offer-list li{display:flex; gap:11px; align-items:flex-start; font-size:.98rem; color:var(--ink-soft);}
+  .offer-list svg{flex:0 0 auto; color:var(--ok); margin-top:3px;}
+  .ladder{margin-top:30px; display:flex; flex-wrap:wrap; align-items:center; gap:10px; font-size:.92rem; color:var(--muted);}
+  .rung{background:var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:7px 14px; font-weight:600; color:var(--ink-soft);}
+  .rung.free{background:var(--tide); border-color:var(--tide); color:var(--sea-deep);}
+  .ladder .arr{color:var(--faint);}
+  .guarantee{
+    margin-top:26px; display:flex; gap:14px; align-items:flex-start;
+    background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius-sm); padding:18px 20px;
+  }
+  .guarantee svg{flex:0 0 auto; color:var(--sea); margin-top:2px;}
+  .guarantee p{margin:0; font-size:.95rem; color:var(--ink-soft);}
+
+  /* ---------- Fit ---------- */
+  .fit-grid{display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:30px;}
+  @media (max-width:760px){ .fit-grid{grid-template-columns:1fr;} }
+  .fit{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:28px; box-shadow:var(--shadow);}
+  .fit h3{display:flex; align-items:center; gap:10px; margin-bottom:14px;}
+  .fit ul{list-style:none; margin:0; padding:0;}
+  .fit li{display:flex; gap:11px; align-items:flex-start; padding:9px 0; font-size:.97rem; color:var(--ink-soft); border-bottom:1px solid var(--line-soft);}
+  .fit li:last-child{border-bottom:0;}
+  .fit li svg{flex:0 0 auto; margin-top:3px;}
+  .fit.yes li svg{color:var(--ok);}
+  .fit.no{background:var(--paper-2);}
+  .fit.no li svg{color:var(--faint);}
+  .fit.no li{color:var(--muted);}
+
+  /* ---------- About ---------- */
+  .about-grid{display:grid; grid-template-columns:.8fr 1.2fr; gap:48px; align-items:start;}
+  @media (max-width:820px){ .about-grid{grid-template-columns:1fr; gap:28px;} }
+  .about-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:26px; box-shadow:var(--shadow); text-align:center;}
+  .about-card .seal{margin:0 auto 14px; width:88px; height:88px;}
+  .about-card .role{font-size:.84rem; letter-spacing:.06em; text-transform:uppercase; color:var(--sea-soft); font-weight:700;}
+  .about-card .name{font-family:var(--serif); font-size:1.4rem; color:var(--ink); margin:4px 0 2px;}
+  .about-card .tag{font-size:.92rem; color:var(--muted);}
+  .warstory{font-size:1.06rem; color:var(--ink-soft);}
+  .warstory blockquote{
+    margin:0 0 18px; font-family:var(--serif); font-size:1.3rem; line-height:1.45; color:var(--ink);
+    border-left:3px solid var(--sand); padding-left:20px;
+  }
+  .pledge{margin-top:20px; padding:18px 20px; background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius-sm); font-size:.95rem; color:var(--ink-soft);}
+  .pledge b{color:var(--sea-deep);}
+
+  /* ---------- FAQ ---------- */
+  .faq-list{margin-top:26px; border-top:1px solid var(--line);}
+  details{border-bottom:1px solid var(--line); padding:4px 0;}
+  details summary{
+    cursor:pointer; list-style:none; padding:20px 44px 20px 2px; position:relative;
+    font-weight:650; font-size:1.08rem; color:var(--ink);
+  }
+  details summary::-webkit-details-marker{display:none;}
+  details summary::after{
+    content:""; position:absolute; right:6px; top:26px; width:11px; height:11px;
+    border-right:2px solid var(--sea-soft); border-bottom:2px solid var(--sea-soft);
+    transform:rotate(45deg); transition:transform .2s ease;
+  }
+  details[open] summary::after{transform:rotate(-135deg); top:30px;}
+  details .ans{padding:0 2px 22px; color:var(--muted); font-size:1rem; max-width:72ch;}
+  details .ans p{margin:0 0 .7em;}
+  details .ans p:last-child{margin-bottom:0;}
+
+  /* ---------- Final CTA ---------- */
+  .final{
+    background:
+      radial-gradient(900px 420px at 80% 0%, rgba(61,126,141,.45), transparent 60%),
+      radial-gradient(700px 400px at 0% 100%, rgba(201,122,74,.22), transparent 60%),
+      var(--sea-deep);
+    color:#fff; text-align:center;
+  }
+  .final h2{color:#fff; max-width:20ch; margin:0 auto .4em;}
+  .final p{color:#cdddde; max-width:52ch; margin:0 auto 28px; font-size:1.12rem;}
+  .final .btn-light{box-shadow:0 14px 40px rgba(0,0,0,.25);}
+  .final .reassure{margin-top:20px; font-size:.9rem; color:#a9c4c6; display:flex; gap:18px; justify-content:center; flex-wrap:wrap;}
+  .final .reassure span{display:inline-flex; align-items:center; gap:7px;}
+
+  /* ---------- Footer ---------- */
+  footer{background:var(--paper-2); border-top:1px solid var(--line); padding:40px 0;}
+  .foot-inner{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:18px;}
+  .foot-inner .wordmark{font-size:1.15rem;}
+  .foot-meta{font-size:.84rem; color:var(--faint); max-width:62ch;}
+  .foot-meta a{color:var(--muted);}
+
+  .placeholder{
+    display:inline-block; font-size:.74rem; font-weight:700; letter-spacing:.04em;
+    color:var(--accent); background:var(--accent-soft); border-radius:6px; padding:2px 8px;
+    font-family:var(--font);
+  }
+
+  /* skip + focus a11y */
+  a:focus-visible,.btn:focus-visible,summary:focus-visible{outline:3px solid var(--sea-soft); outline-offset:3px; border-radius:6px;}
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto;} .btn{transition:none;} }
+</style>
+</head>
+<body>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="wordmark" aria-label="Tideover home">
+      <span class="crest" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="15" cy="15" r="14" fill="#1f5b6b"/>
+          <path d="M4 18.5c2.6 0 2.6 2 5.2 2s2.6-2 5.2-2 2.6 2 5.2 2 2.6-2 5.2-2" stroke="#cfe3e3" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M4 13.5c2.6 0 2.6 2 5.2 2s2.6-2 5.2-2 2.6 2 5.2 2 2.6-2 5.2-2" stroke="#fbf8f2" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="15" cy="8.4" r="2.1" fill="#e8dcc4"/>
+        </svg>
+      </span>
+      <span>Tideover</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="navlink" href="#wait">The long wait</a>
+      <a class="navlink" href="#how">How it works</a>
+      <a class="navlink" href="#pilot">The pilot</a>
+      <a class="navlink" href="#faq">FAQ</a>
+      <a class="btn btn-primary btn-sm" href="{{book_call}}">Free teardown</a>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="pill-row">
+          <span class="pill"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 9c1.2 0 1.2 1 2.5 1S5.7 9 7 9s1.2 1 2.5 1S10.8 9 12 9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><path d="M2 5.5c1.2 0 1.2 1 2.5 1S5.7 5.5 7 5.5s1.2 1 2.5 1S10.8 5.5 12 5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg> For 60–120 day presale waits</span>
+          <span class="pill">Built for Kickstarter &amp; BackerKit graduates</span>
+        </div>
+        <h1>Keep your presale buyers <span class="accent">calm — and aboard —</span> through the long wait.</h1>
+        <p class="sub">Tideover is the support layer that tides your customers over until their order ships. It bolts onto the Gorgias, Tidio, or Intercom you already use — taking only your presale tickets, so nothing else changes — knows each order's real production timeline, and answers the long wait with calm, human, timeline-aware reassurance, so "where's my order?" doesn't become a refund.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="{{book_call}}">
+            Get a free 15-min presale-support teardown
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h11M10 5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <p class="hero-note">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5l5.5 2.3v3.4c0 3.3-2.3 5.6-5.5 7-3.2-1.4-5.5-3.7-5.5-7V3.8L8 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.6 8.1l1.7 1.7 3-3.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          A bolt-on, not a rip-and-replace. We take only your presale tickets — everything else stays in the helpdesk you already have.
+        </p>
+      </div>
+
+      <!-- Hero art: a calm, on-brand reassurance reply -->
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-head">
+          <div class="who">
+            <div class="avatar">TO</div>
+            <div class="meta"><b>Presale order #4127</b>Made-to-order · backer list</div>
+          </div>
+          <span class="stage-tag">Day 62 of wait</span>
+        </div>
+        <div class="bubble them">It's been two months. I'm starting to think this was a scam — where is my order??</div>
+        <div class="bubble us">
+          Totally get it — waiting on something you've already paid for can feel like a long time, and you deserve a straight answer. Good news: your order is in production right now and currently tracking to ship next month. I'll message you the moment that changes. You're in good hands here.
+          <span class="eta">Current ETA band: July 8–22 · in production</span>
+        </div>
+        <div class="art-foot"><span class="dot"></span> Timeline-aware · human-approved · no hard date promised</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BOLT-ON STRIP ===================== -->
+<section style="padding:40px 0;">
+  <div class="wrap">
+    <div style="background:var(--card); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:28px 30px;">
+      <div style="display:flex; flex-wrap:wrap; align-items:center; gap:18px 28px; justify-content:space-between;">
+        <div style="flex:1 1 320px; min-width:280px;">
+          <span class="eyebrow" style="margin-bottom:8px;">Works with your existing stack</span>
+          <h3 style="font-size:1.28rem; margin:0 0 8px;">A bolt-on — presale tickets only. Nothing else changes.</h3>
+          <p style="margin:0; color:var(--muted); font-size:.98rem; max-width:58ch;">Tideover routes <strong>only</strong> your presale and preorder tickets to us. Every other ticket stays in the Gorgias, Tidio, or Intercom you already run — handled exactly as it is today. No rip-and-replace, no migration, no new helpdesk for your team to learn.</p>
+        </div>
+        <ul style="list-style:none; margin:0; padding:0; flex:0 1 300px; min-width:260px; display:grid; gap:11px;">
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:.96rem; color:var(--ink-soft);">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex:0 0 auto; color:var(--ok); margin-top:3px;"><path d="M3 9.5l3.5 3.5L15 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Zero infrastructure change — works alongside your current helpdesk
+          </li>
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:.96rem; color:var(--ink-soft);">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex:0 0 auto; color:var(--ok); margin-top:3px;"><path d="M3 9.5l3.5 3.5L15 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Only presale tickets routed to us — the rest of your inbox is untouched
+          </li>
+          <li style="display:flex; gap:11px; align-items:flex-start; font-size:.96rem; color:var(--ink-soft);">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex:0 0 auto; color:var(--ok); margin-top:3px;"><path d="M3 9.5l3.5 3.5L15 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            No migration, no second inbox, nothing to rip out
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== THE LONG WAIT ===================== -->
+<section id="wait" class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The long wait</span>
+      <h2>Your customers paid. Now they wait 90 days. That gap is where trust quietly leaks out.</h2>
+      <p class="lede">A presale order isn't a one-off ticket — it's a months-long emotional journey. The same buyer who was thrilled at checkout becomes anxious, then suspicious, then a refund request. Here's how the wait usually plays out.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="tcard">
+        <div class="day">Day 7</div>
+        <div class="mood">Excited, eager</div>
+        <p>"Can't wait!" They check the order page, re-read the campaign, and tell friends. Easy to delight — if anyone answers.</p>
+      </div>
+      <div class="tcard">
+        <div class="day">Day 30</div>
+        <div class="mood">First doubt</div>
+        <p>The thrill fades. "Any update on shipping?" A generic helpdesk gives a standard shipping answer — for a product that won't ship for two more months.</p>
+      </div>
+      <div class="tcard">
+        <div class="day">Day 60</div>
+        <div class="mood">Anxious, impatient</div>
+        <p>Silence reads as a red flag. WISMO ("where is my order?") tickets pile up. One frustrating reply and they're Googling "refund."</p>
+        <div class="quote">"It doesn't understand pre-orders — it gives standard shipping answers."</div>
+      </div>
+      <div class="tcard">
+        <div class="day">Day 89</div>
+        <div class="mood">Ready to bail</div>
+        <p>No reassurance, no answer. Now it's a chargeback, a 1-star "scam" review, and a customer you'll never win back.</p>
+      </div>
+    </div>
+
+    <div class="stakes">
+      <div class="stake">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3l9 16H3L12 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 10v4M12 16.5v.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <div><h3>Chargebacks threaten your standing</h3><p>Refunds and disputes don't just cost the sale — they put your Stripe and PayPal accounts at risk.</p></div>
+      </div>
+      <div class="stake">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H8l-4 4V5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 9.5h8M8 12.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <div><h3>WISMO floods drown your inbox</h3><p>The same repetitive "where is my order?" question, hundreds of times, on three different timelines at once.</p></div>
+      </div>
+      <div class="stake">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.3 4.7 5.2.8-3.7 3.7.9 5.1L12 15.8 7.3 17.6l.9-5.1-3.7-3.7 5.2-.8L12 3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <div><h3>"Scam" reviews stick around</h3><p>An anxious customer left in the dark writes the review — and it shapes how the next backer sees you.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== THE MECHANISM ===================== -->
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The presale-specialist layer</span>
+      <h2>Not a new helpdesk. A bolt-on that makes the one you have presale-aware.</h2>
+      <p class="lede">Gorgias, Tidio, and Intercom are strong, generic helpdesks — but to them a presale order looks like any other order. Tideover bolts on top, takes only the presale tickets, knows the wait, and knows exactly what to say at day 7 versus day 60 versus day 89. Everything else stays in your helpdesk, exactly as it is today.</p>
+    </div>
+
+    <div class="mech-grid">
+      <div>
+        <ul class="mech-list">
+          <li>
+            <span class="mech-ic"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M5 11h12M13 7l4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 5v12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+            <div><h3>A bolt-on — presale tickets only</h3><p>We work inside your Gorgias, Tidio, or Intercom and take <strong>only</strong> the presale tickets. Every other ticket stays in your current helpdesk, handled exactly as today — no migration, no second inbox, nothing to rip out.</p></div>
+          </li>
+          <li>
+            <span class="mech-ic"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="7.5" stroke="currentColor" stroke-width="1.7"/><path d="M11 7v4.2l2.8 1.6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div><h3>Knows each order's real production timeline</h3><p>Every reply is tied to where that specific order actually is — in production, in QA, in transit — so customers get a grounded answer, not a canned one.</p></div>
+          </li>
+          <li>
+            <span class="mech-ic"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3.5c4 0 7 2.6 7 6 0 3.3-3 6-7 6-.8 0-1.5-.1-2.2-.3L4.5 17l1-3C4 12.8 4 11.7 4 9.5c0-3.4 3-6 7-6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 8.5h6M8 11h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></span>
+            <div><h3>Timeline-aware, emotionally-intelligent replies</h3><p>Day-stage reassurance scripts acknowledge the feeling first, then resolve it with an honest confidence band — never an invented ship date.</p></div>
+          </li>
+          <li>
+            <span class="mech-ic"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2.5l7 3v4.3c0 4.2-3 7.2-7 8.7-4-1.5-7-4.5-7-8.7V5.5l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 10.7l2.2 2.2L14 8.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            <div><h3>Every novel reply is human-approved</h3><p>We never auto-send a promise we can't keep. A false delivery date does more damage than a slow reply, so a human signs off on anything new.</p></div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="plug">
+        <div class="plug-stack" style="margin-bottom:6px;">
+          <span class="chip">Your Shopify orders</span>
+          <span class="chip">Production timeline</span>
+          <span class="chip">Backer list</span>
+        </div>
+        <div class="plug-arrow"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 4v13M6 12l5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="plug-core">
+          <b>Tideover</b>
+          <span>Presale-specialist support layer</span>
+        </div>
+        <div class="plug-arrow"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 4v13M6 12l5 5 5-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="plug-row">
+          <span class="chip">Gorgias</span>
+          <span class="chip">Tidio</span>
+          <span class="chip">Intercom</span>
+        </div>
+        <p class="plug-cap">Tideover sits between your order data and the helpdesk you already run — taking only the presale tickets, leaving everything else untouched.</p>
+      </div>
+    </div>
+
+    <!-- Comparison -->
+    <div class="compare">
+      <table>
+        <thead>
+          <tr>
+            <th>&nbsp;</th>
+            <th>Generic helpdesk<br><span style="font-weight:500;text-transform:none;letter-spacing:0;">(Gorgias / Tidio / Intercom)</span></th>
+            <th class="us">Tideover</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="feat">Knows an order is a <em>preorder</em></td>
+            <td><span class="cmark no"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M4 4l7 7M11 4l-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Looks like any order</span></td>
+            <td class="us"><span class="cmark"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 8l3 3 6-7" stroke="#2f7d5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Presale-aware</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Knows the real production timeline</td>
+            <td><span class="cmark no"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M4 4l7 7M11 4l-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Agents dig through tools</span></td>
+            <td class="us"><span class="cmark"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 8l3 3 6-7" stroke="#2f7d5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Timeline-aware per order</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Handles the 60–120 day emotional journey</td>
+            <td><span class="cmark no"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M4 4l7 7M11 4l-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Treats WISMO as one-off</span></td>
+            <td class="us"><span class="cmark"><svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 8l3 3 6-7" stroke="#2f7d5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Day-stage reassurance</span></td>
+          </tr>
+          <tr>
+            <td class="feat">Tone</td>
+            <td>Cold, transactional</td>
+            <td class="us">Warm, calm, human, steady</td>
+          </tr>
+          <tr>
+            <td class="feat">Your stack</td>
+            <td>It <em>is</em> the stack</td>
+            <td class="us">Bolts onto what you already use</td>
+          </tr>
+          <tr>
+            <td class="feat">What it touches</td>
+            <td>All of your tickets</td>
+            <td class="us">Only presale tickets — the rest stays put</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== OFFER ===================== -->
+<section id="pilot" class="ink-section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The founding-partner pilot</span>
+      <h2>We'll run your presale support by hand for one cycle. Free.</h2>
+      <p class="lede">Tideover doesn't start with an app — it starts with us in your inbox. For a small group of founding partners, the founder and our drafting system run your presale support manually for one cycle, capturing the exact reassurance language that keeps anxious buyers aboard. You see the work before you ever pay for it.</p>
+    </div>
+
+    <div class="offer-card">
+      <div class="offer-top">
+        <span class="offer-price">Free<small> — founding-partner concierge pilot</small></span>
+        <span class="badge">Founding partners only</span>
+      </div>
+      <p style="color:var(--muted);max-width:60ch;margin:0;">We run one full presale cycle inside your existing helpdesk — drafting timeline-aware replies, building your day-stage script library, and measuring against your own clean baseline. No card, no contract, no helpdesk to install.</p>
+
+      <ul class="offer-list">
+        <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9.5l3.5 3.5L15 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg> We work inside your Gorgias, Tidio, or Intercom — nothing to migrate</li>
+        <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9.5l3.5 3.5L15 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg> Timeline-aware, human-approved replies in two fixed daily windows</li>
+        <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9.5l3.5 3.5L15 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg> A day-by-day reassurance playbook, built on your real timeline</li>
+        <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9.5l3.5 3.5L15 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg> Leading-indicator measurement against your own baseline</li>
+        <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9.5l3.5 3.5L15 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg> Logged "saves" — anxious customers talked back from the ledge</li>
+        <li><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9.5l3.5 3.5L15 4.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg> Founder-led — you talk to the operator, not a ticket queue</li>
+      </ul>
+
+      <div class="ladder">
+        <span class="rung free">Free pilot</span>
+        <span class="arr">→</span>
+        <span class="rung">$199–$499/mo on proof</span>
+        <span class="arr">→</span>
+        <span class="rung">$799–$999+/mo as it scales</span>
+        <span style="margin-left:6px;font-size:.84rem;">Performance fee deferred until a real case study exists.</span>
+      </div>
+
+      <div class="guarantee">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 2.5l7 3v4.5c0 4.3-3 7.4-7 9-4-1.6-7-4.7-7-9V5.5l7-3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M7.5 11l2.3 2.3L15 8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <p><strong>The honest guarantee.</strong> We measure leading indicators — faster first response, fewer "where's my order?" tickets, logged saves — against your own baseline. If the pilot doesn't move them, you don't pay a cent. The full refund-reduction picture takes a complete presale cycle (60–120 days), so we report that <em>after</em> your first cohort completes — and we say so up front.</p>
+      </div>
+
+      <div style="margin-top:28px;">
+        <a class="btn btn-primary" href="{{first_strike_form}}">
+          Apply for a founding-partner pilot
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h11M10 5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FIT ===================== -->
+<section>
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="eyebrow">Honest fit</span>
+      <h2>Who Tideover is built for — and who it isn't</h2>
+      <p class="lede">We'd rather tell you plainly than waste your 15 minutes. Tideover is purpose-built for one specific situation.</p>
+    </div>
+
+    <div class="fit-grid">
+      <div class="fit yes">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="#2f7d5c" stroke-width="1.6"/><path d="M7 11l2.6 2.6L15 8" stroke="#2f7d5c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          A strong fit if…
+        </h3>
+        <ul>
+          <li><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M3 9l3 3 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> You graduated from Kickstarter, Indiegogo, or BackerKit onto Shopify.</li>
+          <li><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M3 9l3 3 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> You sell hardware, design, or made-to-order goods with 60–120 day waits.</li>
+          <li><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M3 9l3 3 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> You juggle backers, late-pledges, and new preorders on different timelines.</li>
+          <li><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M3 9l3 3 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> Your inbox floods with "where is my order?" during the wait.</li>
+          <li><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M3 9l3 3 7.5-8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg> You'd rather keep the sale than fight another chargeback.</li>
+        </ul>
+      </div>
+
+      <div class="fit no">
+        <h3>
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="#8593a0" stroke-width="1.6"/><path d="M7.5 7.5l7 7M14.5 7.5l-7 7" stroke="#8593a0" stroke-width="1.6" stroke-linecap="round"/></svg>
+          Probably not yet if…
+        </h3>
+        <ul>
+          <li><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M4.5 4.5l8 8M12.5 4.5l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> You ship in-stock products in a few days — there's no long wait to bridge.</li>
+          <li><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M4.5 4.5l8 8M12.5 4.5l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> You want a full helpdesk replacement — we plug into yours, we don't replace it.</li>
+          <li><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M4.5 4.5l8 8M12.5 4.5l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> You sell regulated or supplement goods where timeline promises carry liability.</li>
+          <li><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M4.5 4.5l8 8M12.5 4.5l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> Your presale volume is a handful of orders — there's nothing to measure yet.</li>
+          <li><svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M4.5 4.5l8 8M12.5 4.5l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> You want a bot that auto-fires promises — we human-approve every novel reply on purpose.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== ABOUT ===================== -->
+<section class="alt">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">The operator behind it</span>
+      <h2>I've been in your inbox during the long wait — from the merchant side.</h2>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <svg class="seal" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="44" cy="44" r="42" fill="#1f5b6b"/>
+          <circle cx="44" cy="44" r="35" stroke="#cfe3e3" stroke-width="1.4" stroke-dasharray="2 4"/>
+          <path d="M22 52c5.2 0 5.2 4 10.4 4s5.2-4 10.4-4 5.2 4 10.4 4 5.2-4 10.4-4" stroke="#cfe3e3" stroke-width="2" stroke-linecap="round"/>
+          <path d="M22 44c5.2 0 5.2 4 10.4 4s5.2-4 10.4-4 5.2 4 10.4 4 5.2-4 10.4-4" stroke="#fbf8f2" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="44" cy="32" r="4.5" fill="#e8dcc4"/>
+        </svg>
+        <div class="role">Founder</div>
+        <div class="name">Chaga Chai</div>
+        <div class="tag">Ex physical-goods operator — warehouse, in-house shipping, fulfillment, and the customer comms during long order waits.</div>
+      </div>
+
+      <div class="warstory">
+        <blockquote>"I spent years running fulfillment, in-house shipping, and the 'where's my order?' comms during long order waits for a physical-goods brand. I lived the support wave during the wait — so I built the layer I wished I'd had."</blockquote>
+        <p>That's the whole reason Tideover exists. I ran a real physical-goods company — the warehouse, the shipping, and the long stretch where customers had paid but the product was still weeks away. I know exactly what that inbox feels like at day 60, and what a calm, honest, timeline-aware reply does to a customer about to file a dispute.</p>
+        <p>Tideover takes that lived experience and turns it into a repeatable, day-by-day reassurance playbook — run by hand first, so we prove the language before we ever automate it.</p>
+
+        <div class="pledge">
+          <p style="margin:0 0 .5em;"><b>A plain-spoken promise about proof.</b> Tideover is early, and I won't pretend otherwise. You will never see an invented metric, a fake testimonial, a borrowed logo, or a star rating we didn't earn on this page.</p>
+          <p style="margin:0;">Every number we show is a target we measure against your own baseline — never a claimed result. The full refund-reduction case study lands after a real partner's first cohort completes its wait. <span class="placeholder">[CASE STUDY PLACEHOLDER — refund-reduction delta, post first completed cohort]</span> Until then, the proof is the free work itself — and the deeper operator details I'll happily walk you through on a call.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head center">
+      <span class="eyebrow">Questions, answered plainly</span>
+      <h2>The things founders actually ask</h2>
+    </div>
+
+    <div class="faq-list">
+      <details open>
+        <summary>We already have a helpdesk — do I have to switch or install something new?</summary>
+        <div class="ans"><p>No, and that's the whole point. Tideover is a <strong>bolt-on</strong>, not a rip-and-replace. We route <strong>only</strong> your presale and preorder tickets to us — every other ticket stays in the Gorgias, Tidio, or Intercom you already use, handled exactly as it is today.</p><p>There's zero infrastructure change: no migration, no second inbox for your team to learn, nothing to rip out. We work alongside your current helpdesk and add the presale layer it never had — and change nothing else.</p></div>
+      </details>
+      <details>
+        <summary>How is this different from the AI bot already in my helpdesk?</summary>
+        <div class="ans"><p>Generic helpdesks treat a presale order like any other order — so they give a standard shipping answer to a product that won't ship for two months. Tideover knows which orders are preorders, knows each one's real production timeline, and knows what to say at day 7 versus day 60 versus day 89. The reassurance is the whole product.</p></div>
+      </details>
+      <details>
+        <summary>Will you make delivery promises you can't keep?</summary>
+        <div class="ans"><p>Never. A false ship date is the single most damaging thing we could say to an anxious customer. We use honest confidence bands ("currently tracking for [month]," "ETA band X–Y"), never invented exact dates — and every novel reply is approved by a human before it sends. We never auto-fire a promise.</p></div>
+      </details>
+      <details>
+        <summary>What does the free pilot actually involve?</summary>
+        <div class="ans"><p>For one presale cycle, we run your presale support by hand inside your helpdesk. We capture a clean baseline, draft timeline-aware replies in two fixed daily windows (you'll know the cadence up front), build your day-stage script library, and log every "save." You see exactly how it works before there's ever a paid plan on the table.</p></div>
+      </details>
+      <details>
+        <summary>What can you actually prove, and what can't you yet?</summary>
+        <div class="ans"><p>Honestly: in a single cycle we can prove <em>leading indicators</em> — faster first-response time, fewer repetitive WISMO tickets, and logged saves — all measured against your own baseline. A full refund-reduction case study needs a complete 60–120 day presale cycle to finish, so it lands <em>after</em> your first cohort completes. We tell every partner that plainly, and we'd rather under-promise than fabricate a number.</p></div>
+      </details>
+      <details>
+        <summary>What does it cost after the pilot?</summary>
+        <div class="ans"><p>The pilot is free. If it moves your numbers and you want to keep it, paid plans start at $199–$499/mo, growing to $799–$999+/mo as the layer takes on more proactive outreach. Any performance fee is deferred until a real, baselined case study exists — we won't charge for an outcome we can't yet attribute.</p></div>
+      </details>
+      <details>
+        <summary>I'm a crowdfunding creator juggling backers and new preorders. Does that fit?</summary>
+        <div class="ans"><p>That's exactly who Tideover is built for. Kickstarter, Indiegogo, and BackerKit graduates moving onto Shopify are the hardest case — backers, late-pledges, and new preorders all waiting on different timelines. The free 15-minute teardown is the fastest way to see how we'd handle yours.</p></div>
+      </details>
+      <details>
+        <summary>What happens on the free teardown call?</summary>
+        <div class="ans"><p>Fifteen minutes, no pitch deck. We look at your real presale support — the tools you use, the timelines you're juggling, where the wait is leaking trust — and I'll tell you plainly whether Tideover can help and how I'd handle your next wave. If it's not a fit, I'll say so.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FINAL CTA ===================== -->
+<section class="final">
+  <div class="wrap">
+    <h2>The tide always comes in. Their order is coming.</h2>
+    <p>Let's make sure your buyers stay calm and aboard until it does. Grab a free 15-minute presale-support teardown — a real operator looking at your real support, no pitch.</p>
+    <a class="btn btn-light" href="{{book_call}}">
+      Get a free 15-min presale-support teardown
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9h11M10 5l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <div class="reassure">
+      <span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> A bolt-on — presale tickets only, nothing else changes</span>
+      <span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> Free founding-partner pilot</span>
+      <span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> Talk to the operator, not a queue</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="wrap foot-inner">
+    <div>
+      <a href="#top" class="wordmark" aria-label="Tideover home">
+        <span class="crest" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="15" cy="15" r="14" fill="#1f5b6b"/>
+            <path d="M4 18.5c2.6 0 2.6 2 5.2 2s2.6-2 5.2-2 2.6 2 5.2 2 2.6-2 5.2-2" stroke="#cfe3e3" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M4 13.5c2.6 0 2.6 2 5.2 2s2.6-2 5.2-2 2.6 2 5.2 2 2.6-2 5.2-2" stroke="#fbf8f2" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="15" cy="8.4" r="2.1" fill="#e8dcc4"/>
+          </svg>
+        </span>
+        <span>Tideover</span>
+      </a>
+      <p class="foot-meta" style="margin:10px 0 0;">The support layer that tides your customers over until their order ships. <a href="https://tideover.app">tideover.app</a></p>
+    </div>
+    <div style="text-align:right;">
+      <a class="btn btn-ghost btn-sm" href="{{book_call}}">Book a free teardown</a>
+      <p class="foot-meta" style="margin:14px 0 0;">© <span id="yr">2026</span> Tideover. Every figure on this page is a target to measure, never a claimed result.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- Minimal, optional progressive-enhancement JS. Page is fully functional with JS disabled. -->
+<script>
+  (function(){
+    // Keep the footer year current; harmless if JS is off (a sensible default is hard-coded).
+    try { var y = document.getElementById('yr'); if (y) y.textContent = new Date().getFullYear(); } catch(e){}
+  })();
+</script>
+</body>
+</html>
