@@ -47,7 +47,7 @@ export function Pilot() {
               >
                 Free &middot; one full cycle
               </span>
-              <h3 className="mb-4.5 font-serif text-[22px] font-semibold" style={{ color: "#F4F9F8" }}>
+              <h3 className="mb-5 font-serif text-[22px] font-semibold" style={{ color: "#F4F9F8" }}>
                 What&rsquo;s included
               </h3>
               <ul className="m-0 flex list-none flex-col gap-3.5 p-0">

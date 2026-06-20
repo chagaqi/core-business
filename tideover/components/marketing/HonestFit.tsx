@@ -34,7 +34,7 @@ export function HonestFit() {
         <div className="grid grid-cols-1 gap-[22px] md:grid-cols-2">
           <Reveal index={1}>
             <div className="h-full rounded-[20px] border border-[#D6E5E0] bg-paper p-[30px] shadow-card">
-              <h3 className="mb-4.5 font-serif text-[21px] font-semibold text-teal">A strong fit if&hellip;</h3>
+              <h3 className="mb-5 font-serif text-[21px] font-semibold text-teal">A strong fit if&hellip;</h3>
               <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
                 {FIT.map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-[15px] leading-snug text-slate">
@@ -50,7 +50,7 @@ export function HonestFit() {
 
           <Reveal index={2}>
             <div className="h-full rounded-[20px] border border-border bg-sand-2 p-[30px]">
-              <h3 className="mb-4.5 font-serif text-[21px] font-semibold text-[#9A6B45]">Probably not yet if&hellip;</h3>
+              <h3 className="mb-5 font-serif text-[21px] font-semibold text-[#9A6B45]">Probably not yet if&hellip;</h3>
               <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
                 {NOT_YET.map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-[15px] leading-snug text-slate">

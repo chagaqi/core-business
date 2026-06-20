@@ -70,10 +70,16 @@ export function draftReassurance(input: ReassuranceInput): ReassuranceResult {
   // next reassurance window from the merchant's SLA (e.g. "the afternoon update")
   const nextWindow = "the next update window";
 
+  // For overdue orders the confidence band is a full honest sentence, which reads
+  // awkwardly when merged mid-template — substitute a grammatically-neutral phrase.
+  const etaBand = timeline.overdue
+    ? "as soon as it's ready, and I'll update you the moment it moves"
+    : timeline.confidenceBand.replace(/^ships\s+/i, "");
+
   let draftText = mergeFields(template, {
     first_name: firstName,
     brand: merchant.name,
-    eta_band: timeline.confidenceBand.replace(/^ships\s+/i, ""),
+    eta_band: etaBand,
     stage_blurb: stageBlurb(merchant, order.productionStage),
     next_window: nextWindow,
   });
