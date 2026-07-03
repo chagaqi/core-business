@@ -196,8 +196,8 @@ const TASKS = [
   {id:'F5', cat:'FOUND', prio:3, status:'queued', title:'Nightly Atlas backup', detail:'mongodump via GitHub Actions. A lost comm log destroys the Evidence Pack value story.'},
   {id:'F6', cat:'FOUND', prio:3, status:'queued', title:'Uptime + dead-man indicator', detail:'Free uptime monitor + "last ping received" chip so a silently-severed merchant integration is visible.'},
   // TRUST
-  {id:'T1', cat:'TRUST', prio:1, status:'queued', title:'/privacy + /terms pages', detail:'Table stakes before anyone forwards a customer email. CAN-SPAM address + unsubscribe on outbound.'},
-  {id:'T2', cat:'TRUST', prio:2, status:'queued', title:'/security data-map page', detail:'What we see vs never see; per-rung revocation table ("how to fire us in one click"). Ships AFTER F3 so it describes real code. No cert claims.'},
+  {id:'T1', cat:'TRUST', prio:1, status:'active', title:'/privacy + /terms pages', detail:'Table stakes before anyone forwards a customer email. CAN-SPAM address + unsubscribe on outbound.', note:'Building with /security in one trust-surface pass; grounded in real code, proof-only reviewed.'},
+  {id:'T2', cat:'TRUST', prio:2, status:'active', title:'/security data-map page', detail:'What we see vs never see; per-rung revocation table ("how to fire us in one click"). Ships AFTER F3 so it describes real code. No cert claims.', note:'Now accurate — F2/F3/M1 shipped; describes the real PII boundary + drop-at-edge.'},
   {id:'T3', cat:'TRUST', prio:3, status:'queued', title:'Procurement packet', detail:'Security one-pager + mutual DPA template + pilot agreement. Answers "send me your security stuff" same-day.'},
   // WEDGE
   {id:'W1', cat:'WEDGE', prio:1, status:'queued', title:'Email-forward ingest, live end-to-end', detail:'Per-merchant alias → inbound webhook → hardened ingest → drafted reply. THE pilot mechanic: one forwarding rule in, revocation = deleting it. Needs D2+D4+F1+F3.'},
