@@ -9,3 +9,6 @@ node_modules/
 .mcp.json
 .obsidian/
 LLM COURSES/
+
+# any credential/env dumps, wherever they land
+*.env
