@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { StageDot } from "@/components/status/StageDot";
+import { readableAccent } from "@/lib/color";
 import type { OrderTimeline as OrderTimelineData } from "@/lib/types";
 
 /**
@@ -17,6 +18,8 @@ export function OrderTimeline({
   accent?: string;
   compact?: boolean;
 }) {
+  // Contrast-safe accent for the pill TEXT; the pill's tint fill keeps raw brand.
+  const textAccent = accent ? readableAccent(accent) : undefined;
   return (
     <ol className="relative flex flex-col">
       {timeline.stages.map((stage, i) => {
@@ -54,7 +57,7 @@ export function OrderTimeline({
                 {isActive ? (
                   <span
                     className="inline-flex items-center rounded-full bg-terracotta/10 px-2 py-0.5 text-[11px] font-semibold text-terracotta-600"
-                    style={accent ? { color: accent, background: `${accent}1a` } : undefined}
+                    style={accent ? { color: textAccent, background: `${accent}1a` } : undefined}
                   >
                     in progress now
                   </span>

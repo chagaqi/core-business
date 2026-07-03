@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import { readableAccent } from "@/lib/color";
 import type { OrderTimeline } from "@/lib/types";
 
 /**
@@ -18,6 +19,9 @@ export function ConfidenceBand({
   compact?: boolean;
 }) {
   const overdue = timeline.overdue;
+  // Contrast-safe accent for the thin edge + kicker text (both sit on the paper
+  // card over the sand page). Large fills keep the raw brand color elsewhere.
+  const edge = accent ? readableAccent(accent) : undefined;
 
   return (
     <div
@@ -30,11 +34,11 @@ export function ConfidenceBand({
       <span
         aria-hidden
         className="absolute inset-y-0 left-0 w-1.5"
-        style={{ background: overdue ? "var(--terracotta)" : accent ?? "var(--teal)" }}
+        style={{ background: overdue ? "var(--terracotta)" : edge ?? "var(--teal)" }}
       />
 
       <div className="pl-2.5">
-        <p className="kicker mb-2" style={accent && !overdue ? { color: accent } : undefined}>
+        <p className="kicker mb-2" style={edge && !overdue ? { color: edge } : undefined}>
           {overdue ? "An honest update" : "Where your order is"}
         </p>
 

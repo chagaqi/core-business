@@ -1,8 +1,10 @@
 import { Tag } from "@/components/ui/Badge";
 import { ConfidenceBand } from "@/components/status/ConfidenceBand";
+import { WaitProgress } from "@/components/status/WaitProgress";
 import { OrderTimeline } from "@/components/status/OrderTimeline";
 import { ReassuranceCard } from "@/components/status/ReassuranceCard";
 import { AskBox } from "@/components/status/AskBox";
+import { readableAccent } from "@/lib/color";
 import type { PublicStatus } from "@/lib/status";
 
 const GROUP_LABEL: Record<PublicStatus["group"], string> = {
@@ -18,7 +20,10 @@ const GROUP_LABEL: Record<PublicStatus["group"], string> = {
  * as the merchant's own page, inside Tideover's calm layout.
  */
 export function StatusView({ status, token }: { status: PublicStatus; token: string }) {
+  // Raw brand color for large fills/tints; a contrast-safe variant for any accent
+  // used as TEXT or a thin edge on the sand/paper background (see lib/color).
   const accent = status.merchant.colors.primary;
+  const textAccent = readableAccent(accent);
 
   return (
     <div className="min-h-screen bg-sand">
@@ -50,10 +55,12 @@ export function StatusView({ status, token }: { status: PublicStatus; token: str
         </div>
 
         <div className="flex flex-col gap-7">
+          <WaitProgress timeline={status.timeline} accent={accent} />
+
           <ConfidenceBand timeline={status.timeline} accent={accent} />
 
           <section className="panel p-6 md:p-7">
-            <p className="kicker mb-5" style={{ color: accent }}>
+            <p className="kicker mb-5" style={{ color: textAccent }}>
               Production timeline
             </p>
             <OrderTimeline timeline={status.timeline} accent={accent} />

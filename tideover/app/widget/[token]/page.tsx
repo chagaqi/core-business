@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getPublicStatus, viewMetaFromHeaders } from "@/lib/status";
 import { ConfidenceBand } from "@/components/status/ConfidenceBand";
+import { WaitProgress } from "@/components/status/WaitProgress";
 import { OrderTimeline } from "@/components/status/OrderTimeline";
 import { AskBox } from "@/components/status/AskBox";
 import { WidgetFrame } from "@/components/status/WidgetFrame";
@@ -42,10 +43,11 @@ export default async function WidgetPage({ params }: { params: { token: string }
     <WidgetFrame>
       <div className="bg-sand p-4">
         <div className="flex flex-col gap-4">
-          <div>
-            <p className="mb-2 text-[13px] text-ink-mute">
+          <div className="flex flex-col gap-3">
+            <p className="text-[13px] text-ink-mute">
               Hi {status.firstName} — here&rsquo;s where your {status.merchant.name} order is.
             </p>
+            <WaitProgress timeline={status.timeline} accent={accent} compact />
             <ConfidenceBand timeline={status.timeline} accent={accent} compact />
           </div>
 
