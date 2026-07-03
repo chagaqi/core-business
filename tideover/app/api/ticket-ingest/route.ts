@@ -6,8 +6,14 @@ import { ingestTicket } from "@/lib/service";
 import type { Channel } from "@/lib/types";
 
 /**
- * POST /api/ticket-ingest?channel=<channel>[&merchant=<id>] — the webhook entry
- * point. The channel comes from the URL (configured per vendor webhook), never
+ * POST /api/ticket-ingest?channel=<channel>[&merchant=<id>] — the LEGACY webhook
+ * entry point. The real per-merchant integration path is now
+ * POST /api/ingest/[channel]/[token] (ADR-0011, task W2): per-merchant URL token
+ * + derived signature, no forgeable merchant id. This route stays for the native
+ * mock/demo ingest and its vendor-native adapters; the `?merchant=` fallback is
+ * demo-only (see the SECURITY note below).
+ *
+ * The channel comes from the URL (configured per vendor webhook), never
  * from the unverified body. Order of operations is security-critical:
  *
  *   read raw body ONCE → verify signature over the RAW bytes → JSON.parse →
@@ -78,12 +84,14 @@ export async function POST(req: Request) {
   // Real vendor payloads carry no Tideover merchant id; it rides on the
   // webhook URL instead.
   //
-  // SECURITY (W2): merchant identity from an unsigned query param + a single
-  // global webhook secret allows cross-merchant replay. Before ANY real vendor
-  // is wired, move to per-merchant ingest URL + per-merchant secret (task W2)
-  // so merchant identity is bound to the signed material. Live adapters are
-  // stubs until then.
-  if (!payload.merchantId && url.searchParams.get("merchant")) {
+  // SECURITY (W2, RESOLVED): the real per-merchant integration path is now
+  // POST /api/ingest/[channel]/[token] (ADR-0011) — merchant identity is bound
+  // to the unguessable URL token + a per-merchant derived signature, so
+  // cross-merchant replay is impossible. This legacy `?merchant=` query fallback
+  // took merchant identity from an UNSIGNED query param under a single global
+  // secret (replay-able), so it is now gated to demo mode only and must never be
+  // used for a live vendor. New helpdesk webhooks go to /api/ingest/*.
+  if (process.env.DEMO_MODE !== "false" && !payload.merchantId && url.searchParams.get("merchant")) {
     payload.merchantId = url.searchParams.get("merchant");
   }
 

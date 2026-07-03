@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createMerchantFromIntake } from "@/lib/onboarding";
 import { inboxAddressFor } from "@/lib/inbound";
+import { gorgiasHttpIntegration, zendeskTrigger } from "@/lib/ingest-templates";
 
 /** POST /api/onboarding — turn wizard answers into a merchant + preview scripts. */
 const Stage = z.object({
@@ -36,6 +37,13 @@ export async function POST(req: Request) {
     merchantId: merchant.id,
     slug: merchant.slug,
     inboxAddress: inboxAddressFor(merchant.inboxToken),
+    // Per-merchant helpdesk webhook setup (ADR-0011) — the derived signing secret
+    // is computed server-side here (WEBHOOK_ROOT_SECRET is server-only) and passed
+    // to the ConnectPanel for display.
+    connect: {
+      gorgias: gorgiasHttpIntegration(merchant),
+      zendesk: zendeskTrigger(merchant),
+    },
     previews,
   });
 }

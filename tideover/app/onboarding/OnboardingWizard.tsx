@@ -7,6 +7,8 @@ import { Field, TextInput, TextArea, Select } from "@/components/ui/Field";
 import { Stepper } from "@/components/ui/Stepper";
 import { Logo } from "@/components/ui/Logo";
 import { ImportPanel } from "@/app/onboarding/ImportPanel";
+import { ConnectPanel } from "@/app/onboarding/ConnectPanel";
+import type { HelpdeskSetup } from "@/lib/ingest-templates";
 
 /**
  * Near-frictionless merchant onboarding. A multi-step discovery wizard that
@@ -102,6 +104,7 @@ export function OnboardingWizard() {
     merchantId: string;
     slug: string;
     inboxAddress?: string;
+    connect?: { gorgias: HelpdeskSetup; zendesk: HelpdeskSetup };
     previews: Preview[];
   } | null>(null);
 
@@ -180,6 +183,7 @@ export function OnboardingWizard() {
         merchantId: string;
         slug: string;
         inboxAddress?: string;
+        connect?: { gorgias: HelpdeskSetup; zendesk: HelpdeskSetup };
         previews: Preview[];
       };
       setResult(data);
@@ -227,6 +231,10 @@ export function OnboardingWizard() {
               {result.inboxAddress}
             </code>
           </div>
+        ) : null}
+
+        {result.connect ? (
+          <ConnectPanel gorgias={result.connect.gorgias} zendesk={result.connect.zendesk} />
         ) : null}
 
         <ImportPanel merchantId={result.merchantId} />

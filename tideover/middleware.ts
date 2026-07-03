@@ -5,7 +5,9 @@ import { SESSION_COOKIE, verifySessionValue } from "@/lib/session";
 /**
  * Operator auth gate (ADR-0004). The matcher lists ONLY the operator surfaces —
  * public pages (/, /book, /vsl/*, /onboarding, /status/*, /widget/*) and public
- * APIs (/api/status/*, /api/widget-submit, /api/ticket-ingest) never hit this.
+ * APIs (/api/status/*, /api/widget-submit, /api/ticket-ingest, /api/inbound/*,
+ * /api/ingest/*) never hit this. The webhook ingest endpoints authenticate by
+ * their own token + signature, so they must stay OUT of this matcher.
  * DEMO_MODE unset/true = everything passes through untouched.
  */
 export async function middleware(req: NextRequest) {
