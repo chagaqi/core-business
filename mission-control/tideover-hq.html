@@ -189,8 +189,8 @@ const CATS = [
 const TASKS = [
   // FOUNDATIONS
   {id:'F1', cat:'FOUND', prio:1, status:'done', title:'Mongo driver behind the Repositories seam', detail:'DATA_DRIVER=mongo implementation + isDemo merchant flag + seed import. Full driver, deterministic ordering, review-hardened.', note:'DONE + proven: verify/test green, Atlas seeded, JSON↔Mongo parity exact, and a local prod-build test served every page from Atlas with a durable write round-trip (widget → engine-drafted ticket → read back from a separate process). Prod flip = D11, one command, needs Dylan.'},
-  {id:'F2', cat:'FOUND', prio:1, status:'queued', title:'Auth on /app', detail:'Env-password + signed cookie middleware; demo mode stays env-gated for the public demo. Must precede live ingest.'},
-  {id:'F3', cat:'FOUND', prio:1, status:'queued', title:'Ingest hardening', detail:'Raw-body HMAC verify BEFORE parse; env-gate the mock channel (current auth bypass); fast-ACK + async engines; idempotency on (merchant, channel, externalId); drop-at-edge with visible discard counter.'},
+  {id:'F2', cat:'FOUND', prio:1, status:'active', title:'Auth on /app', detail:'Env-password + signed cookie middleware; demo mode stays env-gated for the public demo. Must precede live ingest.', note:'ADR-0004 written; builder + adversarial security review in flight.'},
+  {id:'F3', cat:'FOUND', prio:1, status:'active', title:'Ingest hardening', detail:'Raw-body HMAC verify BEFORE parse; env-gate the mock channel (current auth bypass); idempotency on (merchant, channel, externalId); drop-at-edge seam.', note:'Building in parallel lane with F2; shared security review.'},
   {id:'F4', cat:'FOUND', prio:2, status:'queued', title:'Scheduled jobs', detail:'Vercel Cron: resolved_quiet window-closer + nightly variant_stats rollup.'},
   {id:'F5', cat:'FOUND', prio:3, status:'queued', title:'Nightly Atlas backup', detail:'mongodump via GitHub Actions. A lost comm log destroys the Evidence Pack value story.'},
   {id:'F6', cat:'FOUND', prio:3, status:'queued', title:'Uptime + dead-man indicator', detail:'Free uptime monitor + "last ping received" chip so a silently-severed merchant integration is visible.'},
@@ -237,7 +237,7 @@ const TASKS = [
   {id:'G5', cat:'GTM', prio:2, status:'queued', title:'Cold outreach infra (START NOW)', detail:'Separate outreach domain + mailbox + warm-up (~2-week lead time — the reason this starts during the build sprint) + 10 diagnostic openers.'},
   {id:'G6', cat:'GTM', prio:3, status:'queued', title:'Export Everything button', detail:'Playbook + scripts + comm logs as markdown/CSV zip. Makes "no lock-in" demonstrable on the call.'},
   // TRAIN
-  {id:'TR1', cat:'TRAIN', prio:2, status:'queued', title:'CX lingo & org doc', detail:'30+ term glossary, mock org chart of a 50-person brand, "what each role checks each morning", the 10 diagnostic openers.'},
+  {id:'TR1', cat:'TRAIN', prio:2, status:'active', title:'CX lingo & org doc', detail:'30+ term glossary, mock org chart of a 50-person brand, "what each role checks each morning", the 10 diagnostic openers.', note:'All 4 training docs being written now from the cited research digests (TR1–TR4, one writer agent).'},
   {id:'TR2', cat:'TRAIN', prio:2, status:'queued', title:'Crowdfunding 101', detail:'Campaign lifecycle, backer data flow (KS → pledge manager → Shopify), money rails, chargeback mechanics (13.1 stated CORRECTLY), update-cadence norms.'},
   {id:'TR3', cat:'TRAIN', prio:2, status:'queued', title:'Pricing & pitching doc', detail:'Cited comp table, tier logic, procurement basics (DPA, SIG-Lite, thresholds), qualify-out rules.'},
   {id:'TR4', cat:'TRAIN', prio:3, status:'queued', title:'Managed-tier runbook', detail:'PH salary bands + 13th-month, QA sampling, escalation matrix, SOP-from-recordings, hire gate (2 signed clients + >2h/day queue time).'},
