@@ -50,12 +50,11 @@ export class IntercomAdapter implements ChannelAdapter {
     };
   }
 
-  async verifyWebhook(req: Request): Promise<boolean> {
+  async verifyWebhook(rawBody: string, headers: Headers): Promise<boolean> {
     const secret = process.env.INTERCOM_CLIENT_SECRET;
-    const sig = req.headers.get("x-hub-signature");
+    const sig = headers.get("x-hub-signature");
     if (!secret || !sig) return false;
-    const body = await req.clone().text();
-    const expected = "sha1=" + createHmac("sha1", secret).update(body).digest("hex");
+    const expected = "sha1=" + createHmac("sha1", secret).update(rawBody).digest("hex");
     try {
       return timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
     } catch {

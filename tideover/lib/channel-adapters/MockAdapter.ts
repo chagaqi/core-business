@@ -1,3 +1,4 @@
+import { createHash } from "crypto";
 import { newId } from "@/lib/ids";
 import { getRepositories } from "@/lib/repositories";
 import type { Channel, Sentiment, Ticket, TicketType } from "@/lib/types";
@@ -54,11 +55,25 @@ export class MockAdapter implements ChannelAdapter {
     const r = (raw ?? {}) as Record<string, unknown>;
     const subject = String(r.subject ?? "");
     const body = String(r.body ?? "");
+    const customerEmail = String(r.customerEmail ?? "");
+    const merchantId = String(r.merchantId ?? "");
+    const orderId = r.orderId ? String(r.orderId) : "";
+    // No vendor event id on the native surface, so derive a deterministic one
+    // from the content — identical redelivery dedupes to the same ticket. The
+    // widget subject is constant, so merchantId + orderId are hashed too, or the
+    // same customer asking the same text about two orders would collide.
+    const externalId = r.externalId
+      ? String(r.externalId)
+      : "mock_" +
+        createHash("sha256")
+          .update(`${merchantId}\n${orderId}\n${subject}\n${customerEmail}\n${body}`)
+          .digest("hex")
+          .slice(0, 16);
     return {
-      merchantId: String(r.merchantId ?? ""),
-      externalId: r.externalId ? String(r.externalId) : null,
-      customerEmail: String(r.customerEmail ?? ""),
-      orderRef: r.orderId ? String(r.orderId) : null,
+      merchantId,
+      externalId,
+      customerEmail,
+      orderRef: orderId || null,
       subject,
       body,
       type: inferType(subject, body),
@@ -68,8 +83,9 @@ export class MockAdapter implements ChannelAdapter {
     };
   }
 
-  async verifyWebhook(_req: Request): Promise<boolean> {
-    void _req;
-    return true; // native surface; trust boundary handled by app auth + token
+  async verifyWebhook(_rawBody: string, _headers: Headers): Promise<boolean> {
+    void _rawBody;
+    void _headers;
+    return true; // native surface; the route gates this channel on DEMO_MODE
   }
 }

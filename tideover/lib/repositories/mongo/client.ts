@@ -19,6 +19,15 @@ async function ensureIndexes(db: Db): Promise<void> {
       await col.createIndex({ id: 1 }, { unique: true });
       if (name !== "merchants") await col.createIndex({ merchantId: 1 });
       if (name === "orders") await col.createIndex({ statusToken: 1 });
+      // Idempotency backstop: a truly-concurrent vendor redelivery can slip
+      // past the pre-lookup in ingestTicket, so bind dedupe to a DB constraint.
+      // sparse so tickets without an externalId aren't indexed on null.
+      if (name === "tickets") {
+        await col.createIndex(
+          { merchantId: 1, channel: 1, externalId: 1 },
+          { unique: true, sparse: true },
+        );
+      }
     }),
   );
 }

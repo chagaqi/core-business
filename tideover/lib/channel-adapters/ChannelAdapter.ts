@@ -39,8 +39,12 @@ export interface ChannelAdapter {
   sendReply(ticketId: string, text: string): Promise<{ externalId: string; sentAt: string }>;
   /** normalize an inbound webhook payload to our shape */
   normalizeInbound(raw: unknown): NormalizedTicket;
-  /** verify a webhook signature (HMAC per vendor) */
-  verifyWebhook(req: Request): Promise<boolean>;
+  /**
+   * Verify a webhook signature (HMAC per vendor). `rawBody` MUST be the exact
+   * bytes the vendor sent — re-serialized JSON breaks the HMAC — so the route
+   * reads the body once as text and passes it here before any parsing.
+   */
+  verifyWebhook(rawBody: string, headers: Headers): Promise<boolean>;
   /** OAuth begin (optional; stubbed for third parties) */
   authStartUrl?(merchantId: string): string;
   /** OAuth code exchange (optional; stubbed for third parties) */

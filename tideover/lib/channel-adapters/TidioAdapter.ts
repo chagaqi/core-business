@@ -45,8 +45,9 @@ export class TidioAdapter implements ChannelAdapter {
     };
   }
 
-  async verifyWebhook(req: Request): Promise<boolean> {
+  async verifyWebhook(_rawBody: string, headers: Headers): Promise<boolean> {
+    void _rawBody;
     const secret = process.env.TIDIO_WEBHOOK_SECRET;
-    return Boolean(secret && req.headers.get("x-tidio-secret") === secret);
+    return Boolean(secret && headers.get("x-tidio-secret") === secret);
   }
 }

@@ -26,9 +26,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# env files
+# env files (keep the example template tracked)
 .env*.local
 .env
+!.env.example
 
 .vercel
 

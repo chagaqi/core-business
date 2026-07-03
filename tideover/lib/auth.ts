@@ -1,20 +1,18 @@
 import { cookies } from "next/headers";
 
 /**
- * DEMO auth only. The product surfaces (/app/*) are gated by a single demo
- * operator cookie set on first visit — enough to demonstrate the product without
- * a login wall. PRODUCTION must replace this with real auth (NextAuth/Clerk) +
- * per-merchant RBAC (an operator may only see merchants they're assigned to).
- * Documented as a flagged follow-up in TIDEOVER-PLAN.md.
+ * Mode + operator identity (ADR-0004). DEMO_MODE unset/true keeps every surface
+ * open on seeded data; DEMO_MODE=false makes middleware.ts require the signed
+ * session cookie (lib/session.ts) minted by /login. Single shared password —
+ * per-operator identity/RBAC is a documented seam, post-revenue.
  */
-const COOKIE = "tideover_demo_operator";
+const DEMO_OPERATOR_COOKIE = "tideover_demo_operator";
 
 export function getDemoOperator(): string {
-  const c = cookies().get(COOKIE);
+  const c = cookies().get(DEMO_OPERATOR_COOKIE);
   return c?.value || process.env.DEMO_OPERATOR_NAME || "Chaga";
 }
 
 export function isDemoMode(): boolean {
-  // Always true in this seeded build; kept as a seam so production can flip it.
-  return true;
+  return process.env.DEMO_MODE !== "false";
 }

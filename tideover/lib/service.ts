@@ -79,11 +79,29 @@ function intelToDraft(intel: TicketIntelligence): DraftReply {
   };
 }
 
-/** Ingest a normalized inbound ticket: match order/customer, persist, auto-draft. */
-export async function ingestTicket(n: NormalizedTicket): Promise<{ ticket: Ticket } | { error: string }> {
+/** Mongo raises code 11000 on a unique-index violation; other drivers don't. */
+function isDuplicateKeyError(err: unknown): boolean {
+  return typeof err === "object" && err !== null && "code" in err && err.code === 11000;
+}
+
+/**
+ * Ingest a normalized inbound ticket: dedupe, match order/customer, persist,
+ * auto-draft. Vendor retries redeliver the same event, so a ticket already
+ * ingested for (merchantId, channel, externalId) is returned as-is — no new
+ * ticket, no re-draft. A truly-concurrent redelivery that races the pre-lookup
+ * is caught by the DB unique index and de-duped via the 11000 handler below.
+ */
+export async function ingestTicket(
+  n: NormalizedTicket,
+): Promise<{ ticket: Ticket; duplicate?: boolean } | { error: string }> {
   const repos = getRepositories();
   const merchant = await repos.merchants.findById(n.merchantId);
   if (!merchant) return { error: "unknown merchant" };
+
+  if (n.externalId) {
+    const existing = await repos.tickets.findByExternalId(n.merchantId, n.channel, n.externalId);
+    if (existing) return { ticket: existing, duplicate: true };
+  }
 
   let customer = await repos.customers.findByEmail(n.merchantId, n.customerEmail);
   let order: Order | null = n.orderRef ? await repos.orders.findById(n.orderRef) : null;
@@ -139,7 +157,21 @@ export async function ingestTicket(n: NormalizedTicket): Promise<{ ticket: Ticke
       n.sentiment === "chargeback-threat" ? ["presale:dispute-risk"] : [],
     ),
   };
-  await repos.tickets.create(ticket);
+  try {
+    await repos.tickets.create(ticket);
+  } catch (err) {
+    // Truly-concurrent redelivery can slip past the pre-lookup above; the mongo
+    // driver's unique (merchantId, channel, externalId) index is the backstop.
+    // A duplicate-key error means another delivery won the race — return the
+    // winner as the dedupe result instead of double-creating. The single-process
+    // JSON driver has no such constraint and never throws this, so this stays a
+    // no-op path there.
+    if (n.externalId && isDuplicateKeyError(err)) {
+      const existing = await repos.tickets.findByExternalId(n.merchantId, n.channel, n.externalId);
+      if (existing) return { ticket: existing, duplicate: true };
+    }
+    throw err;
+  }
   await repos.customers.update(customer.id, {
     ticketCount: customer.ticketCount + 1,
     lastSentiment: n.sentiment,

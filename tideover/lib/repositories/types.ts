@@ -53,6 +53,12 @@ export interface CustomerRepository {
 
 export interface TicketRepository {
   findById(id: string): Promise<Ticket | null>;
+  /** idempotency lookup: the ticket already ingested for a vendor event, if any */
+  findByExternalId(
+    merchantId: string,
+    channel: Ticket["channel"],
+    externalId: string,
+  ): Promise<Ticket | null>;
   list(filter: TicketFilter): Promise<Ticket[]>;
   create(ticket: Ticket): Promise<Ticket>;
   /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */

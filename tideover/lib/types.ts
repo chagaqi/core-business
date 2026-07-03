@@ -89,6 +89,11 @@ export interface Merchant {
   playbook: PlaybookTemplates;
   ltvTiers: Record<LtvTierKey, number>; // threshold in cents
   giftCatalogIds: string[];
+  /**
+   * Ingest drop-at-edge filter: a tagged webhook payload is discarded unless at
+   * least one tag matches. undefined (the seed default) = accept everything.
+   */
+  presaleTags?: string[];
   slaWindows: { amStart: string; pmStart: string; tz: string };
   /** baseline metrics captured day-one (proof-only deltas measured against this) */
   baseline: {

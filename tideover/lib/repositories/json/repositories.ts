@@ -89,6 +89,13 @@ const tickets: TicketRepository = {
   async findById(id) {
     return store.tickets.find((t) => t.id === id) ?? null;
   },
+  async findByExternalId(merchantId, channel, externalId) {
+    return (
+      store.tickets.find(
+        (t) => t.merchantId === merchantId && t.channel === channel && t.externalId === externalId,
+      ) ?? null
+    );
+  },
   async list(filter: TicketFilter) {
     return store.tickets.filter(
       (t) =>

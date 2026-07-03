@@ -136,6 +136,9 @@ const tickets: TicketRepository = {
   async findById(id) {
     return findOneWhere<Ticket>("tickets", { id });
   },
+  async findByExternalId(merchantId, channel, externalId) {
+    return findOneWhere<Ticket>("tickets", { merchantId, channel, externalId });
+  },
   async list(filter: TicketFilter) {
     // Falsy checks mirror the JSON driver: "" and undefined both mean no filter.
     const q: Partial<Pick<Ticket, "merchantId" | "status" | "customerId" | "orderId">> = {};
