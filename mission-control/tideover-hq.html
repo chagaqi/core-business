@@ -160,7 +160,7 @@
 <script>
 // ============ CANONICAL TASK BOARD (Claude edits this array each sprint tick) ============
 const DYLAN = [
-  {id:'D1', title:'Merge PR #1 (one click on GitHub)', why:'Clean main baseline; lets branch protection point at main', cost:'$0', status:'queued'},
+  {id:'D1', title:'Merge PR #1 (one click on GitHub)', why:'Clean main baseline; lets branch protection point at main', cost:'$0', status:'done'},
   {id:'D2', title:'Buy the domain (tideover.app first choice)', why:'Email ingest addresses, outbound DKIM, real brand URLs. DNS propagation takes hours — start early', cost:'~$20–40/yr', status:'queued'},
   {id:'D3', title:'MongoDB Atlas account + free M0 cluster → paste MONGODB_URI into Vercel env', why:'All durable writes: outcome ledger, live ingest, CSAT, update feed', cost:'$0', status:'queued'},
   {id:'D4', title:'Email provider account (Resend recommended)', why:'Inbound forward addresses + outbound proof emails; free tier fits', cost:'$0', status:'queued'},
@@ -255,6 +255,7 @@ const LOG = [
   {d:'2026-07-02', t:'Enrichment engine ran: 8 expert lenses + 2 adversarial critics (~600K tokens, all claims cited). Digest preserved in docs/research/.'},
   {d:'2026-07-02', t:'Critics caught 5 pre-build landmines: in-memory store (writes evaporate on serverless), open /app (no auth), ingest signature bypass via mock channel, missing privacy/terms, and the Chaga persona blocking outreach. All now P1 tasks.'},
   {d:'2026-07-02', t:'HQ dashboard + sprint plan committed. Autonomous hourly sprint loop armed.'},
+  {d:'2026-07-02', t:'PR #1 merged into main (Dylan-approved). Sprint work now flows on branch sprint/tideover-finalization → PR into main when green.'},
 ];
 
 // ============ RENDER ============
