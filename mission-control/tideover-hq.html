@@ -247,7 +247,7 @@ const TASKS = [
   {id:'OS1', cat:'OS', prio:1, status:'done', title:'CI on GitHub Actions', detail:'verify + engine tests on every push/PR, path-filtered, free tier.'},
   {id:'OS2', cat:'OS', prio:2, status:'done', title:'Issue templates', detail:'Bug (S1–S3 severity) + feature (with ADR-gate question).'},
   {id:'OS3', cat:'OS', prio:2, status:'queued', title:'ADR log', detail:'Template + backfill ADR-0001 (deterministic engines) and ADR-0002 (repository seam).'},
-  {id:'OS4', cat:'OS', prio:1, status:'queued', title:'Golden eval harness', detail:'~40–60 golden tickets + invariant sweep (~3.6K engine calls: no hard dates ever, bands sane, escalation iff hostile). npm run eval joins verify + CI. Dylan reviews fixtures once (D9).'},
+  {id:'OS4', cat:'OS', prio:1, status:'active', title:'Golden eval harness', detail:'Invariant sweep (no hard dates ever, bands sane, escalation iff hostile, risk in range) — authoritative now; + golden regression fixtures (review-gated, reviewed:false until D9). npm run eval joins verify + CI.', note:'ADR-0006 written; building the sweep + goldens now, adversarially reviewed for meaningful (non-tautological) assertions.'},
   {id:'OS5', cat:'OS', prio:2, status:'queued', title:'smoke.mjs + release ritual', detail:'Prod smoke test (incl. hard-date grep on rendered status HTML) + RELEASE.md + CHANGELOG.md.'},
   {id:'OS6', cat:'OS', prio:3, status:'queued', title:'gh CLI + label taxonomy', detail:'winget install; 6 labels; convert cut list to labeled issues.'},
   {id:'OS7', cat:'OS', prio:2, status:'queued', title:'Node drift guards', detail:'.gitattributes eol=lf + engines field in package.json (local Node 25 vs CI must never surprise us).'},
