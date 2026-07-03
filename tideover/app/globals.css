@@ -303,6 +303,40 @@
   user-select: none;
 }
 
+/* ============================================================
+   Day-0 Baseline Report (M4) — the cold-outreach proof-of-method artifact.
+   Reuses the .evpack print isolation + .ev-* documentary styles above; adds a
+   four-up stat grid. PROOF-ONLY: the merchant's OWN before-picture — never a
+   Tideover result, never a projected improvement, never a hard date.
+   ============================================================ */
+.bl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.bl-stat {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.bl-stat-value {
+  font-family: var(--font-fraunces), "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 32px;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--ink);
+}
+.bl-hero {
+  border-left: 3px solid var(--teal);
+  background: var(--accent-card);
+}
+@media (max-width: 560px) {
+  .bl-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media print {
   @page {
     margin: 14mm;
@@ -344,5 +378,17 @@
   }
   .ev-watermark span {
     color: rgba(192, 70, 59, 0.1);
+  }
+  /* Baseline report: keep each stat tile whole; neutralize screen fills. */
+  .bl-grid {
+    gap: 10px;
+  }
+  .bl-stat {
+    border-color: #d7d7d7;
+    border-radius: 0;
+    break-inside: avoid;
+  }
+  .bl-hero {
+    background: #f4f7f8;
   }
 }

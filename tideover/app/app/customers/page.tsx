@@ -65,7 +65,16 @@ export default async function CustomersPage({
           <h1 className="font-serif text-[34px] leading-tight text-ink">
             {customers.length} on file
           </h1>
-          <p className="text-[13px] text-ink-mute">Sorted by live refund-risk.</p>
+          <p className="text-[13px] text-ink-mute">
+            Sorted by live refund-risk.{" "}
+            <Link
+              href={`/app/baseline?merchant=${merchantId}`}
+              className="text-ink-mute no-underline hover:text-teal"
+              title="Day-0 support baseline — this merchant's own starting numbers, captured before Tideover"
+            >
+              View day-0 baseline
+            </Link>
+          </p>
         </div>
         <MerchantSwitcher
           merchants={merchants.map((m) => ({ id: m.id, name: m.name }))}
