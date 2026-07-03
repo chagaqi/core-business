@@ -11,7 +11,8 @@ default. **No call site changes** — semantics match the JSON driver 1:1.
   and dev HMR reuse one client. Env: `MONGODB_URI` (required), `MONGODB_DB`
   (default `tideover`). Indexes are created once per process on connect:
   unique `id` per collection, `merchantId` on merchant-scoped collections,
-  `statusToken` on orders.
+  `statusToken` on orders, and a non-unique `{orderId, viewedAt}` on
+  `status_views` (append-only view log, ADR-0005).
 - `repositories.ts` — documents are the domain objects verbatim (ISO-date
   strings, prefixed-nanoid `id`, integer cents). Mongo `_id` stays an ObjectId
   and never escapes: reads project `{_id: 0}`, inserts write copies. `update`
@@ -21,7 +22,8 @@ default. **No call site changes** — semantics match the JSON driver 1:1.
 ## Collections (1:1 with `lib/types.ts`)
 
 `merchants`, `orders`, `customers`, `tickets`, `gifts`, `social`
-(seeded from `lib/data/social-feed.json`).
+(seeded from `lib/data/social-feed.json`), `status_views` (seeded from
+`lib/data/status-views.json`).
 
 ## Exact-semantics notes
 

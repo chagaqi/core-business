@@ -1,6 +1,14 @@
 import type { Collection, Document, Filter, MatchKeysAndValues } from "mongodb";
-import { verifyStatusToken } from "@/lib/ids";
-import type { Customer, Gift, Merchant, Order, SocialSignal, Ticket } from "@/lib/types";
+import { newId, verifyStatusToken } from "@/lib/ids";
+import type {
+  Customer,
+  Gift,
+  Merchant,
+  Order,
+  SocialSignal,
+  StatusView,
+  Ticket,
+} from "@/lib/types";
 import { getDb } from "@/lib/repositories/mongo/client";
 import type {
   CustomerRepository,
@@ -9,6 +17,7 @@ import type {
   OrderRepository,
   Repositories,
   SocialSignalRepository,
+  StatusViewRepository,
   TicketFilter,
   TicketRepository,
 } from "@/lib/repositories/types";
@@ -171,6 +180,22 @@ const social: SocialSignalRepository = {
   },
 };
 
+const statusViews: StatusViewRepository = {
+  async record(v) {
+    const sv: StatusView = { ...v, id: newId("sv") };
+    return insert("status_views", sv);
+  },
+  async listByOrder(orderId) {
+    // Deterministic order by viewedAt (the JSON driver sorts the same way);
+    // findWhere sorts by createdAt/id, which these documents don't carry.
+    const c = await col<StatusView>("status_views");
+    return (await c
+      .find({ orderId } as Filter<StatusView>, noId)
+      .sort({ viewedAt: 1, id: 1 })
+      .toArray()) as StatusView[];
+  },
+};
+
 export const mongoRepositories: Repositories = {
   merchants,
   orders,
@@ -178,4 +203,5 @@ export const mongoRepositories: Repositories = {
   tickets,
   gifts,
   social,
+  statusViews,
 };

@@ -1,5 +1,5 @@
-import { verifyStatusToken } from "@/lib/ids";
-import type { Gift, Merchant, SocialSignal, Ticket } from "@/lib/types";
+import { newId, verifyStatusToken } from "@/lib/ids";
+import type { Gift, Merchant, SocialSignal, StatusView, Ticket } from "@/lib/types";
 import { store } from "@/lib/repositories/json/store";
 import type {
   CustomerRepository,
@@ -8,9 +8,16 @@ import type {
   OrderRepository,
   Repositories,
   SocialSignalRepository,
+  StatusViewRepository,
   TicketFilter,
   TicketRepository,
 } from "@/lib/repositories/types";
+
+/** Deterministic order: viewedAt ascending, id as tiebreak (matches Mongo). */
+function byViewedAt(a: StatusView, b: StatusView): number {
+  if (a.viewedAt !== b.viewedAt) return a.viewedAt < b.viewedAt ? -1 : 1;
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
 
 /**
  * JSON-backed repository implementations over the in-memory store. Async by
@@ -129,6 +136,17 @@ const social: SocialSignalRepository = {
   },
 };
 
+const statusViews: StatusViewRepository = {
+  async record(v) {
+    const sv: StatusView = { ...v, id: newId("sv") };
+    store.statusViews.push(sv);
+    return sv;
+  },
+  async listByOrder(orderId) {
+    return store.statusViews.filter((s) => s.orderId === orderId).sort(byViewedAt);
+  },
+};
+
 export const jsonRepositories: Repositories = {
   merchants,
   orders,
@@ -136,4 +154,5 @@ export const jsonRepositories: Repositories = {
   tickets,
   gifts,
   social,
+  statusViews,
 };

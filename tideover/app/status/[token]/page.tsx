@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getPublicStatus } from "@/lib/status";
+import { headers } from "next/headers";
+import { getPublicStatus, viewMetaFromHeaders } from "@/lib/status";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { StatusView } from "./StatusView";
@@ -12,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function StatusPage({ params }: { params: { token: string } }) {
-  const status = await getPublicStatus(params.token);
+  const status = await getPublicStatus(params.token, viewMetaFromHeaders(headers()));
 
   if (!status) {
     return (

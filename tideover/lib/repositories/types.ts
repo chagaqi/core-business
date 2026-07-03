@@ -4,6 +4,7 @@ import type {
   Merchant,
   Order,
   SocialSignal,
+  StatusView,
   Ticket,
 } from "@/lib/types";
 
@@ -74,6 +75,13 @@ export interface SocialSignalRepository {
   listByMerchant(merchantId: string): Promise<SocialSignal[]>;
 }
 
+export interface StatusViewRepository {
+  /** append-only: mints the id, persists the view, returns it. */
+  record(v: Omit<StatusView, "id">): Promise<StatusView>;
+  /** all views for an order, sorted deterministically by viewedAt (then id). */
+  listByOrder(orderId: string): Promise<StatusView[]>;
+}
+
 export interface Repositories {
   merchants: MerchantRepository;
   orders: OrderRepository;
@@ -81,4 +89,5 @@ export interface Repositories {
   tickets: TicketRepository;
   gifts: GiftRepository;
   social: SocialSignalRepository;
+  statusViews: StatusViewRepository;
 }

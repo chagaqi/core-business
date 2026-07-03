@@ -27,6 +27,7 @@ const COLLECTIONS = [
   { name: "tickets", file: "tickets.json" },
   { name: "gifts", file: "gifts.json" },
   { name: "social", file: "social-feed.json" },
+  { name: "status_views", file: "status-views.json" },
 ];
 
 const uri = process.env.MONGODB_URI;

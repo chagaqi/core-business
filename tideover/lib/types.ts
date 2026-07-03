@@ -121,6 +121,38 @@ export interface Order {
   /** signed, opaque, unique per order — powers /status/[token] */
   statusToken: string;
   preorderEtaSource: "metafield" | "preorder-app" | "manual";
+  /**
+   * The delivery estimate disclosed to the buyer at purchase — a human band
+   * (e.g. "weeks 9–11"), NOT a hard date. Distinct from the internal
+   * fulfillment window; drives the dispute-window computation (Visa 13.1 runs
+   * from expected delivery). Optional so existing call sites are unaffected.
+   */
+  disclosedEta?: {
+    value: string;
+    source: "campaign-page" | "checkout" | "update";
+    disclosedAt: string;
+  };
+  /** native crowdfunding label, pure display (e.g. "Aurora Lantern — Kickstarter"). */
+  campaignName?: string;
+  /** native fulfillment-wave label, pure display (e.g. "Wave 2 — EU hub"). */
+  wave?: string;
+}
+
+/**
+ * Append-only status-page view log (ADR-0005). One row per successful
+ * /status/[token] render or /api/status/[token] hit, written fire-and-forget.
+ * Dispute evidence ("notified on X, viewed on Y") — metadata, never customer
+ * PII: the IP is truncated to its first two octets or omitted.
+ */
+export interface StatusView {
+  id: string;
+  orderId: string;
+  merchantId: string;
+  token: string;
+  viewedAt: string;
+  /** first two octets of the request IP only, or omitted — never the full IP. */
+  ipPrefix?: string;
+  userAgent?: string;
 }
 
 /** computed timeline view (never persisted) */

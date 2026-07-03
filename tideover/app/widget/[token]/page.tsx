@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { getPublicStatus } from "@/lib/status";
+import { headers } from "next/headers";
+import { getPublicStatus, viewMetaFromHeaders } from "@/lib/status";
 import { ConfidenceBand } from "@/components/status/ConfidenceBand";
 import { OrderTimeline } from "@/components/status/OrderTimeline";
 import { AskBox } from "@/components/status/AskBox";
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
  * iframe can size itself. Renders ONLY PublicStatus fields.
  */
 export default async function WidgetPage({ params }: { params: { token: string } }) {
-  const status = await getPublicStatus(params.token);
+  const status = await getPublicStatus(params.token, viewMetaFromHeaders(headers()));
 
   if (!status) {
     return (

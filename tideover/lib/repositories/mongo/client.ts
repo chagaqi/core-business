@@ -9,7 +9,15 @@ import { MongoClient, type Db } from "mongodb";
  */
 const KEY = "__tideover_mongo__";
 
-const COLLECTIONS = ["merchants", "orders", "customers", "tickets", "gifts", "social"] as const;
+const COLLECTIONS = [
+  "merchants",
+  "orders",
+  "customers",
+  "tickets",
+  "gifts",
+  "social",
+  "status_views",
+] as const;
 
 async function ensureIndexes(db: Db): Promise<void> {
   await Promise.all(
@@ -28,6 +36,9 @@ async function ensureIndexes(db: Db): Promise<void> {
           { unique: true, sparse: true },
         );
       }
+      // Append-only view log (ADR-0005): non-unique — a customer may view a
+      // status page many times; listByOrder reads by order in viewedAt order.
+      if (name === "status_views") await col.createIndex({ orderId: 1, viewedAt: 1 });
     }),
   );
 }

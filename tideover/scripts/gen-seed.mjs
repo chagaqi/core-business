@@ -53,8 +53,62 @@ function statusToken() {
   return `${raw}.${mac}`;
 }
 // SEED_EPOCH pins "now" for reproducible output; default keeps demo data fresh.
+const DAY_MS = 86400000;
 const epoch = Date.parse(process.env.SEED_EPOCH ?? "") || Date.now();
-const iso = (daysAgo) => new Date(epoch - daysAgo * 86400000).toISOString();
+const iso = (daysAgo) => new Date(epoch - daysAgo * DAY_MS).toISOString();
+
+// ── ADR-0005: disclosed-ETA + campaign/wave labels + status-view log ──
+// All derived deterministically from values already fixed above, so adding
+// them never advances the PRNG that mints ids/tokens (those stay byte-stable).
+const EN = "–"; // en dash – (band ranges, matches lib/time.ts)
+const EM = "—"; // em dash — (native label separator)
+const daysBetweenISO = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / DAY_MS);
+
+// The estimate disclosed to the buyer at purchase: a human weeks-band covering
+// the whole fulfillment window (never a hard date), consistent with the order's
+// own window + day-stage. e.g. a ~75-day window → "weeks 9–11".
+function disclosedValue(order) {
+  const total = Math.max(1, daysBetweenISO(order.fulfillmentStart, order.fulfillmentEnd));
+  const loW = Math.max(1, Math.round((total * 0.88) / 7));
+  const hiW = Math.max(loW + 1, Math.round(total / 7));
+  return `weeks ${loW}${EN}${hiW}`;
+}
+const DISCLOSE_SOURCES = ["campaign-page", "checkout", "update"];
+function disclosedEtaFor(order, idx) {
+  return {
+    value: disclosedValue(order),
+    source: DISCLOSE_SOURCES[idx % DISCLOSE_SOURCES.length],
+    disclosedAt: order.createdAt,
+  };
+}
+// Campaign/wave are pure display strings (no Wave CRUD — on the cut list), and
+// native only to crowdfunding groups; new-preorder orders stay bare (no wave).
+const CAMPAIGN_BY_MERCHANT = {
+  mch_lumen0001: `Aurora Lantern ${EM} Kickstarter`,
+  mch_atelier02: `Nordic Weekender ${EM} Kickstarter`,
+};
+const WAVE_BY_REGION = {
+  US: `Wave 1 ${EM} US hub`,
+  CA: `Wave 1 ${EM} US hub`,
+  EU: `Wave 2 ${EM} EU hub`,
+  UK: `Wave 2 ${EM} EU hub`,
+  AU: `Wave 3 ${EM} APAC hub`,
+};
+function applyLabels(order) {
+  if (order.group === "ks-backer" || order.group === "late-pledge") {
+    order.campaignName = CAMPAIGN_BY_MERCHANT[order.merchantId] ?? `Campaign ${EM} Kickstarter`;
+    order.wave = WAVE_BY_REGION[order.region] ?? `Wave 1 ${EM} main hub`;
+  }
+}
+// Realistic view-log metadata. IP prefixes are the first two octets only
+// (documentation/TEST-NET ranges) — never a full or identifying address.
+const IP_PREFIXES = ["203.0", "198.51", "192.0", "72.14", "24.6", "81.2"];
+const USER_AGENTS = [
+  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+  "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
+];
 
 // ── shared stage definitions ──
 const STAGES = [
@@ -380,6 +434,35 @@ for (const m of merchants) {
   }
 }
 
+// ── ADR-0005: order fields (rng-free — appended after every id/token is fixed) ──
+orders.forEach((o, idx) => {
+  o.disclosedEta = disclosedEtaFor(o, idx);
+  applyLabels(o);
+});
+
+// ── status-view log (append-only) ──
+// Generated LAST so its PRNG draws can't shift any id/token above. Views land
+// within each order's wait window [fulfillmentStart, now]. ~38% of orders get a
+// view, a quarter of those get a second → a realistic spread of ~15–25 rows.
+const statusViews = [];
+for (const o of orders) {
+  if (rng() >= 0.38) continue;
+  const start = Date.parse(o.fulfillmentStart);
+  const span = Math.max(DAY_MS, epoch - start);
+  const n = rng() < 0.25 ? 2 : 1;
+  for (let k = 0; k < n; k++) {
+    statusViews.push({
+      id: id("sv"),
+      orderId: o.id,
+      merchantId: o.merchantId,
+      token: o.statusToken,
+      viewedAt: new Date(start + Math.floor(rng() * span)).toISOString(),
+      ipPrefix: pick(IP_PREFIXES),
+      userAgent: pick(USER_AGENTS),
+    });
+  }
+}
+
 // ── write ──
 const write = (name, data) => writeFileSync(join(DATA, name), JSON.stringify(data, null, 2) + "\n");
 write("merchants.json", merchants);
@@ -388,9 +471,10 @@ write("customers.json", customers);
 write("orders.json", orders);
 write("tickets.json", tickets);
 write("social-feed.json", social);
+write("status-views.json", statusViews);
 
 console.log(
-  `seeded: ${merchants.length} merchants, ${customers.length} customers, ${orders.length} orders, ${tickets.length} tickets, ${gifts.length} gifts, ${social.length} social signals`,
+  `seeded: ${merchants.length} merchants, ${customers.length} customers, ${orders.length} orders, ${tickets.length} tickets, ${gifts.length} gifts, ${social.length} social signals, ${statusViews.length} status views`,
 );
 console.log("sample status links:");
 orders.slice(0, 3).forEach((o) => console.log(`  /status/${o.statusToken}`));
