@@ -7,18 +7,18 @@ import { CalButton } from "@/components/booking/CalButton";
 export const metadata: Metadata = {
   title: "Landing-page VSL — Tideover",
   description:
-    "The 3–4 minute landing-page VSL: the presale wait, why generic helpdesks fail it, the presale-specialist layer, and the honest founding-pilot offer. Proof-only.",
+    "The 3–4 minute landing-page VSL: the presale wait, why generic helpdesks fail it, the presale-specialist layer, and the founding-pilot offer. Proof-only.",
 };
 
 const TITLE = "Landing-page VSL (3–4 min)";
 
-function HonestProofBox() {
+function ProofBox() {
   return (
     <div className="rounded-2xl border border-border bg-sand-2 p-7">
       <h3 className="mb-2.5 font-serif text-[19px] font-semibold text-ink">The straight talk on proof</h3>
       <p className="m-0 text-[15px] leading-relaxed text-slate">
         A &ldquo;we cut refunds by X percent&rdquo; case study needs a full presale cycle, 60 to 120 days, so it
-        doesn&rsquo;t exist yet and we won&rsquo;t fake one. What a pilot shows you first are the honest leading
+        doesn&rsquo;t exist yet and we won&rsquo;t fake one. What a pilot shows you first are the leading
         indicators: faster replies, fewer repeat tickets. The refund numbers come after a first cohort finishes its wait.
         No invented metrics, no testimonials, no logos.
       </p>
@@ -68,9 +68,9 @@ export default function LandingVslPage() {
             <strong>The approach:</strong> Tideover is a presale-specialist layer that bolts onto the inbox you already
             run. It reads each order&rsquo;s real production timeline and drafts a calm, human reply tuned to where that
             buyer sits in the wait. Day 12, someone&rsquo;s nervous it didn&rsquo;t go through, so they get a calm
-            confirmation and a clear ship window. Day 58, &ldquo;I want a refund,&rdquo; so they get an honest read on the
+            confirmation and a clear ship window. Day 58, &ldquo;I want a refund,&rdquo; so they get a straight read on the
             wait and a real production update. Day 89, &ldquo;last chance before I dispute,&rdquo; the highest-stakes
-            save: an honest tracking update and a real reason to wait one more day, so it goes to them and not their bank.
+            save: a straight tracking update and a real reason to wait one more day, so it goes to them and not their bank.
             Same inbox, different replies, because now your support knows the difference.
           </p>
           <p>
@@ -83,7 +83,7 @@ export default function LandingVslPage() {
           <p>
             And here&rsquo;s the straight talk. A &ldquo;we cut refunds by X percent&rdquo; case study needs a full
             presale cycle, 60 to 120 days, so it doesn&rsquo;t exist yet and I won&rsquo;t fake one. What a pilot shows
-            you first are the honest leading indicators: faster replies, fewer repeat tickets. The refund numbers come
+            you first are the leading indicators: faster replies, fewer repeat tickets. The refund numbers come
             after a first cohort finishes its wait. You&rsquo;ll know where the proof stands at every step.
           </p>
           <p>
@@ -93,13 +93,13 @@ export default function LandingVslPage() {
             is a hundred-ninety-nine to two-ninety-nine a month, and the productized version runs two-ninety-nine to
             four-ninety-nine, with no performance fee until a real case study exists. If you graduated off crowdfunding
             onto Shopify and you&rsquo;ve got real buyers in the wait window now, book the free 15-minute teardown below.
-            I&rsquo;ll show you where buyers are most likely to bail and tell you honestly whether a pilot is worth your
+            I&rsquo;ll show you where buyers are most likely to bail and tell you straight whether a pilot is worth your
             time. Operator to operator. Talk soon.
           </p>
         </div>
       </TranscriptToggle>
 
-      <HonestProofBox />
+      <ProofBox />
 
       <EmailCapture />
 

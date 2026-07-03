@@ -496,7 +496,7 @@ export const SCRIPT_PERF_MIN_N = 20;
  * them onto the merchant's variants. Deterministic — variants keep their input
  * order, only kind==='reply_sent' counts. A send with no editedRatio is still
  * counted in `sends` but EXCLUDED from the mean — a missing measurement must not
- * bias a variant's edit-rate downward (proof-only honesty even off the seed
+ * bias a variant's edit-rate downward (proof-only discipline even off the seed
  * path). Exported so the rollup is unit-testable with synthetic data.
  */
 export function aggregateScriptPerformance(

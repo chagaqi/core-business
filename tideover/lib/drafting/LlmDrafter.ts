@@ -6,7 +6,7 @@ import type { DraftContext, DrafterOutput, ReplyDrafter } from "@/lib/drafting/R
  * Optional LLM drafter for NOVEL replies (cases the playbook doesn't cover).
  * Env-gated (LLM_PROVIDER + LLM_API_KEY) and intentionally NOT wired live in the
  * demo. When unconfigured it falls back to the deterministic drafter so the app
- * never breaks. The production prompt is constrained to honest confidence bands;
+ * never breaks. The production prompt is constrained to confidence bands;
  * every LLM draft is still run through assertNoHardDate and still requires human
  * approval before send (no autonomous novel sends — ever).
  */
@@ -28,7 +28,7 @@ export class LlmDrafter implements ReplyDrafter {
     //   const text = await callModel({ model: process.env.LLM_MODEL, system, user: ctx.ticket.body });
     //   assertNoHardDate(text);
     //   return { text, confidenceBand: band, priority: ..., draftedBy: "llm" };
-    // Until wired, defer to deterministic to keep the contract honest:
+    // Until wired, defer to deterministic to keep the contract intact:
     const out = await this.fallback.draft(ctx);
     assertNoHardDate(out.text);
     return out;

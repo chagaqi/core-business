@@ -7,7 +7,7 @@ import { assertNoHardDate } from "@/lib/proof";
  *
  * Maps an order's days-in-wait to a day-stage (7/30/60/89), selects the
  * merchant's playbook template (stage-specific override or base), and merges in
- * the order's honest confidence band + production-stage blurb in the merchant's
+ * the order's confidence band + production-stage blurb in the merchant's
  * voice. Output is a draft only — never auto-sent. The band is guaranteed to be
  * a relative window (assertNoHardDate), never a calendar date.
  */
@@ -83,7 +83,7 @@ export function draftReassurance(input: ReassuranceInput): ReassuranceResult {
   // next reassurance window from the merchant's SLA (e.g. "the afternoon update")
   const nextWindow = "the next update window";
 
-  // For overdue orders the confidence band is a full honest sentence, which reads
+  // For overdue orders the confidence band is a full sentence, which reads
   // awkwardly when merged mid-template — substitute a grammatically-neutral phrase.
   const etaBand = timeline.overdue
     ? "as soon as it's ready, and I'll update you the moment it moves"

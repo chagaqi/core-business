@@ -8,7 +8,7 @@ import { StatusView } from "./StatusView";
 // Generic title — never leak the customer's name or order into metadata.
 export const metadata: Metadata = {
   title: "Your order status",
-  description: "A calm, honest view of where your order is in production.",
+  description: "A calm, clear view of where your order is in production.",
   robots: { index: false, follow: false },
 };
 

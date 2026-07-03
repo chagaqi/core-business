@@ -104,7 +104,7 @@
         "byStage": {}
       },
       "day-89": {
-        "base": "{first_name} — you've waited longer than anyone should have to, and I'm not going to give you a canned line. The honest status: {stage_blurb}. Your tracking is generating and I'll have it to you {eta_band}. I'd rather you let me see this through than route it to your bank — I'm on it personally.",
+        "base": "{first_name} — you've waited longer than anyone should have to, and I'm not going to give you a canned line. Where things actually stand: {stage_blurb}. Your tracking is generating and I'll have it to you {eta_band}. I'd rather you let me see this through than route it to your bank — I'm on it personally.",
         "byStage": {}
       }
     },
@@ -239,7 +239,7 @@
         "byStage": {}
       },
       "day-89": {
-        "base": "{first_name} — you've waited longer than anyone should have to, and I'm not going to give you a canned line. The honest status: {stage_blurb}. Your tracking is generating and I'll have it to you {eta_band}. I'd rather you let me see this through than route it to your bank — I'm on it personally.",
+        "base": "{first_name} — you've waited longer than anyone should have to, and I'm not going to give you a canned line. Where things actually stand: {stage_blurb}. Your tracking is generating and I'll have it to you {eta_band}. I'd rather you let me see this through than route it to your bank — I'm on it personally.",
         "byStage": {}
       }
     },

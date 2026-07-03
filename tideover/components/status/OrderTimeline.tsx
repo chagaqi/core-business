@@ -7,7 +7,7 @@ import type { OrderTimeline as OrderTimelineData } from "@/lib/types";
  * Vertical production timeline built from PublicStatus.timeline.stages. Each row
  * is a dot + label + relative day band ("days 32–72", NEVER a calendar date) +
  * blurb. The active stage is highlighted. The day bands are relative to order
- * placement, so they read as honest progress markers, not promised dates.
+ * placement, so they read as relative progress markers, not promised dates.
  */
 export function OrderTimeline({
   timeline,

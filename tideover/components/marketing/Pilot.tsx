@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/Button";
 
 /**
  * The founding-partner pilot — a dark section. Headline + "what's included"
- * checklist on one side, the value ladder + honest guarantee on the other.
+ * checklist on one side, the value ladder + guarantee on the other.
  * Pricing and the deferred performance fee come straight from the locked offer.
  * CTA uses the ondark button variant.
  */
@@ -120,7 +120,7 @@ export function Pilot() {
                     />
                   </svg>
                   <h3 className="m-0 font-serif text-[20px] font-semibold" style={{ color: "#F4F9F8" }}>
-                    An honest guarantee
+                    The guarantee
                   </h3>
                 </div>
                 <p className="m-0 text-[15px] leading-relaxed" style={{ color: "#C7DAD8" }}>

@@ -5,9 +5,9 @@ import type { OrderTimeline } from "@/lib/types";
 /**
  * The prominent, calm "where things stand" card. Shows timeline.confidenceBand
  * verbatim (already a band string like "ships in weeks 9–11" or an overdue
- * message). If overdue, we lean into the honest "running a little longer than
+ * message). If overdue, we lean into the "running a little longer than
  * planned" tone instead of a chipper one. Always ends with a proof note so the
- * customer understands this is an honest window, never a hard date.
+ * customer understands this is a projected window, never a hard date.
  */
 export function ConfidenceBand({
   timeline,
@@ -39,7 +39,7 @@ export function ConfidenceBand({
 
       <div className="pl-2.5">
         <p className="kicker mb-2" style={edge && !overdue ? { color: edge } : undefined}>
-          {overdue ? "An honest update" : "Where your order is"}
+          {overdue ? "A straight update" : "Where your order is"}
         </p>
 
         {overdue ? (
@@ -69,12 +69,12 @@ export function ConfidenceBand({
                 strokeLinejoin="round"
               />
             </svg>
-            An honest window based on current production pace &mdash; not a hard date. We&rsquo;ll
+            A window based on current production pace &mdash; not a hard date. We&rsquo;ll
             update it the moment it moves.
           </p>
         ) : (
           <p className="mt-1.5 text-[12px] leading-snug text-ink-mute">
-            An honest window based on current pace &mdash; not a hard date.
+            A window based on current pace &mdash; not a hard date.
           </p>
         )}
       </div>

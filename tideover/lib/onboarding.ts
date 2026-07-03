@@ -48,7 +48,7 @@ function buildPlaybook(brand: string, signoff: string): PlaybookTemplates {
       byStage: {},
     },
     "day-89": {
-      base: `{first_name} — you've waited longer than anyone should have to, and I won't give you a canned line. The honest status: {stage_blurb}. Your tracking is generating and I'll have it to you {eta_band}. I'd rather see this through for you than have it routed to your bank — I'm on it personally.`,
+      base: `{first_name} — you've waited longer than anyone should have to, and I won't give you a canned line. Where things actually stand: {stage_blurb}. Your tracking is generating and I'll have it to you {eta_band}. I'd rather see this through for you than have it routed to your bank — I'm on it personally.`,
       byStage: {},
     },
   };

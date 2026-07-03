@@ -6,7 +6,7 @@ import type { DayStageKey } from "@/lib/types";
  *  - day-7  : calm confirmation ("you're in, nothing's wrong")
  *  - day-30 : proof of movement ("here's what's actually happening")
  *  - day-60 : acknowledge the wait + one concrete next step
- *  - day-89 : honest, no spin, tracking-soon
+ *  - day-89 : no spin, tracking-soon
  * Always uses the customer's first name + the merchant's name + the current
  * stageBlurb, and signs off in the merchant's voice. NO hard dates ever.
  */
@@ -35,13 +35,13 @@ function paragraphs({
     case "day-60":
       return [
         `${firstName} — you've been patient through the two-month mark, and we don't take that for granted.`,
-        `Here's exactly where things stand: ${stageBlurb}. The honest next step: we'll send your tracking the moment it generates, and you can ask us anything below — a real person will follow up.`,
+        `Here's exactly where things stand: ${stageBlurb}. The next step: we'll send your tracking the moment it generates, and you can ask us anything below — a real person will follow up.`,
       ];
     case "day-89":
     default:
       return [
         `${firstName} — you've waited longer than anyone should have to, and we won't give you a canned line.`,
-        `The honest status: ${stageBlurb}. Your tracking is close, and we'll get it to you as soon as it's live. We'd rather see this through for you personally than have you wondering — we're on it.`,
+        `Where things actually stand: ${stageBlurb}. Your tracking is close, and we'll get it to you as soon as it's live. We'd rather see this through for you personally than have you wondering — we're on it.`,
       ];
   }
 }

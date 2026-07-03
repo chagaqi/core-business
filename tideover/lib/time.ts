@@ -54,7 +54,7 @@ export function formatBand(loDays: number, hiDays: number): string {
 }
 
 /**
- * Compute the full timeline view for an order: days in wait, the honest
+ * Compute the full timeline view for an order: days in wait, the
  * confidence band, remaining upper bound, overdue flag, and per-stage state.
  */
 export function computeTimeline(

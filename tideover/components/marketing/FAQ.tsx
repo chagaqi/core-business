@@ -10,7 +10,7 @@ import { Reveal } from "@/components/ui/Reveal";
 const FAQS: readonly { q: string; a: React.ReactNode }[] = [
   {
     q: "Do you actually have proof it reduces refunds?",
-    a: "Not yet, and we won't pretend we do. A real refund number needs a full cycle, 60–120 days, which is the entire reason we're running founding pilots now. What we can show you during the pilot are honest leading indicators: faster first-response times, fewer repeat tickets, logged saves. The refund case study comes after your first cohort finishes its wait, built on your own data.",
+    a: "Not yet, and we won't pretend we do. A real refund number needs a full cycle, 60–120 days, which is the entire reason we're running founding pilots now. What we can show you during the pilot are leading indicators: faster first-response times, fewer repeat tickets, logged saves. The refund case study comes after your first cohort finishes its wait, built on your own data.",
   },
   {
     q: "How is this different from my helpdesk's AI add-on?",
@@ -26,7 +26,7 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "What if your AI invents a ship date and makes things worse?",
-    a: "It can't. During the pilot nothing goes out without your approval, and replies are constrained to honest confidence-band windows (“ships in weeks 9–11”), never invented hard dates. We lived the damage a bad timeline promise does to a brand. The check runs in code at send time, so a hard date physically cannot leave the system.",
+    a: "It can't. During the pilot nothing goes out without your approval, and replies are constrained to confidence-band windows (“ships in weeks 9–11”), never invented hard dates. We lived the damage a bad timeline promise does to a brand. The check runs in code at send time, so a hard date physically cannot leave the system.",
   },
   {
     q: "We're juggling Kickstarter backers, late-pledges, and Shopify preorders at once. Can you handle that?",
@@ -34,11 +34,11 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "Will you make promises you can't keep?",
-    a: "Never. We use honest confidence bands, “currently tracking for weeks 9–11,” not a hard date. Every novel reply is human-approved before it sends. A false delivery promise is the most damaging thing we could say, so we don't.",
+    a: "Never. We use confidence bands, “currently tracking for weeks 9–11,” not a hard date. Every novel reply is human-approved before it sends. A false delivery promise is the most damaging thing we could say, so we don't.",
   },
   {
     q: "We barely get chargebacks.",
-    a: "Two honest things. First, rare doesn't mean cheap. A single dispute runs about $128 all-in once you count the fee, the product you re-ship, and the mark it leaves on a merchant account the card networks already watch closely for long delivery (Source: Mastercard 2025 State of Chargebacks). “Item not received” is the exact reason code a 90-day wait invites. Second, disputes were never the everyday cost. The everyday cost is WISMO volume: the same “where's my order?” asked hundreds of times across the wait. That's the bleed Tideover takes off your inbox, dispute or no dispute.",
+    a: "Two things worth saying. First, rare doesn't mean cheap. A single dispute runs about $128 all-in once you count the fee, the product you re-ship, and the mark it leaves on a merchant account the card networks already watch closely for long delivery (Source: Mastercard 2025 State of Chargebacks). “Item not received” is the exact reason code a 90-day wait invites. Second, disputes were never the everyday cost. The everyday cost is WISMO volume: the same “where's my order?” asked hundreds of times across the wait. That's the bleed Tideover takes off your inbox, dispute or no dispute.",
   },
   {
     q: "You'll see our customers. What about data security?",
@@ -62,7 +62,7 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "Why is it free? What's the catch?",
-    a: "We need to author the playbooks alongside real merchants, and the only honest way to do that is on real orders. You get the work free, we earn the case study. The only ask is read access to do the work, and, if you're happy, an honest testimonial about the experience.",
+    a: "We need to author the playbooks alongside real merchants, and the only way to do that is on real orders. You get the work free, we earn the case study. The only ask is read access to do the work, and, if you're happy, a testimonial about the experience.",
   },
   {
     q: "Do I switch helpdesks or install anything?",

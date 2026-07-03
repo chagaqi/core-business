@@ -40,7 +40,7 @@ const FEATURES: readonly { title: string; body: string; icon: React.ReactNode }[
   },
   {
     title: "Timeline-aware, day-stage replies",
-    body: "A Day 7 nudge and a Day 89 worry need different words. Replies meet the buyer at the emotional stage they're in, in honest confidence bands — never an invented hard date.",
+    body: "A Day 7 nudge and a Day 89 worry need different words. Replies meet the buyer at the emotional stage they're in, in confidence bands — never an invented hard date.",
     icon: (
       <>
         <path d="M4 5h16v11H8l-4 3V5Z" stroke="#0E5366" strokeWidth="1.7" fill="none" strokeLinejoin="round" />

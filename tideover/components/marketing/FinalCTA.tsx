@@ -30,7 +30,7 @@ export function FinalCTA() {
         <Reveal index={2}>
           <p className="mx-auto mb-8 max-w-[560px] text-[17px] leading-relaxed" style={{ color: "#BDD4D2" }}>
             Start with a free 15-minute presale-support teardown &mdash; a real operator looking at your real support, no
-            pitch. We&rsquo;ll tell you honestly whether we can help.
+            pitch. We&rsquo;ll tell you straight whether we can help.
           </p>
         </Reveal>
 

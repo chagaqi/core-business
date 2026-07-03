@@ -93,7 +93,7 @@ export function UpdateComposer({
       <form onSubmit={submit} className="panel flex flex-col gap-4 p-5 md:p-6">
         <Field
           label="What's happening in the workshop?"
-          hint="A short, honest note — progress, a photo from the bench, a supplier swap. No hard ship dates."
+          hint="A short, plain note — progress, a photo from the bench, a supplier swap. No hard ship dates."
         >
           <TextArea
             value={text}

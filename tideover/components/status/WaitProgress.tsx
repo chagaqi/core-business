@@ -5,10 +5,10 @@ import type { OrderTimeline } from "@/lib/types";
 
 /**
  * Elapsed-time framing shown ABOVE the confidence band: "Day N of your ~lo–hi-day
- * window", with a calm fill for the share of the honest window already spent.
+ * window", with a calm fill for the share of the projected window already spent.
  *
  * PROOF-ONLY DISCIPLINE (the whole point of this component):
- *  - This is ELAPSED TIME inside an honest window — NEVER "% complete" / "87%
+ *  - This is ELAPSED TIME inside a projected window — NEVER "% complete" / "87%
  *    done". A completion bar implies a hard finish and false precision; a time
  *    bar only says "here's how far into the wait you are". There is no percent
  *    number and no calendar date anywhere — the ConfidenceBand stays the single
@@ -21,7 +21,7 @@ import type { OrderTimeline } from "@/lib/types";
  * lowers *felt* wait — the goal-gradient effect, plus the "labor illusion" that
  * shown progress raises satisfaction even when the wait itself is unchanged
  * (Buell & Norton, "The Labor Illusion", Management Science 2011; cf. Uber's
- * map/ETA wait-psychology work). We show honest elapsed progress, never a
+ * map/ETA wait-psychology work). We show true elapsed progress, never a
  * fabricated completion figure.
  */
 export function WaitProgress({
@@ -37,7 +37,7 @@ export function WaitProgress({
   // Any accent used as TEXT or a thin edge here must clear AA on the sand bg.
   const edge = accent ? readableAccent(accent) : "var(--teal)";
 
-  // OVERDUE: we're past the honest window. Do NOT render a numeric window or a
+  // OVERDUE: we're past the projected window. Do NOT render a numeric window or a
   // full/stalled bar (that manufactures anxiety). A calm, forward-looking
   // "final stretch" note in the terracotta token instead — no number, no percent.
   if (overdue) {
@@ -69,7 +69,7 @@ export function WaitProgress({
     );
   }
 
-  // Honest total-window bounds, derived ONLY from exposed numbers + the existing
+  // Total-window bounds, derived ONLY from exposed numbers + the existing
   // band math (bandVariance) — no invented constants. hi = days already waited +
   // the band's remaining upper bound; lo = hi minus a variance re-derived from
   // the total window (bandVariance(hi)), floored at what's already elapsed (the
@@ -112,7 +112,7 @@ export function WaitProgress({
         </div>
 
         <p className={clsx("mt-2 text-ink-mute", compact ? "text-[12px]" : "text-[12.5px]")}>
-          Time elapsed inside your honest window &mdash; not a completion estimate.
+          Time elapsed inside your projected window &mdash; not a completion estimate.
         </p>
       </div>
     </div>

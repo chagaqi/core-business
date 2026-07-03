@@ -29,7 +29,7 @@ const merchant: Merchant = {
     "day-7": { base: "Hey {first_name}, your {brand} order is {stage_blurb}, {eta_band}. {next_window}.", byStage: {} },
     "day-30": { base: "Hi {first_name}, {stage_blurb}, {eta_band}.", byStage: {} },
     "day-60": { base: "Fair to feel that {first_name}. {stage_blurb}, {eta_band}.", byStage: {} },
-    "day-89": { base: "{first_name}, honest status: {stage_blurb}, {eta_band}.", byStage: {} },
+    "day-89": { base: "{first_name}, where things stand: {stage_blurb}, {eta_band}.", byStage: {} },
   },
   ltvTiers: { standard: 0, high: 50000, vip: 200000 },
   giftCatalogIds: [],

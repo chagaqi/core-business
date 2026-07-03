@@ -55,7 +55,7 @@ const SECTIONS: readonly Section[] = [
   {
     heading: "Sub-processors",
     paras: [
-      "We use a small set of third parties to run the service. We name them honestly, and we will update this list before adding another:",
+      "We use a small set of third parties to run the service. We name them all, and we will update this list before adding another:",
     ],
     bullets: [
       "Vercel — application hosting.",

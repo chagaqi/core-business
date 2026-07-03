@@ -23,7 +23,7 @@ export function containsHardDate(text: string): boolean {
 }
 
 /**
- * Assert a customer-facing reply uses only honest confidence bands. Throws in
+ * Assert a customer-facing reply uses only confidence bands, never a hard date. Throws in
  * dev so a bad template fails loudly before it can reach a customer.
  */
 export function assertNoHardDate(text: string): void {

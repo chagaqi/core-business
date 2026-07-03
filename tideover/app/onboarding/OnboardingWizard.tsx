@@ -15,7 +15,7 @@ import type { HelpdeskSetup } from "@/lib/ingest-templates";
  * collects brand voice, current tools, the real production timeline, and support
  * reality, then POSTs to /api/onboarding and shows the generated day-stage
  * reassurance scripts for review. A "6-question fast-start" toggle collapses to
- * just the essentials. Honest day bands, never hard dates.
+ * just the essentials. Relative day bands, never hard dates.
  */
 
 type Helpdesk = "mock" | "gorgias" | "tidio" | "intercom" | "email";
@@ -37,7 +37,7 @@ interface Preview {
 const TONE_OPTIONS = [
   "Warm",
   "Calm",
-  "Honest",
+  "Straightforward",
   "Playful",
   "Premium",
   "Down-to-earth",
@@ -69,7 +69,7 @@ const PREVIEW_LABEL: Record<string, string> = {
   "day-7": "Day 7 — calm confirmation",
   "day-30": "Day 30 — proof of movement",
   "day-60": "Day 60 — acknowledge + next step",
-  "day-89": "Day 89 — honest & tracking-soon",
+  "day-89": "Day 89 — straight & tracking-soon",
 };
 
 const STAGE_LABEL = "text-[13px] font-semibold text-ink";
@@ -81,7 +81,7 @@ export function OnboardingWizard() {
   // brand & voice
   const [brandName, setBrandName] = useState("");
   const [voice, setVoice] = useState("");
-  const [tone, setTone] = useState<string[]>(["Warm", "Calm", "Honest"]);
+  const [tone, setTone] = useState<string[]>(["Warm", "Calm", "Straightforward"]);
   const [banned, setBanned] = useState("");
   const [signoff, setSignoff] = useState("");
 
@@ -206,7 +206,7 @@ export function OnboardingWizard() {
           <h1 className="mb-3 text-balance">{brandName} is set up on Tideover</h1>
           <p className="max-w-[620px] text-[16px] leading-relaxed text-slate">
             Here are the day-stage reassurance scripts Tideover generated from your answers. Each one
-            is calm, in your voice, and uses an honest confidence band &mdash; never a hard date.
+            is calm, in your voice, and uses a confidence band &mdash; never a hard date.
             Review them, and they&rsquo;re ready to go.
           </p>
         </div>
@@ -269,7 +269,7 @@ export function OnboardingWizard() {
         <h1 className="mb-3 text-balance">Set up Tideover</h1>
         <p className="max-w-[600px] text-[16px] leading-relaxed text-slate">
           A few questions about your brand, your tools, and your real production timeline. We&rsquo;ll
-          turn them into a working day-stage reassurance playbook &mdash; honest windows, never hard
+          turn them into a working day-stage reassurance playbook &mdash; clear windows, never hard
           dates.
         </p>
       </div>
@@ -386,7 +386,7 @@ function TimelineEditor({
   return (
     <div className="flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Fulfillment window — earliest (days)" hint="Honest band, not a promise">
+        <Field label="Fulfillment window — earliest (days)" hint="A range, not a promise">
           <TextInput
             type="number"
             min={0}

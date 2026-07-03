@@ -1,7 +1,7 @@
 import { Reveal } from "@/components/ui/Reveal";
 
 /**
- * Honest-fit section — two cards drawn from the sales-page who-it's-for / not-for
+ * Fit section — two cards drawn from the sales-page who-it's-for / not-for
  * lists. Calm and disqualifying on purpose: we'd rather both sides find out fast.
  */
 const FIT: readonly string[] = [
@@ -26,7 +26,7 @@ export function HonestFit() {
       <div className="wrap">
         <Reveal index={0}>
           <div className="mb-11 max-w-[640px]">
-            <span className="kicker mb-3.5">Honest fit</span>
+            <span className="kicker mb-3.5">Is it a fit?</span>
             <h2 className="m-0 text-balance">We&rsquo;d rather tell you now if this isn&rsquo;t for you.</h2>
           </div>
         </Reveal>

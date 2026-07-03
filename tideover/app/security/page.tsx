@@ -262,7 +262,7 @@ export default function SecurityPage() {
           </div>
         </section>
 
-        {/* Proof-only honesty box */}
+        {/* Proof-only "what we don't claim" box */}
         <section className="section section-sand2 pt-0">
           <div className="wrap max-w-[820px]">
             <div className="rounded-[20px] border border-border bg-paper p-[30px] shadow-card">

@@ -173,7 +173,7 @@ export default async function ScriptsPage({
 
       <p className="rounded-xl border border-dashed border-border bg-sand px-4 py-3 text-[12px] leading-relaxed text-ink-mute">
         Richer outcome columns — customer reply, reopen, CSAT — populate once the pilot is live. Those
-        events are defined in the ledger but not emitted in Phase 0, so they are honestly absent here
+        events are defined in the ledger but not emitted in Phase 0, so they are simply absent here
         rather than filled with placeholder numbers.
       </p>
     </div>

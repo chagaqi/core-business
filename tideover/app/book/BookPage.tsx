@@ -30,7 +30,7 @@ function CheckTick() {
 const CALL_POINTS: readonly string[] = [
   "We look at how your presale tickets are handled today — live, on the call.",
   "We point to the two or three moments in the wait where buyers are most likely to bail.",
-  "We tell you honestly whether a free founding-partner pilot is worth your time.",
+  "We tell you straight whether a free founding-partner pilot is worth your time.",
   "If it's a fit, we map the pilot. If it's not, you keep the teardown either way.",
 ];
 
@@ -69,7 +69,7 @@ export default function BookPage() {
             <Reveal index={2}>
               <p className="mx-auto max-w-[560px] text-[clamp(16px,1.5vw,18px)] leading-relaxed text-slate">
                 A real operator looks at your real presale support, shows you where buyers are most likely to bail, and
-                tells you honestly whether a pilot is worth your time. No deck, no obligation.
+                tells you straight whether a pilot is worth your time. No deck, no obligation.
               </p>
             </Reveal>
           </div>
@@ -114,7 +114,7 @@ export default function BookPage() {
                   </div>
 
                   <p className="mt-auto pt-2 text-[11px] leading-relaxed tracking-[0.04em] text-ink-mute">
-                    The free pilot and the honest leading indicators carry the proof &mdash; not a logo wall, not an
+                    The free pilot and the leading indicators carry the proof &mdash; not a logo wall, not an
                     invented number. We&rsquo;ll never show you a result we can&rsquo;t stand behind.
                   </p>
                 </div>
