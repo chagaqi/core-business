@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Copy framework — the ABOUT template</title>
+<style>
+  :root{--teal:#0E5366;--terra:#D9762F;--sand:#FBF8F2;--ink:#11252A;--paper:#fff;--line:#E5DFD2;--muted:#5B6B70}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--sand);color:var(--ink);font:15.5px/1.6 Inter,system-ui,sans-serif;padding:32px 20px 80px}
+  .wrap{max-width:960px;margin:0 auto}
+  h1,h2{font-family:Fraunces,Georgia,serif;color:var(--teal)}
+  h1{font-size:30px;margin-bottom:6px}
+  h2{font-size:20px;margin:30px 0 10px}
+  .meta{color:var(--muted);margin-bottom:22px}
+  .tblwrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px 10px;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:10px;border-bottom:2px solid var(--line)}
+  td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .yes{color:var(--terra);font-weight:600}
+  .no{color:var(--muted);font-weight:600}
+  .mid{color:var(--teal);font-weight:600}
+  .num{font-family:Fraunces,Georgia,serif;font-weight:600;color:var(--teal);white-space:nowrap}
+  .why{background:#F4EFE4;border-radius:10px;padding:14px 18px;font-size:14px;margin:14px 0}
+  .pick{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--terra);border-radius:12px;padding:20px 24px;margin:14px 0}
+  .pick h3{font-family:Fraunces,Georgia,serif;font-size:22px;color:var(--ink);margin-bottom:10px}
+  .pick ul{margin:8px 0 8px 20px}
+  .pick li{margin-bottom:6px}
+  .runner{font-size:14px;color:var(--muted);margin-top:10px}
+  .rule{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--terra);border-radius:10px;padding:12px 16px;margin:10px 0;font-size:14px}
+  .approve{background:var(--teal);color:#F2EFE7;border-radius:12px;padding:18px 22px;margin-top:26px}
+  .approve strong{color:#fff}
+  .sec{font-weight:600;color:var(--ink);white-space:nowrap}
+  code{background:#F4EFE4;padding:1px 5px;border-radius:4px;font-size:13px}
+  .frag{font-style:italic;color:var(--muted)}
+</style>
+</head>
+<body><div class="wrap">
+<h1>Copy framework — the ABOUT template</h1>
+<div class="meta">Decision needed from Dylan · reverse-engineered from 8 real-site teardowns · becomes the skeleton for the ABOUT, then the whole site · full working doc: <code>docs/copy/ABOUT-TEMPLATE.md</code></div>
+
+<div class="why"><strong>The question you asked, answered honestly:</strong> a full first-person founder <em>memoir</em> on a company's own About page is <strong>not a classic-SaaS thing</strong> — it's a bootstrapper/indie move. The one variable that predicts who shows the founder: whether the company already has <em>external proof</em> (logos, big numbers, press) to trust instead. Tideover has none of that yet — which is exactly why some founder presence is <em>necessary</em> here.</div>
+
+<h2>Who leads with the founder — and who doesn't (cited)</h2>
+<div class="tblwrap"><table>
+<thead><tr><th>Site</th><th>Category</th><th>Founder on company About?</th><th>What carries trust instead</th></tr></thead>
+<tbody>
+<tr><td><strong>Basecamp / 37signals</strong></td><td>Bootstrapper SaaS</td><td><span class="yes">YES</span> — the About <em>is</em> a first-person letter, ~80% founder, signed w/ real personal email</td><td>Admission + structural facts <span class="frag">("27 years profitable")</span></td></tr>
+<tr><td><strong>Kit / Nathan Barry</strong></td><td>Creator SaaS</td><td><span class="mid">SPLIT</span> — company About is founder-absent "we"; full story <em>quarantined</em> on nathanbarry.com (~3:1 founder:mission)</td><td>Dated specifics ($45M ARR) — on the <em>personal</em> page only</td></tr>
+<tr><td><strong>Gumroad / Sahil</strong></td><td>Indie / creator</td><td><span class="mid">SPLIT</span> / de-foundered — product site founder-invisible; ~7,400-word confession in personal essays</td><td>Confession-first + exact, un-rounded numbers</td></tr>
+<tr><td><strong>Oatly</strong></td><td>DTC / CPG</td><td><span class="no">NO</span> — mission-led, founder absent (Öste brothers only in press)</td><td>Mission + sourced data + a labeled "Big Fails!" block</td></tr>
+<tr><td><strong>PostHog</strong></td><td>Dev-tool SaaS</td><td><span class="mid">STAMP</span> — named + photo, but bio ~250w vs ~1,200w philosophy (~1:5); argument stays "we"</td><td>Transparency artifacts + exact numbers</td></tr>
+<tr><td><strong>Linear</strong></td><td>B2B SaaS</td><td><span class="no">NO</span> — founders are peers in a team grid; no bio, no "I", no story</td><td>Logos, "over 33,000 teams," investor names</td></tr>
+<tr><td><strong>Stripe</strong></td><td>B2B fintech</td><td><span class="no">NO</span> on marketing surfaces — founders are silent headshots; voice rationed to a yearly letter</td><td>Exact mega-numbers, logos, honest-weaknesses careers page</td></tr>
+<tr><td><strong>Mercury</strong></td><td>B2B fintech</td><td><span class="no">NO</span> — founder deliberately kept off the About</td><td>Press wall, investor names, customer counts</td></tr>
+</tbody></table></div>
+
+<div class="why"><strong>Read the pattern:</strong> only <strong>Basecamp</strong> (a bootstrapper) runs a big founder story on its own About. The creator brands that have one (Kit, Gumroad) <em>hide it</em> on a personal domain. Classic B2B/fintech (Linear, Stripe, Mercury) and even DTC Oatly keep the founder minimal-to-absent — because they own proof Tideover doesn't. <strong>Honest correction:</strong> Oatly, the DTC example, is <em>not</em> a founder-story brand at all — so "big DTC founder story" is a weaker convention than it feels.</div>
+
+<div class="rule"><strong>Verdict for Tideover:</strong> founder-led sale, no case studies → the founder's lived experience is the <em>only</em> credibility asset on hand, so <strong>some founder presence is necessary and earns trust</strong>. But it <strong>need not be a memoir</strong> — a compact first-person letter (~450–650 words), not Gumroad's 7,400. Put the named founder + the lived wait up front; prove trust with admission + structural fact + exact self-owned numbers; then stop.</div>
+
+<h2>Recommended template site</h2>
+<div class="pick">
+<h3>Basecamp / 37signals — "Where we came from"</h3>
+<ul>
+<li><strong>It's the only model that manufactures trust with zero case studies</strong> — the About is a first-person admission <span class="frag">("clients noticed our failure first")</span>, not a results wall. That is Tideover's exact problem, already solved.</li>
+<li><strong>Its three proof mechanisms are all things Tideover already owns:</strong> narrative admission, <em>structural fact</em> (how you operate, not how big you are), and opinion-as-hype-substitute — none need scale, logos, or numbers Tideover lacks. The founder-minimal sites prove trust with exactly the assets Tideover doesn't have.</li>
+<li><strong>The register is the target voice:</strong> plain-spoken, problem-first, low-hype, conviction-over-superlatives — a bootstrapper talking, not a VC brand performing. Maps 1:1 onto "calm, trust-first."</li>
+</ul>
+<div class="runner"><strong>Runner-up: PostHog</strong> — same named-and-photographed founder-as-<em>stamp</em> instinct plus confess-then-convert and transparency-as-proof, but with the argument kept institutional (better for the <em>home</em> / <em>how-it-works</em> pages where a full letter is too much). Adopt its structure; strip its cocky tone. <strong>Two grafts onto the Basecamp spine:</strong> Stripe's honest-limits block replaces Basecamp's revenue-proof section (Tideover has no revenue fact yet), and Gumroad's confession-first open names the gap before any claim.</div>
+</div>
+
+<h2>The ABOUT template — section-by-section skeleton</h2>
+<p style="font-size:14px;color:var(--muted);margin-bottom:6px">Basecamp's 8-part arc, adapted to proof-only. Copy stays bracketed until the framework is locked. Total target ~450–650 words. Full "Says" + structural moves in <code>docs/copy/ABOUT-TEMPLATE.md</code>.</p>
+<div class="tblwrap"><table>
+<thead><tr><th>Section</th><th>Words</th><th>Function</th><th>Says (describing words — not the copy)</th></tr></thead>
+<tbody>
+<tr><td class="sec">1 · Thesis line</td><td class="num">~10–15</td><td>Frame the story as necessity, not genius</td><td>One flat fragment naming the wait as the reason the company exists. No product, no benefit. <span class="frag">Pattern: "Born out of desperate necessity."</span></td></tr>
+<tr><td class="sec">2 · Founder intro</td><td class="num">~35–60</td><td>Put a named, real human on the page at once</td><td>Warm "I'm Dylan" + the one load-bearing credential — he lived the exact wait he now sells relief from. Photo here. No résumé.</td></tr>
+<tr><td class="sec">3 · The lived problem</td><td class="num">~140–200</td><td>Earn trust by admitting the pain — replaces case studies</td><td>The surge that looked like a win, the 60+ day wait he couldn't move, the WISMO inbox, the toll. Dated, concrete, exact self-owned numbers. Candid, low-drama.</td></tr>
+<tr><td class="sec">4 · The turning point</td><td class="num">~70–110</td><td>Turn the pain into the idea worth solving</td><td>The "magic wand" moment in his words → where Tideover (the literal name) was born. Reflective, quiet — the hinge of the letter.</td></tr>
+<tr><td class="sec">5 · What got built</td><td class="num">~110–170</td><td>Show the product emerging from the scar; judgment turned into software</td><td>Instinct fails at the 300th 11pm email → so it's in code: replies audited, hard dates blocked, results vs your own baseline. Pragmatic, concrete, no hype.</td></tr>
+<tr><td class="sec">6 · Honest limits + proof-only pledge</td><td class="num">~80–120</td><td>Convert the absence of proof into the reason to trust</td><td>Proof only: no fake metrics, no logo wall, no line he can't back; his numbers are his own account until real merchant results replace them. Direct, transparent — honesty as a flex. <em>(graft: Stripe)</em></td></tr>
+<tr><td class="sec">7 · Who it's for + invitation</td><td class="num">~70–110</td><td>Name the exact reader, open a real door</td><td>Shopify merchants in a 60–120 day wait after a campaign overperformed → a small founding-partner group, direct access, results become proof only with sign-off. Warm, specific, low-pressure.</td></tr>
+<tr><td class="sec">8 · Signature + human door</td><td class="num">~15–30</td><td>Close on a person, not a brand</td><td>One line to the merchant mid-onslaught → "— Dylan" + a real reply-to. Quiet, direct, human.</td></tr>
+</tbody></table></div>
+
+<h2>Voice rules (proof-only, distilled from Basecamp)</h2>
+<div class="rule">1 · Write like one email to one person — first-person, contractions, zero corporate mission-speak. &nbsp; 2 · Open on the problem or a plain fact, never the product. &nbsp; 3 · Admission before claim — name the gap first. &nbsp; 4 · Opinion is the hype-substitute — short beliefs, no superlatives. &nbsp; 5 · Proof = narrative + structural fact + exact numbers only — never scale flexes or borrowed logos. &nbsp; 6 · Every number exact and self-owned, flagged as his own account until real results replace it. &nbsp; 7 · Short declaratives; sign with a real name and a real door.</div>
+
+<h2>Same method, whole site (next)</h2>
+<div class="rule"><strong>Home</strong> → Basecamp homepage skeleton; swap the big-numbers scale flex for the structural-fact block + one exact number. &nbsp; <strong>How-it-works</strong> → Linear's product-surface discipline (4–8 word headers, ~20–25 word blurbs, show the real status view as proof). &nbsp; <strong>Pricing</strong> → PostHog pricing-philosophy + Stripe FAQ objection-handling, wrapping the D8 ladder; "no performance fees until real case studies exist" is the proof-only line. Same 7 voice rules carry over unchanged.</div>
+
+<div class="approve"><strong>To lock the framework:</strong> tell Claude <strong>"approve the copy template"</strong> — or <strong>swap the reference site</strong> (e.g. "template on PostHog instead," or "use the Stripe honest-limits voice as the spine"). On approval, this skeleton gets filled into the ABOUT, then the identical Section · Words · Function · Says · Structural-move pass runs on Home, How-it-works, and Pricing to template the whole site.</div>
+</div></body>
+</html>
