@@ -34,7 +34,15 @@ export function QueueList({
 }) {
   if (rows.length === 0) {
     return (
-      <div className="proof-placeholder m-3">Queue is clear for this merchant.</div>
+      <div className="flex flex-col items-center gap-2.5 px-6 py-12 text-center">
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-card text-teal">
+          <CheckMark />
+        </span>
+        <p className="text-[14px] font-semibold text-ink">Queue clear</p>
+        <p className="text-[12px] text-ink-mute">
+          Nothing waiting — every at-risk buyer has a reply out.
+        </p>
+      </div>
     );
   }
 
@@ -45,6 +53,7 @@ export function QueueList({
         return (
           <li key={r.ticketId}>
             <Link
+              data-queue-item={r.ticketId}
               href={`/app/inbox?merchant=${merchantId}&ticket=${r.ticketId}`}
               className={clsx(
                 "block px-4 py-3 no-underline transition",
@@ -80,5 +89,24 @@ export function QueueList({
         );
       })}
     </ul>
+  );
+}
+
+/** Small calm check for the queue-clear state. Inherits currentColor. */
+function CheckMark() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
   );
 }

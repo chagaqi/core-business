@@ -2,6 +2,7 @@ import { getQueue, getTicketView } from "@/lib/service";
 import { getRepositories } from "@/lib/repositories";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { QueueList, type QueueItem } from "@/components/product/QueueList";
+import { QueueKeyboard } from "@/components/product/QueueKeyboard";
 import { FactorBreakdown } from "@/components/product/FactorBreakdown";
 import { DraftRail } from "@/components/product/DraftRail";
 import { GiftSuggestion } from "@/components/product/GiftSuggestion";
@@ -55,7 +56,13 @@ export default async function InboxPage({
 
   const queue = await getQueue(merchantId);
 
-  const items: QueueItem[] = queue.map((r) => ({
+  // The priority queue is the OPEN work — a sent ticket has been handled and
+  // drops out on re-read, so the list visibly shrinks as the operator clears it
+  // (and reaches "Queue clear" when empty). Sent tickets still count toward the
+  // dashboard's before/after metrics, which read the ticket store directly.
+  const openQueue = queue.filter((r) => r.ticket.status !== "sent");
+
+  const items: QueueItem[] = openQueue.map((r) => ({
     ticketId: r.ticket.id,
     firstName: r.customer.firstName,
     group: r.order.group,
@@ -66,12 +73,25 @@ export default async function InboxPage({
     escalated: escalatedSentiment(r.ticket.sentiment),
   }));
 
+  // A deep-linked ticket (even an already-sent one) resolves against the full
+  // queue so its detail still opens; otherwise default to the top of the open
+  // queue (or nothing when the queue is clear).
   const selectedId =
     searchParams.ticket && queue.some((r) => r.ticket.id === searchParams.ticket)
       ? searchParams.ticket
-      : queue[0]?.ticket.id ?? null;
+      : openQueue[0]?.ticket.id ?? null;
+
+  // Approve-and-advance target: the open item after the selected one in priority
+  // order; if the selected item is last (or not in the open list), fall back to
+  // the front of the queue; null when sending would empty the queue.
+  const selectedIndex = items.findIndex((i) => i.ticketId === selectedId);
+  const nextTicketId =
+    selectedIndex >= 0 && selectedIndex < items.length - 1
+      ? items[selectedIndex + 1].ticketId
+      : items.find((i) => i.ticketId !== selectedId)?.ticketId ?? null;
 
   const view = selectedId ? await getTicketView(selectedId) : null;
+  const queueCleared = items.length === 0;
 
   return (
     <div className="flex h-screen flex-col">
@@ -89,21 +109,58 @@ export default async function InboxPage({
       <div className="grid min-h-0 flex-1 grid-cols-[300px_minmax(0,1fr)_360px]">
         {/* LEFT — priority queue */}
         <div className="min-h-0 overflow-y-auto border-r border-border bg-paper">
-          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-paper px-4 py-2.5">
-            <span className="text-[12px] font-semibold uppercase tracking-wider text-ink-mute">
-              Priority queue
-            </span>
-            <span className="text-[12px] text-ink-mute">{items.length}</span>
+          <div className="sticky top-0 z-10 border-b border-border bg-paper px-4 py-2.5">
+            <div className="flex items-center justify-between">
+              <span className="text-[12px] font-semibold uppercase tracking-wider text-ink-mute">
+                Priority queue
+              </span>
+              <span className="text-[12px] text-ink-mute">{items.length}</span>
+            </div>
+            {items.length > 0 ? (
+              <p className="mt-1 text-[11px] text-ink-mute">
+                J/K to move · Enter to open · ⌘↵ to send
+              </p>
+            ) : null}
           </div>
+          <QueueKeyboard
+            ticketIds={items.map((i) => i.ticketId)}
+            selectedId={selectedId}
+            merchantId={merchantId}
+          />
           <QueueList rows={items} selectedId={selectedId} merchantId={merchantId} />
         </div>
 
         {/* CENTER — ticket detail */}
         <div className="min-h-0 overflow-y-auto px-6 py-5">
           {!view ? (
-            <div className="proof-placeholder mt-10">
-              Select a ticket from the queue to open it.
-            </div>
+            queueCleared ? (
+              <div className="mx-auto mt-16 flex max-w-[320px] flex-col items-center gap-3 text-center">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent-card text-teal">
+                  <svg
+                    width="22"
+                    height="22"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M20 6 9 17l-5-5" />
+                  </svg>
+                </span>
+                <h2 className="font-serif text-[22px] text-ink">Queue clear</h2>
+                <p className="text-[13px] text-ink-mute">
+                  You&rsquo;ve cleared the at-risk queue. New tickets land here the
+                  moment they arrive.
+                </p>
+              </div>
+            ) : (
+              <div className="proof-placeholder mt-10">
+                Select a ticket from the queue to open it.
+              </div>
+            )
           ) : (
             <div className="flex flex-col gap-5">
               <div className="flex items-start justify-between gap-3">
@@ -161,10 +218,13 @@ export default async function InboxPage({
         {/* RIGHT — draft rail + gift */}
         <div className="min-h-0 overflow-y-auto border-l border-border bg-sand px-4 py-5">
           {!view ? (
-            <div className="proof-placeholder">No ticket selected.</div>
+            <div className="proof-placeholder">
+              {queueCleared ? "Nothing to draft — queue clear." : "No ticket selected."}
+            </div>
           ) : (
             <div className="flex flex-col gap-4">
               <DraftRail
+                key={view.ticket.id}
                 ticketId={view.ticket.id}
                 draftText={view.intel.reassurance.draftText}
                 confidenceBand={view.intel.reassurance.confidenceBand}
@@ -174,8 +234,11 @@ export default async function InboxPage({
                 alreadySent={view.ticket.status === "sent"}
                 sentText={view.ticket.sent?.text ?? null}
                 firstResponseSec={view.ticket.firstResponseSec}
+                merchantId={merchantId}
+                nextTicketId={nextTicketId}
               />
               <GiftSuggestion
+                key={view.ticket.id}
                 ticketId={view.ticket.id}
                 gift={view.intel.gift.gift}
                 reasoning={view.intel.gift.reasoning}

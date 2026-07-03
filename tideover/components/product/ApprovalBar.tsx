@@ -1,32 +1,47 @@
 "use client";
 
-import { useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+
+/** Imperative handle so the draft textarea can fire ⌘/Ctrl+Enter = send. */
+export interface ApprovalBarHandle {
+  send: () => void;
+}
 
 /**
  * Action row for the cockpit draft rail. Regenerate (POST /api/draft), Approve &
  * send (POST /api/approve-send with the edited text), and Escalate (visual note).
  * Every mutation calls router.refresh() so the server surfaces re-read.
+ *
+ * Approve-and-advance: after a successful send, the just-sent ticket drops out of
+ * the open queue on re-read, so we router.replace() to `nextTicketId` (the queue
+ * item that followed the selected one, computed server-side) — or fall back to
+ * `?merchant=…` alone when the queue is now empty. Exposes an imperative `send()`
+ * so DraftRail's textarea can reuse this exact path for ⌘/Ctrl+Enter.
  */
-export function ApprovalBar({
-  ticketId,
-  getText,
-  alreadySent,
-  firstResponseSec,
-}: {
+export const ApprovalBar = forwardRef<ApprovalBarHandle, {
   ticketId: string;
   getText: () => string;
   alreadySent: boolean;
   firstResponseSec: number | null;
-}) {
+  merchantId: string;
+  nextTicketId: string | null;
+}>(function ApprovalBar(
+  { ticketId, getText, alreadySent, firstResponseSec, merchantId, nextTicketId },
+  ref,
+) {
   const router = useRouter();
   const [busy, setBusy] = useState<"draft" | "send" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [escalated, setEscalated] = useState(false);
-  const [sentMeta, setSentMeta] = useState<{ frt: number | null } | null>(
+  // Set once at mount: shows the "Reply sent." confirmation when a deep-linked
+  // ticket is already sent. The live-send path advances instead of lingering.
+  const [sentMeta] = useState<{ frt: number | null } | null>(
     alreadySent ? { frt: firstResponseSec } : null,
   );
+  // Guards against a double-send from ⌘↵ key-repeat racing the busy state.
+  const sendingRef = useRef(false);
 
   async function post(url: string, body: Record<string, unknown>) {
     const res = await fetch(url, {
@@ -55,21 +70,34 @@ export function ApprovalBar({
   }
 
   async function approveSend() {
+    if (sendingRef.current) return; // ⌘↵ key-repeat / double-click guard.
+    sendingRef.current = true;
     setBusy("send");
     setError(null);
     try {
-      const data = (await post("/api/approve-send", {
-        ticketId,
-        approvedText: getText(),
-      })) as { firstResponseSec?: number | null };
-      setSentMeta({ frt: data.firstResponseSec ?? null });
-      router.refresh();
+      await post("/api/approve-send", { ticketId, approvedText: getText() });
+      // Advance: replace() to the next ticket (or just ?merchant when the queue
+      // is now empty). The page is force-dynamic, so this navigation refetches
+      // the queue — where the just-sent ticket is already filtered out — with no
+      // separate refresh() (which would flash the sent ticket for a frame first).
+      router.replace(
+        nextTicketId
+          ? `/app/inbox?merchant=${merchantId}&ticket=${nextTicketId}`
+          : `/app/inbox?merchant=${merchantId}`,
+      );
+      // Leave busy set through the navigation; DraftRail remounts on the new
+      // ticket (keyed by id), giving fresh state.
     } catch (e) {
       setError((e as Error).message);
-    } finally {
       setBusy(null);
+      sendingRef.current = false;
     }
   }
+
+  // Expose a stable send() that always calls the latest approveSend closure.
+  const approveSendRef = useRef(approveSend);
+  approveSendRef.current = approveSend;
+  useImperativeHandle(ref, () => ({ send: () => void approveSendRef.current() }), []);
 
   if (sentMeta) {
     return (
@@ -116,7 +144,7 @@ export function ApprovalBar({
       </div>
     </div>
   );
-}
+});
 
 function formatFrt(sec: number): string {
   if (sec < 60) return `${sec}s`;

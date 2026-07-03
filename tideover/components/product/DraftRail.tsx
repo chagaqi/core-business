@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { TextArea } from "@/components/ui/Field";
-import { ApprovalBar } from "@/components/product/ApprovalBar";
+import { ApprovalBar, type ApprovalBarHandle } from "@/components/product/ApprovalBar";
 
 /**
  * Right rail of the cockpit. Confidence-band chip, an editable draft (prefilled),
@@ -19,6 +19,8 @@ export function DraftRail({
   alreadySent,
   sentText,
   firstResponseSec,
+  merchantId,
+  nextTicketId,
 }: {
   ticketId: string;
   draftText: string;
@@ -29,10 +31,13 @@ export function DraftRail({
   alreadySent: boolean;
   sentText: string | null;
   firstResponseSec: number | null;
+  merchantId: string;
+  nextTicketId: string | null;
 }) {
   const [text, setText] = useState(alreadySent && sentText ? sentText : draftText);
   const textRef = useRef(text);
   textRef.current = text;
+  const approvalRef = useRef<ApprovalBarHandle>(null);
 
   return (
     <div className="panel flex flex-col gap-3 p-4">
@@ -65,16 +70,27 @@ export function DraftRail({
       <TextArea
         value={text}
         onChange={(e) => setText(e.target.value)}
+        onKeyDown={(e) => {
+          // The one input-context shortcut: ⌘/Ctrl+Enter = Approve & send,
+          // routed through ApprovalBar's existing send path (no duplicate fetch).
+          if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+            e.preventDefault();
+            approvalRef.current?.send();
+          }
+        }}
         disabled={alreadySent}
         className="min-h-[200px] text-[14px]"
         aria-label="Editable reassurance draft"
       />
 
       <ApprovalBar
+        ref={approvalRef}
         ticketId={ticketId}
         getText={() => textRef.current}
         alreadySent={alreadySent}
         firstResponseSec={firstResponseSec}
+        merchantId={merchantId}
+        nextTicketId={nextTicketId}
       />
     </div>
   );
