@@ -233,6 +233,7 @@ export default async function InboxPage({
                 overdue={view.intel.reassurance.overdue}
                 alreadySent={view.ticket.status === "sent"}
                 sentText={view.ticket.sent?.text ?? null}
+                firstName={view.customer.firstName}
                 firstResponseSec={view.ticket.firstResponseSec}
                 merchantId={merchantId}
                 nextTicketId={nextTicketId}

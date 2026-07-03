@@ -23,7 +23,13 @@ export async function POST(req: Request) {
     try {
       assertNoHardDate(parsed.data.approvedText);
     } catch (e) {
-      return NextResponse.json({ error: (e as Error).message }, { status: 422 });
+      // Structured reason (ADR-0014, E4) so the cockpit can explain the block
+      // precisely and mirror it on the send button. The enforcement is real: a
+      // hard date is physically un-sendable — this is the throw, surfaced.
+      return NextResponse.json(
+        { error: (e as Error).message, failedCheck: "hard_date" },
+        { status: 422 },
+      );
     }
   }
   const result = await approveSend(parsed.data.ticketId, parsed.data.approvedText, parsed.data.channel);
@@ -35,5 +41,9 @@ export async function POST(req: Request) {
     sentAt: result.ticket.sent?.sentAt,
     externalId: result.ticket.sent?.externalId,
     firstResponseSec: result.ticket.firstResponseSec,
+    // E4: measured operator edit + whether it clears the promote threshold (with a
+    // real parent variant), so the cockpit can offer "save this edit as a variant".
+    editedRatio: result.editedRatio,
+    canPromote: result.canPromote,
   });
 }

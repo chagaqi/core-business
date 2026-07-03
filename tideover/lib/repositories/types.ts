@@ -107,6 +107,8 @@ export interface ScriptVariantRepository {
     productionStage: ProductionStageKey | null,
   ): Promise<ScriptVariant | null>;
   getById(id: string): Promise<ScriptVariant | null>;
+  /** Insert an operator-promoted variant (ADR-0014, E4). `id` is unique across the collection. */
+  create(variant: ScriptVariant): Promise<ScriptVariant>;
 }
 
 /**

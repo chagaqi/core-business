@@ -231,6 +231,11 @@ const scriptVariants: ScriptVariantRepository = {
   async getById(id) {
     return findOneWhere<ScriptVariant>("script_variants", { id });
   },
+  async create(v: ScriptVariant) {
+    // Same _id-stripping insert as the other create methods; the promoted
+    // variant's prefixed nanoid id stays the document key.
+    return insert("script_variants", v);
+  },
 };
 
 const outcomeEvents: OutcomeEventRepository = {

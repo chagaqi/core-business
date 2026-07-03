@@ -10,6 +10,7 @@ import {
 } from "@/lib/engines";
 import { getDrafter } from "@/lib/drafting/LlmDrafter";
 import { getSendAdapter } from "@/lib/channel-adapters/registry";
+import { containsHardDate } from "@/lib/proof";
 import type { NormalizedTicket } from "@/lib/channel-adapters/ChannelAdapter";
 import type {
   Customer,
@@ -154,8 +155,17 @@ function levenshtein(a: string, b: string): number {
  * The demo cockpit renders drafts live without persisting them, so the variant +
  * baseline draft are recovered by recomputing the engine when the ticket has no
  * persisted draft.
+ *
+ * Returns the {variantId, editedRatio} it recorded so the caller (approveSend)
+ * can offer the E4 operator-promoted-variant flow (variantId = the parent, and
+ * editedRatio measured against PROMOTE_THRESHOLD). Returns null when the reply
+ * could not be attributed (nothing recorded) or on a swallowed failure.
  */
-async function recordReplySent(repos: Repositories, ticket: Ticket, sentText: string): Promise<void> {
+async function recordReplySent(
+  repos: Repositories,
+  ticket: Ticket,
+  sentText: string,
+): Promise<{ variantId: string; editedRatio: number } | null> {
   try {
     const view = await getTicketView(ticket.id);
     const reassurance = view?.intel.reassurance;
@@ -163,15 +173,16 @@ async function recordReplySent(repos: Repositories, ticket: Ticket, sentText: st
     const variantId =
       ticket.draft?.variantId ??
       (reassurance ? await resolveVariantId(repos, ticket.merchantId, reassurance) : undefined);
-    if (variantId === undefined || draftedText === undefined) return; // cannot attribute — skip.
+    if (variantId === undefined || draftedText === undefined) return null; // cannot attribute — skip.
 
     // stageKey must agree with variantId (they describe the same variant), so
     // source it from the resolved variant — not the send-time recompute, which
     // could drift to a later day-stage if the ticket sat drafted across a
     // boundary before being sent.
     const stageKey = (await repos.scriptVariants.getById(variantId))?.stageKey ?? reassurance?.stageKey;
-    if (!stageKey) return;
+    if (!stageKey) return null;
 
+    const ratio = editedRatio(draftedText, sentText);
     await repos.outcomeEvents.record({
       merchantId: ticket.merchantId,
       ticketId: ticket.id,
@@ -182,8 +193,9 @@ async function recordReplySent(repos: Repositories, ticket: Ticket, sentText: st
       sentimentAtSend: ticket.sentiment,
       kind: "reply_sent",
       observedAt: new Date().toISOString(),
-      meta: { editedRatio: editedRatio(draftedText, sentText) },
+      meta: { editedRatio: ratio },
     });
+    return { variantId, editedRatio: ratio };
   } catch (err) {
     console.log(
       JSON.stringify({
@@ -192,6 +204,7 @@ async function recordReplySent(repos: Repositories, ticket: Ticket, sentText: st
         error: err instanceof Error ? err.message : String(err),
       }),
     );
+    return null;
   }
 }
 
@@ -385,17 +398,31 @@ export async function regenerateDraft(ticketId: string): Promise<Ticket | null> 
   return repos.tickets.update(ticketId, { draft, status: "drafted" });
 }
 
+/**
+ * Operator-promoted variants (ADR-0014, E4): the threshold, on `editedRatio`,
+ * above which a send's edit is meaningful enough that the cockpit offers to save
+ * it as a tracked variant. Operator-confirmed on the client — never auto-created.
+ */
+export const PROMOTE_THRESHOLD = 0.3;
+
+/**
+ * Send result carries the two E4 facts the cockpit needs after a send:
+ * `editedRatio` (the measured operator edit) and `canPromote` (that edit cleared
+ * PROMOTE_THRESHOLD AND the reply was attributable to a parent variant, so a
+ * promotion has a real provenance to carry). Both derive from the same
+ * recordReplySent attribution — no re-computation, no fabricated number.
+ */
 export async function approveSend(
   ticketId: string,
   approvedText?: string,
   channelOverride?: Ticket["channel"],
-): Promise<{ ticket: Ticket } | { error: string }> {
+): Promise<{ ticket: Ticket; editedRatio: number; canPromote: boolean } | { error: string }> {
   const repos = getRepositories();
   const ticket = await repos.tickets.findById(ticketId);
   if (!ticket) return { error: "ticket not found" };
   // Idempotent: an already-sent ticket must not re-send or emit a second
   // reply_sent event on a retry (that would double-count the outcome ledger).
-  if (ticket.status === "sent") return { ticket };
+  if (ticket.status === "sent") return { ticket, editedRatio: 0, canPromote: false };
   const text = approvedText ?? ticket.draft?.text;
   if (!text) return { error: "no draft to send" };
 
@@ -417,9 +444,66 @@ export async function approveSend(
   // Outcome ledger (ADR-0007): stamp a reply_sent event attributed to the draft's
   // variant, with meta.editedRatio measuring the operator's edit. Awaited so a
   // same-request read observes it, but non-blocking on failure (see helper).
-  await recordReplySent(repos, ticket, text);
+  const attribution = await recordReplySent(repos, ticket, text);
 
-  return { ticket: updated };
+  return {
+    ticket: updated,
+    editedRatio: attribution?.editedRatio ?? 0,
+    // Offer the promote flow only when the edit is meaningful AND the reply had a
+    // real parent variant to promote from (attribution !== null).
+    canPromote: attribution != null && attribution.editedRatio > PROMOTE_THRESHOLD,
+  };
+}
+
+/**
+ * Operator-promoted variant (ADR-0014, E4): save the operator's edited reply as a
+ * new, tracked ScriptVariant so it competes in the Script Performance panel. The
+ * new variant inherits its parent's slot (stageKey + productionStage) and carries
+ * real provenance (source "operator-promoted", parentVariantId). Operator-
+ * confirmed via the cockpit — this fn is only reached after an explicit save.
+ *
+ * The parent is resolved exactly as the send-time attribution does: the draft's
+ * stamped variantId, or the engine recompute for the demo's live-rendered drafts.
+ * Guard: promotion requires a parent (no parent → nothing to descend from).
+ * Proof-only: a promoted variant is customer-facing template copy, so it is
+ * rejected if it contains a hard delivery date (mirrors assertNoHardDate).
+ */
+export async function promoteVariant(
+  ticketId: string,
+  text: string,
+): Promise<{ variant: ScriptVariant } | { error: string }> {
+  const repos = getRepositories();
+  const trimmed = text.trim();
+  if (!trimmed) return { error: "empty variant text" };
+  if (containsHardDate(trimmed)) {
+    return { error: "variant text contains a hard delivery date — use a confidence band instead" };
+  }
+  const ticket = await repos.tickets.findById(ticketId);
+  if (!ticket) return { error: "ticket not found" };
+
+  const view = await getTicketView(ticketId);
+  const reassurance = view?.intel.reassurance;
+  const parentVariantId =
+    ticket.draft?.variantId ??
+    (reassurance ? await resolveVariantId(repos, ticket.merchantId, reassurance) : undefined);
+  if (!parentVariantId) return { error: "no parent variant to promote from" };
+  const parent = await repos.scriptVariants.getById(parentVariantId);
+  if (!parent) return { error: "parent variant not found" };
+
+  const variant: ScriptVariant = {
+    id: newId("var"),
+    merchantId: ticket.merchantId,
+    stageKey: parent.stageKey,
+    productionStage: parent.productionStage,
+    text: trimmed,
+    source: "operator-promoted",
+    isDefault: false,
+    status: "active",
+    parentVariantId: parent.id,
+    createdAt: new Date().toISOString(),
+  };
+  const created = await repos.scriptVariants.create(variant);
+  return { variant: created };
 }
 
 /** Operator queue: every open/drafted ticket with computed risk, sorted. */

@@ -198,6 +198,10 @@ const scriptVariants: ScriptVariantRepository = {
   async getById(id) {
     return store.scriptVariants.find((v) => v.id === id) ?? null;
   },
+  async create(v) {
+    store.scriptVariants.push(v);
+    return v;
+  },
 };
 
 const outcomeEvents: OutcomeEventRepository = {
