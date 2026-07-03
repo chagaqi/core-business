@@ -3,6 +3,7 @@ import type {
   DayStageKey,
   Gift,
   Merchant,
+  MerchantUpdate,
   Order,
   OutcomeEvent,
   ProductionStageKey,
@@ -115,6 +116,20 @@ export interface OutcomeEventRepository {
   listByMerchant(merchantId: string): Promise<OutcomeEvent[]>;
 }
 
+/**
+ * Merchant workshop updates (ADR-0009). Append-only in practice; `create` mints
+ * the id and persists. Lists are sorted newest-first (createdAt desc, id desc)
+ * so both drivers agree. `listRecentPublic` is the customer-facing projection:
+ * it excludes hidden posts and caps to `limit` — the ONLY read that crosses the
+ * status-page PII boundary, and it carries the merchant's own message, no
+ * customer data.
+ */
+export interface MerchantUpdateRepository {
+  create(u: Omit<MerchantUpdate, "id">): Promise<MerchantUpdate>;
+  listByMerchant(merchantId: string): Promise<MerchantUpdate[]>;
+  listRecentPublic(merchantId: string, limit: number): Promise<MerchantUpdate[]>;
+}
+
 export interface Repositories {
   merchants: MerchantRepository;
   orders: OrderRepository;
@@ -125,4 +140,5 @@ export interface Repositories {
   statusViews: StatusViewRepository;
   scriptVariants: ScriptVariantRepository;
   outcomeEvents: OutcomeEventRepository;
+  merchantUpdates: MerchantUpdateRepository;
 }

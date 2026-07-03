@@ -30,6 +30,7 @@ const COLLECTIONS = [
   { name: "status_views", file: "status-views.json" },
   { name: "script_variants", file: "script-variants.json" },
   { name: "outcome_events", file: "outcome-events.json" },
+  { name: "merchant_updates", file: "merchant-updates.json" },
 ];
 
 const uri = process.env.MONGODB_URI;

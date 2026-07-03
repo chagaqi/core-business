@@ -2,7 +2,7 @@
  * Tideover domain model — the single source of truth for every entity.
  *
  * Conventions:
- *  - ids are prefixed nanoids: mch_ ord_ cus_ tkt_ gft_ sig_ drf_ sv_ var_ oe_
+ *  - ids are prefixed nanoids: mch_ ord_ cus_ tkt_ gft_ sig_ drf_ sv_ var_ oe_ upd_
  *  - dates are ISO 8601 strings
  *  - money is integer CENTS (never floats)
  *  - enums are string-literal unions
@@ -160,6 +160,27 @@ export interface StatusView {
   /** first two octets of the request IP only, or omitted — never the full IP. */
   ipPrefix?: string;
   userAgent?: string;
+}
+
+/**
+ * A merchant "workshop update" (ADR-0009, task U2). ONE short broadcast the
+ * merchant writes ("here's what's happening") that fans out to every waiting
+ * backer's status page AND becomes a copy-to-Kickstarter draft. Merchant-level,
+ * never per-order — so a single post reaches every customer in the wait.
+ *
+ * Append-only in practice: `hidden` soft-retracts a post without deleting it
+ * (the public feed excludes hidden ones). Text is proof-linted on save — a
+ * workshop update must never promise a hard ship date. The optional `imageUrl`
+ * is an externally-hosted URL the merchant supplies (no upload pipeline);
+ * surfaces render it with max-width:100%, never store it as a blob.
+ */
+export interface MerchantUpdate {
+  id: string;
+  merchantId: string;
+  text: string;
+  imageUrl?: string;
+  hidden?: boolean;
+  createdAt: string;
 }
 
 /** computed timeline view (never persisted) */

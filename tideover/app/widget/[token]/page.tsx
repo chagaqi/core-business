@@ -4,6 +4,7 @@ import { getPublicStatus, viewMetaFromHeaders } from "@/lib/status";
 import { ConfidenceBand } from "@/components/status/ConfidenceBand";
 import { WaitProgress } from "@/components/status/WaitProgress";
 import { OrderTimeline } from "@/components/status/OrderTimeline";
+import { WorkshopFeed } from "@/components/status/WorkshopFeed";
 import { AskBox } from "@/components/status/AskBox";
 import { WidgetFrame } from "@/components/status/WidgetFrame";
 
@@ -54,6 +55,8 @@ export default async function WidgetPage({ params }: { params: { token: string }
           <div className="rounded-xl border border-border bg-paper p-4">
             <OrderTimeline timeline={status.timeline} accent={accent} compact />
           </div>
+
+          <WorkshopFeed updates={status.updates} accent={accent} compact />
 
           <AskBox token={params.token} accent={accent} compact />
 

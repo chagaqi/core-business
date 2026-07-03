@@ -2,6 +2,7 @@ import type {
   Customer,
   Gift,
   Merchant,
+  MerchantUpdate,
   Order,
   OutcomeEvent,
   ScriptVariant,
@@ -13,6 +14,7 @@ import type {
 import customersJson from "@/lib/data/customers.json";
 import giftsJson from "@/lib/data/gifts.json";
 import merchantsJson from "@/lib/data/merchants.json";
+import merchantUpdatesJson from "@/lib/data/merchant-updates.json";
 import ordersJson from "@/lib/data/orders.json";
 import outcomeEventsJson from "@/lib/data/outcome-events.json";
 import scriptVariantsJson from "@/lib/data/script-variants.json";
@@ -37,6 +39,7 @@ export interface SeedData {
   statusViews: StatusView[];
   scriptVariants: ScriptVariant[];
   outcomeEvents: OutcomeEvent[];
+  merchantUpdates: MerchantUpdate[];
 }
 
 export function buildSeed(): SeedData {
@@ -50,5 +53,6 @@ export function buildSeed(): SeedData {
     statusViews: clone(statusViewsJson as unknown as StatusView[]),
     scriptVariants: clone(scriptVariantsJson as unknown as ScriptVariant[]),
     outcomeEvents: clone(outcomeEventsJson as unknown as OutcomeEvent[]),
+    merchantUpdates: clone(merchantUpdatesJson as unknown as MerchantUpdate[]),
   };
 }

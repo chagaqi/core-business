@@ -16,6 +16,7 @@ const NAV: Array<{ href: string; label: string; hint: string }> = [
   { href: "/app/customers", label: "Customers", hint: "LTV + risk" },
   { href: "/app/gifts", label: "Gifts", hint: "Goodwill engine" },
   { href: "/app/social", label: "Social", hint: "Signal monitor" },
+  { href: "/app/updates", label: "Updates", hint: "Workshop feed" },
 ];
 
 export function Sidebar({ operator }: { operator: string }) {

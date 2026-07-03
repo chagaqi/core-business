@@ -4,6 +4,7 @@ import type {
   Customer,
   Gift,
   Merchant,
+  MerchantUpdate,
   Order,
   OutcomeEvent,
   ScriptVariant,
@@ -16,6 +17,7 @@ import type {
   CustomerRepository,
   GiftRepository,
   MerchantRepository,
+  MerchantUpdateRepository,
   OrderRepository,
   OutcomeEventRepository,
   Repositories,
@@ -245,6 +247,35 @@ const outcomeEvents: OutcomeEventRepository = {
   },
 };
 
+const merchantUpdates: MerchantUpdateRepository = {
+  async create(u) {
+    const upd: MerchantUpdate = { ...u, id: newId("upd") };
+    return insert("merchant_updates", upd);
+  },
+  async listByMerchant(merchantId) {
+    // Newest-first (createdAt desc, id desc) — matches the JSON driver exactly.
+    const c = await col<MerchantUpdate>("merchant_updates");
+    return (await c
+      .find({ merchantId } as Filter<MerchantUpdate>, noId)
+      .sort({ createdAt: -1, id: -1 })
+      .toArray()) as MerchantUpdate[];
+  },
+  async listRecentPublic(merchantId, limit) {
+    // Customer-facing projection: exclude hidden posts, newest-first, capped.
+    // `hidden: { $ne: true }` matches both absent and false (the JSON driver's
+    // `!u.hidden`). limit floored at 0 so a bad caller never inverts the cap.
+    const c = await col<MerchantUpdate>("merchant_updates");
+    return (await c
+      .find(
+        { merchantId, hidden: { $ne: true } } as Filter<MerchantUpdate>,
+        noId,
+      )
+      .sort({ createdAt: -1, id: -1 })
+      .limit(Math.max(0, limit))
+      .toArray()) as MerchantUpdate[];
+  },
+};
+
 export const mongoRepositories: Repositories = {
   merchants,
   orders,
@@ -255,4 +286,5 @@ export const mongoRepositories: Repositories = {
   statusViews,
   scriptVariants,
   outcomeEvents,
+  merchantUpdates,
 };

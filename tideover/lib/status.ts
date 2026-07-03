@@ -19,6 +19,14 @@ export interface PublicStatus {
   timeline: OrderTimeline;
   stageKey: DayStageKey;
   stageBlurb: string;
+  /**
+   * The merchant's most recent public workshop updates (ADR-0009), hidden ones
+   * excluded, newest-first. Merchant-level, so one post reaches every waiting
+   * backer. This is the merchant's OWN public message — the only new field
+   * crossing the PII boundary, and it carries no customer data (never id,
+   * merchantId, or the hidden flag — only what the customer should see).
+   */
+  updates: Array<{ text: string; imageUrl?: string; createdAt: string }>;
 }
 
 /** Request context for the view log — captured at the call site from headers. */
@@ -76,6 +84,15 @@ export async function getPublicStatus(
   const timeline = computeTimeline(order, merchant);
   const stage = dayStageFor(timeline.daysInWait);
 
+  // Merchant-level workshop feed (ADR-0009): the 3 most recent public updates,
+  // curated down to only the customer-facing fields (never id/merchantId/hidden).
+  const recent = await repos.merchantUpdates.listRecentPublic(order.merchantId, 3);
+  const updates = recent.map((u) => ({
+    text: u.text,
+    createdAt: u.createdAt,
+    ...(u.imageUrl ? { imageUrl: u.imageUrl } : {}),
+  }));
+
   return {
     firstName: customer.firstName,
     merchant: {
@@ -90,5 +107,6 @@ export async function getPublicStatus(
     timeline,
     stageKey: stage.key,
     stageBlurb: stageBlurb(merchant, order.productionStage),
+    updates,
   };
 }

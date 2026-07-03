@@ -19,6 +19,7 @@ const COLLECTIONS = [
   "status_views",
   "script_variants",
   "outcome_events",
+  "merchant_updates",
 ] as const;
 
 async function ensureIndexes(db: Db): Promise<void> {
@@ -50,6 +51,9 @@ async function ensureIndexes(db: Db): Promise<void> {
       if (name === "outcome_events") {
         await col.createIndex({ merchantId: 1, variantId: 1, kind: 1, observedAt: 1 });
       }
+      // Workshop updates (ADR-0009): the feed reads a merchant's recent updates
+      // newest-first, so index the (merchantId, createdAt) access pattern.
+      if (name === "merchant_updates") await col.createIndex({ merchantId: 1, createdAt: -1 });
     }),
   );
 }

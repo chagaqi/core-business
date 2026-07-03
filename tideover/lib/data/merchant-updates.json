@@ -1,0 +1,54 @@
+[
+  {
+    "id": "upd_pg6a22u3zikb",
+    "merchantId": "mch_lumen0001",
+    "text": "Quality control is underway. Each unit is checked by hand before it's cleared to pack — we'd rather catch anything now than later.",
+    "imageUrl": "https://picsum.photos/seed/upd_pg6a22u3zikb/1024/576",
+    "createdAt": "2026-07-01T03:40:56.001Z"
+  },
+  {
+    "id": "upd_8vtjfj65pcop",
+    "merchantId": "mch_lumen0001",
+    "text": "The finished batch is consolidating at the port and freight is booked. We'll post here the moment it's confirmed in transit.",
+    "createdAt": "2026-06-25T03:40:56.001Z"
+  },
+  {
+    "id": "upd_rahty12swls4",
+    "merchantId": "mch_lumen0001",
+    "text": "A note from the workshop: thank you for your patience through the wait. We read every message, and we're seeing this through personally.",
+    "createdAt": "2026-06-18T03:40:56.001Z"
+  },
+  {
+    "id": "upd_6n8fuayfu20z",
+    "merchantId": "mch_lumen0001",
+    "text": "The anodizing came back with a deeper, more even finish than the early samples. A little extra care on the coating, well worth it.",
+    "imageUrl": "https://picsum.photos/seed/upd_6n8fuayfu20z/1024/576",
+    "createdAt": "2026-06-11T03:40:56.001Z"
+  },
+  {
+    "id": "upd_gmj95p54chi4",
+    "merchantId": "mch_atelier02",
+    "text": "Quality control is underway. Each unit is checked by hand before it's cleared to pack — we'd rather catch anything now than later.",
+    "imageUrl": "https://picsum.photos/seed/upd_gmj95p54chi4/1024/576",
+    "createdAt": "2026-06-29T03:40:56.001Z"
+  },
+  {
+    "id": "upd_mhobz5ordkqw",
+    "merchantId": "mch_atelier02",
+    "text": "The finished batch is consolidating at the port and freight is booked. We'll post here the moment it's confirmed in transit.",
+    "createdAt": "2026-06-20T03:40:56.001Z"
+  },
+  {
+    "id": "upd_1gnfp1vmrmcu",
+    "merchantId": "mch_atelier02",
+    "text": "A note from the workshop: thank you for your patience through the wait. We read every message, and we're seeing this through personally.",
+    "imageUrl": "https://picsum.photos/seed/upd_1gnfp1vmrmcu/1024/576",
+    "createdAt": "2026-06-11T03:40:56.001Z"
+  },
+  {
+    "id": "upd_kmi82b06udtu",
+    "merchantId": "mch_atelier02",
+    "text": "The anodizing came back with a deeper, more even finish than the early samples. A little extra care on the coating, well worth it.",
+    "createdAt": "2026-06-02T03:40:56.001Z"
+  }
+]

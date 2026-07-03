@@ -573,6 +573,46 @@ for (const m of merchants) {
   }
 }
 
+// ── ADR-0009 update pipeline: demo merchant "workshop updates" (3–5/merchant) ──
+// One merchant-level broadcast that fans out to every waiting backer's status
+// page. Generated LAST so its PRNG draws can't shift any id/token above. Text is
+// plausible workshop copy with NO hard dates (proof-only extends to merchant
+// broadcasts) and no digits, so it clears containsHardDate + proof-lint. createdAt
+// is spread back across the wait window so the feed shows varied freshness stamps.
+// Some carry an externally-hosted image URL (never uploaded) to exercise that path.
+const UPDATE_TEXTS = [
+  "Quick one from the bench: components for this run are all in and checked. Nothing waiting on a supplier now, so we're moving.",
+  "Tooling is finalized and the first samples cleared our internal bench test. The fit is exactly where we wanted it.",
+  "The production line is warm and the first units are coming off it. Sharing a shot from the floor below.",
+  "Small heads-up: one supplier ran tight on a part, so we switched to our backup source to keep the run on pace. Your place in line is unchanged.",
+  "Packaging arrived and it looks the part. We're prepping the first batch to move into quality control.",
+  "Quality control is underway. Each unit is checked by hand before it's cleared to pack — we'd rather catch anything now than later.",
+  "The finished batch is consolidating at the port and freight is booked. We'll post here the moment it's confirmed in transit.",
+  "A note from the workshop: thank you for your patience through the wait. We read every message, and we're seeing this through personally.",
+  "The anodizing came back with a deeper, more even finish than the early samples. A little extra care on the coating, well worth it.",
+  "We're in the pick-and-pack stretch now. Orders are boxed in the order they came in, and tracking follows as each one leaves.",
+];
+const updImage = (updId) => `https://picsum.photos/seed/${updId}/1024/576`;
+const merchantUpdates = [];
+for (const m of merchants) {
+  const count = 4 + int(0, 1); // 4–5 per merchant (within the ~3–5 target)
+  const startIdx = int(0, UPDATE_TEXTS.length - 1);
+  const newest = 2 + int(0, 3); // days-ago for the most recent post
+  const gap = 5 + int(0, 4); // days between posts
+  for (let i = 0; i < count; i++) {
+    const updId = id("upd");
+    const daysAgo = newest + i * gap + int(0, 2); // older as i grows
+    const withImage = rng() < 0.45;
+    merchantUpdates.push({
+      id: updId,
+      merchantId: m.id,
+      text: UPDATE_TEXTS[(startIdx + i) % UPDATE_TEXTS.length],
+      ...(withImage ? { imageUrl: updImage(updId) } : {}),
+      createdAt: iso(daysAgo),
+    });
+  }
+}
+
 // ── write ──
 const write = (name, data) => writeFileSync(join(DATA, name), JSON.stringify(data, null, 2) + "\n");
 write("merchants.json", merchants);
@@ -584,9 +624,10 @@ write("social-feed.json", social);
 write("status-views.json", statusViews);
 write("script-variants.json", scriptVariants);
 write("outcome-events.json", outcomeEvents);
+write("merchant-updates.json", merchantUpdates);
 
 console.log(
-  `seeded: ${merchants.length} merchants, ${customers.length} customers, ${orders.length} orders, ${tickets.length} tickets, ${gifts.length} gifts, ${social.length} social signals, ${statusViews.length} status views, ${scriptVariants.length} script variants, ${outcomeEvents.length} outcome events`,
+  `seeded: ${merchants.length} merchants, ${customers.length} customers, ${orders.length} orders, ${tickets.length} tickets, ${gifts.length} gifts, ${social.length} social signals, ${statusViews.length} status views, ${scriptVariants.length} script variants, ${outcomeEvents.length} outcome events, ${merchantUpdates.length} merchant updates`,
 );
 console.log("sample status links:");
 orders.slice(0, 3).forEach((o) => console.log(`  /status/${o.statusToken}`));

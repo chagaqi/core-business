@@ -20,6 +20,7 @@ const social = load("social-feed");
 const statusViews = load("status-views");
 const scriptVariants = load("script-variants");
 const outcomeEvents = load("outcome-events");
+const merchantUpdates = load("merchant-updates");
 
 const SECRET = process.env.STATUS_TOKEN_SECRET || "dev-only-change-me";
 const sign = (raw) => createHmac("sha256", SECRET).update(raw).digest("hex").slice(0, 10);
@@ -121,6 +122,29 @@ for (const e of outcomeEvents) {
   }
 }
 
+// ── ADR-0009: merchant workshop updates — FKs, unique ids, well-formed, and
+// (proof-only) NO hard delivery date in the text. Patterns mirror lib/proof.ts
+// containsHardDate exactly so the seed can't ship a date the runtime would reject.
+const HARD_DATE_PATTERNS = [
+  /\b\d{4}-\d{2}-\d{2}\b/,
+  /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?\b/i,
+  /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/,
+  /\bships?\s+on\s+\w/i,
+  /\bguarantee\w*\s+(?:delivery|ship|arrival)\b/i,
+];
+const containsHardDate = (t) => HARD_DATE_PATTERNS.some((re) => re.test(t));
+const updIds = new Set();
+for (const u of merchantUpdates) {
+  fk(`merchant-update ${u.id}.merchantId`, u.merchantId, mids);
+  if (updIds.has(u.id)) errors.push(`duplicate merchant-update id: ${u.id}`);
+  updIds.add(u.id);
+  if (typeof u.text !== "string" || !u.text.trim()) errors.push(`merchant-update ${u.id}.text: missing/blank`);
+  else if (containsHardDate(u.text)) errors.push(`merchant-update ${u.id}.text: contains a hard delivery date (proof-only violation)`);
+  if (typeof u.createdAt !== "string" || !ISO_RE.test(u.createdAt)) errors.push(`merchant-update ${u.id}.createdAt: not ISO`);
+  if (u.imageUrl !== undefined && (typeof u.imageUrl !== "string" || !/^https?:\/\//.test(u.imageUrl))) errors.push(`merchant-update ${u.id}.imageUrl: not an http(s) URL`);
+  if (u.hidden !== undefined && typeof u.hidden !== "boolean") errors.push(`merchant-update ${u.id}.hidden: not a boolean`);
+}
+
 // every merchant must carry the isDemo flag (demo events never pollute real stats)
 for (const m of merchants) {
   if (typeof m.isDemo !== "boolean") errors.push(`merchant ${m.id}: missing isDemo boolean`);
@@ -161,5 +185,5 @@ if (errors.length) {
   process.exit(1);
 }
 console.log(
-  `✓ seed-check passed: ${merchants.length} merchants, ${customers.length} customers, ${orders.length} orders, ${tickets.length} tickets, ${gifts.length} gifts, ${social.length} signals, ${statusViews.length} status views, ${scriptVariants.length} script variants, ${outcomeEvents.length} outcome events; all FKs + ${seen.size} unique signed tokens valid.`,
+  `✓ seed-check passed: ${merchants.length} merchants, ${customers.length} customers, ${orders.length} orders, ${tickets.length} tickets, ${gifts.length} gifts, ${social.length} signals, ${statusViews.length} status views, ${scriptVariants.length} script variants, ${outcomeEvents.length} outcome events, ${merchantUpdates.length} merchant updates; all FKs + ${seen.size} unique signed tokens valid.`,
 );

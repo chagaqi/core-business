@@ -2,6 +2,7 @@ import { newId, verifyStatusToken } from "@/lib/ids";
 import type {
   Gift,
   Merchant,
+  MerchantUpdate,
   OutcomeEvent,
   SocialSignal,
   StatusView,
@@ -12,6 +13,7 @@ import type {
   CustomerRepository,
   GiftRepository,
   MerchantRepository,
+  MerchantUpdateRepository,
   OrderRepository,
   OutcomeEventRepository,
   Repositories,
@@ -32,6 +34,12 @@ function byViewedAt(a: StatusView, b: StatusView): number {
 function byObservedAt(a: OutcomeEvent, b: OutcomeEvent): number {
   if (a.observedAt !== b.observedAt) return a.observedAt < b.observedAt ? -1 : 1;
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+/** Deterministic order: createdAt DESC (newest first), id desc tiebreak (matches Mongo). */
+function byCreatedAtDesc(a: MerchantUpdate, b: MerchantUpdate): number {
+  if (a.createdAt !== b.createdAt) return a.createdAt > b.createdAt ? -1 : 1;
+  return a.id > b.id ? -1 : a.id < b.id ? 1 : 0;
 }
 
 /**
@@ -198,6 +206,23 @@ const outcomeEvents: OutcomeEventRepository = {
   },
 };
 
+const merchantUpdates: MerchantUpdateRepository = {
+  async create(u) {
+    const upd: MerchantUpdate = { ...u, id: newId("upd") };
+    store.merchantUpdates.push(upd);
+    return upd;
+  },
+  async listByMerchant(merchantId) {
+    return store.merchantUpdates.filter((u) => u.merchantId === merchantId).sort(byCreatedAtDesc);
+  },
+  async listRecentPublic(merchantId, limit) {
+    return store.merchantUpdates
+      .filter((u) => u.merchantId === merchantId && !u.hidden)
+      .sort(byCreatedAtDesc)
+      .slice(0, Math.max(0, limit));
+  },
+};
+
 export const jsonRepositories: Repositories = {
   merchants,
   orders,
@@ -208,4 +233,5 @@ export const jsonRepositories: Repositories = {
   statusViews,
   scriptVariants,
   outcomeEvents,
+  merchantUpdates,
 };
