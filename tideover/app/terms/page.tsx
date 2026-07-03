@@ -110,7 +110,7 @@ export default function TermsPage() {
                 "Plain English. These cover the founding-partner pilot and how the Tideover product is meant to be used. They are written for an early-stage tool and say so where it matters."
               }
             </p>
-            <p className="mt-4 text-[14px] font-semibold text-ink-mute">Last updated: [DATE &mdash; set at publish]</p>
+            <p className="mt-4 text-[14px] font-semibold text-ink-mute">Last updated: July 3, 2026</p>
             <nav aria-label="Legal pages" className="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-[14px] text-ink-mute">
               <a className="link-quiet" href="/privacy">
                 Privacy

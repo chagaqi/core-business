@@ -86,7 +86,7 @@ const SECTIONS: readonly Section[] = [
     heading: "Outbound email and CAN-SPAM",
     paras: [
       "If Tideover ever helps send email on your behalf, each message will identify the sender (your brand), include a valid physical postal address, and honor opt-out requests promptly, consistent with the US CAN-SPAM Act.",
-      "A valid physical postal address is legally required on commercial email. Ours is not yet set: [BUSINESS ADDRESS — to add]. This must be filled in before any CAN-SPAM-governed message is sent.",
+      "A valid physical postal address is legally required on commercial email. Ours is 54 Beasley Dr, Unit 3, Kitchener, ON, Canada, and it appears on every commercial message we send.",
     ],
   },
   {
@@ -104,7 +104,7 @@ const SECTIONS: readonly Section[] = [
   {
     heading: "Contact",
     paras: [
-      "Questions about privacy, or a deletion or export request, go to hello@tideover.app. Physical address: [BUSINESS ADDRESS — to add].",
+      "Questions about privacy, or a deletion or export request, go to hello@tideover.app. Physical address: 54 Beasley Dr, Unit 3, Kitchener, ON, Canada.",
     ],
   },
 ];
@@ -123,7 +123,7 @@ export default function PrivacyPage() {
                 "Plain English, no boilerplate maze. This describes how the Tideover product handles the tickets and order data merchants route to us."
               }
             </p>
-            <p className="mt-4 text-[14px] font-semibold text-ink-mute">Last updated: [DATE &mdash; set at publish]</p>
+            <p className="mt-4 text-[14px] font-semibold text-ink-mute">Last updated: July 3, 2026</p>
             <nav aria-label="Legal pages" className="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-[14px] text-ink-mute">
               <span className="font-semibold text-teal">Privacy</span>
               <a className="link-quiet" href="/terms">

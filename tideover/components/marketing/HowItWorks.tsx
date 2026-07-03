@@ -68,6 +68,9 @@ const COMPARISON: readonly { row: string; generic: string; tideover: string }[] 
   { row: "Tone", generic: "Canned & transactional", tideover: "Warm, human, calm" },
   { row: "Replaces your stack", generic: "It is the stack", tideover: "Plugs in — nothing to replace" },
   { row: "Setup", generic: "Migration, new tool to learn", tideover: "Bolt-on — zero infra change" },
+  { row: "Pricing model", generic: "Ticket fee, plus a per-AI-resolution meter*", tideover: "One flat fee on presale tickets" },
+  { row: "Who approves replies", generic: "A confidence threshold decides", tideover: "You approve every reply" },
+  { row: "If you leave", generic: "Export what you can", tideover: "Already in your helpdesk; status page off" },
 ];
 
 function Arrow() {
@@ -204,6 +207,19 @@ export function HowItWorks() {
                 </tbody>
               </table>
             </div>
+            <p className="border-t border-[#F1EADC] px-6 py-4 text-[12.5px] leading-relaxed text-ink-mute">
+              <span aria-hidden>* </span>Gorgias publishes AI Agent pricing of roughly $0.90&ndash;1.00 per resolved
+              conversation, billed on top of its per-ticket fee. (Source:{" "}
+              <a
+                className="link-quiet"
+                href="https://www.gorgias.com/blog/ai-agent-pricing"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Gorgias published pricing
+              </a>
+              .)
+            </p>
           </div>
         </Reveal>
       </div>
