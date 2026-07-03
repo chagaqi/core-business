@@ -161,9 +161,9 @@
 // ============ CANONICAL TASK BOARD (Claude edits this array each sprint tick) ============
 const DYLAN = [
   {id:'D1', title:'Merge PR #1 (one click on GitHub)', why:'Clean main baseline; lets branch protection point at main', cost:'$0', status:'done'},
-  {id:'D2', title:'Buy the domain (tideover.app first choice)', why:'DONE — Dylan bought it. Still needed from Dylan: tell Claude the exact domain name + registrar so DNS work can start', cost:'~$20–40/yr', status:'done'},
+  {id:'D2', title:'Buy the domain — tideover.app', why:'DONE — tideover.app is ours. DNS already proven workable (Resend DKIM records verified)', cost:'~$20–40/yr', status:'done'},
   {id:'D3', title:'MongoDB Atlas cluster + URI into Vercel env', why:'DONE — cluster tideovermvp live (SRV verified), URI in tideover/.env.local + Vercel prod env. $500 startup credits on standby. Remaining: Atlas → Network Access → allow 0.0.0.0/0 (Vercel IPs are dynamic)', cost:'$0', status:'done'},
-  {id:'D4', title:'Email provider account (Resend recommended)', why:'Inbound forward addresses + outbound proof emails; free tier fits', cost:'$0', status:'queued'},
+  {id:'D4', title:'Email provider account (Resend)', why:'DONE — mail.tideover.app VERIFIED in Resend, sending enabled; key in .env.local + Vercel prod. Receiving still disabled (one MX record, handled inside task W1)', cost:'$0', status:'done'},
   {id:'D5', title:'GitHub Pro', why:'Branch protection on private repos needs Pro; makes green CI physically required to merge', cost:'$4/mo', status:'queued'},
   {id:'D6', title:'Vercel Pro (defer until first PAID pilot)', why:'Hobby plan ToS prohibits commercial use; the free demo is fine today', cost:'$20/mo later', status:'queued'},
   {id:'D7', title:'Persona decision: approve the honest ABOUT rewrite', why:'Sales page currently speaks as "Chaga" with an unverifiable operator story — blocks ALL outreach. Draft will be ready for you', cost:'$0', status:'queued'},
@@ -258,6 +258,7 @@ const LOG = [
   {d:'2026-07-02', t:'PR #1 merged into main (Dylan-approved). Sprint work now flows on branch sprint/tideover-finalization → PR into main when green.'},
   {d:'2026-07-02', t:'CI failure diagnosed and fixed: pipeline was pinned to Node 20 but npm test needs --experimental-strip-types (Node ≥22.6). Fix on sprint branch, awaiting PR/merge to main.'},
   {d:'2026-07-02', t:'D2 + D3 unblocked: domain bought; Atlas cluster live with $500 credits standby; MONGODB_URI secured in .env.local + Vercel prod env; stray credentials file deleted and *.env ignore guard added. F1 (Mongo driver) is now fully unblocked.'},
+  {d:'2026-07-03', t:'D4 done: tideover.app is the domain; mail.tideover.app verified in Resend (sending enabled, receiving pending one MX record in W1); RESEND_API_KEY + EMAIL_FROM in .env.local + Vercel prod. Atlas 0.0.0.0/0 allow confirmed by Dylan — D3 fully complete. Outbound test email pending Dylan approval (permission gate).'},
 ];
 
 // ============ RENDER ============
