@@ -11,8 +11,10 @@
     "seed:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-mongo.mjs",
     "smoke:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/mongo-smoke.mjs",
     "proof-lint": "node scripts/proof-lint.mjs",
+    "eval": "node evals/eval.mjs",
+    "gen-goldens": "node --experimental-strip-types --import ./scripts/register-hooks.mjs evals/gen-goldens.mjs",
     "test": "node --experimental-strip-types --import ./scripts/register-hooks.mjs --test \"lib/**/__tests__/*.test.ts\"",
-    "verify": "npm run seed-check && npm run proof-lint && npm run lint && npm run build"
+    "verify": "npm run seed-check && npm run proof-lint && npm run eval && npm run lint && npm run build"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
