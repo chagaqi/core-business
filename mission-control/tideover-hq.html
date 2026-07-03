@@ -237,10 +237,10 @@ const TASKS = [
   {id:'G5', cat:'GTM', prio:2, status:'queued', title:'Cold outreach infra (START NOW)', detail:'Separate outreach domain + mailbox + warm-up (~2-week lead time — the reason this starts during the build sprint) + 10 diagnostic openers.'},
   {id:'G6', cat:'GTM', prio:3, status:'queued', title:'Export Everything button', detail:'Playbook + scripts + comm logs as markdown/CSV zip. Makes "no lock-in" demonstrable on the call.'},
   // TRAIN
-  {id:'TR1', cat:'TRAIN', prio:2, status:'active', title:'CX lingo & org doc', detail:'30+ term glossary, mock org chart of a 50-person brand, "what each role checks each morning", the 10 diagnostic openers.', note:'All 4 training docs being written now from the cited research digests (TR1–TR4, one writer agent).'},
-  {id:'TR2', cat:'TRAIN', prio:2, status:'queued', title:'Crowdfunding 101', detail:'Campaign lifecycle, backer data flow (KS → pledge manager → Shopify), money rails, chargeback mechanics (13.1 stated CORRECTLY), update-cadence norms.'},
-  {id:'TR3', cat:'TRAIN', prio:2, status:'queued', title:'Pricing & pitching doc', detail:'Cited comp table, tier logic, procurement basics (DPA, SIG-Lite, thresholds), qualify-out rules.'},
-  {id:'TR4', cat:'TRAIN', prio:3, status:'queued', title:'Managed-tier runbook', detail:'PH salary bands + 13th-month, QA sampling, escalation matrix, SOP-from-recordings, hire gate (2 signed clients + >2h/day queue time).'},
+  {id:'TR1', cat:'TRAIN', prio:2, status:'done', title:'CX lingo & org doc', detail:'33-term glossary w/ presale angles, 50-person-brand org chart + morning checks, escalation tiers, QA culture, 10 verbatim cold-call openers, "say this never that" table.', note:'gtm-assets/training/01-cx-lingo-and-org.md (2,402w)'},
+  {id:'TR2', cat:'TRAIN', prio:2, status:'done', title:'Crowdfunding 101', detail:'Lifecycle, backer data flow, WISMO concentration, money rails (13.1 stated correctly, KS vs Shopify rails), update norms, 6 outsider tells.', note:'gtm-assets/training/02-crowdfunding-101.md (1,982w)'},
+  {id:'TR3', cat:'TRAIN', prio:2, status:'done', title:'Pricing & pitching doc', detail:'Cited comp table, v2 ladder logic + founding floor, procurement basics, qualify-out rules, pitch frames.', note:'gtm-assets/training/03-pricing-and-pitching.md (1,591w). Caught + fixed a stale $249 table that broke the founding floor.'},
+  {id:'TR4', cat:'TRAIN', prio:3, status:'done', title:'Managed-tier runbook', detail:'PH bands + 13th-month, hire gate, shift design vs slaWindows, QA program, escalation matrix, margin math.', note:'gtm-assets/training/04-managed-tier-runbook.md (1,236w)'},
   // OS
   {id:'OS1', cat:'OS', prio:1, status:'done', title:'CI on GitHub Actions', detail:'verify + engine tests on every push/PR, path-filtered, free tier.'},
   {id:'OS2', cat:'OS', prio:2, status:'done', title:'Issue templates', detail:'Bug (S1–S3 severity) + feature (with ADR-gate question).'},
@@ -270,6 +270,7 @@ const LOG = [
   {d:'2026-07-03', t:'Overnight research launched per Dylan: Swan, ColdIQ, Valley, credit-pricing meta, founder-story structures → pricing v2 + ABOUT draft by morning. Autonomous build loop continues hourly.'},
   {d:'2026-07-03', t:'F1 COMPLETE: review fixes applied (deterministic ordering, index-failure client close, seed --force wipe, DNS preload), all gates green. Local prod-build test on the Mongo driver: every page 200 from Atlas + durable write round-trip proven (widget question → engine-drafted ticket → read back from a separate process → cleaned up). Production cutover queued as D11 (needs Dylan\\u2019s word — permission gate).'},
   {d:'2026-07-03', t:'Overnight research delivered (6 agents, all green): pricing v2 page (Scale re-priced $749 w/ published caps; credits rejected as core meter with 4 cited reasons, Goodwill Wallet survives; soft-limit doctrine), founder-ABOUT draft built on the real story (7-exemplar structure research), cited digest in docs/research/. Both morning reads linked from the Needs-Dylan table.'},
+  {d:'2026-07-03', t:'TR1–TR4 done: all 4 training docs written (7,211 words, cited) in gtm-assets/training/ — CX lingo/org + 10 cold-call openers, Crowdfunding 101, Pricing & pitching, Managed-tier runbook. QA pass caught a stale $249 tier table (founding-floor violation) and aligned it to the v2 ladder before commit. F2/F3 security build still in flight.'},
 ];
 
 // ============ RENDER ============
