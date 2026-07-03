@@ -30,6 +30,7 @@ export interface MerchantRepository {
   findBySlug(slug: string): Promise<Merchant | null>;
   list(): Promise<Merchant[]>;
   create(merchant: Merchant): Promise<Merchant>;
+  /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */
   update(id: string, patch: Partial<Merchant>): Promise<Merchant>;
 }
 
@@ -38,6 +39,7 @@ export interface OrderRepository {
   findByToken(lookupKey: string): Promise<Order | null>;
   listByMerchant(merchantId: string): Promise<Order[]>;
   listByCustomer(customerId: string): Promise<Order[]>;
+  /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */
   update(id: string, patch: Partial<Order>): Promise<Order>;
 }
 
@@ -45,6 +47,7 @@ export interface CustomerRepository {
   findById(id: string): Promise<Customer | null>;
   findByEmail(merchantId: string, email: string): Promise<Customer | null>;
   listByMerchant(merchantId: string): Promise<Customer[]>;
+  /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */
   update(id: string, patch: Partial<Customer>): Promise<Customer>;
 }
 
@@ -52,6 +55,7 @@ export interface TicketRepository {
   findById(id: string): Promise<Ticket | null>;
   list(filter: TicketFilter): Promise<Ticket[]>;
   create(ticket: Ticket): Promise<Ticket>;
+  /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */
   update(id: string, patch: Partial<Ticket>): Promise<Ticket>;
 }
 

@@ -1,9 +1,13 @@
 /**
  * Deterministic seed generator. Produces lib/data/*.json with valid, signed
- * status tokens and full referential integrity. Re-runnable: same output every
- * time (seeded PRNG + deterministic tokens), so demo /status links are stable.
+ * status tokens and full referential integrity. Ids and tokens are stable
+ * across runs (seeded PRNG + deterministic tokens), so demo /status links are
+ * stable — but dates are relative to the epoch (default: now), so output is
+ * NOT byte-identical between runs unless SEED_EPOCH pins the clock.
  *
  * Run: node scripts/gen-seed.mjs
+ *      SEED_EPOCH=2026-07-01T00:00:00Z node scripts/gen-seed.mjs  # pinned time
+ *                                                                 # (eval goldens)
  *
  * Token signing MUST match lib/ids.ts (sha256 over raw, hex sliced to 10), using
  * the dev-fallback secret so the seeded tokens verify at runtime out of the box.
@@ -48,7 +52,9 @@ function statusToken() {
   const mac = createHmac("sha256", SECRET).update(raw).digest("hex").slice(0, 10);
   return `${raw}.${mac}`;
 }
-const iso = (daysAgo) => new Date(Date.now() - daysAgo * 86400000).toISOString();
+// SEED_EPOCH pins "now" for reproducible output; default keeps demo data fresh.
+const epoch = Date.parse(process.env.SEED_EPOCH ?? "") || Date.now();
+const iso = (daysAgo) => new Date(epoch - daysAgo * 86400000).toISOString();
 
 // ── shared stage definitions ──
 const STAGES = [
@@ -80,6 +86,7 @@ const merchants = [
     id: "mch_lumen0001",
     name: "Lumen Forge",
     slug: "lumen-forge",
+    isDemo: true,
     brand: {
       voice: "Warm, plain-spoken maker. Talks like a fellow builder, never corporate.",
       tone: ["warm", "earnest", "nerdy-technical"],
@@ -103,6 +110,7 @@ const merchants = [
     id: "mch_atelier02",
     name: "Atelier Noord",
     slug: "atelier-noord",
+    isDemo: true,
     brand: {
       voice: "Premium, understated, design-led. Calm confidence, no exclamation points.",
       tone: ["premium", "understated", "earnest"],

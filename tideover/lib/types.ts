@@ -79,6 +79,8 @@ export interface Merchant {
   id: string;
   name: string;
   slug: string;
+  /** seeded demo merchant — its events must never count toward real proof stats */
+  isDemo: boolean;
   brand: MerchantBrand;
   helpdesk: Channel;
   preorderApp: string;

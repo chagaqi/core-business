@@ -3,6 +3,7 @@
     "id": "mch_lumen0001",
     "name": "Lumen Forge",
     "slug": "lumen-forge",
+    "isDemo": true,
     "brand": {
       "voice": "Warm, plain-spoken maker. Talks like a fellow builder, never corporate.",
       "tone": [
@@ -124,18 +125,19 @@
       "tz": "ET"
     },
     "baseline": {
-      "capturedOn": "2026-05-16T06:50:00.683Z",
+      "capturedOn": "2026-05-29T03:40:55.994Z",
       "medianFrtSec": 27000,
       "wismoPer100Orders": 150,
       "ticketsPerWeek": 38,
       "repeatWismoPct": 62
     },
-    "createdAt": "2026-05-11T06:50:00.683Z"
+    "createdAt": "2026-05-24T03:40:55.995Z"
   },
   {
     "id": "mch_atelier02",
     "name": "Atelier Noord",
     "slug": "atelier-noord",
+    "isDemo": true,
     "brand": {
       "voice": "Premium, understated, design-led. Calm confidence, no exclamation points.",
       "tone": [
@@ -257,12 +259,12 @@
       "tz": "CET"
     },
     "baseline": {
-      "capturedOn": "2026-05-23T06:50:00.683Z",
+      "capturedOn": "2026-06-05T03:40:55.995Z",
       "medianFrtSec": 19000,
       "wismoPer100Orders": 95,
       "ticketsPerWeek": 22,
       "repeatWismoPct": 55
     },
-    "createdAt": "2026-05-18T06:50:00.683Z"
+    "createdAt": "2026-05-31T03:40:55.995Z"
   }
 ]

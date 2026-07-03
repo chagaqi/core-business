@@ -1,23 +1,23 @@
 import { jsonRepositories } from "@/lib/repositories/json/repositories";
+import { mongoRepositories } from "@/lib/repositories/mongo/repositories";
 import type { Repositories } from "@/lib/repositories/types";
 
 /**
- * Repository factory. Switches on DATA_DRIVER so MongoDB Atlas can be wired in
- * later (lib/repositories/mongo) without touching a single call site.
+ * Repository factory. Switches on DATA_DRIVER; no call site knows which
+ * backend it's talking to.
  *
- *   DATA_DRIVER=mock  (default) → JSON-backed in-memory store
- *   DATA_DRIVER=mongo           → MongoDB (skeleton; see lib/repositories/mongo)
+ *   DATA_DRIVER unset | json | mock → JSON-backed in-memory store (default)
+ *   DATA_DRIVER=mongo               → MongoDB (ADR-0003)
+ *
+ * The mongo driver is lazy — it only connects on the first repository call —
+ * so builds and JSON-mode runs never touch the network.
  */
 export function getRepositories(): Repositories {
-  const driver = process.env.DATA_DRIVER ?? "mock";
+  const driver = process.env.DATA_DRIVER ?? "json";
   switch (driver) {
     case "mongo":
-      // Intentionally not wired for the seeded demo. The mongo/ skeleton maps
-      // the same Repositories interface to collections + indexes. Throw loudly
-      // rather than silently fall back, so a misconfigured deploy is obvious.
-      throw new Error(
-        "DATA_DRIVER=mongo is not wired in the demo. See lib/repositories/mongo/README for the production swap.",
-      );
+      return mongoRepositories;
+    case "json":
     case "mock":
     default:
       return jsonRepositories;

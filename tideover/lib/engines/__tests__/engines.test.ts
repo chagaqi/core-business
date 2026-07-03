@@ -18,6 +18,7 @@ const merchant: Merchant = {
   id: "mch_t",
   name: "Testco",
   slug: "testco",
+  isDemo: true,
   brand: { voice: "warm", tone: ["warm"], banned: ["unfortunately"], signoff: "— Testco", logoText: "Testco", colors: { primary: "#0E5366", bg: "#FBF8F2", ink: "#11252A" } },
   helpdesk: "mock",
   preorderApp: "PreProduct",

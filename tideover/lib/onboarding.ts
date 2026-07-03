@@ -71,6 +71,8 @@ export async function createMerchantFromIntake(intake: IntakeData): Promise<{
     id: newId("mch"),
     name: intake.brandName,
     slug,
+    // intake = a real merchant; only seeded demo data sets isDemo true
+    isDemo: false,
     brand: {
       voice: intake.voice,
       tone: intake.tone,

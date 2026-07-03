@@ -48,6 +48,11 @@ for (const g of gifts) fk(`gift ${g.id}.merchantId`, g.merchantId, mids);
 for (const s of social) fk(`social ${s.id}.merchantId`, s.merchantId, mids);
 for (const m of merchants) for (const gid of m.giftCatalogIds) fk(`merchant ${m.id}.giftCatalogIds`, gid, gids);
 
+// every merchant must carry the isDemo flag (demo events never pollute real stats)
+for (const m of merchants) {
+  if (typeof m.isDemo !== "boolean") errors.push(`merchant ${m.id}: missing isDemo boolean`);
+}
+
 // token uniqueness + signature
 const seen = new Set();
 for (const o of orders) {
