@@ -1,0 +1,172 @@
+"use client";
+
+import { useRef, useState } from "react";
+import { Button } from "@/components/ui/Button";
+import { DEFAULT_ORDER_VALUE_CENTS, mapRows, parseCsv, type ImportFormat, type MappedRow } from "@/lib/csv";
+
+/**
+ * Rung-0 backer-list import (ADR-0010). The merchant picks their Kickstarter /
+ * BackerKit export; it's parsed IN THIS COMPONENT (the browser) and only the
+ * mapped rows shown in the preview are POSTed to /api/import. The raw file never
+ * leaves the machine — that's the whole privacy story of the lowest trust rung.
+ */
+
+interface ImportPanelProps {
+  merchantId: string;
+}
+
+interface Counts {
+  customersCreated: number;
+  ordersCreated: number;
+  skipped: number;
+}
+
+const FORMAT_LABEL: Record<ImportFormat, string> = {
+  kickstarter: "Kickstarter backer report",
+  backerkit: "BackerKit export",
+  unknown: "unrecognized headers — mapping best-effort as Kickstarter",
+};
+
+function dollars(cents?: number): string {
+  if (cents === undefined) return "—";
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
+export function ImportPanel({ merchantId }: ImportPanelProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [format, setFormat] = useState<ImportFormat | null>(null);
+  const [mapped, setMapped] = useState<MappedRow[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [counts, setCounts] = useState<Counts | null>(null);
+
+  async function onFile(e: React.ChangeEvent<HTMLInputElement>) {
+    setError(null);
+    setCounts(null);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setFileName(file.name);
+    try {
+      const text = await file.text(); // parsed locally — the file stays on-device
+      const { format: fmt, rows } = mapRows(parseCsv(text));
+      const withEmail = rows.filter((r) => r.email.trim() !== "");
+      setFormat(fmt);
+      setMapped(withEmail);
+      if (withEmail.length === 0) {
+        setError("No rows with an email address were found. Check the file and try again.");
+      }
+    } catch {
+      setError("Could not read that file. Make sure it's a plain CSV export.");
+      setMapped([]);
+      setFormat(null);
+    }
+  }
+
+  async function runImport() {
+    if (mapped.length === 0) return;
+    setImporting(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // ONLY the mapped rows leave the browser — never the raw file.
+        body: JSON.stringify({ merchantId, rows: mapped }),
+      });
+      if (!res.ok) throw new Error("request failed");
+      const data = (await res.json()) as Counts;
+      setCounts(data);
+    } catch {
+      setError("Something went wrong importing your list. Please try again.");
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  const preview = mapped.slice(0, 5);
+
+  return (
+    <div className="panel mt-6 p-6">
+      <p className="kicker mb-3">Import your backer list</p>
+      <p className="mb-4 text-[14px] leading-relaxed text-slate">
+        Upload the export you already hold &mdash; a Kickstarter backer report or a BackerKit CSV
+        &mdash; to populate your customers and orders. No password, no store access.
+      </p>
+      <p className="mb-4 rounded-xl border border-border bg-sand p-3 text-[12.5px] leading-relaxed text-ink-mute">
+        Your file is parsed <strong>in your browser</strong>. Only the mapped fields in the preview
+        below are sent to Tideover &mdash; the raw CSV never leaves your machine.
+      </p>
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept=".csv,text/csv"
+        onChange={onFile}
+        className="hidden"
+        aria-label="Backer list CSV"
+      />
+      <div className="flex flex-wrap items-center gap-3">
+        <Button variant="ghost" onClick={() => inputRef.current?.click()}>
+          Choose CSV file
+        </Button>
+        {fileName ? <span className="text-[13px] text-ink-mute">{fileName}</span> : null}
+      </div>
+
+      {format ? (
+        <p className="mt-4 text-[13px] text-slate">
+          Detected: <strong className="text-ink">{FORMAT_LABEL[format]}</strong> &middot;{" "}
+          {mapped.length} row{mapped.length === 1 ? "" : "s"} with an email
+        </p>
+      ) : null}
+
+      {preview.length > 0 ? (
+        <div className="mt-4 overflow-x-auto rounded-xl border border-border">
+          <table className="w-full border-collapse text-[13px]">
+            <thead>
+              <tr className="bg-sand text-left text-ink-mute">
+                <th className="px-3 py-2 font-semibold">First name</th>
+                <th className="px-3 py-2 font-semibold">Email</th>
+                <th className="px-3 py-2 font-semibold">Group</th>
+                <th className="px-3 py-2 font-semibold">Value</th>
+                <th className="px-3 py-2 font-semibold">Disclosed ETA</th>
+              </tr>
+            </thead>
+            <tbody>
+              {preview.map((r, i) => (
+                <tr key={i} className="border-t border-border text-slate">
+                  <td className="px-3 py-2">{r.firstName || "—"}</td>
+                  <td className="px-3 py-2">{r.email}</td>
+                  <td className="px-3 py-2">{r.group ?? "ks-backer"}</td>
+                  <td className="px-3 py-2">{dollars(r.orderValueCents ?? DEFAULT_ORDER_VALUE_CENTS)}</td>
+                  <td className="px-3 py-2">{r.disclosedEtaValue ?? "—"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {mapped.length > preview.length ? (
+            <p className="border-t border-border px-3 py-2 text-[12px] text-ink-mute">
+              + {mapped.length - preview.length} more row{mapped.length - preview.length === 1 ? "" : "s"} will import
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {error ? <p className="mt-4 text-[13.5px] font-medium text-terracotta-600">{error}</p> : null}
+
+      {counts ? (
+        <p className="mt-5 rounded-xl border border-teal-300 bg-accent-card/60 p-3 text-[14px] font-medium text-ink">
+          {counts.customersCreated} customer{counts.customersCreated === 1 ? "" : "s"},{" "}
+          {counts.ordersCreated} order{counts.ordersCreated === 1 ? "" : "s"} created
+          {counts.skipped ? ` · ${counts.skipped} row${counts.skipped === 1 ? "" : "s"} skipped (no email)` : ""}.
+        </p>
+      ) : (
+        <div className="mt-5">
+          <Button onClick={runImport} disabled={importing || mapped.length === 0}>
+            {importing ? "Importing…" : `Import ${mapped.length || ""} backer${mapped.length === 1 ? "" : "s"}`.trim()}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -33,6 +33,7 @@ export const config = {
     "/api/social-signal-feed",
     "/api/orders/:path*",
     "/api/onboarding",
+    "/api/import",
     "/api/updates",
   ],
 };

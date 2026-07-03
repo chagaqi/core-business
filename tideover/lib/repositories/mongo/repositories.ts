@@ -127,6 +127,11 @@ const orders: OrderRepository = {
   async listByCustomer(customerId) {
     return findWhere<Order>("orders", { customerId });
   },
+  async create(o: Order) {
+    // insert() writes a copy so Mongo's _id never touches the caller's object;
+    // the unique { id: 1 } index (mongo/client.ts) rejects a duplicate order id.
+    return insert("orders", o);
+  },
   async update(id, p) {
     return updateById<Order>("orders", id, p);
   },
@@ -144,6 +149,10 @@ const customers: CustomerRepository = {
   },
   async listByMerchant(merchantId) {
     return findWhere<Customer>("customers", { merchantId });
+  },
+  async create(c: Customer) {
+    // Same _id-stripping insert; unique { id: 1 } index guards duplicate ids.
+    return insert("customers", c);
   },
   async update(id, p) {
     return updateById<Customer>("customers", id, p);

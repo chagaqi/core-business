@@ -143,6 +143,10 @@ export interface Order {
   campaignName?: string;
   /** native fulfillment-wave label, pure display (e.g. "Wave 2 — EU hub"). */
   wave?: string;
+  /** CSV-import provenance (ADR-0010): the source row's own id, namespaced by
+   *  merchant. Set only on imported orders; lets a re-import dedupe orders so a
+   *  double-click can't duplicate a merchant's backer list. */
+  importKey?: string;
 }
 
 /**

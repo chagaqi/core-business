@@ -94,6 +94,10 @@ const orders: OrderRepository = {
   async listByCustomer(customerId) {
     return store.orders.filter((o) => o.customerId === customerId);
   },
+  async create(o) {
+    store.orders.push(o);
+    return o;
+  },
   async update(id, p) {
     return patch(store.orders, id, p);
   },
@@ -112,6 +116,10 @@ const customers: CustomerRepository = {
   },
   async listByMerchant(merchantId) {
     return store.customers.filter((c) => c.merchantId === merchantId);
+  },
+  async create(c) {
+    store.customers.push(c);
+    return c;
   },
   async update(id, p) {
     return patch(store.customers, id, p);

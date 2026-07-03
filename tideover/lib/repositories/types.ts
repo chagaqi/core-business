@@ -47,6 +47,8 @@ export interface OrderRepository {
   findByToken(lookupKey: string): Promise<Order | null>;
   listByMerchant(merchantId: string): Promise<Order[]>;
   listByCustomer(customerId: string): Promise<Order[]>;
+  /** Insert a new order (CSV import, ADR-0010). `id` is unique across the collection. */
+  create(order: Order): Promise<Order>;
   /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */
   update(id: string, patch: Partial<Order>): Promise<Order>;
 }
@@ -55,6 +57,8 @@ export interface CustomerRepository {
   findById(id: string): Promise<Customer | null>;
   findByEmail(merchantId: string, email: string): Promise<Customer | null>;
   listByMerchant(merchantId: string): Promise<Customer[]>;
+  /** Insert a new customer (CSV import, ADR-0010). Import dedupes by email first. */
+  create(customer: Customer): Promise<Customer>;
   /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */
   update(id: string, patch: Partial<Customer>): Promise<Customer>;
 }

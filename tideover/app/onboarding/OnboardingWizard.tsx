@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Field, TextInput, TextArea, Select } from "@/components/ui/Field";
 import { Stepper } from "@/components/ui/Stepper";
 import { Logo } from "@/components/ui/Logo";
+import { ImportPanel } from "@/app/onboarding/ImportPanel";
 
 /**
  * Near-frictionless merchant onboarding. A multi-step discovery wizard that
@@ -227,6 +228,8 @@ export function OnboardingWizard() {
             </code>
           </div>
         ) : null}
+
+        <ImportPanel merchantId={result.merchantId} />
 
         <div className="mt-9 flex flex-wrap items-center gap-4">
           <Button href={`/app?merchant=${result.merchantId}`}>See your cockpit</Button>
