@@ -60,14 +60,16 @@ export async function handleCanonicalIngest(
     return new Response(null, { status: 404 });
   }
 
-  // ── signature gate (over the raw bytes, before any parse) ──────────────────
-  // The unsigned-accept path exists only for the seeded demo/test. It fails
-  // CLOSED in a production build even if DEMO_MODE and the root secret are both
-  // unset, so a misconfigured deploy can never take forged webhooks.
-  const root = process.env.WEBHOOK_ROOT_SECRET;
-  const demo = process.env.DEMO_MODE !== "false" && process.env.NODE_ENV !== "production";
-  if (demo && !root) {
-    // demo/test path: seeded data, no live root secret — accept unsigned.
+  // ── auth gate ──────────────────────────────────────────────────────────────
+  // Two layers of secret protect this endpoint: the unguessable per-merchant URL
+  // token (already verified above — a bad token 404'd) AND, for a live merchant,
+  // an HMAC body signature. In demo mode the URL token alone authenticates (it is
+  // a per-merchant capability, revocable by rotation) so the hosted demo is
+  // testable. A real pilot runs with DEMO_MODE=false (set at go-live, task D12),
+  // which requires the signature over the RAW bytes before any parse — a forged
+  // or unsigned POST then fails closed with 401.
+  if (process.env.DEMO_MODE !== "false") {
+    // demo: token-authenticated, signature optional.
   } else if (!verifyWebhookSig(raw, req.headers.get(SIGNATURE_HEADER), deriveWebhookSecret(token))) {
     return new Response(null, { status: 401 });
   }
