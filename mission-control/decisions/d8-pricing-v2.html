@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D8 v2 — Pricing ladder, revised</title>
+<style>
+  :root{--teal:#0E5366;--terra:#D9762F;--sand:#FBF8F2;--ink:#11252A;--paper:#fff;--line:#E5DFD2;--muted:#5B6B70}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--sand);color:var(--ink);font:15.5px/1.6 Inter,system-ui,sans-serif;padding:32px 20px 80px}
+  .wrap{max-width:900px;margin:0 auto}
+  h1,h2{font-family:Fraunces,Georgia,serif;color:var(--teal)}
+  h1{font-size:30px;margin-bottom:6px}
+  h2{font-size:20px;margin:28px 0 10px}
+  h3{font-size:16px;margin:18px 0 6px;color:var(--teal)}
+  .meta{color:var(--muted);margin-bottom:22px}
+  .tblwrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px 10px;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:10px;border-bottom:2px solid var(--line)}
+  td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .price{font-family:Fraunces,Georgia,serif;font-size:19px;font-weight:600;color:var(--teal);white-space:nowrap}
+  .why{background:#F4EFE4;border-radius:10px;padding:14px 18px;font-size:14px;margin:14px 0}
+  .approve{background:var(--teal);color:#F2EFE7;border-radius:12px;padding:18px 22px;margin-top:26px}
+  .approve strong{color:#fff}
+  ul{margin:8px 0 8px 22px}
+  ol{margin:8px 0 8px 22px}
+  .rule{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--terra);border-radius:10px;padding:12px 16px;margin:10px 0;font-size:14.5px}
+  .ok{display:inline-block;background:#E4EFE6;color:#2E6B3F;border-radius:6px;padding:1px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:600;vertical-align:middle}
+  a{color:var(--teal)}
+  .src{font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body><div class="wrap">
+<h1>D8 v2 — The pricing ladder, revised</h1>
+<div class="meta">Revised after Dylan's overnight feedback + five research reports · full cited digest: <code>docs/research/2026-07-03-gtm-pricing-meta.md</code></div>
+
+<h2>What changed since v1, and why</h2>
+<div class="why">
+<strong>Your Scale objection was right, and the research says why it read wrong.</strong> Gorgias sells a bigger jump than ours ($360 Pro to $900 Advanced, +150%) and gets away with it because the jump buys a hard published cap increase: 2,000 to 5,000 tickets, printed on the card (<a href="https://www.gorgias.com/pricing">gorgias.com/pricing</a>). v1 named the meter but printed no per-tier numbers, so $899 was +$400 for a feature list. The fix is threefold:
+<ol>
+<li><strong>Scale drops $899 → $749</strong> and gets loaded with differentiators that are already spec'd (unlimited evidence packs, QA scorecard, assignment routing, priority SLA, API). The gap becomes +$250 (50%), matching the Starter→Growth step.</li>
+<li><strong>Order-volume caps now print on every card.</strong> You liked metering on total order volume; the caps are what make each rung self-justify. A merchant picks a band from their own order book, so the bill is known in advance and never spikes on a bad week.</li>
+<li><strong>Credits got a full evaluation and an honest verdict below:</strong> no as the core meter, yes as a dollar wallet for gifts only.</li>
+</ol>
+Unchanged: the floor. Founding partners convert at $199–299/mo, "the lowest I'll offer," in writing. No public tier sits below $299. Managed tiers unchanged and approved.
+</div>
+
+<h2>Recommended: compressed good-better-best, caps on every card</h2>
+<p>One sentence above the tiers, adapted from Swan's value reframe ("Pay for GTM work done, not software access," <a href="https://www.getswan.com/pricing">getswan.com/pricing</a>): <strong>"Pay for orders protected, not software access."</strong> Meter: presale orders currently in the wait window. Never seats, never tickets, never per-resolution.</p>
+<div class="tblwrap"><table>
+<thead><tr><th>Tier</th><th>Price</th><th>Order cap</th><th>What's in it</th></tr></thead>
+<tbody>
+<tr><td><strong>Founding Pilot</strong><br>(5 slots, honest cap)</td><td class="price">Free, one cycle</td><td>—</td><td>Full concierge, day-0 baseline, day-14 walk-away checkpoint. Converts at <strong>$199–299/mo locked for life</strong>. The promise, kept.</td></tr>
+<tr><td><strong>Starter</strong></td><td class="price">$299/mo</td><td>≤300 in window</td><td>Cockpit + engines, status pages + widget, email-forward ingest, unlimited seats</td></tr>
+<tr><td><strong>Growth</strong></td><td class="price">$499/mo</td><td>≤1,500 in window</td><td>+ helpdesk webhook integrations, refund-risk dashboard, evidence packs, delay-notice workflow, update pipeline</td></tr>
+<tr><td><strong>Scale</strong></td><td class="price">$749/mo</td><td>≤5,000 in window</td><td>+ unlimited evidence packs, QA scorecard, assignment/ownership routing, social-signal monitor, multi-campaign cohorts, priority SLA, API access</td></tr>
+<tr><td><strong>Cohort Pass</strong></td><td class="price">$1,500 flat</td><td>one campaign cycle (90–120 days)</td><td>Unchanged. The way crowdfunding merchants think; anchored against the ~5% they just paid BackerKit. Everything in Growth.</td></tr>
+</tbody></table></div>
+<p class="src">Sanity anchor a prospect can check with their own arithmetic: a Gorgias merchant on Pro pays $360/mo + $1.00 per AI-resolved conversation + $36–40 per 100 tickets over cap (<a href="https://www.gorgias.com/pricing">gorgias.com/pricing</a>). Growth at $499 flat undercuts that stack for any store doing a few hundred AI resolutions a month, with no invented efficacy number needed.</p>
+
+<h3>Soft limits, always (the Swan lesson, inverted)</h3>
+<ul>
+<li>Crossing a cap <strong>never pauses anything</strong>. Swan's automations stop at zero credits (<a href="https://www.salesforge.ai/blog/swan-gtm-review">salesforge review</a>); tolerable for outbound, fatal at day 45 of a 90-day presale wait. Tideover degrades never, bills later: we finish your cycle at the current price and have an upgrade conversation.</li>
+<li><strong>No overage penalty.</strong> Swan prices top-ups at 150% of plan rate; Gorgias charges $36–40 per 100 extra tickets. A Kickstarter graduate spikes by design; punishing the spike punishes the moment of highest need.</li>
+<li><strong>Passive access is free</strong> (Swan's one universally good mechanic): unlimited seats, your VA works in the cockpit free, end customers never count toward anything.</li>
+<li><strong>Pause between campaign cycles.</strong> Presale is seasonal; billing respects that. This is our answer to rollover-fairness copy without inventing a currency to roll over.</li>
+</ul>
+
+<h2>Alternative: four volume rungs (fallback if Scale features slip)</h2>
+<div class="tblwrap"><table>
+<thead><tr><th>Tier</th><th>Price</th><th>Order cap</th></tr></thead>
+<tbody>
+<tr><td><strong>Starter</strong></td><td class="price">$299/mo</td><td>≤250 in window</td></tr>
+<tr><td><strong>Growth</strong></td><td class="price">$449/mo</td><td>≤750 in window</td></tr>
+<tr><td><strong>Pro</strong></td><td class="price">$649/mo</td><td>≤2,000 in window</td></tr>
+<tr><td><strong>Scale</strong></td><td class="price">$899/mo</td><td>≤5,000 in window</td></tr>
+</tbody></table></div>
+<p>Use this only if the Scale differentiators (QA scorecard, routing, unlimited packs) can't ship this sprint: here the caps alone do the justifying, so $899 survives because it buys 2.5x the volume of the rung below, Gorgias-style. Cost: four Stripe links instead of three, and band-edge plan-shopping. <strong>Rejected outright: base-plus-metered-usage</strong> ($299 + $40 per 100 extra orders). It is the one shape that hands our own Gorgias-comparison cold email to a competitor to send back at us.</p>
+
+<h2>Should Tideover use credits? Honest verdict: no as the meter, yes as a wallet</h2>
+<div class="why">The meta is real: 79 of the PricingSaaS 500 now offer a credit model, up from 35 at end of 2024, +126% in a year (<a href="https://www.growthunhinged.com/p/2025-state-of-saas-pricing-changes">Growth Unhinged, 2025 State of SaaS Pricing</a>). But the reason credits swept AI GTM does not apply to us, and the same analyst's 2026 call is that the pendulum swings back to simplicity.</div>
+<ol>
+<li><strong>Credits are margin insurance for vendors with per-action COGS.</strong> Swan pays for enrichment lookups; Clay pays data providers per lookup (<a href="https://www.clay.com/pricing">clay.com/pricing</a>). Tideover's marginal cost per order-in-window is cents. Importing a credit meter imports the anxiety without protecting anything.</li>
+<li><strong>It torches our wedge.</strong> The cold-outreach line is "one flat fee, no per-resolution meter, no setup fee" against Gorgias's double meter (ticket tiers plus $1.00 per AI resolution, <a href="https://www.gorgias.com/pricing">gorgias.com/pricing</a>). You cannot send that email and also sell credits.</li>
+<li><strong>Value anti-correlation.</strong> Any per-action meter bills the merchant most exactly when a delay hits and tickets spike, which is when they are most cash-poor. Intercom's $0.99/resolution works because Fin's resolutions ARE the value (<a href="https://www.intercom.com/pricing">intercom.com/pricing</a>); Tideover's value is the tickets that never arrive, which is unmeterable.</li>
+<li><strong>The failure modes are on the record:</strong> Clay's unpredictable bills and pay-for-the-attempt charging (<a href="https://www.eesel.ai/blog/clay-pricing">eesel.ai teardown</a>), Cursor's opaque usage pool and public CEO apology with refunds (<a href="https://techcrunch.com/2025/07/07/cursor-apologizes-for-unclear-pricing-changes-that-upset-users/">TechCrunch</a>), Apollo's use-it-or-lose-it expiry resentment (<a href="https://www.eesel.ai/blog/apollo-pricing">eesel.ai</a>).</li>
+</ol>
+<h3>The one credit-shaped thing that fits: the Goodwill Wallet</h3>
+<p>Exactly one Tideover action has real per-unit cost: <strong>gift sends</strong> (physical or monetary goodwill to an angry waiting customer). For that, a prepaid wallet, available at every tier:</p>
+<ul>
+<li>Denominated in <strong>dollars, not an invented currency</strong>. Lemlist pins 1 credit = $0.01 for legibility (<a href="https://www.lemlist.com/pricing">lemlist.com/pricing</a>); we go one further and just use dollars.</li>
+<li>Gift cost passes through 1:1 plus a flat handling fee per send ($0 during pilots). Charged <strong>only on successful delivery</strong> (Lemlist's pay-per-success answer to Clay's pay-for-the-attempt complaint).</li>
+<li><strong>Never expires while subscribed; refundable on exit.</strong> Matches the delete-everything-on-exit doctrine and dodges the Apollo/Cursor rollover resentment on record.</li>
+<li>Balance renders on the plan-usage dashboard tile already spec'd.</li>
+</ul>
+<div class="rule"><strong>Do NOT meter evidence packs or social alerts.</strong> A dispute already costs the merchant ~$15–25 in fees before product loss; charging $5 per pack at their worst moment reads as petty and kills the "we're on your side of the chargeback" story. Pack quantity and alert depth are tier differentiators instead, and that is precisely what manufactures the Scale-tier justification v1 was missing.</div>
+
+<h2>Managed tiers — quoted on the call only <span class="ok">Approved as-is</span></h2>
+<div class="tblwrap"><table>
+<thead><tr><th>Tier</th><th>Quote band</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><strong>Managed Lite</strong> (shared operator, ≤150 tickets/mo)</td><td class="price">~$849/mo</td><td>~65% gross margin at PH rates</td></tr>
+<tr><td><strong>Managed Pod</strong> (dedicated rep + QA lead oversight)</td><td class="price">$1,500–2,000/mo</td><td>Parity with a bare agency agent ($1,400–3,500 market) but includes the software. You run the first client's queue yourself; hire gate = 2 signed managed clients AND >2h/day of queue time.</td></tr>
+</tbody></table></div>
+<p style="font-size:13.5px;color:var(--muted)">Unchanged from v1 per your feedback. One addition from the ColdIQ teardown, structure not price: frame the managed engagement as a 3-month pilot with a Day-90 review and a walk-away asset ("if it's not working, you keep the playbooks, templates, and baseline report"), plus pre-send approval of every customer-facing message. That is ColdIQ's entire risk-reversal at $2–8K/mo retainers, and it costs nothing (<a href="https://coldiq.com/outbound">coldiq.com/outbound</a>). Budget self-segmentation on the contact form ($500–1K / 1–2K / 2K+) routes leads before a call.</p>
+
+<h2>The rules the page states out loud (each one a cited wedge)</h2>
+<ul>
+<li><strong>Flat price. No per-ticket meter, no per-AI-resolution fee</strong> (Gorgias bills both, on their own pricing page)</li>
+<li><strong>No setup fee</strong> (TalentPop charges ~$2,500)</li>
+<li><strong>No credits, no overage penalties, nothing ever pauses</strong> (Swan: 150% top-up rate, automations stop at zero)</li>
+<li><strong>Unlimited seats</strong>; your VA works in the cockpit free</li>
+<li><strong>Month-to-month; pause between campaign cycles</strong></li>
+<li><strong>No performance fees</strong> until real case studies exist (proof-only)</li>
+</ul>
+
+<div class="rule"><strong>Not building this sprint:</strong> automated Stripe metering/billing. Prices publish on /pricing; payment happens via manual Stripe Payment Links. On approval, three files update to the new numbers: <code>TIDEOVER-PLAN.md</code> line 241 (Stripe links still say $199/$299/$499), <code>tideover/components/marketing/Pilot.tsx</code> and <code>FAQ.tsx</code> (still show the old $199–$499 / $799–$999 ladder).</div>
+
+<div class="approve"><strong>To approve:</strong> tell Claude <strong>"approve D8"</strong> (or adjust any number: "approve D8 but Scale at $799"; anything below the $299 public floor I'll flag as breaking the founding-partner promise and propose the fix). On approval this becomes the /pricing page, and the numbers flow into the FAQ, cold-email templates, and Stripe links.</div>
+</div></body>
+</html>
