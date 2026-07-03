@@ -616,5 +616,53 @@
     "sentimentAtSend": "anxious",
     "kind": "csat_up",
     "observedAt": "2026-07-03T01:20:00.000Z"
+  },
+  {
+    "id": "oe_f40000000000",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_ssclznolot09",
+    "orderId": "ord_1vyly8e86mha",
+    "customerId": "cus_hde7ct87fwk9",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "calm",
+    "kind": "resolved_quiet",
+    "observedAt": "2026-07-03T12:00:00.000Z"
+  },
+  {
+    "id": "oe_f40000000001",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_8m5eftgfssz3",
+    "orderId": "ord_780fgzueixzk",
+    "customerId": "cus_pq4i5jasd94t",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "hostile",
+    "kind": "resolved_quiet",
+    "observedAt": "2026-07-03T12:05:00.000Z"
+  },
+  {
+    "id": "oe_f40000000002",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_rs3h4pcto9v4",
+    "orderId": "ord_wr09l1jy00n1",
+    "customerId": "cus_if41gzk729hc",
+    "variantId": "var_y9209nd050qf",
+    "stageKey": "day-30",
+    "sentimentAtSend": "hostile",
+    "kind": "resolved_quiet",
+    "observedAt": "2026-07-03T12:10:00.000Z"
+  },
+  {
+    "id": "oe_f40000000003",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_2o3hlcroeq9f",
+    "orderId": "ord_oyo5uimf5ah3",
+    "customerId": "cus_n4t53zh85i1g",
+    "variantId": "var_pz1yt29un83b",
+    "stageKey": "day-7",
+    "sentimentAtSend": "calm",
+    "kind": "resolved_quiet",
+    "observedAt": "2026-07-03T12:15:00.000Z"
   }
 ]

@@ -143,14 +143,16 @@ export default async function ScriptsPage({
         appears once that column has at least {SCRIPT_PERF_MIN_N} of its own data points; below that we
         show the raw count and keep collecting. Edit rate = how much operators changed the draft before
         sending. Customer reply = the share of inbound replies that came back calm. Reopen = replies
-        followed by the customer coming back. CSAT = the customer&rsquo;s own 👍 on the status page.
+        followed by the customer coming back. CSAT = the customer&rsquo;s own 👍 on the status page. Quiet
+        resolution = sends that got no reply and no reopen for seven days — the wait settled (the mirror of
+        reopen).
       </p>
 
       {rows.length === 0 ? (
         <div className="proof-placeholder">No script variants seeded for this merchant.</div>
       ) : (
         <div className="panel overflow-x-auto">
-          <table className="w-full min-w-[920px] text-left text-[14px]">
+          <table className="w-full min-w-[1080px] text-left text-[14px]">
             <thead>
               <tr className="border-b border-border text-[11px] uppercase tracking-wider text-ink-mute">
                 <th className="px-5 py-2.5 font-semibold">Slot &amp; script</th>
@@ -159,6 +161,7 @@ export default async function ScriptsPage({
                 <th className="px-5 py-2.5 font-semibold">Customer reply (calm)</th>
                 <th className="px-5 py-2.5 font-semibold">Reopen rate</th>
                 <th className="px-5 py-2.5 font-semibold">CSAT</th>
+                <th className="px-5 py-2.5 font-semibold">Quiet resolution</th>
               </tr>
             </thead>
             <tbody>
@@ -214,6 +217,13 @@ export default async function ScriptsPage({
                         render={(r) => `${Math.round(r * 100)}% 👍`}
                       />
                     </td>
+                    <td className="px-5 py-3.5">
+                      <OutcomeCell
+                        rate={row.quietResolutionRate}
+                        count={row.sends}
+                        render={(r) => `${Math.round(r * 100)}% settled`}
+                      />
+                    </td>
                   </tr>
                 );
               })}
@@ -224,7 +234,8 @@ export default async function ScriptsPage({
 
       <p className="rounded-xl border border-dashed border-border bg-sand px-4 py-3 text-[12px] leading-relaxed text-ink-mute">
         These columns fold live from the outcome ledger — a customer reply within the attribution window,
-        a reopened ticket, a 👍/👎 tap on the status page. On the seeded demo the samples are deliberately
+        a reopened ticket, a 👍/👎 tap on the status page, and a daily sweep that marks a send settled when
+        seven quiet days pass with no reply. On the seeded demo the samples are deliberately
         small, so most read &ldquo;collecting data&rdquo; rather than a rate: small samples are noise, and we
         would rather show the honest count than a number the data can&rsquo;t back yet.
       </p>

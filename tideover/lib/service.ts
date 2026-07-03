@@ -575,6 +575,14 @@ export interface ScriptPerformanceRow {
   csatResponses: number;
   /** csat_up / (csat_up + csat_down) — null below the csat threshold. */
   csatRate: number | null;
+
+  // ── ADR-0013 (F4) quiet-resolution fact ────────────────────────────────────
+  /** count of kind==='resolved_quiet' events attributed to this variant (the
+   *  scheduled sweep's output: sends that got no comeback for 7 days). */
+  resolvedQuiet: number;
+  /** resolved_quiet / sends — null below the sends threshold. The positive mirror
+   *  of reopen rate: the share of sends that settled the wait quietly. */
+  quietResolutionRate: number | null;
 }
 
 /**
@@ -593,6 +601,7 @@ interface VariantStats {
   reopens: number;
   csatUp: number;
   csatDown: number;
+  resolvedQuiet: number;
 }
 const emptyStats = (): VariantStats => ({
   sends: 0,
@@ -602,6 +611,7 @@ const emptyStats = (): VariantStats => ({
   reopens: 0,
   csatUp: 0,
   csatDown: 0,
+  resolvedQuiet: 0,
 });
 
 /**
@@ -609,7 +619,8 @@ const emptyStats = (): VariantStats => ({
  * variants. Deterministic — variants keep their input order, never ranked by
  * performance. Folds the E1 send facts (kind==='reply_sent': `sends` +
  * meta.editedRatio) plus the E2 customer-side outcomes (customer_replied /
- * reopened / csat_up / csat_down). A send with no editedRatio is still counted in
+ * reopened / csat_up / csat_down) and the F4 quiet-resolution count
+ * (resolved_quiet, from the scheduled sweep). A send with no editedRatio is still counted in
  * `sends` but EXCLUDED from the mean — a missing measurement must not bias a
  * variant's edit-rate downward (proof-only discipline even off the seed path).
  *
@@ -651,8 +662,11 @@ export function aggregateScriptPerformance(
       case "csat_down":
         s.csatDown += 1;
         break;
+      case "resolved_quiet":
+        s.resolvedQuiet += 1;
+        break;
       default:
-        break; // refund_requested / chargeback / resolved_quiet: not surfaced here.
+        break; // refund_requested / chargeback: not surfaced here.
     }
   }
   return variants.map((variant) => {
@@ -674,6 +688,11 @@ export function aggregateScriptPerformance(
       reopenRate: s.sends >= SCRIPT_PERF_MIN_N ? Math.min(1, s.reopens / s.sends) : null,
       csatResponses,
       csatRate: csatResponses >= SCRIPT_PERF_MIN_N ? s.csatUp / csatResponses : null,
+      resolvedQuiet: s.resolvedQuiet,
+      // resolved_quiet <= sends by construction (one per settled send), so the cap
+      // is a no-op here — kept only as the same defensive ceiling as reopenRate.
+      quietResolutionRate:
+        s.sends >= SCRIPT_PERF_MIN_N ? Math.min(1, s.resolvedQuiet / s.sends) : null,
     };
   });
 }

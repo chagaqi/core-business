@@ -139,14 +139,16 @@ test("customer-side kinds never inflate sends / editedRatio (only reply_sent doe
     kindEvent("var_a", "reopened"),
     kindEvent("var_a", "csat_up"),
     kindEvent("var_a", "csat_down"),
+    kindEvent("var_a", "resolved_quiet"),
   ];
   const rows = aggregateScriptPerformance([variant({ id: "var_a" })], events);
   const a = rows[0];
-  assert.equal(a.sends, 1);
+  assert.equal(a.sends, 1); // only the reply_sent counts — resolved_quiet does not
   assert.equal(a.avgEditedRatio, 0.5);
   assert.equal(a.customerReplies, 1);
   assert.equal(a.reopens, 1);
   assert.equal(a.csatResponses, 2);
+  assert.equal(a.resolvedQuiet, 1);
 });
 
 test("calm-response rate = calm / all customer_replied once the sample reaches the floor", () => {
@@ -222,4 +224,36 @@ test("a variant with no customer-side events reports zero counts and null rates"
   assert.equal(a.reopenRate, null);
   assert.equal(a.csatResponses, 0);
   assert.equal(a.csatRate, null);
+  assert.equal(a.resolvedQuiet, 0);
+  assert.equal(a.quietResolutionRate, null);
+});
+
+// ── ADR-0013 (F4) quiet-resolution aggregation ──────────────────────────────
+
+test("quiet-resolution rate = resolved_quiet / sends once sends reach the floor, gated below it", () => {
+  const enough = [
+    ...repeat(SCRIPT_PERF_MIN_N, () => event("var_a", 0.1, "reply_sent")), // 20 sends
+    ...repeat(6, () => kindEvent("var_a", "resolved_quiet")), // 6 settled quiet
+  ];
+  const a = aggregateScriptPerformance([variant({ id: "var_a" })], enough)[0];
+  assert.equal(a.resolvedQuiet, 6);
+  assert.ok(Math.abs((a.quietResolutionRate ?? 0) - 6 / 20) < 1e-9); // 0.30
+
+  const tooFew = [
+    ...repeat(SCRIPT_PERF_MIN_N - 1, () => event("var_b", 0.1, "reply_sent")), // 19 sends
+    ...repeat(6, () => kindEvent("var_b", "resolved_quiet")),
+  ];
+  const b = aggregateScriptPerformance([variant({ id: "var_b" })], tooFew)[0];
+  assert.equal(b.resolvedQuiet, 6); // raw count present
+  assert.equal(b.quietResolutionRate, null); // rate gated by too-few sends (small-N humility)
+});
+
+test("quiet-resolution rate is capped at 1 — resolved_quiet <= sends by construction, but never renders >100%", () => {
+  const events = [
+    ...repeat(SCRIPT_PERF_MIN_N, () => event("var_a", 0.1, "reply_sent")), // 20 sends
+    ...repeat(25, () => kindEvent("var_a", "resolved_quiet")), // impossible surplus, defended anyway
+  ];
+  const a = aggregateScriptPerformance([variant({ id: "var_a" })], events)[0];
+  assert.equal(a.resolvedQuiet, 25); // raw count honest
+  assert.equal(a.quietResolutionRate, 1); // ...but the rate never exceeds 1
 });

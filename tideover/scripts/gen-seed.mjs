@@ -667,6 +667,47 @@ for (const m of merchants) {
   }
 }
 
+// ── ADR-0013 (F4) scheduled sweep: DEMO resolved_quiet events ──
+// The sweep's output, pre-baked so the Script Performance panel shows the
+// quiet-resolution column immediately. One resolved_quiet per QUIET seeded send —
+// a reply_sent whose order drew no customer_replied/reopened back — attributed to
+// that reply's variant/stage/order. Generated LAST (after every other block) so
+// its PRNG draws can't shift any id/token above; rows APPEND to outcomeEvents.
+// Deterministic + idempotent by (order,variant): the live sweep re-runs over these
+// and never double-emits (ADR-0013 guard covers seed + sweep uniformly).
+// observedAt = the send + 7 days (the window closing). Kept a "handful" (well below
+// SCRIPT_PERF_MIN_N) so the panel reads honest "collecting data (n=X)", never a rate.
+const RESOLVED_QUIET_WINDOW_DAYS = 7;
+const comebackOrders = new Set(
+  outcomeEvents
+    .filter((e) => e.kind === "customer_replied" || e.kind === "reopened")
+    .map((e) => e.orderId),
+);
+const quietSeen = new Set();
+for (const m of merchants) {
+  const mReplies = outcomeEvents.filter((e) => e.kind === "reply_sent" && e.merchantId === m.id);
+  let emitted = 0;
+  for (const r of mReplies) {
+    if (emitted >= 2) break; // a couple per merchant keeps the sample small
+    const key = `${r.orderId}|${r.variantId}`;
+    if (comebackOrders.has(r.orderId) || quietSeen.has(key)) continue; // not quiet / already settled
+    quietSeen.add(key);
+    emitted += 1;
+    outcomeEvents.push({
+      id: id("oe"),
+      merchantId: m.id,
+      ticketId: r.ticketId,
+      orderId: r.orderId,
+      customerId: r.customerId,
+      variantId: r.variantId,
+      stageKey: r.stageKey,
+      sentimentAtSend: r.sentimentAtSend,
+      kind: "resolved_quiet",
+      observedAt: new Date(Date.parse(r.observedAt) + RESOLVED_QUIET_WINDOW_DAYS * DAY_MS).toISOString(),
+    });
+  }
+}
+
 // ── write ──
 const write = (name, data) => writeFileSync(join(DATA, name), JSON.stringify(data, null, 2) + "\n");
 write("merchants.json", merchants);
