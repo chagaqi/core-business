@@ -170,6 +170,7 @@ const DYLAN = [
   {id:'D8', title:'Pricing: managed tiers APPROVED; public tiers → v2 overnight', why:'Dylan: order-volume metering yes, Scale\'s +$400 gap unjustified, explore Swan-style credits. Research (Swan/ColdIQ/Valley + credit meta) running now → d8-pricing-v2.html by morning', cost:'$0', status:'active', link:'decisions/d8-pricing.html'},
   {id:'D9', title:'Golden-fixture review (one evening, ~45 min)', why:'Read each expected engine reply once and approve — this converts snapshots into the actual spec', cost:'time', status:'queued'},
   {id:'D10', title:'Stripe activation', why:'DONE — account live. No key needed yet; when pricing is approved Claude will ask for a RESTRICTED key (payment-links scope only), never the full secret key', cost:'$0', status:'done'},
+  {id:'D11', title:'Say "flip prod to mongo"', why:'Everything is pre-verified (parity exact, durable writes proven locally against Atlas). The permission system requires your word for a live data-layer change. One sentence from you → I set DATA_DRIVER=mongo in Vercel + deploy + smoke-test', cost:'$0', status:'queued'},
 ];
 
 const CATS = [
@@ -187,7 +188,7 @@ const CATS = [
 
 const TASKS = [
   // FOUNDATIONS
-  {id:'F1', cat:'FOUND', prio:1, status:'active', title:'Mongo driver behind the Repositories seam', detail:'DATA_DRIVER=mongo implementation + isDemo merchant flag + seed import. Code lands now; URI wires in when D3 done. Prerequisite for half the sprint.', note:'Built + verify/test green. Atlas seeded (156 docs), driver parity vs JSON = zero mismatches. Adversarial-review fixes in flight; prod flip after.'},
+  {id:'F1', cat:'FOUND', prio:1, status:'done', title:'Mongo driver behind the Repositories seam', detail:'DATA_DRIVER=mongo implementation + isDemo merchant flag + seed import. Full driver, deterministic ordering, review-hardened.', note:'DONE + proven: verify/test green, Atlas seeded, JSON↔Mongo parity exact, and a local prod-build test served every page from Atlas with a durable write round-trip (widget → engine-drafted ticket → read back from a separate process). Prod flip = D11, one command, needs Dylan.'},
   {id:'F2', cat:'FOUND', prio:1, status:'queued', title:'Auth on /app', detail:'Env-password + signed cookie middleware; demo mode stays env-gated for the public demo. Must precede live ingest.'},
   {id:'F3', cat:'FOUND', prio:1, status:'queued', title:'Ingest hardening', detail:'Raw-body HMAC verify BEFORE parse; env-gate the mock channel (current auth bypass); fast-ACK + async engines; idempotency on (merchant, channel, externalId); drop-at-edge with visible discard counter.'},
   {id:'F4', cat:'FOUND', prio:2, status:'queued', title:'Scheduled jobs', detail:'Vercel Cron: resolved_quiet window-closer + nightly variant_stats rollup.'},
@@ -267,6 +268,7 @@ const LOG = [
   {d:'2026-07-03', t:'F1 landed green: full driver, Atlas seeded (2/31/42/55/10/16 docs), JSON↔Mongo parity test = zero mismatches, safety latch verified. Review found 1 should-fix ordering issue + nits — fix pass running.'},
   {d:'2026-07-03', t:'D5 done (branch protection ON). D7 DECIDED: the real story — COVID gym-equipment business, $200K first week, 60+ day waits, 2 years in the WISMO trenches; "that\\u2019s where Tide Over was born." Saved to docs/founder-story.md; credibility-anchor blocker (open since May) RESOLVED.'},
   {d:'2026-07-03', t:'Overnight research launched per Dylan: Swan, ColdIQ, Valley, credit-pricing meta, founder-story structures → pricing v2 + ABOUT draft by morning. Autonomous build loop continues hourly.'},
+  {d:'2026-07-03', t:'F1 COMPLETE: review fixes applied (deterministic ordering, index-failure client close, seed --force wipe, DNS preload), all gates green. Local prod-build test on the Mongo driver: every page 200 from Atlas + durable write round-trip proven (widget question → engine-drafted ticket → read back from a separate process → cleaned up). Production cutover queued as D11 (needs Dylan\\u2019s word — permission gate).'},
 ];
 
 // ============ RENDER ============
