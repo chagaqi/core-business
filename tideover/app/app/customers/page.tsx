@@ -36,10 +36,10 @@ export default async function CustomersPage({
     getQueue(merchantId),
   ]);
 
-  // highest live risk + a linkable open ticket, keyed by customer.
+  // highest live risk + a linkable open ticket + its order, keyed by customer.
   const riskByCustomer = new Map<
     string,
-    { score: number; color: RiskColor; ticketId: string }
+    { score: number; color: RiskColor; ticketId: string; orderId: string }
   >();
   for (const r of queue) {
     const prev = riskByCustomer.get(r.customer.id);
@@ -48,6 +48,7 @@ export default async function CustomersPage({
         score: r.riskScore,
         color: r.color as RiskColor,
         ticketId: r.ticket.id,
+        orderId: r.order.id,
       });
     }
   }
@@ -82,6 +83,7 @@ export default async function CustomersPage({
               <th className="px-5 py-2.5 text-right font-semibold">Tickets</th>
               <th className="px-5 py-2.5 font-semibold">Last sentiment</th>
               <th className="px-5 py-2.5 text-right font-semibold">Risk</th>
+              <th className="px-5 py-2.5 text-right font-semibold">Evidence</th>
             </tr>
           </thead>
           <tbody>
@@ -118,6 +120,22 @@ export default async function CustomersPage({
                   ) : (
                     <span className="text-[12px] text-ink-mute">no open ticket</span>
                   )}
+                </td>
+                <td className="px-5 py-3 text-right">
+                  {(() => {
+                    const evidenceOrderId = risk?.orderId ?? customer.orderIds[0];
+                    return evidenceOrderId ? (
+                      <Link
+                        href={`/app/orders/${evidenceOrderId}/evidence`}
+                        className="text-[12px] text-ink-mute no-underline hover:text-teal"
+                        title="Dispute evidence pack for this order"
+                      >
+                        Evidence pack
+                      </Link>
+                    ) : (
+                      <span className="text-[12px] text-ink-mute">—</span>
+                    );
+                  })()}
                 </td>
               </tr>
             ))}

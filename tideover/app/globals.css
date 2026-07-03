@@ -232,3 +232,117 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   Dispute Evidence Pack (M2) — sober, documentary, print-first.
+   Uses the brand tokens above; no marketing flourish. window.print()
+   / "Save as PDF" must yield a clean one-to-two page document with no
+   PDF library. Print isolation hides the app chrome and shows only .evpack.
+   ============================================================ */
+.evpack {
+  position: relative;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 28px 26px 72px;
+  color: var(--ink);
+}
+.evpack .ev-doc-title {
+  font-family: var(--font-fraunces), "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 27px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.ev-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+.ev-card.p-0 {
+  padding: 0;
+}
+.ev-eta {
+  border-left: 3px solid var(--teal);
+  background: var(--accent-card);
+}
+.ev-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.ev-meta {
+  font-size: 11.5px;
+  color: var(--ink-mute);
+}
+.ev-entry {
+  border-bottom: 1px solid var(--border);
+}
+.ev-entry:last-child {
+  border-bottom: 0;
+}
+/* SAMPLE DATA overlay — a screenshot/PDF-leak guard for demo merchants. */
+.ev-watermark {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.ev-watermark span {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 112px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: rgba(192, 70, 59, 0.08);
+  transform: rotate(-27deg);
+  white-space: nowrap;
+  user-select: none;
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  /* Isolate the pack: hide everything, then reveal only .evpack. */
+  body * {
+    visibility: hidden !important;
+  }
+  .evpack,
+  .evpack * {
+    visibility: visible !important;
+  }
+  .evpack {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .ev-card {
+    border-color: #d7d7d7;
+    border-radius: 0;
+  }
+  .ev-eta {
+    background: #f4f7f8;
+  }
+  .ev-section,
+  .ev-entry {
+    break-inside: avoid;
+  }
+  .ev-watermark span {
+    color: rgba(192, 70, 59, 0.1);
+  }
+}

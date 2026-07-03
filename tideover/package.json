@@ -11,7 +11,7 @@
     "seed:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-mongo.mjs",
     "smoke:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/mongo-smoke.mjs",
     "proof-lint": "node scripts/proof-lint.mjs",
-    "test": "node --experimental-strip-types --import ./scripts/register-hooks.mjs --test \"lib/engines/__tests__/*.test.ts\"",
+    "test": "node --experimental-strip-types --import ./scripts/register-hooks.mjs --test \"lib/**/__tests__/*.test.ts\"",
     "verify": "npm run seed-check && npm run proof-lint && npm run lint && npm run build"
   },
   "dependencies": {
