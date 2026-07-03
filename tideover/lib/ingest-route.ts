@@ -70,7 +70,13 @@ export async function handleCanonicalIngest(
   // or unsigned POST then fails closed with 401.
   if (process.env.DEMO_MODE !== "false") {
     // demo: token-authenticated, signature optional.
-  } else if (!verifyWebhookSig(raw, req.headers.get(SIGNATURE_HEADER), deriveWebhookSecret(token))) {
+  } else if (
+    !process.env.WEBHOOK_ROOT_SECRET ||
+    !verifyWebhookSig(raw, req.headers.get(SIGNATURE_HEADER), deriveWebhookSecret(token))
+  ) {
+    // live: a real HMAC signature is required, AND WEBHOOK_ROOT_SECRET must be
+    // set — an empty root makes the derived secret computable from the public
+    // URL token, so we fail closed rather than accept a forgeable signature.
     return new Response(null, { status: 401 });
   }
 
@@ -87,10 +93,12 @@ export async function handleCanonicalIngest(
   const payload = parsed.data;
 
   // Drop-at-edge (ADR-0011 §4): when the merchant scopes ingest to presale tags,
-  // a tagged payload with no match is acked but never persisted or drafted.
+  // anything without a matching tag — INCLUDING an untagged payload — is acked
+  // but never persisted or drafted (honors the onboarding promise "untagged
+  // tickets never reach us"). With no presaleTags configured, accept everything.
   const tags = payload.tags ?? [];
   const allowed = merchant.presaleTags;
-  if (tags.length > 0 && allowed && allowed.length > 0 && !tags.some((t) => allowed.includes(t))) {
+  if (allowed && allowed.length > 0 && !tags.some((t) => allowed.includes(t))) {
     console.log(
       JSON.stringify({ event: "ingest.discarded", merchantId: merchant.id, channel, tags }),
     );

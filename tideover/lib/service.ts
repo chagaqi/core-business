@@ -215,7 +215,10 @@ export async function ingestTicket(
   }
 
   let customer = await repos.customers.findByEmail(n.merchantId, n.customerEmail);
+  // Scope the order_ref lookup to THIS merchant — a payload citing another
+  // merchant's order id must never attach that order (cross-merchant data leak).
   let order: Order | null = n.orderRef ? await repos.orders.findById(n.orderRef) : null;
+  if (order && order.merchantId !== n.merchantId) order = null;
   if (!order && customer) {
     const orders = await repos.orders.listByCustomer(customer.id);
     order = orders[0] ?? null;

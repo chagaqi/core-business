@@ -47,6 +47,18 @@ function extractTags(payload: Record<string, unknown>): string[] {
 }
 
 export async function POST(req: Request) {
+  // Legacy route. The real per-merchant integration path is /api/ingest/[channel]/[token]
+  // (ADR-0011), which binds merchant identity to an unguessable URL token. This
+  // route authenticates merchant identity only via a body id + a per-channel
+  // GLOBAL secret (cross-merchant-injectable if that secret ever leaks), so it is
+  // hard-disabled once the app is live — a real pilot must use /api/ingest/*.
+  if (process.env.DEMO_MODE === "false") {
+    return NextResponse.json(
+      { error: "gone: use the per-merchant /api/ingest/[channel]/[token] endpoint" },
+      { status: 410 },
+    );
+  }
+
   const raw = await req.text();
 
   const url = new URL(req.url);

@@ -306,4 +306,40 @@ test("route: drop-at-edge discards a payload whose tags miss the merchant's pres
   );
   assert.equal(((await kept.json()) as { status: string }).status, "ingested");
   assert.ok(await repos.tickets.findByExternalId(merchant.id, "email", externalId2));
+
+  // An UNTAGGED payload is also dropped when presaleTags is configured — honors
+  // the onboarding promise "untagged tickets never reach us".
+  const externalId3 = `wh_untagged_${Date.now()}`;
+  const untagged = await handleCanonicalIngest(
+    ingestRequest({ external_id: externalId3, customer_email: "buyer@example.com", subject: "hi", body: "no tags here" }),
+    "webhook",
+    merchant.inboxToken,
+  );
+  assert.equal(((await untagged.json()) as { status: string }).status, "discarded");
+  assert.equal(await repos.tickets.findByExternalId(merchant.id, "email", externalId3), null);
+});
+
+test("route (live mode): fails closed when WEBHOOK_ROOT_SECRET is unset (no forgeable-secret path)", async () => {
+  const repos = getRepositories();
+  const merchant = (await repos.merchants.list())[0];
+  process.env.DEMO_MODE = "false";
+  delete process.env.WEBHOOK_ROOT_SECRET; // misconfigured live deploy
+  try {
+    // Even a request "signed" with the empty-root-derived secret is rejected,
+    // because the route refuses to verify at all without a root secret.
+    const raw = JSON.stringify({ external_id: "x", customer_email: "a@b.com", subject: "s", body: "b" });
+    const forgeable = signWebhookBody(raw, deriveWebhookSecret(merchant.inboxToken));
+    const res = await handleCanonicalIngest(
+      new Request(`http://localhost/api/ingest/webhook/${merchant.inboxToken}`, {
+        method: "POST",
+        headers: { "content-type": "application/json", [SIGNATURE_HEADER]: `sha256=${forgeable}` },
+        body: raw,
+      }),
+      "webhook",
+      merchant.inboxToken,
+    );
+    assert.equal(res.status, 401);
+  } finally {
+    delete process.env.DEMO_MODE;
+  }
 });
