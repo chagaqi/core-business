@@ -4,7 +4,7 @@
 > **Target:** the free founding-partner concierge pilot (book a 15-min presale-support teardown). Paid plans are the next step, never the ask here.
 > **Buyer:** Kickstarter / Indiegogo / BackerKit graduates moving onto Shopify, with a 60–120 day fulfillment wait.
 > **Voice:** the locked Tideover brand kit. Warm, calm, steady, human. No hype.
-> **PROOF-ONLY:** no fabricated refund stats, case studies, testimonials, ratings, or logos. External numbers are cited to a named source and never restated as a Tideover result. The refund case study doesn't exist yet (a cycle is 60–120 days); founding / leading-indicator framing stands in. The "$2M" figure is warm-call only and never appears here.
+> **PROOF-ONLY:** no fabricated refund stats, case studies, testimonials, ratings, or logos. External numbers are cited to a named source and never restated as a Tideover result. The refund case study doesn't exist yet (a cycle is 60–120 days); founding / leading-indicator framing stands in. No revenue figure is claimed anywhere; the credibility is Dylan's own first-person account of the gym-equipment business he ran ($200K in week one, 60-plus-day waits, two years), self-reported and framed as such.
 > **Net-new note:** this is the deep page for warmed traffic and nurture clickthroughs. `_tideover-landing-page.html` is the short book-a-call page for cold ad/DM traffic. Variant banks below are ready to A/B across both.
 
 ---
@@ -112,18 +112,26 @@ That's it. No migration, no new tool, no engineering time, no card.
 
 ## [ABOUT — the operator]
 
-I'm Chaga, the founder of Tideover. I'm not a CS-software salesperson. I'm an operator. I built a physical-goods brand from scratch and ran the unglamorous half myself: warehouse, in-house shipping, fulfillment, and the part nobody puts in the founder story, the customer messages during the long waits. I've answered the "where is my order?" email at 11pm. I watched a good reply turn a furious customer loyal, and a slow or canned one send her straight to a chargeback.
+In 2020 I started a gym equipment business the week the gyms closed. I closed $200K in orders in my first seven days. That sounds like a win. It was the start of the hardest two years of my working life.
 
-That scar tissue is the entire product. The reassurance scripts in Tideover aren't CS theory scraped off a blog. They're written from what actually calmed a real buyer in a real inbox, then tuned to your vertical. I know what to say at day 60 because I had to figure it out when the order was mine and the angry customer was real.
+Every one of those orders shipped into the worst freight delays in e-commerce history. Customers waited 60 days and more, and every morning the inbox refilled with the same question: where is my order? I couldn't make a single container move faster. The only real job was convincing good people to wait a little longer, then doing it again the next day.
 
-Now let me be just as honest about what I can't show you yet. Tideover is new. A real "we cut your refunds by X%" case study needs a complete presale cycle, 60 to 120 days, to even exist. It doesn't exist today, and I won't fake one. No invented stats, no borrowed logos, no fictional testimonials. If I'd lie to you about my own proof, you couldn't trust me with your customers.
+I used to think: if I could wave a magic wand and the stress of handling the onslaught of inquiries — when you know there's nothing you can do but convince them to wait a bit longer — could just go away in an instant, it would have saved me my sanity, my nervous system, my family, and my time to focus on growing the business.
 
-What I can show you, starting in the pilot, are the honest leading indicators that predict the refund number that lands later:
-- **Faster first responses** on presale tickets, measured against your own captured baseline.
-- **Fewer repeat "where's my order" tickets** as buyers stop having to ask twice.
-- **Logged saves** — the refund and dispute pulls recorded with the actual ticket, so you can see them.
+That's where Tideover was born. The name is literal. I spent two years tiding customers over, and I learned, order by order and refund by refund, what keeps a customer calm through a long wait and what turns a delay into a chargeback.
 
-The full refund-reduction proof lands after your first cohort finishes its wait. You'll never pay for proof that isn't there yet. That's the founding-partner deal: you get the work free while I earn the case study, on your real orders.
+Here's the honest part: you shouldn't have to learn it the way I did. Instinct doesn't scale. At 11pm, on your three-hundredth "where is my order" email, instinct fails. So I built the judgment into software instead of leaving it to nerves:
+- Every reply Tideover drafts is audited in code before it reaches a customer.
+- Hard delivery dates you can't control are physically blocked. The system will not send a promise you can't keep.
+- Results are measured against one thing only: your own store's baseline. Never a benchmark I invented.
+
+One pledge governs everything on this site: proof only. No fabricated metrics, no fake logo wall, no "merchants love us" line I can't back. The numbers above ($200K, 60+ days, two years) are my own account of my own business. They stay the only numbers here until real merchant results, shared with permission, replace them.
+
+Tideover exists for Shopify merchants staring down a 60–120 day fulfillment wait, usually right after a crowdfunding campaign worked better than expected. If that's you, I'm taking on a small group of founding partners. You get me directly, you shape the product, and your results, only with your sign-off, become the proof this page runs on.
+
+If you're in the middle of the onslaught right now, I know exactly where you're standing. Write to me.
+
+— Dylan
 
 ---
 
@@ -296,13 +304,13 @@ And the honest part most people skip: there's no finished refund case study yet,
 # PART 4 — "ABOUT" WAR-STORY VARIANT (paste-ready)
 # ============================================================
 
-> One alternate operator-credibility block for email/DM where the full [ABOUT] section is too long. Proof-only; the "$2M" figure never appears.
+> One alternate operator-credibility block for email/DM where the full [ABOUT] section is too long. Proof-only; no revenue figure is claimed — the self-reported gym-equipment story carries it.
 
 ---
 
 ### ABOUT VARIANT — "Operator scars, not CS theory"
 
-I'm Chaga. Most people selling you AI support tools have never shipped a physical product or eaten a chargeback. I have. I built a physical-goods brand from scratch and ran the engine room myself: warehouse, shipping, fulfillment, and the "where is my order" messages during the wait. That's why Tideover's reassurance scripts come from a real inbox instead of an empathy blog. I know what to say at day 60 because I had to figure it out when the furious customer was real and the order was mine. My promise on proof: I will never show you a refund stat, a case study, a testimonial, or a logo I can't stand behind. The full "we cut refunds X%" proof needs a 60–120 day cycle and doesn't exist yet. What you get in the pilot is the honest version: faster responses, fewer repeat tickets, logged saves, and the real case study after your first cohort lands.
+I'm Dylan. Most people selling you AI support tools have never shipped a physical product or eaten a chargeback. I have. In 2020 I started a gym-equipment business the week the gyms closed, closed $200K in orders in my first seven days, then spent two years tiding those customers over through 60-plus-day freight delays — answering the "where is my order" email myself, every morning. That's why Tideover's reassurance scripts come from a real inbox instead of an empathy blog. I know what to say at day 60 because I had to figure it out when the furious customer was real and the order was mine. My promise on proof: I will never show you a refund stat, a case study, a testimonial, or a logo I can't stand behind. The full "we cut refunds X%" proof needs a 60–120 day cycle and doesn't exist yet. What you get in the pilot is the honest version: faster responses, fewer repeat tickets, logged saves, and the real case study after your first cohort lands.
 
 ---
 ---
@@ -326,12 +334,12 @@ I'm Chaga. Most people selling you AI support tools have never shipped a physica
 
 ---
 
-## [USAGE NOTES — for Chaga / the build]
+## [USAGE NOTES — for Dylan / the build]
 
 - **Two pages, two jobs.** `_tideover-landing-page.html` = short book-a-call page for cold ad/DM traffic. **This file** = the long argument for warm traffic, nurture clickthroughs, and high-consideration buyers. Don't run both at one person cold.
 - **Merge fields are real:** `{{first_name}}`, `{{brand_name}}`, `{{booking_link}}`.
 - **Booking link** = the Cal.com "Presale Support Interview / Teardown" 15-min event (doc 36, §5 Day 0). Wire it into every `{{booking_link}}` before publishing.
 - **Proof-only is load-bearing.** If you get a real, baselined leading-indicator win or an experience testimonial, add it where marked. Never a refund/chargeback % until a completed-cohort case study exists post-cycle, and never invented ratings or logos. Cite any external stat to its named source (done in [THE STAKES]).
-- **The "$2M" figure never appears here.** It's reserved for warm calls per doc 36 §1. The war story carries the credibility without the number.
+- **No revenue figure is claimed anywhere.** The retired "$2M/yr" number is gone with the retired persona. Credibility is Dylan's own first-person account of the gym-equipment business he ran — $200K in week one, 60-plus-day waits, two years — self-reported and framed as such, never restated as a Tideover result.
 - **Scarcity ("five founding pilots") is honest.** It maps to the real concurrent-partner cap in doc 36 (1–2 live concurrent during the Venture-1 overlap, 3–5 committed). Keep it true.
 - **A/B order to test:** Hero (primary, in [HERO]) vs C (mechanism) for cold-ish; D for crowdfunding-list outreach; B for cash-flow buyers. CTA 2 for the full page, 1 for nurtured readers.

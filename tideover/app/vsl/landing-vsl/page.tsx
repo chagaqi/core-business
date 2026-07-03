@@ -74,10 +74,11 @@ export default function LandingVslPage() {
             Same inbox, different replies, because now your support knows the difference.
           </p>
           <p>
-            <strong>Credibility (proof-only):</strong> I&rsquo;m Chaga, not a CS-software salesperson. I ran fulfillment,
-            in-house shipping, and the &ldquo;where is my order&rdquo; comms for a physical-goods brand. I&rsquo;ve sent
-            the day-60 refund email that works and the one that makes it worse. What calms an anxious buyer versus what
-            makes them hit dispute, that&rsquo;s the whole product.
+            <strong>Credibility (proof-only):</strong> I&rsquo;m Dylan, not a CS-software salesperson. In 2020 I started a
+            gym-equipment business the week the gyms closed, then spent two years tiding those customers over through
+            60-plus-day freight delays &mdash; answering the &ldquo;where is my order&rdquo; email myself, every morning.
+            I&rsquo;ve sent the day-60 refund email that works and the one that makes it worse. What calms an anxious buyer
+            versus what makes them hit dispute, that&rsquo;s the whole product.
           </p>
           <p>
             And here&rsquo;s the straight talk. A &ldquo;we cut refunds by X percent&rdquo; case study needs a full

@@ -413,7 +413,7 @@ for (const m of merchants) {
       status: "sent",
       sent: {
         text: "(approved day-stage reassurance reply)",
-        approvedBy: "Chaga",
+        approvedBy: "Dylan",
         sentAt: iso(ageDays),
         externalId: `mock_send_${i}`,
       },

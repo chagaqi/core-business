@@ -103,7 +103,7 @@ test("buildCommLog includes inbound + sent replies chronologically, and excludes
       createdAt: "2026-06-02T00:00:00.000Z",
       body: "second in",
       status: "sent",
-      sent: { text: "reply sent", approvedBy: "Chaga", sentAt: "2026-06-03T00:00:00.000Z", externalId: "m1" },
+      sent: { text: "reply sent", approvedBy: "Dylan", sentAt: "2026-06-03T00:00:00.000Z", externalId: "m1" },
     }),
     ticket({
       id: "tkt_a",
@@ -131,6 +131,6 @@ test("buildCommLog includes inbound + sent replies chronologically, and excludes
   );
   assert.equal(log[0].actor, "Mara (customer)");
   assert.equal(log[0].at, "2026-06-01T00:00:00.000Z"); // tkt_a inbound, earliest
-  assert.equal(log[2].actor, "Chaga (operator)");
+  assert.equal(log[2].actor, "Dylan (operator)");
   assert.equal(log[2].statusLabel, "sent");
 });

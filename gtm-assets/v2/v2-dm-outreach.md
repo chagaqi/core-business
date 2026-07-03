@@ -1,6 +1,6 @@
 # Tideover — DM Outreach (LinkedIn / X / IG)
 
-> **Venture 2 — Tideover (tideover.app).** Founder: Chaga Chai. Beachhead: Kickstarter / Indiegogo / BackerKit creators moving onto Shopify, 60-to-120-day fulfillment windows, big backer lists. "To tide someone over": get anxious presale buyers through the wait, calm and aboard, until their order ships.
+> **Venture 2 — Tideover (tideover.app).** Founder: Dylan. Beachhead: Kickstarter / Indiegogo / BackerKit creators moving onto Shopify, 60-to-120-day fulfillment windows, big backer lists. "To tide someone over": get anxious presale buyers through the wait, calm and aboard, until their order ships.
 >
 > **The ask, every sequence:** a free 15-min presale-support teardown → a free founding-partner concierge pilot, one cycle. This is the DM companion to the landing page and email asset. Real personal accounts. The warmed `tideover.app` domain is next-cohort email only.
 >
@@ -10,7 +10,7 @@
 >
 > **The one upgrade — ARTIFACT-FIRST.** Where the real operators open with a *claim* (Welsh's "love what you're doing," Ruiz's "are you looking to," Mahrle's "I'm building the sales team"), Tideover opens with a *finished made-for-them thing*: the free 15-min teardown of their own presale inbox. The artifact does the trust-building the operators' goodwill ladder did, in one touch. We say that is the upgrade in the notes, never hide it.
 >
-> **Proof-only (do not edit out):** Operator background is a war story, never a number: *"I ran fulfillment, in-house shipping, and the where's-my-order comms for a physical-goods brand for years."* The "$2M" figure is warm-call only, on a booked call, never in a cold DM. No invented refund stats, case studies, testimonials, ratings, logos, or client names. A cycle runs 60 to 120 days, so the refund case study doesn't exist yet. Use founding-partner and leading-indicator framing, and say so plainly. `[CASE STUDY PLACEHOLDER]`. Example replies use honest ETA bands ("ships in weeks 9 to 11"), never invented hard dates. Any self-reported number a real operator posts is *theirs*, never restated as ours.
+> **Proof-only (do not edit out):** Operator background is Dylan's lived gym-equipment story, never a revenue figure: *"I ran a physical-goods brand through brutal fulfillment delays and answered the where's-my-order emails myself for years."* No "$2M" or any revenue figure — the only numbers are his own self-reported account ($200K week one, 60-plus-day waits, two years), and even those stay off a cold DM. No invented refund stats, case studies, testimonials, ratings, logos, or client names. A cycle runs 60 to 120 days, so the refund case study doesn't exist yet. Use founding-partner and leading-indicator framing, and say so plainly. `[CASE STUDY PLACEHOLDER]`. Example replies use honest ETA bands ("ships in weeks 9 to 11"), never invented hard dates. Any self-reported number a real operator posts is *theirs*, never restated as ours.
 >
 > **The hook rule (non-negotiable, per outreach-proof.md Tactic 3, 8 sources):** AI/token personalization is now *worse than none*. A tool pulls the raw signal (Kickstarter/BackerKit end-date calendar, delay-update posts, backer comment feeds). **A human writes the per-prospect line.** Never let a model fill `[CampaignName]`, the trigger reference, or any signal sentence. The brackets below are merge fields a human verifies, not a model's output.
 >
@@ -43,7 +43,7 @@
 **LinkedIn:**
 > Hi [FirstName], saw [Brand] is in the thick of fulfilling [CampaignName]. That stretch is the part nobody warns you about. The money's in, but the inbox turns into "any update on my order?" on repeat, and the calm answer at day 20 isn't the answer at day 80.
 >
-> I ran fulfillment, in-house shipping, and the where's-my-order comms for a physical-goods brand for years. Answered the day-60 refund email at 11pm more times than I can count.
+> I ran fulfillment and the where's-my-order comms for a physical-goods brand for years. Answered the day-60 refund email at 11pm more times than I can count.
 >
 > I've been doing free 15-min presale-support teardowns for a few crowdfunding brands mid-fulfillment, showing the 2 or 3 points in the wait where backers are most likely to bail. Want me to send one over for [Brand]?
 
@@ -218,7 +218,7 @@
 
 ## SECTION 6 — REPLY-HANDLERS
 
-> Route each reply to its handler. **Clarify before you answer an objection** (per outreach-proof.md Tactic 9, 5 sources): the one-line clarify in front of each rebuttal is in *italics*. Ask it, let them answer, then deploy the scripted line. The ~$2M figure comes up on a booked call only, never as a flex.
+> Route each reply to its handler. **Clarify before you answer an objection** (per outreach-proof.md Tactic 9, 5 sources): the one-line clarify in front of each rebuttal is in *italics*. Ask it, let them answer, then deploy the scripted line. No revenue figure is claimed; the credibility is the lived gym-equipment story, self-reported numbers only.
 >
 > **Structure note — two parents.** The "yes / what is this / not now" path mirrors **Marcos Ruiz's $3M LinkedIn DM flow** — *ask → dig → dig → soft ask, never a raw calendar link cold* (`[VERBATIM]` flow / `[WEAK]` proof — https://www.thebirdhouse.email/p/steal-this-3m-linkedin-dm-script). The objection clarifies mirror **Jeremy Miner & Prospeo, "I need to think about it"** — *clarify the real objection before answering it* (Miner `[PARAPHRASE]` — https://7thlevelhq.com/the-top-52-objections/; Prospeo `[VERBATIM]` — https://prospeo.io/s/smma-sales-script): the italic clarify line in front of every rebuttal is that move. The re-engage (Response 5) mirrors **Braun's "not interested / not right now"** (`[VERBATIM]` — https://www.linkedin.com/posts/josh-braun_josh-a-prospect-responded-to-my-cold-email-activity-7074138982707556352-T9Cm): drop the meeting-ask, trade it for one useful thing, remove the obligation. **Artifact-first upgrade:** every Ruiz "soft ask" terminates in *the teardown of their own inbox*, not "I'll set up a call with my team." Ruiz earns the call with a claim; we earn it with the built artifact. Response 1 is the only place the `[BookingLink]` appears, after the yes.
 
@@ -267,7 +267,7 @@
 ---
 
 ### BONUS — "Are you a competitor / consultant?"
-> Neither. I ran fulfillment, in-house shipping, and the long-wait customer comms for a physical-goods brand, and Tideover is me turning that into a tool. Solo founder, not an agency pitching retainers, which is why you get a free teardown on your real inbox instead of a sales deck. Happy to share more on a quick call, want me to send a time?
+> Neither. I ran fulfillment and the long-wait customer comms for a physical-goods brand, and Tideover is me turning that into a tool. Solo founder, not an agency pitching retainers, which is why you get a free teardown on your real inbox instead of a sales deck. Happy to share more on a quick call, want me to send a time?
 
 ---
 
@@ -280,7 +280,7 @@
 - [ ] The opener's trigger is actually visible on their page, and a **human** wrote the signal line. No AI-filled hook, ever.
 - [ ] Default is permission-ask. The booking link is offered, not pasted, in touch 1. (Embedded-link openers are A/B only.)
 - [ ] No refund %, case study, testimonial, client name, or rating anywhere. No other operator's self-reported number restated as ours.
-- [ ] No "$2M" / revenue figure in the DM. War story only; the figure waits for a booked call.
+- [ ] No "$2M" or any revenue figure in the DM. The lived gym-equipment story only; self-reported numbers stay off the cold DM.
 - [ ] When a link does go out, it's `[BookingLink]`, after a yes. Never in a connection note.
 - [ ] Connection note is either absent or one ultra-specific note under 180 chars.
 - [ ] Example replies use confidence-band windows, never invented hard dates.

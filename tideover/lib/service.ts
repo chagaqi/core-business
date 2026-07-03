@@ -328,7 +328,7 @@ export async function approveSend(
 
   const updated = await repos.tickets.update(ticketId, {
     status: "sent",
-    sent: { text, approvedBy: process.env.DEMO_OPERATOR_NAME ?? "Chaga", sentAt, externalId },
+    sent: { text, approvedBy: process.env.DEMO_OPERATOR_NAME ?? "Dylan", sentAt, externalId },
     firstResponseSec,
   });
 

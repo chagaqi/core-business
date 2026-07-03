@@ -10,7 +10,7 @@ const DEMO_OPERATOR_COOKIE = "tideover_demo_operator";
 
 export function getDemoOperator(): string {
   const c = cookies().get(DEMO_OPERATOR_COOKIE);
-  return c?.value || process.env.DEMO_OPERATOR_NAME || "Chaga";
+  return c?.value || process.env.DEMO_OPERATOR_NAME || "Dylan";
 }
 
 export function isDemoMode(): boolean {

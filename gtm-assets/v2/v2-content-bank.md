@@ -2,12 +2,12 @@
 
 > **Venture:** Tideover. Presale-support layer for Shopify. Bolts onto the helpdesk you already run, takes only the presale tickets, knows each order's real production timeline, and answers the 60–120 day wait with calm, timeline-aware reassurance.
 > **Beachhead:** Kickstarter / Indiegogo / BackerKit graduates moving onto Shopify.
-> **Voice:** Chaga. Ex-operator who ran the warehouse, in-house shipping, and the where's-my-order inbox for a physical-goods brand. First-person, plain, operator to operator.
+> **Voice:** Dylan. A technical founder who lived the problem, then built the measurement system for it. In 2020 he started a gym-equipment business the week the gyms closed, closed $200K in orders in week one, then spent two years tiding those customers over through 60-plus-day freight delays — answering "where's my order?" himself, every morning. First-person, plain, operator to operator. Any number is his own account of his own business, self-reported, never inflated.
 > **Status:** Pre-launch, concierge-first. The refund-reduction case study does not exist yet (a cycle is 60–120 days). Use leading-indicator and founding-partner framing where proof would normally go.
 
 ## PROOF-ONLY GUARDRAILS (read before posting anything)
 1. **No fabricated refund stats, case studies, testimonials, ratings, or logos.** None exist yet. Say so.
-2. **The ~$2M figure is warm-conversation only.** In public, the operator background is a war story ("I ran fulfillment and the where's-my-order inbox for a physical-goods brand"), never a number.
+2. **No revenue figure is claimed.** There's no "$2M/yr" number (it belonged to the retired persona). The operator background is Dylan's lived gym-equipment story, and the only self-reported numbers are his own — $200K in orders in week one, 60-plus-day waits, two years running it — framed as his own account, never a Tideover result.
 3. **External stats** (YepAI, Gartner-via-YepAI, card-network fees, Kickstarter totals) cite the source. Context, not our results.
 4. **Where a case study would go:** "founding-partner pilots starting now," the leading indicators we measure, or a labeled illustration.
 5. **Timeline language stays in confidence bands** ("ships in weeks 9–11"), never invented hard dates. Model this in the content.
@@ -434,7 +434,7 @@ If you run preorders and want it when it's ready, comment "playbook" or DM me. O
 
 # PART 3 — COMMUNITY COMMENT FRAMES
 
-> **Rules:** Post from a real, aged account with standing in the sub. Lead with help that stands on its own even if you never mention Tideover. Never drop a link or product name unless someone asks "what do you use / is there a tool for this." Reference operator experience generically ("when I ran fulfillment for a physical-goods brand"), never the $2M number. Read the whole thread first. These are starting frames to personalize, not copy-paste spam.
+> **Rules:** Post from a real, aged account with standing in the sub. Lead with help that stands on its own even if you never mention Tideover. Never drop a link or product name unless someone asks "what do you use / is there a tool for this." Reference operator experience generically ("when I ran a gym-equipment brand through brutal fulfillment delays"), never a revenue figure. Read the whole thread first. These are starting frames to personalize, not copy-paste spam.
 >
 > **Target communities:** r/shopify, r/kickstarter, r/Crowdfunding, r/ecommerce, r/Entrepreneur, Shopify Community, Gorgias Community, the "Shopify App Founders" / "Shopify Entrepreneurs" FB groups.
 
@@ -489,7 +489,7 @@ If you run preorders and want it when it's ready, comment "playbook" or DM me. O
 **Cross-repurposing:** Each [METHOD]/[TACTICAL] post seeds a section of the Presale Anxiety Playbook lead magnet. Each [WAR STORY] is a newsletter cold-open. CT-1/6 teach the day-stage method hardest, so they double as soft validation. Watch upvotes and replies.
 
 **Before anything goes live:**
-- Never type "$2M" in public. War-story framing only.
+- Never claim a revenue figure. The lived gym-equipment story carries the credibility; the only numbers are Dylan's own self-reported account ($200K week one, 60-plus-day waits, two years).
 - Never present an external stat (YepAI, Gartner-via-YepAI, card-network fees) as Tideover's own result. Cite the source.
 - No refund %, no case study, no testimonial, no rating, no logo until it's real and the partner vouches for it.
 - Founding-partner CTAs stay soft and honest. Free pilot, you approve every reply, no refund number promised, proof comes after the cycle.

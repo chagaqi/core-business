@@ -115,15 +115,15 @@
   <main>
 <h1>Tideover — Concierge Pilot Onboarding Kit (v2)</h1>
 <blockquote><p><strong>What this is.</strong> Everything that turns a "yes, I'll pilot" into a live concierge partner. It picks up where the teardown call ends. Merge fields write <code>{{like_this}}</code> and are the only blanks.</p>
-<p><strong>Who runs it.</strong> Chaga, personally. Agents draft, Chaga approves.</p>
-<p><strong>Proof-only (enforced below).</strong> No fabricated refund stats, case studies, testimonials, ratings, or logos. The refund-reduction case study doesn't exist yet; a presale cycle runs 60 to 120 days, so leading-indicator and founding-partner framing goes where proof would. The operator background is a war story. The revenue figure is warm-conversation-only and never appears in a sent asset.</p>
-<p><strong>What's inside.</strong> A free pilot agreement (3 variants), the intake questionnaire, the access checklist, the SLA explainer, a 5-touch email sequence, and Chaga's run-of-show. Use it the moment a partner says yes.</p></blockquote>
+<p><strong>Who runs it.</strong> Dylan, personally. Agents draft, Dylan approves.</p>
+<p><strong>Proof-only (enforced below).</strong> No fabricated refund stats, case studies, testimonials, ratings, or logos. The refund-reduction case study doesn't exist yet; a presale cycle runs 60 to 120 days, so leading-indicator and founding-partner framing goes where proof would. The operator background is Dylan's lived gym-equipment story. No revenue figure is claimed; the only numbers are his own self-reported account ($200K week one, 60-plus-day waits, two years), and they never appear in a sent asset as a Tideover result.</p>
+<p><strong>What's inside.</strong> A free pilot agreement (3 variants), the intake questionnaire, the access checklist, the SLA explainer, a 5-touch email sequence, and Dylan's run-of-show. Use it the moment a partner says yes.</p></blockquote>
 <hr>
 <h1>1. FOUNDING-PARTNER PILOT AGREEMENT</h1>
 <blockquote><p>Plain-English on purpose. A working understanding between two people, not a legal weapon. One page, sent as a Google Doc or PDF. A typed name and date is the signature. Pick the variant that fits the partner.</p></blockquote>
 <h2>Variant A — Standard</h2>
 <p><strong>Tideover Founding-Partner Pilot — Letter of Understanding</strong></p>
-<p><strong>Between:</strong> Tideover ("we," run personally by Chaga, founder)<br>
+<p><strong>Between:</strong> Tideover ("we," run personally by Dylan, founder)<br>
 <strong>And:</strong> {{partner_brand_name}} ("you"), represented by {{partner_contact_name}}<br>
 <strong>Date:</strong> {{date}}<br>
 <strong>Pilot window:</strong> One presale cycle, starting {{start_date}}. Month-to-month, either of us ends it any time with a heads-up (§7).</p>
@@ -147,7 +147,7 @@
 <p><strong>7. Ending it.</strong> Month-to-month, no lock-in. On the way out: we hand you the full script library and the before/after data, remove our access within 24 hours, and delete or return any exported data you ask us to. Nothing you gave us appears in a public claim that names you.</p>
 <p><strong>8. The honest fine print (operator to operator).</strong> We're new and not hiding it. We run these founding pilots because the long-term proof has to be earned in real inboxes over a real cycle. Meanwhile you get a former physical-goods operator who answered the day-60 "I want a refund" email at 11pm, running your presale support by hand and handing you the scripts to keep.</p>
 <p><strong>Agreed —</strong></p>
-<p>Tideover: Chaga, Founder — {{date}}<br>
+<p>Tideover: Dylan, Founder — {{date}}<br>
 {{partner_brand_name}}: {{partner_contact_name}}, {{partner_title}} — {{date}}</p>
 <hr>
 <h2>Variant B — Short "Napkin"</h2>
@@ -164,7 +164,7 @@
 <li><strong>Straight talk:</strong> I won't claim a refund-reduction stat. That needs a full cycle to exist. You get honest leading indicators now and the real refund number later, if it earns it.</li>
 </ul>
 <p>Reply "let's go" and I'll send the access checklist and intake form today.<br>
-— Chaga, Tideover</p>
+— Dylan, Tideover</p>
 <hr>
 <h2>Variant C — Anonymized-by-Default</h2>
 <blockquote><p>Same as Variant A, but the publicity right is stripped to anonymized-aggregate-only with no testimonial obligation. Use for supplements, medical, baby-adjacent, NDA, or anyone who flinched at "share results."</p></blockquote>
@@ -245,46 +245,46 @@
 <h3>→ Gorgias</h3>
 <ol>
 <li><strong>Settings → Users &amp; Permissions → Add user.</strong></li>
-<li>Invite <strong><code>chaga@{{tideover_domain}}</code></strong> as an <strong>Agent</strong>. Agent seats are free up to your plan limit. At your cap? Use a light/collaborator seat or the email-alias route in §C. Don't pay for a seat for a free pilot.</li>
+<li>Invite <strong><code>dylan@{{tideover_domain}}</code></strong> as an <strong>Agent</strong>. Agent seats are free up to your plan limit. At your cap? Use a light/collaborator seat or the email-alias route in §C. Don't pay for a seat for a free pilot.</li>
 <li><strong>Agent is enough, not Admin.</strong> I view and reply to tickets, not settings, billing, or integrations.</li>
 <li>Point me at your tag list, or I'll set up the preorder tags in §D for you to approve.</li>
 </ol>
 <h3>→ Intercom</h3>
 <ol>
 <li><strong>Settings → Workspace → Teammates → Invite teammate.</strong></li>
-<li>Invite <strong><code>chaga@{{tideover_domain}}</code></strong> with the <strong>Inbox seat</strong> / agent permission, not Manage or admin.</li>
+<li>Invite <strong><code>dylan@{{tideover_domain}}</code></strong> with the <strong>Inbox seat</strong> / agent permission, not Manage or admin.</li>
 <li>Add me to the inbox where presale conversations land.</li>
 </ol>
 <h3>→ Email-only (no helpdesk) — the shared-alias route</h3>
 <ol>
 <li>In your email admin, create a forwarding rule or shared alias: <strong><code>support+{{partner_slug}}@{{tideover_domain}}</code></strong> receives a copy of incoming support mail. Set up send-as so replies go out from <em>your</em> support address. The customer never sees a different sender.</li>
-<li>Or simpler: add <strong><code>chaga@{{tideover_domain}}</code></strong> as a <strong>delegate</strong> on your support inbox (Gmail: Settings → Accounts → "Grant access to your account"). Delegation lets me read and reply as your support address without a password.</li>
+<li>Or simpler: add <strong><code>dylan@{{tideover_domain}}</code></strong> as a <strong>delegate</strong> on your support inbox (Gmail: Settings → Accounts → "Grant access to your account"). Delegation lets me read and reply as your support address without a password.</li>
 <li>Either way, I never need your password, and you revoke in one click.</li>
 </ol>
 <h3>→ Tidio</h3>
 <ol>
 <li><strong>Settings → Operators → Add operator.</strong></li>
-<li>Invite <strong><code>chaga@{{tideover_domain}}</code></strong> as an <strong>Operator</strong>, not Owner or Admin.</li>
+<li>Invite <strong><code>dylan@{{tideover_domain}}</code></strong> as an <strong>Operator</strong>, not Owner or Admin.</li>
 <li>Assign me to the channels where presale questions arrive.</li>
 </ol>
 <h3>→ Zendesk</h3>
 <ol>
 <li><strong>Admin Center → People → Team → Add team member.</strong></li>
-<li>Invite <strong><code>chaga@{{tideover_domain}}</code></strong> as an <strong>Agent</strong>. For sending, I need a standard seat or the alias route in §C.</li>
+<li>Invite <strong><code>dylan@{{tideover_domain}}</code></strong> as an <strong>Agent</strong>. For sending, I need a standard seat or the alias route in §C.</li>
 </ol>
 <h3>→ Help Scout</h3>
 <ol>
 <li><strong>Manage → Users → Invite.</strong></li>
-<li>Add <strong><code>chaga@{{tideover_domain}}</code></strong> as a <strong>User</strong> with access to your support Mailbox. User, not Account Owner.</li>
+<li>Add <strong><code>dylan@{{tideover_domain}}</code></strong> as a <strong>User</strong> with access to your support Mailbox. User, not Account Owner.</li>
 </ol>
 <h3>→ Shopify Inbox / Shopify Admin support</h3>
 <ol>
 <li><strong>Settings → Users and permissions → Add staff.</strong></li>
-<li>Invite <strong><code>chaga@{{tideover_domain}}</code></strong> limited to <strong>Orders (view)</strong> and the support/Inbox app. No Finance, Apps, or Settings access.</li>
+<li>Invite <strong><code>dylan@{{tideover_domain}}</code></strong> limited to <strong>Orders (view)</strong> and the support/Inbox app. No Finance, Apps, or Settings access.</li>
 </ol>
 <h3>→ Re:amaze / Freshdesk / Kustomer / other</h3>
 <ol>
-<li>Invite <strong><code>chaga@{{tideover_domain}}</code></strong> as a standard agent. Same principle everywhere: agent-level, view and reply, no admin. Tell me the tool and I'll confirm the exact menu path.</li>
+<li>Invite <strong><code>dylan@{{tideover_domain}}</code></strong> as a standard agent. Same principle everywhere: agent-level, view and reply, no admin. Tell me the tool and I'll confirm the exact menu path.</li>
 </ol>
 <h2>B. The one read-only thing we always need: order and timeline visibility</h2>
 <p>So replies are accurate, I need to see (not change) order and production status. Easiest:</p>
@@ -373,7 +373,7 @@
 </ul>
 <p>One promise up front: nothing reaches your customers without your sign-off. And I won't claim a refund stat I haven't earned. You'll get honest leading indicators now, and the real refund picture after your first cohort finishes its wait.</p>
 <p>Reply with any questions, or just send the form and access and we're off.</p>
-<p>— Chaga, Tideover</p></blockquote>
+<p>— Dylan, Tideover</p></blockquote>
 <p><em>Attach: Access Checklist (§3) + SLA Explainer (§4).</em></p>
 <h3>Email 2 — Access nudge (send: 24 to 48h later if access or form not done)</h3>
 <p><strong>Subject:</strong> Quick unblock so I can start on {{brand}}<br>
@@ -387,7 +387,7 @@
 <li>Rather do it together on a 10-min screen-share? Grab a slot: {{booking_link}}.</li>
 </ul>
 <p>The moment I'm in, I baseline your support and start drafting.</p>
-<p>— Chaga</p></blockquote>
+<p>— Dylan</p></blockquote>
 <h3>Email 3 — Scripts ready for approval (send: within ~48h of receiving timeline + access)</h3>
 <p><strong>Subject:</strong> Your day-stage reassurance scripts — ready for your eyes<br>
 <em>Alt A:</em> Drafted: what {{brand}} buyers hear at day 7, 30, 60 &amp; 89<br>
@@ -402,7 +402,7 @@
 </ul>
 <p>Once you give the thumbs-up, I start working tickets in your two daily windows. Your baseline is already captured, so from here you'll see exactly what changes.</p>
 <p>Reply "approved" or mark up anything you want changed.</p>
-<p>— Chaga</p></blockquote>
+<p>— Dylan</p></blockquote>
 <h3>Email 4 — We're live + how to reach me (send: day support goes live)</h3>
 <p><strong>Subject:</strong> Live on {{brand}}'s presale inbox — here's how this runs<br>
 <em>Alt A:</em> I'm in. Your presale buyers are covered as of today<br>
@@ -417,7 +417,7 @@
 </ul>
 <p>I'll send a short recap at the end of week one with your first leading indicators against the baseline. First-response time, WISMO volume, and what I'm seeing in the inbox.</p>
 <p>Onward.<br>
-— Chaga</p></blockquote>
+— Dylan</p></blockquote>
 <h3>Email 5 — First-week recap + leading indicators (send: ~7 days after go-live)</h3>
 <p><strong>Subject:</strong> Your first week, by the numbers (the honest ones)<br>
 <em>Alt A:</em> Week 1 recap: what changed in {{brand}}'s presale inbox<br>
@@ -438,21 +438,21 @@
 <p><strong>What I'm seeing in your inbox:</strong> {{1–2 plain sentences, e.g., "the day-45 'is this real?' wave is the biggest chunk, and the production-stage update calms most of them on the first reply."}}</p>
 <p><strong>What I'd like from you, if this is feeling good:</strong> a quick, honest line about the experience so far. Responsiveness, your inbox load, customer tone. Only what you've personally seen. I'm not asking you to vouch for a number you can't yet stand behind. Per our agreement, anything public stays anonymized unless you say otherwise.</p>
 <p>Anything you want adjusted (tone, a specific reply, a customer group), just say the word.</p>
-<p>— Chaga</p></blockquote>
+<p>— Dylan</p></blockquote>
 <h2>Reactivation mini-sequence (for a partner who signed but went quiet)</h2>
 <blockquote><p>Use when Email 2's nudge didn't land and the partner stalled before go-live. Friendly, no guilt, easy out.</p></blockquote>
 <p><strong>R1 — Still want to do this? (send: ~4 days after Email 2, no response)</strong><br>
 <strong>Subject:</strong> Want me to hold your founding-partner spot?</p>
-<blockquote><p>Hi {{first_name}} — I'm keeping a founding spot open for {{brand}}, but I don't want to hold one you've cooled on. If you're still in, the only thing between you and a quieter presale inbox is the access step. Happy to do it together on a 10-min call: {{booking_link}}. If the timing's off, say so and I'll come back when your next cohort's in the wait. — Chaga</p></blockquote>
+<blockquote><p>Hi {{first_name}} — I'm keeping a founding spot open for {{brand}}, but I don't want to hold one you've cooled on. If you're still in, the only thing between you and a quieter presale inbox is the access step. Happy to do it together on a 10-min call: {{booking_link}}. If the timing's off, say so and I'll come back when your next cohort's in the wait. — Dylan</p></blockquote>
 <p><strong>R2 — Make it stupidly easy (send: ~4 days after R1)</strong><br>
 <strong>Subject:</strong> The 60-second version, if it helps</p>
-<blockquote><p>Hi {{first_name}} — figured I'd remove the friction. Forward me your support inbox delegation (not your password, Gmail's "grant access" feature), or just BCC me on a few real presale tickets and I'll start drafting from there. We formalize access once you see a draft you like. The whole point of a free pilot is that you take no risk finding out if it works. Want the one-click instructions? — Chaga</p></blockquote>
+<blockquote><p>Hi {{first_name}} — figured I'd remove the friction. Forward me your support inbox delegation (not your password, Gmail's "grant access" feature), or just BCC me on a few real presale tickets and I'll start drafting from there. We formalize access once you see a draft you like. The whole point of a free pilot is that you take no risk finding out if it works. Want the one-click instructions? — Dylan</p></blockquote>
 <p><strong>R3 — Graceful close, door open (send: ~5 days after R2)</strong><br>
 <strong>Subject:</strong> Closing your spot for now — door's open</p>
-<blockquote><p>Hi {{first_name}} — I'll release your founding spot so I'm not pestering you. Zero hard feelings, there's no good time to add a new thing mid-fulfillment. The offer stands whenever your next cohort hits the wait. Reply and I'll pick it right back up, founding price intact. — Chaga</p></blockquote>
+<blockquote><p>Hi {{first_name}} — I'll release your founding spot so I'm not pestering you. Zero hard feelings, there's no good time to add a new thing mid-fulfillment. The offer stands whenever your next cohort hits the wait. Reply and I'll pick it right back up, founding price intact. — Dylan</p></blockquote>
 <hr>
-<h1>6. INTERNAL — ONBOARDING RUN-OF-SHOW (Chaga's side, not partner-facing)</h1>
-<blockquote><p>The human checklist for taking a partner live. Keep this off the partner-facing docs. <code>[H]</code> = Chaga's hands. <code>[A]</code> = agent (Onboarding-Concierge / Script-Drafter) drafts for approval.</p></blockquote>
+<h1>6. INTERNAL — ONBOARDING RUN-OF-SHOW (Dylan's side, not partner-facing)</h1>
+<blockquote><p>The human checklist for taking a partner live. Keep this off the partner-facing docs. <code>[H]</code> = Dylan's hands. <code>[A]</code> = agent (Onboarding-Concierge / Script-Drafter) drafts for approval.</p></blockquote>
 <p><strong>On signed agreement (Day 0 of this partner):</strong></p>
 <ul>
 <li>[ ] <code>[H]</code> Save the signed variant (A/B/C) and which publicity right applies to the partner folder.</li>
@@ -482,7 +482,7 @@
 <li>[ ] <code>[H]</code> Log any dispute saves with ticket links to the case-study seed log.</li>
 <li>[ ] <code>[H]</code> Decide: add the next queued partner this week? Only if under the concurrent cap and Venture-1 load allows.</li>
 </ul>
-<p><strong>Proof-only gate before anything goes public:</strong> no refund %, no invented ratings or logos, external stats cited to source, operator background framed as war story (never a number-led flex in a sent asset), partner anonymized unless they gave a separate written yes.</p>
+<p><strong>Proof-only gate before anything goes public:</strong> no refund %, no invented ratings or logos, external stats cited to source, operator background is Dylan's lived gym-equipment story (no revenue figure, no number-led flex in a sent asset), partner anonymized unless they gave a separate written yes.</p>
 <hr>
 <p><em>End of kit. The teardown is the front door; this is everything after the handshake.</em></p>
   </main>

@@ -2,7 +2,7 @@
 
 The presale-specialist support layer. It bolts onto your existing helpdesk, takes only the presale tickets, knows each order's real production timeline, and answers the 60-to-120-day wait in your voice.
 
-**Founder:** Chaga Chai · **Beachhead:** Kickstarter / Indiegogo / BackerKit graduates moving to Shopify.
+**Founder:** Dylan · **Beachhead:** Kickstarter / Indiegogo / BackerKit graduates moving to Shopify.
 **Voice:** `gtm-assets/tideover-brand-kit.md`. Strategy: `gtm-assets/outreach-playbook.md`. Copy bar: `gtm-assets/copy-standard.md`. Real parents: `gtm-assets/real-scripts-library.md`.
 
 > **How this kit was rebuilt.** Every section's STRUCTURE is matched to a proven, published operator script in `real-scripts-library.md` (or the playbook's artifact-first arc). The send-ready copy stays clean; each section's rationale note names the real parent it mirrors and links it. **Our one upgrade is ARTIFACT-FIRST:** where the real operators open with a claim ("I have some ideas," "I help businesses fix that," "I've got a few ideas on how to close that gap"), we open with the finished made-for-them thing. The free presale-support teardown on *their* tickets, or the day-stage script we already wrote. The artifact replaces the claim. That upgrade is called out in each note.
@@ -14,7 +14,7 @@ The presale-specialist support layer. It bolts onto your existing helpdesk, take
 No refund case study exists yet. A presale cycle is 60 to 120 days, so the proof can't exist until a first cohort completes. Every script sells on measured leading indicators and lived operator experience, never an invented result. Break these and you're the chatbot-demo spam these buyers already hate.
 
 1. **No invented numbers.** No refund stat, chargeback %, case study, testimonial, rating, or logo. Nothing you can't show on a screen-share.
-2. **"$2M" is warm-conversation only.** Cold, you're "a former physical-goods operator who ran fulfillment, in-house shipping, and the customer comms during long order waits." Name the figure once they're leaning in, and only because you can back it on request.
+2. **No revenue figure is claimed.** You're "a former physical-goods operator who ran a gym-equipment brand through the worst freight delays in e-commerce history and answered the where's-my-order emails myself." The only numbers are your own self-reported account ($200K in orders in week one, 60-plus-day waits, two years) — never a "$2M/yr" figure.
 3. **Where a refund case study would go, use leading indicators.** Faster first response, fewer where-is-my-order tickets, more deflection during the pilot. The refund number comes after a complete cycle. Say so out loud.
 4. **Any third-party stat is cited to its source,** never restated as Tideover's own result. (The library's weak/self-reported numbers, like HubSpot's 57%/21% or any operator's revenue, are theirs, never ours.)
 5. **You screen them as hard as they screen you.** Concierge means 1 to 5 partners total. The scarcity is real. If they're not a fit, say so.
@@ -258,13 +258,13 @@ Run the 1A spine. Swap the open and lead with the segment's sharpest wound.
 > "Fair with anything early. Two protections. You keep every script I write, so even if I vanished tomorrow you've got the playbook. And there's no lock-in. I'm betting my reputation on these first few partners, so you'll get more attention from me than from a 50-person SaaS support queue."
 
 **"What's your background? Why trust you on this?"**
-> "I ran fulfillment, in-house shipping, and the customer comms during long order waits for a physical-goods brand. I've sat in the inbox answering where-is-my-order for the hundredth time and watched a calm customer turn into a dispute. Not a tech founder who read about the problem. That's why I can write the reassurance scripts better than a generic tool." [Warm, substantiable moment only: "It was around a $2M/year operation."]
+> "I ran a gym-equipment brand through the worst freight delays in e-commerce history and answered the where-is-my-order emails myself. I've sat in the inbox answering where-is-my-order for the hundredth time and watched a calm customer turn into a dispute. Not a tech founder who read about the problem. That's why I can write the reassurance scripts better than a generic tool." [Self-reported, in his own voice only: "I closed $200K in orders my first week, then spent two years tiding those customers over."]
 
 **"We tried an AI bot and it was bad."**
 > *[Clarify:]* "I believe it. When you say it was bad, what specifically went wrong, did it give a confidently wrong answer, did it sound robotic, or did it just deflect people in a loop?"
 > "I believe you, most are bad, because they're generic bots with no idea what a presale even is. That's why I'm specialist-only and concierge-first. A human approves everything in the pilot, and it only handles the presale wait, the one place a generic bot is most wrong. Judge this by the free pilot on your real tickets, not the bad bot."
 
-*Structure: Miner clarify-first, then Braun's "name the real worry out loud" defuse (the case-study clarify splits "result proof" from "won't-disappear proof," exactly Braun's move). Parents: [Miner clarify](https://7thlevelhq.com/the-top-52-objections/), [Braun send-me-an-email defuse](https://joshbraun.com/send-me-an-email/). **Artifact-first upgrade + PROOF-ONLY:** the track-record honesty ("no finished case study yet") is led with strength reversed into the reason for the free founding pilot, never a "smaller shop" apology. The $2M figure is warm-only. Every answer ends pointing at the free pilot on their own tickets as the artifact-evidence.*
+*Structure: Miner clarify-first, then Braun's "name the real worry out loud" defuse (the case-study clarify splits "result proof" from "won't-disappear proof," exactly Braun's move). Parents: [Miner clarify](https://7thlevelhq.com/the-top-52-objections/), [Braun send-me-an-email defuse](https://joshbraun.com/send-me-an-email/). **Artifact-first upgrade + PROOF-ONLY:** the track-record honesty ("no finished case study yet") is led with strength reversed into the reason for the free founding pilot, never a "smaller shop" apology. No revenue figure is claimed; self-reported numbers only. Every answer ends pointing at the free pilot on their own tickets as the artifact-evidence.*
 
 ### Quick-fire
 
@@ -423,7 +423,7 @@ Run the 1A spine. Swap the open and lead with the segment's sharpest wound.
 **Don't:**
 - ❌ Lead with "AI." Lead with the wound.
 - ❌ Quote a refund-reduction %. It doesn't exist. Say so, out loud, every time.
-- ❌ Name "$2M" in cold outreach. War story first, the number only in warm, substantiable conversation.
+- ❌ Claim a "$2M" or any revenue figure. The only numbers are Dylan's own self-reported account ($200K week one, 60-plus-day waits, two years), framed as such.
 - ❌ Invent case studies, testimonials, ratings, logos, or "trusted by." (The library's weak/self-reported numbers are the operators' own, never restated as ours.)
 - ❌ Restate an industry stat as Tideover's own result. Cite the source or don't say it.
 - ❌ Make a paid ask without a documented win and an experience testimonial in hand.

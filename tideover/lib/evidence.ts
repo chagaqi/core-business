@@ -130,7 +130,7 @@ export type CommLogKind = "inbound" | "outbound-sent";
 export interface CommLogEntry {
   at: string;
   kind: CommLogKind;
-  /** who the entry is from, e.g. "Mara (customer)" or "Chaga (operator)". */
+  /** who the entry is from, e.g. "Mara (customer)" or "Dylan (operator)". */
   actor: string;
   channel: Channel;
   /** short state word: "received" | "sent" | "drafted — not sent". */
