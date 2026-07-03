@@ -3,6 +3,7 @@ import { ConfidenceBand } from "@/components/status/ConfidenceBand";
 import { WaitProgress } from "@/components/status/WaitProgress";
 import { OrderTimeline } from "@/components/status/OrderTimeline";
 import { ReassuranceCard } from "@/components/status/ReassuranceCard";
+import { CsatTap } from "@/components/status/CsatTap";
 import { WorkshopFeed } from "@/components/status/WorkshopFeed";
 import { AskBox } from "@/components/status/AskBox";
 import { readableAccent } from "@/lib/color";
@@ -75,6 +76,8 @@ export function StatusView({ status, token }: { status: PublicStatus; token: str
             signoff={status.merchant.signoff}
             accent={accent}
           />
+
+          <CsatTap token={token} accent={accent} />
 
           <WorkshopFeed updates={status.updates} accent={accent} />
 

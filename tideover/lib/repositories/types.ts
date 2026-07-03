@@ -118,6 +118,14 @@ export interface OutcomeEventRepository {
   record(e: Omit<OutcomeEvent, "id">): Promise<OutcomeEvent>;
   listByVariant(variantId: string): Promise<OutcomeEvent[]>;
   listByMerchant(merchantId: string): Promise<OutcomeEvent[]>;
+  /**
+   * CSAT is the customer's re-tappable thumbs (ADR-0012, E2): a new tap REPLACES
+   * their prior one for the order, it never stacks. Removes every csat_up /
+   * csat_down event for the order so the caller can append the current tap;
+   * returns the count removed. ONLY csat kinds are touched — the append-only
+   * reply_sent / customer_replied / reopened rows are never deleted.
+   */
+  deleteCsatForOrder(orderId: string): Promise<number>;
 }
 
 /**

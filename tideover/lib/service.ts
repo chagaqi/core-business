@@ -195,6 +195,80 @@ async function recordReplySent(repos: Repositories, ticket: Ticket, sentText: st
   }
 }
 
+/** Reply-attribution window (ADR-0012): an inbound this long after a reply_sent
+ *  still counts as a response to that reply. Seven days mirrors the ledger's
+ *  other windows and Visa's dispute clock granularity. */
+const REPLY_ATTRIBUTION_WINDOW_MS = 7 * 86400000;
+
+/**
+ * Outcome ledger (ADR-0012, E2): the CUSTOMER-side half of the loop. When a new
+ * inbound lands on an order that had a reply_sent within the 7-day attribution
+ * window, emit a `customer_replied` (carrying the inbound's inferred sentiment in
+ * meta.respondedSentiment), attributed to that reply's variant so it folds into
+ * the panel. If the ticket that reply was sent on is already sent/resolved, also
+ * emit `reopened`. Best-effort — the ticket is already persisted, so a ledger
+ * failure is logged and swallowed, never blocking ingest (mirrors recordReplySent).
+ */
+async function recordReplyAttribution(repos: Repositories, ticket: Ticket): Promise<void> {
+  try {
+    const events = await repos.outcomeEvents.listByMerchant(ticket.merchantId);
+    const inboundMs = new Date(ticket.createdAt).getTime();
+    // Most recent reply_sent for THIS order whose age at the inbound is within
+    // the window (and not in the future — an inbound can't answer a later reply).
+    const reply = events
+      .filter((e) => e.kind === "reply_sent" && e.orderId === ticket.orderId)
+      .filter((e) => {
+        const gap = inboundMs - new Date(e.observedAt).getTime();
+        return gap >= 0 && gap <= REPLY_ATTRIBUTION_WINDOW_MS;
+      })
+      .sort((a, b) => new Date(b.observedAt).getTime() - new Date(a.observedAt).getTime())[0];
+    if (!reply) return; // no reply to attribute a response to — nothing to record.
+
+    // Attribution mirrors the reply's identity (same variant/stage), stamped onto
+    // the NEW inbound ticket; the response's own sentiment rides in meta.
+    const base = {
+      merchantId: ticket.merchantId,
+      ticketId: ticket.id,
+      orderId: ticket.orderId,
+      customerId: ticket.customerId,
+      variantId: reply.variantId,
+      stageKey: reply.stageKey,
+      sentimentAtSend: reply.sentimentAtSend,
+      observedAt: ticket.createdAt,
+    };
+    await repos.outcomeEvents.record({
+      ...base,
+      kind: "customer_replied",
+      meta: { respondedSentiment: ticket.sentiment },
+    });
+
+    // Reopen: the reply landed on a ticket that was already closed out, and here's
+    // the customer back again — a measured signal the reply didn't fully settle it.
+    // Count it AT MOST ONCE per reply: a customer who writes back three times to one
+    // resolved thread reopened it once, not three times. Without this, reopens could
+    // exceed sends and the panel's reopen rate would read over 100%.
+    const alreadyReopened = events.some(
+      (e) => e.kind === "reopened" && e.orderId === ticket.orderId && e.variantId === reply.variantId,
+    );
+    const priorTicket = await repos.tickets.findById(reply.ticketId);
+    if (
+      !alreadyReopened &&
+      priorTicket &&
+      (priorTicket.status === "sent" || priorTicket.status === "resolved")
+    ) {
+      await repos.outcomeEvents.record({ ...base, kind: "reopened" });
+    }
+  } catch (err) {
+    console.log(
+      JSON.stringify({
+        event: "outcome-event.attribution-failed",
+        ticketId: ticket.id,
+        error: err instanceof Error ? err.message : String(err),
+      }),
+    );
+  }
+}
+
 /**
  * Ingest a normalized inbound ticket: dedupe, match order/customer, persist,
  * auto-draft. Vendor retries redeliver the same event, so a ticket already
@@ -294,6 +368,9 @@ export async function ingestTicket(
     ticketCount: customer.ticketCount + 1,
     lastSentiment: n.sentiment,
   });
+  // Outcome ledger (ADR-0012, E2): attribute a customer_replied (+ reopened) to a
+  // recent reply on this order. Best-effort — never blocks the ingest result.
+  await recordReplyAttribution(repos, ticket);
   return { ticket };
 }
 
@@ -481,6 +558,23 @@ export interface ScriptPerformanceRow {
   avgEditedRatio: number | null;
   /** sample size == sends; surfaces gate any rate on this vs SCRIPT_PERF_MIN_N. */
   n: number;
+
+  // ── ADR-0012 (E2) customer-side outcome facts ──────────────────────────────
+  // Each RATE below is gated to null unless its OWN sample reaches
+  // SCRIPT_PERF_MIN_N, so a small, noisy sample can never surface a rate. The
+  // raw counts are always present so the surface can show "collecting data (n=X)".
+  /** count of kind==='customer_replied' events attributed to this variant. */
+  customerReplies: number;
+  /** calm respondedSentiment / all customer_replied — null below the reply threshold. */
+  calmResponseRate: number | null;
+  /** count of kind==='reopened' events attributed to this variant. */
+  reopens: number;
+  /** reopened / sends — null below the sends threshold. */
+  reopenRate: number | null;
+  /** csat_up + csat_down count attributed to this variant. */
+  csatResponses: number;
+  /** csat_up / (csat_up + csat_down) — null below the csat threshold. */
+  csatRate: number | null;
 }
 
 /**
@@ -491,31 +585,96 @@ export interface ScriptPerformanceRow {
  */
 export const SCRIPT_PERF_MIN_N = 20;
 
+interface VariantStats {
+  sends: number;
+  ratios: number[];
+  customerReplies: number;
+  calmReplies: number;
+  reopens: number;
+  csatUp: number;
+  csatDown: number;
+}
+const emptyStats = (): VariantStats => ({
+  sends: 0,
+  ratios: [],
+  customerReplies: 0,
+  calmReplies: 0,
+  reopens: 0,
+  csatUp: 0,
+  csatDown: 0,
+});
+
 /**
- * Pure aggregation: group the ledger's reply_sent events by variantId and fold
- * them onto the merchant's variants. Deterministic — variants keep their input
- * order, only kind==='reply_sent' counts. A send with no editedRatio is still
- * counted in `sends` but EXCLUDED from the mean — a missing measurement must not
- * bias a variant's edit-rate downward (proof-only discipline even off the seed
- * path). Exported so the rollup is unit-testable with synthetic data.
+ * Pure aggregation: fold the ledger's events by variantId onto the merchant's
+ * variants. Deterministic — variants keep their input order, never ranked by
+ * performance. Folds the E1 send facts (kind==='reply_sent': `sends` +
+ * meta.editedRatio) plus the E2 customer-side outcomes (customer_replied /
+ * reopened / csat_up / csat_down). A send with no editedRatio is still counted in
+ * `sends` but EXCLUDED from the mean — a missing measurement must not bias a
+ * variant's edit-rate downward (proof-only discipline even off the seed path).
+ *
+ * Every RATE is gated to null unless its own sample reaches SCRIPT_PERF_MIN_N, so
+ * a small sample can never surface a rate; the raw counts always accompany it so
+ * the caller can render "collecting data (n=X)". Exported so the rollup is
+ * unit-testable with synthetic data.
  */
 export function aggregateScriptPerformance(
   variants: ScriptVariant[],
   events: OutcomeEvent[],
 ): ScriptPerformanceRow[] {
-  const statsByVariant = new Map<string, { sends: number; ratios: number[] }>();
+  const statsByVariant = new Map<string, VariantStats>();
+  const statsFor = (variantId: string): VariantStats => {
+    let s = statsByVariant.get(variantId);
+    if (!s) {
+      s = emptyStats();
+      statsByVariant.set(variantId, s);
+    }
+    return s;
+  };
   for (const e of events) {
-    if (e.kind !== "reply_sent") continue;
-    const s = statsByVariant.get(e.variantId) ?? { sends: 0, ratios: [] };
-    s.sends += 1;
-    if (typeof e.meta?.editedRatio === "number") s.ratios.push(e.meta.editedRatio);
-    statsByVariant.set(e.variantId, s);
+    const s = statsFor(e.variantId);
+    switch (e.kind) {
+      case "reply_sent":
+        s.sends += 1;
+        if (typeof e.meta?.editedRatio === "number") s.ratios.push(e.meta.editedRatio);
+        break;
+      case "customer_replied":
+        s.customerReplies += 1;
+        if (e.meta?.respondedSentiment === "calm") s.calmReplies += 1;
+        break;
+      case "reopened":
+        s.reopens += 1;
+        break;
+      case "csat_up":
+        s.csatUp += 1;
+        break;
+      case "csat_down":
+        s.csatDown += 1;
+        break;
+      default:
+        break; // refund_requested / chargeback / resolved_quiet: not surfaced here.
+    }
   }
   return variants.map((variant) => {
-    const s = statsByVariant.get(variant.id) ?? { sends: 0, ratios: [] };
+    const s = statsByVariant.get(variant.id) ?? emptyStats();
     const avgEditedRatio =
       s.ratios.length === 0 ? null : s.ratios.reduce((a, b) => a + b, 0) / s.ratios.length;
-    return { variant, sends: s.sends, avgEditedRatio, n: s.sends };
+    const csatResponses = s.csatUp + s.csatDown;
+    return {
+      variant,
+      sends: s.sends,
+      avgEditedRatio,
+      n: s.sends,
+      customerReplies: s.customerReplies,
+      calmResponseRate:
+        s.customerReplies >= SCRIPT_PERF_MIN_N ? s.calmReplies / s.customerReplies : null,
+      reopens: s.reopens,
+      // Capped at 1: reopens are deduped per reply at emit time, but a defensive
+      // ceiling guarantees the panel can never render a nonsensical >100% rate.
+      reopenRate: s.sends >= SCRIPT_PERF_MIN_N ? Math.min(1, s.reopens / s.sends) : null,
+      csatResponses,
+      csatRate: csatResponses >= SCRIPT_PERF_MIN_N ? s.csatUp / csatResponses : null,
+    };
   });
 }
 

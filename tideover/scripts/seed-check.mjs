@@ -104,6 +104,10 @@ const OE_KINDS = new Set([
   "reply_sent", "customer_replied", "reopened", "csat_up", "csat_down",
   "refund_requested", "chargeback", "resolved_quiet",
 ]);
+// ADR-0012 (E2): the customer-side kinds must attribute to a real variant, and
+// customer_replied carries a valid respondedSentiment in meta.
+const SENTIMENTS = new Set(["calm", "anxious", "hostile", "chargeback-threat"]);
+const CUSTOMER_OUTCOME_KINDS = new Set(["customer_replied", "reopened", "csat_up", "csat_down"]);
 const oeIds = new Set();
 for (const e of outcomeEvents) {
   fk(`outcome-event ${e.id}.merchantId`, e.merchantId, mids);
@@ -119,6 +123,15 @@ for (const e of outcomeEvents) {
   if (e.meta !== undefined && e.meta.editedRatio !== undefined) {
     const r = e.meta.editedRatio;
     if (typeof r !== "number" || Number.isNaN(r) || r < 0 || r > 1) errors.push(`outcome-event ${e.id}.meta.editedRatio: out of [0,1] (${r})`);
+  }
+  // ADR-0012: a customer-side event (customer_replied/reopened/csat_*) must
+  // reference a real variant so it folds into the panel; and where a
+  // respondedSentiment is present it must be a known sentiment.
+  if (CUSTOMER_OUTCOME_KINDS.has(e.kind)) {
+    fk(`outcome-event ${e.id}.variantId (customer-side)`, e.variantId, vids);
+  }
+  if (e.meta !== undefined && e.meta.respondedSentiment !== undefined && !SENTIMENTS.has(e.meta.respondedSentiment)) {
+    errors.push(`outcome-event ${e.id}.meta.respondedSentiment: invalid (${e.meta.respondedSentiment})`);
   }
 }
 

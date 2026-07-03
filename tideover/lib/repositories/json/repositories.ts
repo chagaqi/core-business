@@ -212,6 +212,18 @@ const outcomeEvents: OutcomeEventRepository = {
   async listByMerchant(merchantId) {
     return store.outcomeEvents.filter((e) => e.merchantId === merchantId).sort(byObservedAt);
   },
+  async deleteCsatForOrder(orderId) {
+    // In-place splice so the store's array reference (held elsewhere) stays live.
+    let removed = 0;
+    for (let i = store.outcomeEvents.length - 1; i >= 0; i--) {
+      const e = store.outcomeEvents[i];
+      if (e.orderId === orderId && (e.kind === "csat_up" || e.kind === "csat_down")) {
+        store.outcomeEvents.splice(i, 1);
+        removed += 1;
+      }
+    }
+    return removed;
+  },
 };
 
 const merchantUpdates: MerchantUpdateRepository = {

@@ -358,5 +358,263 @@
     "meta": {
       "editedRatio": 0
     }
+  },
+  {
+    "id": "oe_e20000000000",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_sve0jhmz4kjz",
+    "orderId": "ord_mx4s8st5zaeq",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "anxious",
+    "kind": "customer_replied",
+    "observedAt": "2026-07-02T09:15:00.000Z",
+    "meta": {
+      "respondedSentiment": "calm"
+    }
+  },
+  {
+    "id": "oe_e20000000001",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_lold1lw7um75",
+    "orderId": "ord_c3l20wplsuau",
+    "customerId": "cus_pt6pa1a6rxev",
+    "variantId": "var_y9209nd050qf",
+    "stageKey": "day-30",
+    "sentimentAtSend": "anxious",
+    "kind": "customer_replied",
+    "observedAt": "2026-07-02T14:40:00.000Z",
+    "meta": {
+      "respondedSentiment": "calm"
+    }
+  },
+  {
+    "id": "oe_e20000000002",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_qhbr4narfmwj",
+    "orderId": "ord_xftv0b8sj4qu",
+    "customerId": "cus_hde7ct87fwk9",
+    "variantId": "var_ji82latd7jh5",
+    "stageKey": "day-7",
+    "sentimentAtSend": "anxious",
+    "kind": "customer_replied",
+    "observedAt": "2026-07-02T20:05:00.000Z",
+    "meta": {
+      "respondedSentiment": "anxious"
+    }
+  },
+  {
+    "id": "oe_e20000000003",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_jbvzqp0nay9f",
+    "orderId": "ord_t6ksfinenw78",
+    "customerId": "cus_xe4zvtvvv4x9",
+    "variantId": "var_ji82latd7jh5",
+    "stageKey": "day-7",
+    "sentimentAtSend": "calm",
+    "kind": "customer_replied",
+    "observedAt": "2026-07-03T01:20:00.000Z",
+    "meta": {
+      "respondedSentiment": "calm"
+    }
+  },
+  {
+    "id": "oe_e20000000004",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_34q8o67hxf4h",
+    "orderId": "ord_jn2po6s6pnb1",
+    "customerId": "cus_imixidctka8l",
+    "variantId": "var_y9209nd050qf",
+    "stageKey": "day-30",
+    "sentimentAtSend": "hostile",
+    "kind": "customer_replied",
+    "observedAt": "2026-07-03T02:55:00.000Z",
+    "meta": {
+      "respondedSentiment": "calm"
+    }
+  },
+  {
+    "id": "oe_e20000000005",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_35lhl54rgk3a",
+    "orderId": "ord_chncb2tlutov",
+    "customerId": "cus_7nty2dy6kqbu",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "chargeback-threat",
+    "kind": "customer_replied",
+    "observedAt": "2026-07-02T09:15:00.000Z",
+    "meta": {
+      "respondedSentiment": "anxious"
+    }
+  },
+  {
+    "id": "oe_e20000000006",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_npumsi7by6k5",
+    "orderId": "ord_l5m7768s7eay",
+    "customerId": "cus_k7dwlxc65eg7",
+    "variantId": "var_pz1yt29un83b",
+    "stageKey": "day-7",
+    "sentimentAtSend": "calm",
+    "kind": "customer_replied",
+    "observedAt": "2026-07-02T14:40:00.000Z",
+    "meta": {
+      "respondedSentiment": "calm"
+    }
+  },
+  {
+    "id": "oe_e20000000007",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_62ee27racdgd",
+    "orderId": "ord_34mp17i7q1zv",
+    "customerId": "cus_wl5xj8vj4h5k",
+    "variantId": "var_n6jj54u0i3hc",
+    "stageKey": "day-60",
+    "sentimentAtSend": "hostile",
+    "kind": "customer_replied",
+    "observedAt": "2026-07-02T20:05:00.000Z",
+    "meta": {
+      "respondedSentiment": "anxious"
+    }
+  },
+  {
+    "id": "oe_e20000000008",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_pux3jt2kh3v9",
+    "orderId": "ord_ikmpfn3yt32j",
+    "customerId": "cus_mq968avavbwk",
+    "variantId": "var_prren3oexv60",
+    "stageKey": "day-89",
+    "sentimentAtSend": "chargeback-threat",
+    "kind": "customer_replied",
+    "observedAt": "2026-07-03T01:20:00.000Z",
+    "meta": {
+      "respondedSentiment": "calm"
+    }
+  },
+  {
+    "id": "oe_e20000000009",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_1yhf0d1fbdsl",
+    "orderId": "ord_b65odfvl14he",
+    "customerId": "cus_jrzy3b618bmu",
+    "variantId": "var_pz1yt29un83b",
+    "stageKey": "day-7",
+    "sentimentAtSend": "anxious",
+    "kind": "customer_replied",
+    "observedAt": "2026-07-03T02:55:00.000Z",
+    "meta": {
+      "respondedSentiment": "calm"
+    }
+  },
+  {
+    "id": "oe_e20000000010",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_sve0jhmz4kjz",
+    "orderId": "ord_mx4s8st5zaeq",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "anxious",
+    "kind": "csat_up",
+    "observedAt": "2026-07-02T09:15:00.000Z"
+  },
+  {
+    "id": "oe_e20000000011",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_lold1lw7um75",
+    "orderId": "ord_c3l20wplsuau",
+    "customerId": "cus_pt6pa1a6rxev",
+    "variantId": "var_y9209nd050qf",
+    "stageKey": "day-30",
+    "sentimentAtSend": "anxious",
+    "kind": "csat_up",
+    "observedAt": "2026-07-02T14:40:00.000Z"
+  },
+  {
+    "id": "oe_e20000000012",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_qhbr4narfmwj",
+    "orderId": "ord_xftv0b8sj4qu",
+    "customerId": "cus_hde7ct87fwk9",
+    "variantId": "var_ji82latd7jh5",
+    "stageKey": "day-7",
+    "sentimentAtSend": "anxious",
+    "kind": "csat_down",
+    "observedAt": "2026-07-02T20:05:00.000Z"
+  },
+  {
+    "id": "oe_e20000000013",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_34q8o67hxf4h",
+    "orderId": "ord_jn2po6s6pnb1",
+    "customerId": "cus_imixidctka8l",
+    "variantId": "var_y9209nd050qf",
+    "stageKey": "day-30",
+    "sentimentAtSend": "hostile",
+    "kind": "csat_up",
+    "observedAt": "2026-07-03T01:20:00.000Z"
+  },
+  {
+    "id": "oe_e20000000014",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_jbvzqp0nay9f",
+    "orderId": "ord_t6ksfinenw78",
+    "customerId": "cus_xe4zvtvvv4x9",
+    "variantId": "var_ji82latd7jh5",
+    "stageKey": "day-7",
+    "sentimentAtSend": "calm",
+    "kind": "csat_up",
+    "observedAt": "2026-07-03T02:55:00.000Z"
+  },
+  {
+    "id": "oe_e20000000015",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_npumsi7by6k5",
+    "orderId": "ord_l5m7768s7eay",
+    "customerId": "cus_k7dwlxc65eg7",
+    "variantId": "var_pz1yt29un83b",
+    "stageKey": "day-7",
+    "sentimentAtSend": "calm",
+    "kind": "csat_up",
+    "observedAt": "2026-07-02T09:15:00.000Z"
+  },
+  {
+    "id": "oe_e20000000016",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_62ee27racdgd",
+    "orderId": "ord_34mp17i7q1zv",
+    "customerId": "cus_wl5xj8vj4h5k",
+    "variantId": "var_n6jj54u0i3hc",
+    "stageKey": "day-60",
+    "sentimentAtSend": "hostile",
+    "kind": "csat_down",
+    "observedAt": "2026-07-02T14:40:00.000Z"
+  },
+  {
+    "id": "oe_e20000000017",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_pux3jt2kh3v9",
+    "orderId": "ord_ikmpfn3yt32j",
+    "customerId": "cus_mq968avavbwk",
+    "variantId": "var_prren3oexv60",
+    "stageKey": "day-89",
+    "sentimentAtSend": "chargeback-threat",
+    "kind": "csat_up",
+    "observedAt": "2026-07-02T20:05:00.000Z"
+  },
+  {
+    "id": "oe_e20000000018",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_1yhf0d1fbdsl",
+    "orderId": "ord_b65odfvl14he",
+    "customerId": "cus_jrzy3b618bmu",
+    "variantId": "var_pz1yt29un83b",
+    "stageKey": "day-7",
+    "sentimentAtSend": "anxious",
+    "kind": "csat_up",
+    "observedAt": "2026-07-03T01:20:00.000Z"
   }
 ]

@@ -332,6 +332,13 @@ export type OutcomeEventKind =
 export interface OutcomeEventMeta {
   /** normalized [0,1] char-distance between the drafted reply and the sent reply. */
   editedRatio?: number;
+  /**
+   * The inferred sentiment of a customer's inbound reply that landed within the
+   * attribution window (ADR-0012, E2). Carried ONLY on `customer_replied` events
+   * so the panel can fold a calm-response rate. A measured fact (the channel's
+   * own sentiment inference), never an invented outcome.
+   */
+  respondedSentiment?: Sentiment;
 }
 
 /**

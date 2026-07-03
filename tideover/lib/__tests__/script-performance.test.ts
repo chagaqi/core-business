@@ -5,7 +5,7 @@ import {
   computeScriptPerformance,
   SCRIPT_PERF_MIN_N,
 } from "@/lib/service";
-import type { OutcomeEvent, OutcomeEventKind, ScriptVariant } from "@/lib/types";
+import type { OutcomeEvent, OutcomeEventKind, ScriptVariant, Sentiment } from "@/lib/types";
 
 function variant(over: Partial<ScriptVariant> & { id: string }): ScriptVariant {
   return {
@@ -40,6 +40,19 @@ function event(
     observedAt: "2026-06-25T00:00:00.000Z",
     ...(editedRatio === undefined ? {} : { meta: { editedRatio } }),
   };
+}
+
+/** a customer_replied event carrying the inbound's inferred sentiment (E2). */
+function replied(variantId: string, respondedSentiment: Sentiment): OutcomeEvent {
+  return { ...event(variantId, undefined, "customer_replied"), meta: { respondedSentiment } };
+}
+/** an event of an arbitrary kind with no meta (reopened / csat_up / csat_down). */
+function kindEvent(variantId: string, kind: OutcomeEventKind): OutcomeEvent {
+  return event(variantId, undefined, kind);
+}
+/** N copies of a factory result, so tests can cross the SCRIPT_PERF_MIN_N floor. */
+function repeat<T>(n: number, make: (i: number) => T): T[] {
+  return Array.from({ length: n }, (_, i) => make(i));
 }
 
 test("aggregateScriptPerformance counts reply_sent sends and averages editedRatio per variant", () => {
@@ -115,4 +128,98 @@ test("computeScriptPerformance rolls up the Lumen seed with the expected send co
   // small-sample humility: every seeded variant is below the proof threshold, so
   // the surface shows "collecting data (n=X)" and never a rate.
   assert.ok(rows.every((r) => r.n < SCRIPT_PERF_MIN_N));
+});
+
+// ── ADR-0012 (E2) customer-side outcome aggregations ────────────────────────
+
+test("customer-side kinds never inflate sends / editedRatio (only reply_sent does)", () => {
+  const events = [
+    event("var_a", 0.5, "reply_sent"),
+    replied("var_a", "calm"),
+    kindEvent("var_a", "reopened"),
+    kindEvent("var_a", "csat_up"),
+    kindEvent("var_a", "csat_down"),
+  ];
+  const rows = aggregateScriptPerformance([variant({ id: "var_a" })], events);
+  const a = rows[0];
+  assert.equal(a.sends, 1);
+  assert.equal(a.avgEditedRatio, 0.5);
+  assert.equal(a.customerReplies, 1);
+  assert.equal(a.reopens, 1);
+  assert.equal(a.csatResponses, 2);
+});
+
+test("calm-response rate = calm / all customer_replied once the sample reaches the floor", () => {
+  const events = [
+    ...repeat(SCRIPT_PERF_MIN_N - 5, () => replied("var_a", "calm")), // 15 calm
+    ...repeat(5, () => replied("var_a", "anxious")), // 5 not-calm → 20 total
+  ];
+  const a = aggregateScriptPerformance([variant({ id: "var_a" })], events)[0];
+  assert.equal(a.customerReplies, SCRIPT_PERF_MIN_N); // 20
+  assert.ok(Math.abs((a.calmResponseRate ?? 0) - 15 / 20) < 1e-9); // 0.75
+});
+
+test("calm-response rate is gated to null below the reply floor (small-N humility)", () => {
+  const events = repeat(SCRIPT_PERF_MIN_N - 1, () => replied("var_a", "calm")); // 19, all calm
+  const a = aggregateScriptPerformance([variant({ id: "var_a" })], events)[0];
+  assert.equal(a.customerReplies, SCRIPT_PERF_MIN_N - 1); // 19 raw count still reported
+  assert.equal(a.calmResponseRate, null); // ...but never a rate the sample can't support
+});
+
+test("reopen rate = reopened / sends once sends reach the floor, gated below it", () => {
+  const withEnoughSends = [
+    ...repeat(SCRIPT_PERF_MIN_N, () => event("var_a", 0.1, "reply_sent")), // 20 sends
+    ...repeat(5, () => kindEvent("var_a", "reopened")), // 5 reopens
+  ];
+  const a = aggregateScriptPerformance([variant({ id: "var_a" })], withEnoughSends)[0];
+  assert.equal(a.reopens, 5);
+  assert.ok(Math.abs((a.reopenRate ?? 0) - 5 / 20) < 1e-9); // 0.25
+
+  const tooFewSends = [
+    ...repeat(SCRIPT_PERF_MIN_N - 1, () => event("var_b", 0.1, "reply_sent")), // 19 sends
+    ...repeat(5, () => kindEvent("var_b", "reopened")),
+  ];
+  const b = aggregateScriptPerformance([variant({ id: "var_b" })], tooFewSends)[0];
+  assert.equal(b.reopens, 5); // raw count present
+  assert.equal(b.reopenRate, null); // rate gated by too-few sends
+});
+
+test("reopen rate is capped at 1 — never renders a nonsensical >100% (ADR-0012 fix)", () => {
+  // Defense-in-depth: even if more reopened events than sends slipped through
+  // (they shouldn't — reopens dedupe per reply at emit time), the panel caps at 100%.
+  const events = [
+    ...repeat(SCRIPT_PERF_MIN_N, () => event("var_a", 0.1, "reply_sent")), // 20 sends
+    ...repeat(25, () => kindEvent("var_a", "reopened")), // 25 reopens > 20 sends
+  ];
+  const a = aggregateScriptPerformance([variant({ id: "var_a" })], events)[0];
+  assert.equal(a.reopens, 25); // raw count is honest
+  assert.equal(a.reopenRate, 1); // ...but the rate never exceeds 1
+});
+
+test("csat = up / (up + down) once the sample reaches the floor, gated below it", () => {
+  const enough = [
+    ...repeat(15, () => kindEvent("var_a", "csat_up")),
+    ...repeat(5, () => kindEvent("var_a", "csat_down")), // 20 responses
+  ];
+  const a = aggregateScriptPerformance([variant({ id: "var_a" })], enough)[0];
+  assert.equal(a.csatResponses, 20);
+  assert.ok(Math.abs((a.csatRate ?? 0) - 15 / 20) < 1e-9); // 0.75
+
+  const tooFew = [
+    ...repeat(10, () => kindEvent("var_b", "csat_up")),
+    ...repeat(9, () => kindEvent("var_b", "csat_down")), // 19 responses
+  ];
+  const b = aggregateScriptPerformance([variant({ id: "var_b" })], tooFew)[0];
+  assert.equal(b.csatResponses, 19); // raw count present
+  assert.equal(b.csatRate, null); // rate gated below the floor
+});
+
+test("a variant with no customer-side events reports zero counts and null rates", () => {
+  const a = aggregateScriptPerformance([variant({ id: "var_a" })], [])[0];
+  assert.equal(a.customerReplies, 0);
+  assert.equal(a.calmResponseRate, null);
+  assert.equal(a.reopens, 0);
+  assert.equal(a.reopenRate, null);
+  assert.equal(a.csatResponses, 0);
+  assert.equal(a.csatRate, null);
 });

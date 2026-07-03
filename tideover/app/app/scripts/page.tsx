@@ -57,6 +57,31 @@ function NBadge({ n }: { n: number }) {
   );
 }
 
+/**
+ * One measured-outcome cell with small-N humility baked in: when the rollup
+ * gated the rate to null (its own sample is below SCRIPT_PERF_MIN_N) we show
+ * "collecting data (n=X)" — never a rate the sample can't support. `count` is the
+ * metric's OWN denominator (replies / sends / csat responses), not total sends.
+ */
+function OutcomeCell({
+  rate,
+  count,
+  render,
+}: {
+  rate: number | null;
+  count: number;
+  render: (rate: number) => string;
+}) {
+  if (rate === null) {
+    return <span className="text-[12px] text-ink-mute">collecting data (n={count})</span>;
+  }
+  return (
+    <span className="text-[13px] text-ink">
+      {render(rate)} <span className="text-ink-mute">· n={count}</span>
+    </span>
+  );
+}
+
 export default async function ScriptsPage({
   searchParams,
 }: {
@@ -114,21 +139,26 @@ export default async function ScriptsPage({
       </header>
 
       <p className="rounded-xl border border-dashed border-border bg-sand px-4 py-3 text-[12px] leading-relaxed text-ink-mute">
-        Edit rate = how much operators changed the draft before sending; lower means the script landed
-        closer to what got sent. It is one signal, not a verdict — and it only appears once a variant has
-        at least {SCRIPT_PERF_MIN_N} sends. Below that we show the raw count and keep collecting.
+        Every column is a measured event count or ratio — one signal each, never a verdict. A rate only
+        appears once that column has at least {SCRIPT_PERF_MIN_N} of its own data points; below that we
+        show the raw count and keep collecting. Edit rate = how much operators changed the draft before
+        sending. Customer reply = the share of inbound replies that came back calm. Reopen = replies
+        followed by the customer coming back. CSAT = the customer&rsquo;s own 👍 on the status page.
       </p>
 
       {rows.length === 0 ? (
         <div className="proof-placeholder">No script variants seeded for this merchant.</div>
       ) : (
         <div className="panel overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-[14px]">
+          <table className="w-full min-w-[920px] text-left text-[14px]">
             <thead>
               <tr className="border-b border-border text-[11px] uppercase tracking-wider text-ink-mute">
                 <th className="px-5 py-2.5 font-semibold">Slot &amp; script</th>
                 <th className="px-5 py-2.5 text-right font-semibold">Sends</th>
-                <th className="px-5 py-2.5 font-semibold">Edit rate (measured)</th>
+                <th className="px-5 py-2.5 font-semibold">Edit rate</th>
+                <th className="px-5 py-2.5 font-semibold">Customer reply (calm)</th>
+                <th className="px-5 py-2.5 font-semibold">Reopen rate</th>
+                <th className="px-5 py-2.5 font-semibold">CSAT</th>
               </tr>
             </thead>
             <tbody>
@@ -139,7 +169,7 @@ export default async function ScriptsPage({
                 }`;
                 return (
                   <tr key={variant.id} className="border-b border-border last:border-0 align-top">
-                    <td className="max-w-[460px] px-5 py-3.5">
+                    <td className="max-w-[420px] px-5 py-3.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-[13px] font-semibold text-ink">{slot}</span>
                         {variant.isDefault ? <Tag>default</Tag> : null}
@@ -163,6 +193,27 @@ export default async function ScriptsPage({
                         </span>
                       )}
                     </td>
+                    <td className="px-5 py-3.5">
+                      <OutcomeCell
+                        rate={row.calmResponseRate}
+                        count={row.customerReplies}
+                        render={(r) => `${Math.round(r * 100)}% calm`}
+                      />
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <OutcomeCell
+                        rate={row.reopenRate}
+                        count={row.sends}
+                        render={(r) => `${Math.round(r * 100)}% reopened`}
+                      />
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <OutcomeCell
+                        rate={row.csatRate}
+                        count={row.csatResponses}
+                        render={(r) => `${Math.round(r * 100)}% 👍`}
+                      />
+                    </td>
                   </tr>
                 );
               })}
@@ -172,9 +223,10 @@ export default async function ScriptsPage({
       )}
 
       <p className="rounded-xl border border-dashed border-border bg-sand px-4 py-3 text-[12px] leading-relaxed text-ink-mute">
-        Richer outcome columns — customer reply, reopen, CSAT — populate once the pilot is live. Those
-        events are defined in the ledger but not emitted in Phase 0, so they are simply absent here
-        rather than filled with placeholder numbers.
+        These columns fold live from the outcome ledger — a customer reply within the attribution window,
+        a reopened ticket, a 👍/👎 tap on the status page. On the seeded demo the samples are deliberately
+        small, so most read &ldquo;collecting data&rdquo; rather than a rate: small samples are noise, and we
+        would rather show the honest count than a number the data can&rsquo;t back yet.
       </p>
     </div>
   );

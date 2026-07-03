@@ -254,6 +254,14 @@ const outcomeEvents: OutcomeEventRepository = {
       .sort({ observedAt: 1, id: 1 })
       .toArray()) as OutcomeEvent[];
   },
+  async deleteCsatForOrder(orderId) {
+    const c = await col<OutcomeEvent>("outcome_events");
+    const res = await c.deleteMany({
+      orderId,
+      kind: { $in: ["csat_up", "csat_down"] },
+    } as Filter<OutcomeEvent>);
+    return res.deletedCount ?? 0;
+  },
 };
 
 const merchantUpdates: MerchantUpdateRepository = {

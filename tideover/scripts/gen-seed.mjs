@@ -613,6 +613,60 @@ for (const m of merchants) {
   }
 }
 
+// ── ADR-0012 (E2) outcome ledger: DEMO customer-side outcomes ──
+// A handful of customer_replied (with respondedSentiment) + csat_up/csat_down
+// events, each attributed to the variant of an EXISTING reply_sent for the same
+// order, so they fold into the panel's new columns (calm-response / reopen /
+// CSAT). Generated LAST — after every other block — so their PRNG draws can't
+// shift any id/token above; new rows APPEND to outcomeEvents. Both seed merchants
+// are isDemo, so these inherit demo lineage (never counted toward a real stat).
+// At most one csat per order (dedupe on (orderId, kind∈csat)) mirrors the CSAT
+// re-tap rule. Volumes stay a "handful" (well below SCRIPT_PERF_MIN_N), so the
+// panel reads honest "collecting data (n=X)" rather than a rate the sample can't
+// support — small-N humility on display.
+const replySent = outcomeEvents.filter((e) => e.kind === "reply_sent");
+const RESP_SENTIMENTS = ["calm", "calm", "calm", "anxious", "anxious", "hostile"];
+const csatSeenOrders = new Set();
+for (const m of merchants) {
+  const mReplies = replySent.filter((e) => e.merchantId === m.id);
+  if (mReplies.length === 0) continue;
+  const replyN = Math.min(mReplies.length, 6);
+  for (let i = 0; i < replyN; i++) {
+    const r = pick(mReplies);
+    outcomeEvents.push({
+      id: id("oe"),
+      merchantId: m.id,
+      ticketId: r.ticketId,
+      orderId: r.orderId,
+      customerId: r.customerId,
+      variantId: r.variantId,
+      stageKey: r.stageKey,
+      sentimentAtSend: r.sentimentAtSend,
+      kind: "customer_replied",
+      observedAt: new Date(epoch - int(0, 4) * DAY_MS).toISOString(),
+      meta: { respondedSentiment: pick(RESP_SENTIMENTS) },
+    });
+  }
+  const csatN = Math.min(mReplies.length, 5);
+  for (let i = 0; i < csatN; i++) {
+    const r = pick(mReplies);
+    if (csatSeenOrders.has(r.orderId)) continue; // one csat per order (dedupe rule)
+    csatSeenOrders.add(r.orderId);
+    outcomeEvents.push({
+      id: id("oe"),
+      merchantId: m.id,
+      ticketId: r.ticketId,
+      orderId: r.orderId,
+      customerId: r.customerId,
+      variantId: r.variantId,
+      stageKey: r.stageKey,
+      sentimentAtSend: r.sentimentAtSend,
+      kind: rng() < 0.7 ? "csat_up" : "csat_down", // mostly satisfied
+      observedAt: new Date(epoch - int(0, 4) * DAY_MS).toISOString(),
+    });
+  }
+}
+
 // ── write ──
 const write = (name, data) => writeFileSync(join(DATA, name), JSON.stringify(data, null, 2) + "\n");
 write("merchants.json", merchants);
