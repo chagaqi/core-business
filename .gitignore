@@ -9,6 +9,8 @@ node_modules/
 .mcp.json
 .obsidian/
 LLM COURSES/
+.agents/
+skills-lock.json
 
 # any credential/env dumps, wherever they land
 *.env
