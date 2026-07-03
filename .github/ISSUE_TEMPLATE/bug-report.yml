@@ -1,0 +1,38 @@
+name: Bug report
+description: Something in Tideover is broken or behaving wrong
+title: "[bug] "
+labels: ["bug"]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Where
+      description: Page/route or engine (e.g. /app/inbox, reassurance engine, /status/[token])
+      placeholder: /app/inbox
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw vs what you expected. Screenshots welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open /app/inbox
+        2. Click the Dana ticket
+        3. ...
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - "S1 — demo-breaking (a partner would see it)"
+        - "S2 — wrong behavior, workaround exists"
+        - "S3 — polish/cosmetic"
+    validations:
+      required: true

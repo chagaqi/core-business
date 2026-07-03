@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tideover HQ — Finalization Sprint</title>
+<style>
+  :root{
+    --teal:#0E5366; --terra:#D9762F; --sand:#FBF8F2; --ink:#11252A;
+    --paper:#FFFFFF; --line:#E5DFD2; --muted:#5B6B70;
+    --ok:#1F7A45; --warn:#9A6700; --bad:#B42318; --idle:#5B6B70;
+    --ok-bg:#E4F2E9; --warn-bg:#FBF0DA; --bad-bg:#FBE4E1; --idle-bg:#ECEAE3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--sand);color:var(--ink);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;padding:28px 20px 80px}
+  .wrap{max-width:1180px;margin:0 auto}
+  h1,h2,h3{font-family:Fraunces,Georgia,"Times New Roman",serif;color:var(--teal);font-weight:600}
+  h1{font-size:34px;line-height:1.15}
+  h2{font-size:21px;margin-bottom:10px}
+  a{color:var(--teal)}
+  header{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;justify-content:space-between;border-bottom:3px solid var(--teal);padding-bottom:18px;margin-bottom:22px}
+  .tagline{color:var(--muted);margin-top:4px}
+  .sprint-chip{background:var(--teal);color:#fff;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600}
+  .links{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 24px}
+  .links a{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:13px;text-decoration:none;font-weight:600}
+  .links a:hover{border-color:var(--terra)}
+  .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:26px}
+  .tile{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .tile .num{font-family:Fraunces,Georgia,serif;font-size:32px;font-weight:600;color:var(--teal)}
+  .tile .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+  .tile.accent .num{color:var(--terra)}
+  .panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:22px}
+  .panel.dylan{border-left:6px solid var(--terra)}
+  .panel.dod{border-left:6px solid var(--teal)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  .tblwrap{overflow-x:auto}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:6px 10px;border-bottom:2px solid var(--line)}
+  td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .chip{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;white-space:nowrap}
+  .chip.done{background:var(--ok-bg);color:var(--ok)}
+  .chip.active{background:var(--warn-bg);color:var(--warn)}
+  .chip.blocked{background:var(--bad-bg);color:var(--bad)}
+  .chip.queued{background:var(--idle-bg);color:var(--idle)}
+  .prio{display:inline-block;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:800;margin-right:6px}
+  .p1{background:var(--terra);color:#fff}
+  .p2{background:#B9A886;color:#fff}
+  .p3{background:var(--idle-bg);color:var(--muted)}
+  .cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px}
+  .cat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .cat h3{font-size:16px;display:flex;justify-content:space-between;align-items:center;color:var(--teal)}
+  .cat h3 .count{font-family:Inter,system-ui,sans-serif;font-size:12px;color:var(--muted);font-weight:600}
+  .bar{height:7px;border-radius:4px;background:var(--line);margin:9px 0 12px;overflow:hidden}
+  .bar > div{height:100%;background:var(--teal);border-radius:4px}
+  .task{padding:8px 0;border-bottom:1px solid var(--line)}
+  .task:last-child{border-bottom:none}
+  .task .t-head{display:flex;align-items:baseline;gap:8px}
+  .task .t-title{font-weight:600;font-size:14px}
+  .task .t-detail{font-size:13px;color:var(--muted);margin-top:2px}
+  .task .t-note{font-size:12.5px;color:var(--terra);margin-top:2px;font-weight:600}
+  .task.done-row .t-title{color:var(--muted);text-decoration:line-through;text-decoration-color:#B9A886}
+  details{margin-bottom:22px}
+  details summary{cursor:pointer;font-family:Fraunces,Georgia,serif;font-size:21px;font-weight:600;color:var(--teal);padding:6px 0;list-style-position:outside}
+  .cut td:first-child{font-weight:600;width:32%}
+  .log-entry{display:flex;gap:14px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .log-entry:last-child{border-bottom:none}
+  .log-date{color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600;font-size:13px;padding-top:1px}
+  .dod-list{list-style:none}
+  .dod-list li{padding:7px 0 7px 30px;position:relative;border-bottom:1px solid var(--line)}
+  .dod-list li:last-child{border-bottom:none}
+  .dod-list li::before{content:"○";position:absolute;left:6px;color:var(--muted);font-weight:700}
+  .dod-list li.hit::before{content:"✓";color:var(--ok)}
+  .doctrine{background:var(--teal);color:#F2EFE7;border-radius:14px;padding:18px 22px;font-size:14px}
+  .doctrine strong{color:#fff}
+  .doctrine h2{color:#F2D9BF}
+  .foot{color:var(--muted);font-size:13px;margin-top:26px;text-align:center}
+  @media (max-width:640px){ body{padding:16px 10px 60px} h1{font-size:26px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>Tideover HQ</h1>
+    <div class="tagline">Finalization sprint command center · Calm the wait. Keep the sale.</div>
+  </div>
+  <div class="sprint-chip">SPRINT: Jul 2 → Jul 5, 2026 · Fable window ends ~Jul 7</div>
+</header>
+
+<div class="links">
+  <a href="https://tideover.vercel.app" target="_blank">🌊 Live app</a>
+  <a href="https://github.com/chagaqi/core-business" target="_blank">📦 Repo</a>
+  <a href="https://github.com/chagaqi/core-business/pull/1" target="_blank">🔀 PR #1</a>
+  <a href="../docs/TIDEOVER-SPRINT-PLAN.md" target="_blank">📋 Sprint plan</a>
+  <a href="../docs/research/2026-07-02-enrichment-digest.md" target="_blank">🔬 Research digest</a>
+  <a href="NOTES-FOR-CLAUDE.md" target="_blank">📥 Leave me a note</a>
+</div>
+
+<div class="tiles" id="tiles"></div>
+
+<section class="panel dylan">
+  <h2>🟠 Needs Dylan — do these first, everything stacks on them</h2>
+  <p style="font-size:13px;color:var(--muted);margin-bottom:10px">Purchases and decisions only you can make. DNS, Stripe, and provider approvals have wall-clock lead times, so they hurt most when started late. Total spend to unblock everything: roughly $25–65.</p>
+  <div class="tblwrap"><table id="dylan-table">
+    <thead><tr><th>Item</th><th>Why / what it unblocks</th><th>Cost</th><th>Status</th></tr></thead>
+    <tbody></tbody>
+  </table></div>
+</section>
+
+<section class="panel dod">
+  <h2>🎯 Definition of Done — the sprint ends by outcome, not by clock</h2>
+  <ul class="dod-list">
+    <li>The 10-minute demo path runs clean on <strong>live persistence</strong> (Mongo), recorded as a walkthrough</li>
+    <li>Security floor: /app auth, raw-body HMAC verify before parse, mock channel env-gated, /privacy + /terms live</li>
+    <li>Email-forward pilot mechanic works end-to-end on a real inbox</li>
+    <li>Evidence Pack renders for a seeded order; day-0 Baseline Report generates</li>
+    <li>Cold-outreach kit ready: honest ABOUT, WISMO Teardown template, 10 diagnostic openers, first email draft</li>
+    <li>verify + test + eval + smoke all green on prod; cut items logged as truthful backlog</li>
+    <li>Training docs Dylan can read in an evening (CX lingo · Crowdfunding 101 · Pricing &amp; pitching · Managed-tier runbook)</li>
+  </ul>
+</section>
+
+<h2 style="margin:6px 0 12px">Workstreams</h2>
+<div class="cats" id="cats"></div>
+
+<details>
+  <summary>✂️ Standing cut list — agreed now so no agent starts them</summary>
+  <div class="panel" style="margin-top:10px"><div class="tblwrap"><table class="cut">
+    <tr><td>Bandit / Thompson / epsilon selection</td><td>Zero customers; slots need months to reach n≥20. Ship ledger + variant stamping + stats panel only. Selection is post-first-cohort.</td></tr>
+    <tr><td>Bespoke ZendeskAdapter + write-back vault</td><td>The canonical push schema + merchant-templated webhooks already cover the Zendesk read path. Write-back is post-first-revenue.</td></tr>
+    <tr><td>Tidio / Intercom adapters</td><td>Webhooks plan-gated (Tidio) or need a per-workspace dev app (Intercom). Those merchants use the email rung.</td></tr>
+    <tr><td>Homepage voice-scraping</td><td>No real algorithm exists. Replaced by "paste two past support replies".</td></tr>
+    <tr><td>Kickstarter scrapers (comments, recently-funded)</td><td>KS ToS prohibits scraping. Manual paste-a-URL; prospect timing by manual browsing.</td></tr>
+    <tr><td>Gorgias macro import/export</td><td>Needs the API-key trust rung; "Gorgias format" isn't portable. Markdown export only.</td></tr>
+    <tr><td>Cmd+K palette · Wave CRUD · real WFM</td><td>Polish or enterprise scope. J/K triage is the demo moment; wave labels + cohort forecast panel suffice.</td></tr>
+    <tr><td>Shopify public app / helpdesk OAuth apps</td><td>Weeks of app review + PII redaction rules. Post-revenue.</td></tr>
+    <tr><td>SOC 2 / enterprise security questionnaires</td><td>$25–50K. Qualify out; /security data-map is the honest answer.</td></tr>
+    <tr><td>NPS · CES 1–7 scale</td><td>NPS is brand-level and meaningless mid-wait. One binary thumbs tap won.</td></tr>
+    <tr><td>Per-seat / per-resolution / performance-fee pricing</td><td>Recreates the competitor mechanics we sell against; performance fees violate proof-only pre-case-study.</td></tr>
+    <tr><td>PH hire before 2 signed managed clients</td><td>Salary vs $750 budget = insolvency. Dylan-as-first-agent; screen recordings become the SOPs.</td></tr>
+    <tr><td>Photo upload pipeline · GitHub Action lane · Dev Console page</td><td>Post-sprint. Text + external image URL; gh CLI output is the dev view this week.</td></tr>
+  </table></div></div>
+</details>
+
+<section class="panel">
+  <h2>📜 Sprint log</h2>
+  <div id="log"></div>
+</section>
+
+<section class="doctrine">
+  <h2>Proof-only doctrine (never bends)</h2>
+  No fabricated metrics, testimonials, clients, or results. Confidence bands, never hard delivery dates (enforced in code at draft AND send). Literal <strong>[CASE STUDY PLACEHOLDER]</strong> until a real cohort completes. Third-party benchmarks live in cited popovers, never beside merchant data. Demo surfaces carry a persistent "Sample data" watermark. "Self-improving" appears only as measured numbers with n-badges, never as the word "learning".
+</section>
+
+<div class="foot">To leave instructions: edit <strong>mission-control/NOTES-FOR-CLAUDE.md</strong> and tell Claude to check the notes file. This board is regenerated by Claude each sprint tick; your browser edits won't persist.</div>
+
+</div>
+
+<script>
+// ============ CANONICAL TASK BOARD (Claude edits this array each sprint tick) ============
+const DYLAN = [
+  {id:'D1', title:'Merge PR #1 (one click on GitHub)', why:'Clean main baseline; lets branch protection point at main', cost:'$0', status:'queued'},
+  {id:'D2', title:'Buy the domain (tideover.app first choice)', why:'Email ingest addresses, outbound DKIM, real brand URLs. DNS propagation takes hours — start early', cost:'~$20–40/yr', status:'queued'},
+  {id:'D3', title:'MongoDB Atlas account + free M0 cluster → paste MONGODB_URI into Vercel env', why:'All durable writes: outcome ledger, live ingest, CSAT, update feed', cost:'$0', status:'queued'},
+  {id:'D4', title:'Email provider account (Resend recommended)', why:'Inbound forward addresses + outbound proof emails; free tier fits', cost:'$0', status:'queued'},
+  {id:'D5', title:'GitHub Pro', why:'Branch protection on private repos needs Pro; makes green CI physically required to merge', cost:'$4/mo', status:'queued'},
+  {id:'D6', title:'Vercel Pro (defer until first PAID pilot)', why:'Hobby plan ToS prohibits commercial use; the free demo is fine today', cost:'$20/mo later', status:'queued'},
+  {id:'D7', title:'Persona decision: approve the honest ABOUT rewrite', why:'Sales page currently speaks as "Chaga" with an unverifiable operator story — blocks ALL outreach. Draft will be ready for you', cost:'$0', status:'queued'},
+  {id:'D8', title:'Pricing sign-off', why:'New ladder must honor the "$199–299 founding, lowest I\'ll offer" promise already written in the sales page', cost:'$0', status:'queued'},
+  {id:'D9', title:'Golden-fixture review (one evening, ~45 min)', why:'Read each expected engine reply once and approve — this converts snapshots into the actual spec', cost:'time', status:'queued'},
+  {id:'D10', title:'Stripe activation (defer until first conversion)', why:'Payment links for founding-price conversion', cost:'$0', status:'queued'},
+];
+
+const CATS = [
+  {key:'FOUND', label:'Foundations & Persistence'},
+  {key:'TRUST', label:'Trust, Security & Legal'},
+  {key:'WEDGE', label:'Integration Wedge'},
+  {key:'MONEY', label:'Money Artifacts'},
+  {key:'ENGINE', label:'Outcome Ledger & QA'},
+  {key:'COCKPIT', label:'Cockpit & Dashboard UX'},
+  {key:'CUSTOMER', label:'Customer Wait Experience'},
+  {key:'GTM', label:'Pricing & Sales Surfaces'},
+  {key:'TRAIN', label:'Dylan Training Docs'},
+  {key:'OS', label:'Engineering OS'},
+];
+
+const TASKS = [
+  // FOUNDATIONS
+  {id:'F1', cat:'FOUND', prio:1, status:'queued', title:'Mongo driver behind the Repositories seam', detail:'DATA_DRIVER=mongo implementation + isDemo merchant flag + seed import. Code lands now; URI wires in when D3 done. Prerequisite for half the sprint.'},
+  {id:'F2', cat:'FOUND', prio:1, status:'queued', title:'Auth on /app', detail:'Env-password + signed cookie middleware; demo mode stays env-gated for the public demo. Must precede live ingest.'},
+  {id:'F3', cat:'FOUND', prio:1, status:'queued', title:'Ingest hardening', detail:'Raw-body HMAC verify BEFORE parse; env-gate the mock channel (current auth bypass); fast-ACK + async engines; idempotency on (merchant, channel, externalId); drop-at-edge with visible discard counter.'},
+  {id:'F4', cat:'FOUND', prio:2, status:'queued', title:'Scheduled jobs', detail:'Vercel Cron: resolved_quiet window-closer + nightly variant_stats rollup.'},
+  {id:'F5', cat:'FOUND', prio:3, status:'queued', title:'Nightly Atlas backup', detail:'mongodump via GitHub Actions. A lost comm log destroys the Evidence Pack value story.'},
+  {id:'F6', cat:'FOUND', prio:3, status:'queued', title:'Uptime + dead-man indicator', detail:'Free uptime monitor + "last ping received" chip so a silently-severed merchant integration is visible.'},
+  // TRUST
+  {id:'T1', cat:'TRUST', prio:1, status:'queued', title:'/privacy + /terms pages', detail:'Table stakes before anyone forwards a customer email. CAN-SPAM address + unsubscribe on outbound.'},
+  {id:'T2', cat:'TRUST', prio:2, status:'queued', title:'/security data-map page', detail:'What we see vs never see; per-rung revocation table ("how to fire us in one click"). Ships AFTER F3 so it describes real code. No cert claims.'},
+  {id:'T3', cat:'TRUST', prio:3, status:'queued', title:'Procurement packet', detail:'Security one-pager + mutual DPA template + pilot agreement. Answers "send me your security stuff" same-day.'},
+  // WEDGE
+  {id:'W1', cat:'WEDGE', prio:1, status:'queued', title:'Email-forward ingest, live end-to-end', detail:'Per-merchant alias → inbound webhook → hardened ingest → drafted reply. THE pilot mechanic: one forwarding rule in, revocation = deleting it. Needs D2+D4+F1+F3.'},
+  {id:'W2', cat:'WEDGE', prio:2, status:'queued', title:'Canonical push schema + vendor templates', detail:'One ingest schema; onboarding generates copy-paste Gorgias HTTP-integration + Zendesk trigger templates with per-merchant URL/secret + "waiting for first ping" live test.'},
+  {id:'W3', cat:'WEDGE', prio:2, status:'queued', title:'CSV import (Rung 0)', detail:'Kickstarter backer report + BackerKit export, parsed client-side (file never leaves their machine), captures disclosedEta.'},
+  // MONEY
+  {id:'M1', cat:'MONEY', prio:1, status:'queued', title:'Schema: disclosedEta + view log', detail:'Order.disclosedEta {value, source, disclosedAt} + campaign/wave labels + status-page view logging. Seed migration in the same PR.'},
+  {id:'M2', cat:'MONEY', prio:1, status:'queued', title:'Dispute Evidence Pack', detail:'Per-order print-view: every reply, delay notice, disclosed ETA, status-page views — "the fields Shopify\'s dispute response asks for". Never a win-rate claim.'},
+  {id:'M3', cat:'MONEY', prio:2, status:'queued', title:'"GMV in open dispute window" tile', detail:'Orders past disclosedEta + 15 days, split by payment rail (KS money ≠ Shopify money — different remedies).'},
+  {id:'M4', cat:'MONEY', prio:2, status:'queued', title:'Day-0 Baseline Report', detail:'Branded one-pager from Merchant.baseline + a DEFINED capture procedure (helpdesk export or 7-day silent window; never self-report).'},
+  {id:'M5', cat:'MONEY', prio:2, status:'queued', title:'Delay-notice workflow', detail:'Overdue flag → drafted notice with revised window + cancel option, human-approved. Verify FTC rule text first; ZERO compliance claims in copy.'},
+  {id:'M6', cat:'MONEY', prio:3, status:'queued', title:'Bleed calculator', detail:'Marketing-page calculator using only cited externals ($ per interaction, ~$128 per dispute) with visible source footnotes.'},
+  // ENGINE
+  {id:'E1', cat:'ENGINE', prio:1, status:'queued', title:'Variant + outcome ledger (Phase 0)', detail:'script_variants + append-only outcome_events; variant stamping + editedRatio at approve-send. NO selection policy this sprint.'},
+  {id:'E2', cat:'ENGINE', prio:2, status:'queued', title:'Outcome instrumentation', detail:'Reply attribution, reopen detection, resolved_quiet window, one-tap thumbs on the status page (the ONE feedback primitive).'},
+  {id:'E3', cat:'ENGINE', prio:2, status:'queued', title:'Script Performance panel', detail:'Per-variant measured stats with n-badges; "collecting data" under n=20; never the word "winner". DEMO-labeled synthetic events for the demo merchant only.'},
+  {id:'E4', cat:'ENGINE', prio:2, status:'queued', title:'"Reply QA score" lite + save-edit-as-variant', detail:'4 dimensions, 2 auto-scored, hard-date auto-fail ("the software physically will not send one" — the QA claim no service can copy). Operator edits >30% promote to new variants.'},
+  // COCKPIT
+  {id:'C1', cat:'COCKPIT', prio:1, status:'queued', title:'Keyboard triage + approve-and-advance', detail:'J/K/Enter/Cmd+Enter thin client wrapper (NOT a SPA rewrite) + auto-advance after send + "Queue clear" state. The "8 at-risk tickets in 90 seconds" demo moment.'},
+  {id:'C2', cat:'COCKPIT', prio:2, status:'queued', title:'Draft alternates', detail:'{standard, brief, de-escalate} chips above the draft — the Gorgias recommended-macro pattern on our playbook.'},
+  {id:'C3', cat:'COCKPIT', prio:2, status:'queued', title:'"Previously told" strip', detail:'Last sent reply + quoted band above every new draft, so no draft ever walks back a promise. Extends proof doctrine across messages.'},
+  {id:'C4', cat:'COCKPIT', prio:2, status:'queued', title:'Dashboard v2: hero + insider row', detail:'"Revenue at risk" hero tile (dollars, top-left) + Median FRT / TTR / WISMO share / Tickets-per-100 with cited benchmark popovers + click-through filters. Hard cap 7 tiles. Contact-driver Pareto.'},
+  {id:'C5', cat:'COCKPIT', prio:3, status:'queued', title:'SLA countdown chips + attainment tile', detail:'Per-ticket countdown vs merchant slaWindows; amber near-breach, red breach.'},
+  {id:'C6', cat:'COCKPIT', prio:3, status:'queued', title:'Ticket assignment field', detail:'Assignee + shift + escalation state — the managed-tier ops seam.'},
+  {id:'C7', cat:'COCKPIT', prio:3, status:'queued', title:'Cohort WISMO forecast panel', detail:'"212 orders enter the day-60–89 window next week → expect ~X tickets at your baseline rate." Method shown. No generic helpdesk can do this.'},
+  // CUSTOMER
+  {id:'U1', cat:'CUSTOMER', prio:1, status:'queued', title:'Status-page wait UX', detail:'"Day 47 of your 90–118 day window" elapsed bar (never a % bar — that\'s a hard-date promise in disguise), 44px touch targets, accent-contrast auto-fix, reduced-motion.'},
+  {id:'U2', cat:'CUSTOMER', prio:1, status:'queued', title:'Unified Update Pipeline', detail:'ONE composer → status-page "Latest from the workshop" feed + stage-transition outbound approval queue + copy-to-Kickstarter update draft (draft-only, creator posts it). Replaces 3 overlapping proposals.'},
+  {id:'U3', cat:'CUSTOMER', prio:2, status:'queued', title:'Demo-tour-first onboarding + Sample-data watermark', detail:'Step-0 "see it working on sample data" tour; persistent watermark on every demo surface (screenshot-leak proof hazard).'},
+  {id:'U4', cat:'CUSTOMER', prio:3, status:'queued', title:'Setup checklist on /app', detail:'5 items, quick win first; persisted via the repository seam.'},
+  {id:'U5', cat:'CUSTOMER', prio:3, status:'queued', title:'Voice preview from pasted replies', detail:'"Paste two past support replies" → day-30 draft in their voice beside a generic one. No scraping.'},
+  // GTM
+  {id:'G1', cat:'GTM', prio:1, status:'queued', title:'Persona sweep: honest ABOUT', detail:'Rewrite ABOUT in Dylan\'s honest register; sweep "Chaga" from auth defaults, sales page, emails, seeds. Blocks ALL outreach. Needs D7 approval.'},
+  {id:'G2', cat:'GTM', prio:2, status:'queued', title:'/pricing page', detail:'Honors the founding promise; free founding pilot (5 slots, one cycle, day-14 checkpoint) for crowdfunding-scale; managed tier OFF the page (quote $1.5–2K on the call). Plan-usage tile.'},
+  {id:'G3', cat:'GTM', prio:2, status:'queued', title:'FAQ + comparison table', detail:'6 new objection entries; verified Gorgias per-resolution economics rows, cited, never editorialized.'},
+  {id:'G4', cat:'GTM', prio:2, status:'queued', title:'WISMO Teardown + day-14 checkpoint', detail:'Teardown template (prospect keeps it); checkpoint banner measures FRT + coverage only — dispute stats physically can\'t move in 14 days; weekly proof email template.'},
+  {id:'G5', cat:'GTM', prio:2, status:'queued', title:'Cold outreach infra (START NOW)', detail:'Separate outreach domain + mailbox + warm-up (~2-week lead time — the reason this starts during the build sprint) + 10 diagnostic openers.'},
+  {id:'G6', cat:'GTM', prio:3, status:'queued', title:'Export Everything button', detail:'Playbook + scripts + comm logs as markdown/CSV zip. Makes "no lock-in" demonstrable on the call.'},
+  // TRAIN
+  {id:'TR1', cat:'TRAIN', prio:2, status:'queued', title:'CX lingo & org doc', detail:'30+ term glossary, mock org chart of a 50-person brand, "what each role checks each morning", the 10 diagnostic openers.'},
+  {id:'TR2', cat:'TRAIN', prio:2, status:'queued', title:'Crowdfunding 101', detail:'Campaign lifecycle, backer data flow (KS → pledge manager → Shopify), money rails, chargeback mechanics (13.1 stated CORRECTLY), update-cadence norms.'},
+  {id:'TR3', cat:'TRAIN', prio:2, status:'queued', title:'Pricing & pitching doc', detail:'Cited comp table, tier logic, procurement basics (DPA, SIG-Lite, thresholds), qualify-out rules.'},
+  {id:'TR4', cat:'TRAIN', prio:3, status:'queued', title:'Managed-tier runbook', detail:'PH salary bands + 13th-month, QA sampling, escalation matrix, SOP-from-recordings, hire gate (2 signed clients + >2h/day queue time).'},
+  // OS
+  {id:'OS1', cat:'OS', prio:1, status:'done', title:'CI on GitHub Actions', detail:'verify + engine tests on every push/PR, path-filtered, free tier.'},
+  {id:'OS2', cat:'OS', prio:2, status:'done', title:'Issue templates', detail:'Bug (S1–S3 severity) + feature (with ADR-gate question).'},
+  {id:'OS3', cat:'OS', prio:2, status:'queued', title:'ADR log', detail:'Template + backfill ADR-0001 (deterministic engines) and ADR-0002 (repository seam).'},
+  {id:'OS4', cat:'OS', prio:1, status:'queued', title:'Golden eval harness', detail:'~40–60 golden tickets + invariant sweep (~3.6K engine calls: no hard dates ever, bands sane, escalation iff hostile). npm run eval joins verify + CI. Dylan reviews fixtures once (D9).'},
+  {id:'OS5', cat:'OS', prio:2, status:'queued', title:'smoke.mjs + release ritual', detail:'Prod smoke test (incl. hard-date grep on rendered status HTML) + RELEASE.md + CHANGELOG.md.'},
+  {id:'OS6', cat:'OS', prio:3, status:'queued', title:'gh CLI + label taxonomy', detail:'winget install; 6 labels; convert cut list to labeled issues.'},
+  {id:'OS7', cat:'OS', prio:2, status:'queued', title:'Node drift guards', detail:'.gitattributes eol=lf + engines field in package.json (local Node 25 vs CI must never surprise us).'},
+];
+
+const LOG = [
+  {d:'2026-07-02', t:'Cloud build landed: PR #1 verified locally (22 routes, 7/7 engine tests, verify green) and deployed live to tideover.vercel.app.'},
+  {d:'2026-07-02', t:'Engineering OS started: CI pipeline + issue templates live on GitHub.'},
+  {d:'2026-07-02', t:'Enrichment engine ran: 8 expert lenses + 2 adversarial critics (~600K tokens, all claims cited). Digest preserved in docs/research/.'},
+  {d:'2026-07-02', t:'Critics caught 5 pre-build landmines: in-memory store (writes evaporate on serverless), open /app (no auth), ingest signature bypass via mock channel, missing privacy/terms, and the Chaga persona blocking outreach. All now P1 tasks.'},
+  {d:'2026-07-02', t:'HQ dashboard + sprint plan committed. Autonomous hourly sprint loop armed.'},
+];
+
+// ============ RENDER ============
+const statusMeta = {done:['✓','Done'],active:['●','In progress'],blocked:['⛔','Blocked'],queued:['○','Queued']};
+function chip(s){const m=statusMeta[s]||statusMeta.queued;return `<span class="chip ${s}">${m[0]} ${m[1]}</span>`}
+function prio(p){return `<span class="prio p${p}">P${p}</span>`}
+
+// tiles
+const done=TASKS.filter(t=>t.status==='done').length, active=TASKS.filter(t=>t.status==='active').length,
+      p1open=TASKS.filter(t=>t.prio===1&&t.status!=='done').length,
+      dylanOpen=DYLAN.filter(t=>t.status!=='done').length;
+document.getElementById('tiles').innerHTML = `
+  <div class="tile"><div class="num">${done}/${TASKS.length}</div><div class="lbl">tasks done</div></div>
+  <div class="tile"><div class="num">${active}</div><div class="lbl">in progress</div></div>
+  <div class="tile accent"><div class="num">${p1open}</div><div class="lbl">P1 remaining</div></div>
+  <div class="tile accent"><div class="num">${dylanOpen}</div><div class="lbl">waiting on Dylan</div></div>`;
+
+// dylan table
+document.querySelector('#dylan-table tbody').innerHTML = DYLAN.map(d=>
+  `<tr><td><strong>${d.id}</strong> · ${d.title}</td><td>${d.why}</td><td>${d.cost}</td><td>${chip(d.status)}</td></tr>`).join('');
+
+// categories
+document.getElementById('cats').innerHTML = CATS.map(c=>{
+  const ts=TASKS.filter(t=>t.cat===c.key);
+  const dn=ts.filter(t=>t.status==='done').length;
+  const rows=ts.map(t=>`
+    <div class="task ${t.status==='done'?'done-row':''}">
+      <div class="t-head">${prio(t.prio)}<span class="t-title">${t.title}</span>&nbsp;${chip(t.status)}</div>
+      <div class="t-detail">${t.detail}</div>
+      ${t.note?`<div class="t-note">↳ ${t.note}</div>`:''}
+    </div>`).join('');
+  return `<div class="cat"><h3>${c.label} <span class="count">${dn}/${ts.length}</span></h3>
+    <div class="bar"><div style="width:${ts.length?Math.round(dn/ts.length*100):0}%"></div></div>${rows}</div>`;
+}).join('');
+
+// log
+document.getElementById('log').innerHTML = LOG.map(l=>
+  `<div class="log-entry"><span class="log-date">${l.d}</span><span>${l.t}</span></div>`).join('');
+</script>
+</body>
+</html>
