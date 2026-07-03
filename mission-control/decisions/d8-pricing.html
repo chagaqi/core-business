@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D8 — Pricing ladder sign-off</title>
+<style>
+  :root{--teal:#0E5366;--terra:#D9762F;--sand:#FBF8F2;--ink:#11252A;--paper:#fff;--line:#E5DFD2;--muted:#5B6B70}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--sand);color:var(--ink);font:15.5px/1.6 Inter,system-ui,sans-serif;padding:32px 20px 80px}
+  .wrap{max-width:900px;margin:0 auto}
+  h1,h2{font-family:Fraunces,Georgia,serif;color:var(--teal)}
+  h1{font-size:30px;margin-bottom:6px}
+  h2{font-size:20px;margin:28px 0 10px}
+  .meta{color:var(--muted);margin-bottom:22px}
+  .tblwrap{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:6px 10px;margin:12px 0}
+  table{width:100%;border-collapse:collapse;font-size:14.5px}
+  th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);padding:10px;border-bottom:2px solid var(--line)}
+  td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  .price{font-family:Fraunces,Georgia,serif;font-size:19px;font-weight:600;color:var(--teal);white-space:nowrap}
+  .why{background:#F4EFE4;border-radius:10px;padding:14px 18px;font-size:14px;margin:14px 0}
+  .approve{background:var(--teal);color:#F2EFE7;border-radius:12px;padding:18px 22px;margin-top:26px}
+  .approve strong{color:#fff}
+  ul{margin:8px 0 8px 22px}
+  .rule{background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--terra);border-radius:10px;padding:12px 16px;margin:10px 0;font-size:14.5px}
+</style>
+</head>
+<body><div class="wrap">
+<h1>D8 — The pricing ladder</h1>
+<div class="meta">Decision needed from Dylan · becomes the /pricing page + Stripe payment links + outreach numbers</div>
+
+<div class="why"><strong>The one constraint that shaped everything:</strong> your sales page already promises founding partners "$199–299/mo at conversion, the lowest I'll offer." Any public tier below $299 makes that written promise false on day one. The ladder honors it. Market anchors (cited in the research digest): Gorgias runs $360–$900/mo on ticket tiers <em>plus</em> $0.90–1.00 per AI resolution; agencies charge $1,400–$3,500/mo for one dedicated offshore agent with zero software.</div>
+
+<h2>Public tiers (metered on presale orders currently in the wait window — never seats, never per-ticket)</h2>
+<div class="tblwrap"><table>
+<thead><tr><th>Tier</th><th>Price</th><th>Cap</th><th>What's in it</th></tr></thead>
+<tbody>
+<tr><td><strong>Founding Pilot</strong><br>(5 slots, honest cap)</td><td class="price">Free, one cycle</td><td>—</td><td>Full concierge: we do setup, day-0 baseline captured, day-14 walk-away checkpoint. Converts at <strong>$199–299/mo locked for life</strong> — the promise, kept.</td></tr>
+<tr><td><strong>Starter</strong></td><td class="price">$299/mo</td><td>≤250 orders in window</td><td>Cockpit + engines, status pages + widget, email-forward ingest, unlimited seats</td></tr>
+<tr><td><strong>Growth</strong></td><td class="price">$499/mo</td><td>≤1,000</td><td>+ helpdesk webhook integrations, refund-risk dashboard, evidence packs, update pipeline</td></tr>
+<tr><td><strong>Scale</strong></td><td class="price">$899/mo</td><td>≤3,000</td><td>+ social-signal monitor, multi-campaign cohorts, API access</td></tr>
+<tr><td><strong>Cohort Pass</strong></td><td class="price">$1,500 flat</td><td>one campaign cycle (90–120 days)</td><td>The way crowdfunding merchants actually think. Anchor: they just paid BackerKit ~5% of funds (a $200K raise ≈ $7–10K). One campaign, everything in Growth.</td></tr>
+</tbody></table></div>
+
+<h2>Managed tiers — quoted on the call only, never on the public page</h2>
+<div class="tblwrap"><table>
+<thead><tr><th>Tier</th><th>Quote band</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td><strong>Managed Lite</strong> (shared operator, ≤150 tickets/mo)</td><td class="price">~$849/mo</td><td>~65% gross margin at PH rates</td></tr>
+<tr><td><strong>Managed Pod</strong> (dedicated rep + QA lead oversight)</td><td class="price">$1,500–2,000/mo</td><td>Parity with a bare agency agent ($1,400–3,500 market) but includes the software. You run the first client's queue yourself; hire gate = 2 signed managed clients AND >2h/day of your queue time.</td></tr>
+</tbody></table></div>
+<p style="font-size:13.5px;color:var(--muted)">Why off-page: printing "Managed Pod $1,950" publicly invites the one question we can't answer yet ("who exactly runs the pod?"). On a call, "I run your queue personally inside the software until your dedicated operator is trained" is a strength.</p>
+
+<h2>The rules the page states out loud (each one is a wedge vs competitors)</h2>
+<ul>
+<li><strong>Flat price. No per-ticket meter, no per-AI-resolution fee</strong> (Gorgias bills both — cited, on their own pricing pages)</li>
+<li><strong>No setup fee</strong> (TalentPop charges ~$2,500)</li>
+<li><strong>Unlimited seats</strong> — your VA works in the cockpit free</li>
+<li><strong>Month-to-month; pause between campaign cycles</strong> — presale is seasonal, billing respects that</li>
+<li><strong>No performance fees</strong> until real case studies exist (proof-only)</li>
+</ul>
+
+<div class="rule"><strong>Not building this sprint:</strong> automated Stripe metering/billing. Prices publish on /pricing; payment happens via manual Stripe Payment Links when someone converts. Automation comes when there's revenue to automate.</div>
+
+<div class="approve"><strong>To approve:</strong> tell Claude <strong>"approve D8"</strong> (or adjust any number: "approve D8 but Starter at $249" — I'll flag that it breaks the founding-promise floor and propose the fix). On approval this becomes the /pricing page (task G2) and the numbers flow into the FAQ, cold-email templates, and Stripe links.</div>
+</div></body>
+</html>

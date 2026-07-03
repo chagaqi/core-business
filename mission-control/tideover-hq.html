@@ -164,12 +164,12 @@ const DYLAN = [
   {id:'D2', title:'Buy the domain — tideover.app', why:'DONE — tideover.app is ours. DNS already proven workable (Resend DKIM records verified)', cost:'~$20–40/yr', status:'done'},
   {id:'D3', title:'MongoDB Atlas cluster + URI into Vercel env', why:'DONE — cluster tideovermvp live (SRV verified), URI in tideover/.env.local + Vercel prod env. $500 startup credits on standby. Remaining: Atlas → Network Access → allow 0.0.0.0/0 (Vercel IPs are dynamic)', cost:'$0', status:'done'},
   {id:'D4', title:'Email provider account (Resend)', why:'DONE — mail.tideover.app VERIFIED in Resend, sending enabled; key in .env.local + Vercel prod. Receiving still disabled (one MX record, handled inside task W1)', cost:'$0', status:'done'},
-  {id:'D5', title:'GitHub Pro', why:'Branch protection on private repos needs Pro; makes green CI physically required to merge', cost:'$4/mo', status:'queued'},
-  {id:'D6', title:'Vercel Pro (defer until first PAID pilot)', why:'Hobby plan ToS prohibits commercial use; the free demo is fine today', cost:'$20/mo later', status:'queued'},
-  {id:'D7', title:'Persona decision: approve the honest ABOUT rewrite', why:'Sales page currently speaks as "Chaga" with an unverifiable operator story — blocks ALL outreach. Draft will be ready for you', cost:'$0', status:'queued'},
-  {id:'D8', title:'Pricing sign-off', why:'New ladder must honor the "$199–299 founding, lowest I\'ll offer" promise already written in the sales page', cost:'$0', status:'queued'},
+  {id:'D5', title:'GitHub Pro ✓ → flip on branch protection (60 sec)', why:'Pro is bought. One click-path left: create the protect-main ruleset — guide is linked', cost:'$4/mo ✓', status:'active', link:'decisions/d5-branch-protection.html'},
+  {id:'D6', title:'Vercel Pro', why:'DONE — $20 plan active; paid pilots are now ToS-clean', cost:'$20/mo ✓', status:'done'},
+  {id:'D7', title:'Approve the honest ABOUT rewrite (draft ready → click)', why:'Kill the Chaga persona; sign as "Dylan". Full before/after draft is linked — read it and say "approve D7"', cost:'$0', status:'active', link:'decisions/d7-about-persona.html'},
+  {id:'D8', title:'Approve the pricing ladder (proposal ready → click)', why:'Free founding pilot → $199–299 locked (promise kept), $299/$499/$899 tiers + $1,500 Cohort Pass; managed tiers quoted on-call only. Say "approve D8"', cost:'$0', status:'active', link:'decisions/d8-pricing.html'},
   {id:'D9', title:'Golden-fixture review (one evening, ~45 min)', why:'Read each expected engine reply once and approve — this converts snapshots into the actual spec', cost:'time', status:'queued'},
-  {id:'D10', title:'Stripe activation (defer until first conversion)', why:'Payment links for founding-price conversion', cost:'$0', status:'queued'},
+  {id:'D10', title:'Stripe activation', why:'DONE — account live. No key needed yet; when pricing is approved Claude will ask for a RESTRICTED key (payment-links scope only), never the full secret key', cost:'$0', status:'done'},
 ];
 
 const CATS = [
@@ -259,6 +259,10 @@ const LOG = [
   {d:'2026-07-02', t:'CI failure diagnosed and fixed: pipeline was pinned to Node 20 but npm test needs --experimental-strip-types (Node ≥22.6). Fix on sprint branch, awaiting PR/merge to main.'},
   {d:'2026-07-02', t:'D2 + D3 unblocked: domain bought; Atlas cluster live with $500 credits standby; MONGODB_URI secured in .env.local + Vercel prod env; stray credentials file deleted and *.env ignore guard added. F1 (Mongo driver) is now fully unblocked.'},
   {d:'2026-07-03', t:'D4 done: tideover.app is the domain; mail.tideover.app verified in Resend (sending enabled, receiving pending one MX record in W1); RESEND_API_KEY + EMAIL_FROM in .env.local + Vercel prod. Atlas 0.0.0.0/0 allow confirmed by Dylan — D3 fully complete. Outbound test email pending Dylan approval (permission gate).'},
+  {d:'2026-07-03', t:'Test email from updates@mail.tideover.app landed in Dylan\'s Gmail INBOX (not spam) — outbound rail proven on a day-old domain.'},
+  {d:'2026-07-03', t:'Dylan bought GitHub Pro + Vercel Pro and activated Stripe (D6, D10 done). Persona verdict: Chaga is out, sign as "Dylan".'},
+  {d:'2026-07-03', t:'Decision pages published in mission-control/decisions/ — D7 ABOUT rewrite draft, D8 pricing proposal, D5 branch-protection click guide. Linked from the Needs-Dylan table.'},
+  {d:'2026-07-03', t:'F1 (Mongo driver) build in flight: ADR-0003 written; builder agent + adversarial review + live-Atlas integration test running.'},
 ];
 
 // ============ RENDER ============
@@ -278,7 +282,7 @@ document.getElementById('tiles').innerHTML = `
 
 // dylan table
 document.querySelector('#dylan-table tbody').innerHTML = DYLAN.map(d=>
-  `<tr><td><strong>${d.id}</strong> · ${d.title}</td><td>${d.why}</td><td>${d.cost}</td><td>${chip(d.status)}</td></tr>`).join('');
+  `<tr><td><strong>${d.id}</strong> · ${d.link?`<a href="${d.link}" target="_blank">${d.title} ↗</a>`:d.title}</td><td>${d.why}</td><td>${d.cost}</td><td>${chip(d.status)}</td></tr>`).join('');
 
 // categories
 document.getElementById('cats').innerHTML = CATS.map(c=>{
