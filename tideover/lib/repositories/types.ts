@@ -33,6 +33,8 @@ export interface TicketFilter {
 export interface MerchantRepository {
   findById(id: string): Promise<Merchant | null>;
   findBySlug(slug: string): Promise<Merchant | null>;
+  /** Resolve an inbound address local-part → merchant (ADR-0008 email ingest). */
+  findByInboxToken(token: string): Promise<Merchant | null>;
   list(): Promise<Merchant[]>;
   create(merchant: Merchant): Promise<Merchant>;
   /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */

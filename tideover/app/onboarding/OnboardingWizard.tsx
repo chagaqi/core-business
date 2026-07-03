@@ -97,7 +97,12 @@ export function OnboardingWizard() {
   // submit state
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{ merchantId: string; slug: string; previews: Preview[] } | null>(null);
+  const [result, setResult] = useState<{
+    merchantId: string;
+    slug: string;
+    inboxAddress?: string;
+    previews: Preview[];
+  } | null>(null);
 
   const steps = fast ? FAST_STEPS : FULL_STEPS;
   const lastStep = steps.length - 1;
@@ -170,7 +175,12 @@ export function OnboardingWizard() {
         }),
       });
       if (!res.ok) throw new Error("request failed");
-      const data = (await res.json()) as { merchantId: string; slug: string; previews: Preview[] };
+      const data = (await res.json()) as {
+        merchantId: string;
+        slug: string;
+        inboxAddress?: string;
+        previews: Preview[];
+      };
       setResult(data);
     } catch {
       setError("Something went wrong generating your playbook. Please try again.");
@@ -204,6 +214,19 @@ export function OnboardingWizard() {
             </div>
           ))}
         </div>
+
+        {result.inboxAddress ? (
+          <div className="panel mt-6 p-6">
+            <p className="kicker mb-3">Your integration — one forwarding rule</p>
+            <p className="mb-3 text-[14px] leading-relaxed text-slate">
+              Forward your support email to this address &mdash; that&rsquo;s the whole integration.
+              No password, no app install; stop forwarding to revoke.
+            </p>
+            <code className="inline-block rounded-lg border border-border bg-sand px-3 py-2 text-[14px] font-semibold text-ink">
+              {result.inboxAddress}
+            </code>
+          </div>
+        ) : null}
 
         <div className="mt-9 flex flex-wrap items-center gap-4">
           <Button href={`/app?merchant=${result.merchantId}`}>See your cockpit</Button>

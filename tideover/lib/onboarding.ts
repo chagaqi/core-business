@@ -1,4 +1,4 @@
-import { newId, newStatusToken } from "@/lib/ids";
+import { newId, newInboxToken, newStatusToken } from "@/lib/ids";
 import { getRepositories } from "@/lib/repositories";
 import { draftReassurance } from "@/lib/engines/reassurance";
 import type { Customer, DayStageKey, Merchant, Order, PlaybookTemplates, StageDef } from "@/lib/types";
@@ -73,6 +73,9 @@ export async function createMerchantFromIntake(intake: IntakeData): Promise<{
     slug,
     // intake = a real merchant; only seeded demo data sets isDemo true
     isDemo: false,
+    // ADR-0008: mint the merchant's inbound address up front so onboarding can
+    // hand them the one forwarding rule that IS the integration.
+    inboxToken: newInboxToken(),
     brand: {
       voice: intake.voice,
       tone: intake.tone,

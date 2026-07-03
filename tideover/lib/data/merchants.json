@@ -4,6 +4,7 @@
     "name": "Lumen Forge",
     "slug": "lumen-forge",
     "isDemo": true,
+    "inboxToken": "zubwdu74tq5zt83vu6egiasx",
     "brand": {
       "voice": "Warm, plain-spoken maker. Talks like a fellow builder, never corporate.",
       "tone": [
@@ -138,6 +139,7 @@
     "name": "Atelier Noord",
     "slug": "atelier-noord",
     "isDemo": true,
+    "inboxToken": "0tii5y1io3qr4lz037748igp",
     "brand": {
       "voice": "Premium, understated, design-led. Calm confidence, no exclamation points.",
       "tone": [

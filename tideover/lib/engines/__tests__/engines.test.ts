@@ -19,6 +19,7 @@ const merchant: Merchant = {
   name: "Testco",
   slug: "testco",
   isDemo: true,
+  inboxToken: "testcoinbox000000000000t",
   brand: { voice: "warm", tone: ["warm"], banned: ["unfortunately"], signoff: "— Testco", logoText: "Testco", colors: { primary: "#0E5366", bg: "#FBF8F2", ink: "#11252A" } },
   helpdesk: "mock",
   preorderApp: "PreProduct",

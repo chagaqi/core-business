@@ -53,6 +53,9 @@ const merchants: MerchantRepository = {
   async findBySlug(slug) {
     return store.merchants.find((m) => m.slug === slug) ?? null;
   },
+  async findByInboxToken(token) {
+    return store.merchants.find((m) => m.inboxToken === token) ?? null;
+  },
   async list() {
     return store.merchants;
   },

@@ -93,6 +93,9 @@ const merchants: MerchantRepository = {
   async findBySlug(slug) {
     return findOneWhere<Merchant>("merchants", { slug });
   },
+  async findByInboxToken(token) {
+    return findOneWhere<Merchant>("merchants", { inboxToken: token });
+  },
   async list() {
     return findWhere<Merchant>("merchants", {});
   },

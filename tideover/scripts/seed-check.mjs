@@ -126,6 +126,18 @@ for (const m of merchants) {
   if (typeof m.isDemo !== "boolean") errors.push(`merchant ${m.id}: missing isDemo boolean`);
 }
 
+// ADR-0008: every merchant needs a present, non-blank, unique inbound token
+// (the local-part of <inboxToken>@in.tideover.app — the email-ingest routing key).
+const inboxTokens = new Set();
+for (const m of merchants) {
+  if (typeof m.inboxToken !== "string" || !m.inboxToken.trim()) {
+    errors.push(`merchant ${m.id}: missing/blank inboxToken`);
+    continue;
+  }
+  if (inboxTokens.has(m.inboxToken)) errors.push(`duplicate merchant inboxToken: ${m.inboxToken}`);
+  inboxTokens.add(m.inboxToken);
+}
+
 // token uniqueness + signature
 const seen = new Set();
 for (const o of orders) {

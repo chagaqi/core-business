@@ -36,6 +36,17 @@ export function newStatusToken(): string {
   return `${raw}.${sign(raw)}`;
 }
 
+/**
+ * A merchant inbound token (ADR-0008): the unguessable local-part of
+ * `<inboxToken>@in.tideover.app`. High-entropy random (24 base36 chars ≈ 124
+ * bits) so the address can't be enumerated; a leak exposes only one merchant
+ * and is revoked by rotating the token. Seeded merchants derive theirs
+ * deterministically in gen-seed.mjs; new merchants mint one here at onboarding.
+ */
+export function newInboxToken(): string {
+  return nanoToken();
+}
+
 /** Verify a token's signature. Returns the lookup key or null if invalid. */
 export function verifyStatusToken(token: string): string | null {
   const [raw, mac] = token.split(".");

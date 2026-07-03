@@ -64,6 +64,16 @@ function variantId(merchantId, stageKey, stage) {
   for (let i = 0; i < 12; i++) out += ALPHABET[parseInt(h.slice(i * 2, i * 2 + 2), 16) % ALPHABET.length];
   return `var_${out}`;
 }
+// ADR-0008: stable, unguessable per-merchant inbound token — the local-part of
+// <inboxToken>@in.tideover.app. HMAC-derived (NOT the PRNG stream) so re-seeding
+// is idempotent and adding it never advances the PRNG that mints order/ticket
+// ids + tokens (those stay byte-identical). 24 base36 chars mirrors newInboxToken.
+function inboxTokenFor(merchantId) {
+  const h = createHmac("sha256", SECRET).update(`inbox:${merchantId}`).digest("hex");
+  let out = "";
+  for (let i = 0; i < 24; i++) out += ALPHABET[parseInt(h.slice(i * 2, i * 2 + 2), 16) % ALPHABET.length];
+  return out;
+}
 // Mirrors lib/engines/reassurance.ts dayStageFor (bucket only).
 function dayStageKeyFor(daysInWait) {
   if (daysInWait <= 7) return "day-7";
@@ -160,6 +170,7 @@ const merchants = [
     name: "Lumen Forge",
     slug: "lumen-forge",
     isDemo: true,
+    inboxToken: inboxTokenFor("mch_lumen0001"),
     brand: {
       voice: "Warm, plain-spoken maker. Talks like a fellow builder, never corporate.",
       tone: ["warm", "earnest", "nerdy-technical"],
@@ -184,6 +195,7 @@ const merchants = [
     name: "Atelier Noord",
     slug: "atelier-noord",
     isDemo: true,
+    inboxToken: inboxTokenFor("mch_atelier02"),
     brand: {
       voice: "Premium, understated, design-led. Calm confidence, no exclamation points.",
       tone: ["premium", "understated", "earnest"],

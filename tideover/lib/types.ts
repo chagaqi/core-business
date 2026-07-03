@@ -81,6 +81,13 @@ export interface Merchant {
   slug: string;
   /** seeded demo merchant — its events must never count toward real proof stats */
   isDemo: boolean;
+  /**
+   * Stable, unguessable per-merchant token — the local-part of the merchant's
+   * inbound address `<inboxToken>@in.tideover.app` (ADR-0008). The address IS
+   * the routing key + capability: Resend inbound resolves the recipient's
+   * local-part back to this merchant. Rotating it revokes the old address.
+   */
+  inboxToken: string;
   brand: MerchantBrand;
   helpdesk: Channel;
   preorderApp: string;

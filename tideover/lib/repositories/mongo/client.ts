@@ -28,6 +28,9 @@ async function ensureIndexes(db: Db): Promise<void> {
       // Domain `id` is the real key; Mongo's _id never leaves the driver.
       await col.createIndex({ id: 1 }, { unique: true });
       if (name !== "merchants") await col.createIndex({ merchantId: 1 });
+      // ADR-0008: inbound email routing resolves an address local-part →
+      // merchant; the token is unique per merchant and looked up on every hit.
+      if (name === "merchants") await col.createIndex({ inboxToken: 1 }, { unique: true });
       if (name === "orders") await col.createIndex({ statusToken: 1 });
       // Idempotency backstop: a truly-concurrent vendor redelivery can slip
       // past the pre-lookup in ingestTicket, so bind dedupe to a DB constraint.
