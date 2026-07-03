@@ -12,6 +12,12 @@ const VSL_LINKS: readonly { label: string; href: string }[] = [
   { label: "Playbook promo", href: "/vsl/playbook-promo" },
 ];
 
+const LEGAL_LINKS: readonly { label: string; href: string }[] = [
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
+  { label: "Security", href: "/security" },
+];
+
 export function Footer() {
   return (
     <footer className="section-dark">
@@ -41,6 +47,14 @@ export function Footer() {
           Every figure on this page is a target to measure against your own baseline &mdash; never a claimed result. We
           never make hard delivery promises; confidence bands only.
         </p>
+
+        <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]" style={{ color: "#A9C2C0" }}>
+          {LEGAL_LINKS.map((l) => (
+            <a key={l.href} href={l.href} className="no-underline hover:underline" style={{ color: "#A9C2C0" }}>
+              {l.label}
+            </a>
+          ))}
+        </div>
       </div>
     </footer>
   );
