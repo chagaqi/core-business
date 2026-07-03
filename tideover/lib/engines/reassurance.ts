@@ -35,6 +35,13 @@ export interface ReassuranceResult {
   stageKey: DayStageKey;
   overdue: boolean;
   managerNote: string | null;
+  /**
+   * Outcome-ledger attribution key (ADR-0007). Pure metadata identifying which
+   * playbook template produced this draft: "<stageKey>:<productionStage|base>".
+   * "base" when the stage has no byStage override for the order's production
+   * stage. Never affects draftText/band/priority/escalation.
+   */
+  variantKey: string;
 }
 
 function mergeFields(
@@ -66,6 +73,12 @@ export function draftReassurance(input: ReassuranceInput): ReassuranceResult {
 
   const stage = merchant.playbook[stageKey];
   const template = stage.byStage[order.productionStage] ?? stage.base;
+
+  // Outcome-ledger variant identity (ADR-0007): the selection identity above IS
+  // the variant. Pure metadata — computed from the same lookup, changes nothing.
+  const variantKey = `${stageKey}:${
+    stage.byStage[order.productionStage] !== undefined ? order.productionStage : "base"
+  }`;
 
   // next reassurance window from the merchant's SLA (e.g. "the afternoon update")
   const nextWindow = "the next update window";
@@ -100,5 +113,6 @@ export function draftReassurance(input: ReassuranceInput): ReassuranceResult {
     managerNote: escalated
       ? "High-risk customer — prioritize human approval this window before it routes to a dispute."
       : null,
+    variantKey,
   };
 }

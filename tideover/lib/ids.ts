@@ -13,7 +13,7 @@ const ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz";
 const nano = customAlphabet(ALPHABET, 12);
 const nanoToken = customAlphabet(ALPHABET, 24);
 
-export type IdPrefix = "mch" | "ord" | "cus" | "tkt" | "gft" | "sig" | "drf" | "sv";
+export type IdPrefix = "mch" | "ord" | "cus" | "tkt" | "gft" | "sig" | "drf" | "sv" | "var" | "oe";
 
 export function newId(prefix: IdPrefix): string {
   return `${prefix}_${nano()}`;

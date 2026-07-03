@@ -1,8 +1,12 @@
 import type {
   Customer,
+  DayStageKey,
   Gift,
   Merchant,
   Order,
+  OutcomeEvent,
+  ProductionStageKey,
+  ScriptVariant,
   SocialSignal,
   StatusView,
   Ticket,
@@ -82,6 +86,33 @@ export interface StatusViewRepository {
   listByOrder(orderId: string): Promise<StatusView[]>;
 }
 
+/**
+ * Outcome ledger — script variants (ADR-0007). Read-only in Phase 0; variants
+ * are seeded from each merchant's playbook. `findByKey` resolves the reassurance
+ * engine's variant identity (stageKey + productionStage|null) to a variant id so
+ * a draft can be stamped with the template that produced it.
+ */
+export interface ScriptVariantRepository {
+  listByMerchant(merchantId: string): Promise<ScriptVariant[]>;
+  findByKey(
+    merchantId: string,
+    stageKey: DayStageKey,
+    productionStage: ProductionStageKey | null,
+  ): Promise<ScriptVariant | null>;
+  getById(id: string): Promise<ScriptVariant | null>;
+}
+
+/**
+ * Append-only outcome events (ADR-0007). `record` mints the id and persists;
+ * events are never edited or deleted. Lists are sorted deterministically by
+ * observedAt (then id) so both drivers agree.
+ */
+export interface OutcomeEventRepository {
+  record(e: Omit<OutcomeEvent, "id">): Promise<OutcomeEvent>;
+  listByVariant(variantId: string): Promise<OutcomeEvent[]>;
+  listByMerchant(merchantId: string): Promise<OutcomeEvent[]>;
+}
+
 export interface Repositories {
   merchants: MerchantRepository;
   orders: OrderRepository;
@@ -90,4 +121,6 @@ export interface Repositories {
   gifts: GiftRepository;
   social: SocialSignalRepository;
   statusViews: StatusViewRepository;
+  scriptVariants: ScriptVariantRepository;
+  outcomeEvents: OutcomeEventRepository;
 }

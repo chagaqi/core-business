@@ -2,7 +2,7 @@
  * Tideover domain model — the single source of truth for every entity.
  *
  * Conventions:
- *  - ids are prefixed nanoids: mch_ ord_ cus_ tkt_ gft_ sig_ drf_
+ *  - ids are prefixed nanoids: mch_ ord_ cus_ tkt_ gft_ sig_ drf_ sv_ var_ oe_
  *  - dates are ISO 8601 strings
  *  - money is integer CENTS (never floats)
  *  - enums are string-literal unions
@@ -189,6 +189,12 @@ export interface DraftReply {
   riskScore: number;
   recommendedGiftId: string | null;
   createdAt: string;
+  /**
+   * Outcome-ledger attribution (ADR-0007): the ScriptVariant that produced this
+   * draft. Stamped at draft time; a reply_sent OutcomeEvent carries it on send.
+   * Optional so pre-ledger drafts and legacy call sites remain valid.
+   */
+  variantId?: string;
 }
 
 export interface SentReply {
@@ -250,4 +256,68 @@ export interface ScoredSignal extends SocialSignal {
   flagged: boolean;
   matchedKeywords: string[];
   suggestedOutreach: string | null;
+}
+
+// ─── outcome ledger (ADR-0007, task E1) ──────────────────────────────────
+export type ScriptVariantSource = "library" | "merchant-default" | "operator-promoted";
+export type ScriptVariantStatus = "active" | "retired";
+
+/**
+ * A tracked playbook template — the unit outcomes accrue against (the data
+ * foundation for the "self-improving playbooks" story). Phase 0 migrates every
+ * merchant playbook `base` + `byStage[x]` string into an isDefault variant so a
+ * sent reply can be attributed to the exact template that produced it.
+ * `productionStage` is the byStage override key this variant represents, or null
+ * for the day-stage's base copy.
+ */
+export interface ScriptVariant {
+  id: string;
+  merchantId: string;
+  stageKey: DayStageKey;
+  productionStage: ProductionStageKey | null;
+  text: string;
+  source: ScriptVariantSource;
+  isDefault: boolean;
+  status: ScriptVariantStatus;
+  parentVariantId?: string | null;
+  createdAt: string;
+}
+
+/**
+ * Outcome-event kinds. Phase 0 (ADR-0007) emits ONLY `reply_sent`; the rest are
+ * defined for E2's attribution work but are never written yet (see the cut list).
+ */
+export type OutcomeEventKind =
+  | "reply_sent"
+  | "customer_replied"
+  | "reopened"
+  | "csat_up"
+  | "csat_down"
+  | "refund_requested"
+  | "chargeback"
+  | "resolved_quiet";
+
+export interface OutcomeEventMeta {
+  /** normalized [0,1] char-distance between the drafted reply and the sent reply. */
+  editedRatio?: number;
+}
+
+/**
+ * Append-only outcome ledger row (ADR-0007). One `reply_sent` per approved send,
+ * stamped with the variant that produced the draft. Never edited, never deleted.
+ * isDemo lineage is inherited via merchantId → merchant.isDemo at rollup time
+ * (E3), so demo events never count toward any real proof stat.
+ */
+export interface OutcomeEvent {
+  id: string;
+  merchantId: string;
+  ticketId: string;
+  orderId: string;
+  customerId: string;
+  variantId: string;
+  stageKey: DayStageKey;
+  sentimentAtSend: Sentiment;
+  kind: OutcomeEventKind;
+  observedAt: string;
+  meta?: OutcomeEventMeta;
 }

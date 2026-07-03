@@ -17,6 +17,8 @@ const COLLECTIONS = [
   "gifts",
   "social",
   "status_views",
+  "script_variants",
+  "outcome_events",
 ] as const;
 
 async function ensureIndexes(db: Db): Promise<void> {
@@ -39,6 +41,12 @@ async function ensureIndexes(db: Db): Promise<void> {
       // Append-only view log (ADR-0005): non-unique — a customer may view a
       // status page many times; listByOrder reads by order in viewedAt order.
       if (name === "status_views") await col.createIndex({ orderId: 1, viewedAt: 1 });
+      // Outcome ledger (ADR-0007). Variant id is the unique key (covered by the
+      // generic {id:1} unique index above). Outcome events are append-only, so
+      // index the rollup access pattern non-uniquely.
+      if (name === "outcome_events") {
+        await col.createIndex({ merchantId: 1, variantId: 1, kind: 1, observedAt: 1 });
+      }
     }),
   );
 }

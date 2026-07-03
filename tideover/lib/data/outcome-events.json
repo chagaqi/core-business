@@ -1,0 +1,362 @@
+[
+  {
+    "id": "oe_qmwbn7w02oyn",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_sve0jhmz4kjz",
+    "orderId": "ord_mx4s8st5zaeq",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "anxious",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-25T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.306
+    }
+  },
+  {
+    "id": "oe_y1bj9ff2kkfd",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_ssclznolot09",
+    "orderId": "ord_1vyly8e86mha",
+    "customerId": "cus_hde7ct87fwk9",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "calm",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-29T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.374
+    }
+  },
+  {
+    "id": "oe_76lq63098lmw",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_lold1lw7um75",
+    "orderId": "ord_c3l20wplsuau",
+    "customerId": "cus_pt6pa1a6rxev",
+    "variantId": "var_y9209nd050qf",
+    "stageKey": "day-30",
+    "sentimentAtSend": "anxious",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-30T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.326
+    }
+  },
+  {
+    "id": "oe_iijdhwmz1b2b",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_qhbr4narfmwj",
+    "orderId": "ord_xftv0b8sj4qu",
+    "customerId": "cus_hde7ct87fwk9",
+    "variantId": "var_ji82latd7jh5",
+    "stageKey": "day-7",
+    "sentimentAtSend": "anxious",
+    "kind": "reply_sent",
+    "observedAt": "2026-07-01T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.246
+    }
+  },
+  {
+    "id": "oe_1ncoarwg8w1i",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_34q8o67hxf4h",
+    "orderId": "ord_jn2po6s6pnb1",
+    "customerId": "cus_imixidctka8l",
+    "variantId": "var_y9209nd050qf",
+    "stageKey": "day-30",
+    "sentimentAtSend": "hostile",
+    "kind": "reply_sent",
+    "observedAt": "2026-07-03T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0
+    }
+  },
+  {
+    "id": "oe_01tspny11sr7",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_lrzn86ggk7zw",
+    "orderId": "ord_mx4s8st5zaeq",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "calm",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-27T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0
+    }
+  },
+  {
+    "id": "oe_xzetydp2l52j",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_8m5eftgfssz3",
+    "orderId": "ord_780fgzueixzk",
+    "customerId": "cus_pq4i5jasd94t",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "hostile",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-26T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.025
+    }
+  },
+  {
+    "id": "oe_jfm4rcci46ab",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_04mketon6ac0",
+    "orderId": "ord_zm35g6r6iacc",
+    "customerId": "cus_g0k6wt9hpq4k",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "chargeback-threat",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-26T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.066
+    }
+  },
+  {
+    "id": "oe_hh94xvrflzkd",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_jsh1jesewrlu",
+    "orderId": "ord_mx4s8st5zaeq",
+    "customerId": "cus_p9l4ma3fgp2e",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "anxious",
+    "kind": "reply_sent",
+    "observedAt": "2026-07-01T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.125
+    }
+  },
+  {
+    "id": "oe_1rrmass0ed1u",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_h5y7633vpta5",
+    "orderId": "ord_jaues8ssc7sm",
+    "customerId": "cus_4eg63sjv1821",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "hostile",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-25T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.148
+    }
+  },
+  {
+    "id": "oe_ko5jk2kvvtpv",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_5aiqn4xgvqok",
+    "orderId": "ord_jn2po6s6pnb1",
+    "customerId": "cus_imixidctka8l",
+    "variantId": "var_y9209nd050qf",
+    "stageKey": "day-30",
+    "sentimentAtSend": "hostile",
+    "kind": "reply_sent",
+    "observedAt": "2026-07-01T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0
+    }
+  },
+  {
+    "id": "oe_yrts08z8pcho",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_jbvzqp0nay9f",
+    "orderId": "ord_t6ksfinenw78",
+    "customerId": "cus_xe4zvtvvv4x9",
+    "variantId": "var_ji82latd7jh5",
+    "stageKey": "day-7",
+    "sentimentAtSend": "calm",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-28T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.253
+    }
+  },
+  {
+    "id": "oe_js9wdb6fqisv",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_61p6p2l8896n",
+    "orderId": "ord_jn2po6s6pnb1",
+    "customerId": "cus_imixidctka8l",
+    "variantId": "var_y9209nd050qf",
+    "stageKey": "day-30",
+    "sentimentAtSend": "hostile",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-25T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0
+    }
+  },
+  {
+    "id": "oe_favlno6k3je2",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_qhbr4narfmwj",
+    "orderId": "ord_xftv0b8sj4qu",
+    "customerId": "cus_hde7ct87fwk9",
+    "variantId": "var_ji82latd7jh5",
+    "stageKey": "day-7",
+    "sentimentAtSend": "anxious",
+    "kind": "reply_sent",
+    "observedAt": "2026-07-03T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0
+    }
+  },
+  {
+    "id": "oe_c182e1bqhptk",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_rs3h4pcto9v4",
+    "orderId": "ord_wr09l1jy00n1",
+    "customerId": "cus_if41gzk729hc",
+    "variantId": "var_y9209nd050qf",
+    "stageKey": "day-30",
+    "sentimentAtSend": "hostile",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-30T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.149
+    }
+  },
+  {
+    "id": "oe_sv8dbktl0rap",
+    "merchantId": "mch_lumen0001",
+    "ticketId": "tkt_35lhl54rgk3a",
+    "orderId": "ord_chncb2tlutov",
+    "customerId": "cus_7nty2dy6kqbu",
+    "variantId": "var_qqw70vxsp4oo",
+    "stageKey": "day-89",
+    "sentimentAtSend": "chargeback-threat",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-30T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.144
+    }
+  },
+  {
+    "id": "oe_7xey8dc49toi",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_pux3jt2kh3v9",
+    "orderId": "ord_ikmpfn3yt32j",
+    "customerId": "cus_mq968avavbwk",
+    "variantId": "var_prren3oexv60",
+    "stageKey": "day-89",
+    "sentimentAtSend": "chargeback-threat",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-28T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0
+    }
+  },
+  {
+    "id": "oe_2jgmaeo44t2w",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_npumsi7by6k5",
+    "orderId": "ord_l5m7768s7eay",
+    "customerId": "cus_k7dwlxc65eg7",
+    "variantId": "var_pz1yt29un83b",
+    "stageKey": "day-7",
+    "sentimentAtSend": "calm",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-27T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.203
+    }
+  },
+  {
+    "id": "oe_5vwrqx51b69z",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_62ee27racdgd",
+    "orderId": "ord_34mp17i7q1zv",
+    "customerId": "cus_wl5xj8vj4h5k",
+    "variantId": "var_n6jj54u0i3hc",
+    "stageKey": "day-60",
+    "sentimentAtSend": "hostile",
+    "kind": "reply_sent",
+    "observedAt": "2026-07-02T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.052
+    }
+  },
+  {
+    "id": "oe_5qd16rq4zyy7",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_2o3hlcroeq9f",
+    "orderId": "ord_oyo5uimf5ah3",
+    "customerId": "cus_n4t53zh85i1g",
+    "variantId": "var_pz1yt29un83b",
+    "stageKey": "day-7",
+    "sentimentAtSend": "hostile",
+    "kind": "reply_sent",
+    "observedAt": "2026-07-03T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.218
+    }
+  },
+  {
+    "id": "oe_7e579ykf6xt6",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_3pz915p24gye",
+    "orderId": "ord_34mp17i7q1zv",
+    "customerId": "cus_wl5xj8vj4h5k",
+    "variantId": "var_n6jj54u0i3hc",
+    "stageKey": "day-60",
+    "sentimentAtSend": "calm",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-26T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.154
+    }
+  },
+  {
+    "id": "oe_vaygfz8l93lx",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_pux3jt2kh3v9",
+    "orderId": "ord_ikmpfn3yt32j",
+    "customerId": "cus_mq968avavbwk",
+    "variantId": "var_prren3oexv60",
+    "stageKey": "day-89",
+    "sentimentAtSend": "calm",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-30T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.282
+    }
+  },
+  {
+    "id": "oe_jahgpn8jbmvq",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_2o3hlcroeq9f",
+    "orderId": "ord_oyo5uimf5ah3",
+    "customerId": "cus_n4t53zh85i1g",
+    "variantId": "var_pz1yt29un83b",
+    "stageKey": "day-7",
+    "sentimentAtSend": "calm",
+    "kind": "reply_sent",
+    "observedAt": "2026-07-01T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0.007
+    }
+  },
+  {
+    "id": "oe_dbr8xle1n7c9",
+    "merchantId": "mch_atelier02",
+    "ticketId": "tkt_1yhf0d1fbdsl",
+    "orderId": "ord_b65odfvl14he",
+    "customerId": "cus_jrzy3b618bmu",
+    "variantId": "var_pz1yt29un83b",
+    "stageKey": "day-7",
+    "sentimentAtSend": "anxious",
+    "kind": "reply_sent",
+    "observedAt": "2026-06-25T03:40:55.995Z",
+    "meta": {
+      "editedRatio": 0
+    }
+  }
+]

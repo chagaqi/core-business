@@ -1,12 +1,21 @@
 import { newId, verifyStatusToken } from "@/lib/ids";
-import type { Gift, Merchant, SocialSignal, StatusView, Ticket } from "@/lib/types";
+import type {
+  Gift,
+  Merchant,
+  OutcomeEvent,
+  SocialSignal,
+  StatusView,
+  Ticket,
+} from "@/lib/types";
 import { store } from "@/lib/repositories/json/store";
 import type {
   CustomerRepository,
   GiftRepository,
   MerchantRepository,
   OrderRepository,
+  OutcomeEventRepository,
   Repositories,
+  ScriptVariantRepository,
   SocialSignalRepository,
   StatusViewRepository,
   TicketFilter,
@@ -16,6 +25,12 @@ import type {
 /** Deterministic order: viewedAt ascending, id as tiebreak (matches Mongo). */
 function byViewedAt(a: StatusView, b: StatusView): number {
   if (a.viewedAt !== b.viewedAt) return a.viewedAt < b.viewedAt ? -1 : 1;
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+/** Deterministic order: observedAt ascending, id as tiebreak (matches Mongo). */
+function byObservedAt(a: OutcomeEvent, b: OutcomeEvent): number {
+  if (a.observedAt !== b.observedAt) return a.observedAt < b.observedAt ? -1 : 1;
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
 
@@ -147,6 +162,39 @@ const statusViews: StatusViewRepository = {
   },
 };
 
+const scriptVariants: ScriptVariantRepository = {
+  async listByMerchant(merchantId) {
+    return store.scriptVariants.filter((v) => v.merchantId === merchantId);
+  },
+  async findByKey(merchantId, stageKey, productionStage) {
+    return (
+      store.scriptVariants.find(
+        (v) =>
+          v.merchantId === merchantId &&
+          v.stageKey === stageKey &&
+          v.productionStage === productionStage,
+      ) ?? null
+    );
+  },
+  async getById(id) {
+    return store.scriptVariants.find((v) => v.id === id) ?? null;
+  },
+};
+
+const outcomeEvents: OutcomeEventRepository = {
+  async record(e) {
+    const oe: OutcomeEvent = { ...e, id: newId("oe") };
+    store.outcomeEvents.push(oe);
+    return oe;
+  },
+  async listByVariant(variantId) {
+    return store.outcomeEvents.filter((e) => e.variantId === variantId).sort(byObservedAt);
+  },
+  async listByMerchant(merchantId) {
+    return store.outcomeEvents.filter((e) => e.merchantId === merchantId).sort(byObservedAt);
+  },
+};
+
 export const jsonRepositories: Repositories = {
   merchants,
   orders,
@@ -155,4 +203,6 @@ export const jsonRepositories: Repositories = {
   gifts,
   social,
   statusViews,
+  scriptVariants,
+  outcomeEvents,
 };

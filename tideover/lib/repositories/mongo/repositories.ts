@@ -5,6 +5,8 @@ import type {
   Gift,
   Merchant,
   Order,
+  OutcomeEvent,
+  ScriptVariant,
   SocialSignal,
   StatusView,
   Ticket,
@@ -15,7 +17,9 @@ import type {
   GiftRepository,
   MerchantRepository,
   OrderRepository,
+  OutcomeEventRepository,
   Repositories,
+  ScriptVariantRepository,
   SocialSignalRepository,
   StatusViewRepository,
   TicketFilter,
@@ -196,6 +200,48 @@ const statusViews: StatusViewRepository = {
   },
 };
 
+const scriptVariants: ScriptVariantRepository = {
+  async listByMerchant(merchantId) {
+    return findWhere<ScriptVariant>("script_variants", { merchantId });
+  },
+  async findByKey(merchantId, stageKey, productionStage) {
+    // productionStage null matches the day-stage's base variant. All seeded
+    // docs carry productionStage explicitly, so { …: null } is unambiguous and
+    // matches the JSON driver's strict === null comparison 1:1.
+    return findOneWhere<ScriptVariant>("script_variants", {
+      merchantId,
+      stageKey,
+      productionStage,
+    } as Filter<ScriptVariant>);
+  },
+  async getById(id) {
+    return findOneWhere<ScriptVariant>("script_variants", { id });
+  },
+};
+
+const outcomeEvents: OutcomeEventRepository = {
+  async record(e) {
+    const oe: OutcomeEvent = { ...e, id: newId("oe") };
+    return insert("outcome_events", oe);
+  },
+  async listByVariant(variantId) {
+    // Deterministic order by observedAt then id (matches the JSON driver);
+    // append-only rows carry no createdAt for findWhere's default sort.
+    const c = await col<OutcomeEvent>("outcome_events");
+    return (await c
+      .find({ variantId } as Filter<OutcomeEvent>, noId)
+      .sort({ observedAt: 1, id: 1 })
+      .toArray()) as OutcomeEvent[];
+  },
+  async listByMerchant(merchantId) {
+    const c = await col<OutcomeEvent>("outcome_events");
+    return (await c
+      .find({ merchantId } as Filter<OutcomeEvent>, noId)
+      .sort({ observedAt: 1, id: 1 })
+      .toArray()) as OutcomeEvent[];
+  },
+};
+
 export const mongoRepositories: Repositories = {
   merchants,
   orders,
@@ -204,4 +250,6 @@ export const mongoRepositories: Repositories = {
   gifts,
   social,
   statusViews,
+  scriptVariants,
+  outcomeEvents,
 };

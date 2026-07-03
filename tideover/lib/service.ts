@@ -1,10 +1,11 @@
 import { newId } from "@/lib/ids";
-import { getRepositories } from "@/lib/repositories";
+import { getRepositories, type Repositories } from "@/lib/repositories";
 import { computeTimeline } from "@/lib/time";
 import {
   computeTicketIntelligence,
   scoreRefundRisk,
   stageCeilDayFor,
+  type ReassuranceResult,
   type TicketIntelligence,
 } from "@/lib/engines";
 import { getDrafter } from "@/lib/drafting/LlmDrafter";
@@ -16,6 +17,7 @@ import type {
   Merchant,
   Order,
   OrderTimeline,
+  ProductionStageKey,
   Ticket,
 } from "@/lib/types";
 
@@ -85,6 +87,113 @@ function isDuplicateKeyError(err: unknown): boolean {
 }
 
 /**
+ * Outcome ledger (ADR-0007): resolve the reassurance engine's variant identity
+ * ("<stageKey>:<productionStage|base>") to the merchant's seeded variant id, so
+ * a draft can be stamped with the template that produced it. Returns undefined
+ * if no variant matches (pre-ledger data) — attribution is then skipped.
+ */
+async function resolveVariantId(
+  repos: Repositories,
+  merchantId: string,
+  reassurance: Pick<ReassuranceResult, "variantKey" | "stageKey">,
+): Promise<string | undefined> {
+  const sep = reassurance.variantKey.indexOf(":");
+  const stagePart = sep >= 0 ? reassurance.variantKey.slice(sep + 1) : "base";
+  const productionStage: ProductionStageKey | null =
+    stagePart === "base" ? null : (stagePart as ProductionStageKey);
+  const variant = await repos.scriptVariants.findByKey(merchantId, reassurance.stageKey, productionStage);
+  return variant?.id;
+}
+
+/**
+ * Normalized character edit distance in [0,1]; 0 = identical. Levenshtein over
+ * the drafted vs the approved reply divided by the longer length. This is the
+ * outcome ledger's `editedRatio` (ADR-0007) — a measured fact about the
+ * operator's own edit, never a fabricated outcome.
+ */
+export function editedRatio(drafted: string, approved: string): number {
+  if (drafted === approved) return 0;
+  const maxLen = Math.max(drafted.length, approved.length);
+  if (maxLen === 0) return 0;
+  const ratio = levenshtein(drafted, approved) / maxLen;
+  return ratio < 0 ? 0 : ratio > 1 ? 1 : ratio;
+}
+
+function levenshtein(a: string, b: string): number {
+  const m = a.length;
+  const n = b.length;
+  if (m === 0) return n;
+  if (n === 0) return m;
+  let prev = new Array<number>(n + 1);
+  let curr = new Array<number>(n + 1);
+  for (let j = 0; j <= n; j++) prev[j] = j;
+  for (let i = 1; i <= m; i++) {
+    curr[0] = i;
+    const ai = a.charCodeAt(i - 1);
+    for (let j = 1; j <= n; j++) {
+      const cost = ai === b.charCodeAt(j - 1) ? 0 : 1;
+      const del = prev[j] + 1;
+      const ins = curr[j - 1] + 1;
+      const sub = prev[j - 1] + cost;
+      curr[j] = del < ins ? (del < sub ? del : sub) : ins < sub ? ins : sub;
+    }
+    const tmp = prev;
+    prev = curr;
+    curr = tmp;
+  }
+  return prev[n];
+}
+
+/**
+ * Outcome ledger (ADR-0007): record ONE reply_sent event for an approved send,
+ * attributed to the variant that produced the draft, carrying meta.editedRatio.
+ * Best-effort — the send has already succeeded, so a ledger failure is logged
+ * and swallowed, never blocking the send (mirrors the ADR-0005 view log).
+ * The demo cockpit renders drafts live without persisting them, so the variant +
+ * baseline draft are recovered by recomputing the engine when the ticket has no
+ * persisted draft.
+ */
+async function recordReplySent(repos: Repositories, ticket: Ticket, sentText: string): Promise<void> {
+  try {
+    const view = await getTicketView(ticket.id);
+    const reassurance = view?.intel.reassurance;
+    const draftedText = ticket.draft?.text ?? reassurance?.draftText;
+    const variantId =
+      ticket.draft?.variantId ??
+      (reassurance ? await resolveVariantId(repos, ticket.merchantId, reassurance) : undefined);
+    if (variantId === undefined || draftedText === undefined) return; // cannot attribute — skip.
+
+    // stageKey must agree with variantId (they describe the same variant), so
+    // source it from the resolved variant — not the send-time recompute, which
+    // could drift to a later day-stage if the ticket sat drafted across a
+    // boundary before being sent.
+    const stageKey = (await repos.scriptVariants.getById(variantId))?.stageKey ?? reassurance?.stageKey;
+    if (!stageKey) return;
+
+    await repos.outcomeEvents.record({
+      merchantId: ticket.merchantId,
+      ticketId: ticket.id,
+      orderId: ticket.orderId,
+      customerId: ticket.customerId,
+      variantId,
+      stageKey,
+      sentimentAtSend: ticket.sentiment,
+      kind: "reply_sent",
+      observedAt: new Date().toISOString(),
+      meta: { editedRatio: editedRatio(draftedText, sentText) },
+    });
+  } catch (err) {
+    console.log(
+      JSON.stringify({
+        event: "outcome-event.record-failed",
+        ticketId: ticket.id,
+        error: err instanceof Error ? err.message : String(err),
+      }),
+    );
+  }
+}
+
+/**
  * Ingest a normalized inbound ticket: dedupe, match order/customer, persist,
  * auto-draft. Vendor retries redeliver the same event, so a ticket already
  * ingested for (merchantId, channel, externalId) is returned as-is — no new
@@ -132,6 +241,9 @@ export async function ingestTicket(
     ticketsLast7d,
   });
 
+  // Outcome ledger (ADR-0007): stamp the draft with the variant that produced it.
+  const variantId = await resolveVariantId(repos, merchant.id, intel.reassurance);
+
   const ticket: Ticket = {
     id: newId("tkt"),
     merchantId: merchant.id,
@@ -152,6 +264,7 @@ export async function ingestTicket(
       confidenceBand: drafted.confidenceBand,
       priority: drafted.priority,
       draftedBy: drafted.draftedBy,
+      ...(variantId ? { variantId } : {}),
     },
     tags: ["presale", `presale:${n.type}`].concat(
       n.sentiment === "chargeback-threat" ? ["presale:dispute-risk"] : [],
@@ -184,6 +297,9 @@ export async function regenerateDraft(ticketId: string): Promise<Ticket | null> 
   const view = await getTicketView(ticketId);
   if (!view) return null;
   const draft = intelToDraft(view.intel);
+  // Outcome ledger (ADR-0007): carry variant attribution onto the persisted draft.
+  const variantId = await resolveVariantId(repos, view.merchant.id, view.intel.reassurance);
+  if (variantId) draft.variantId = variantId;
   return repos.tickets.update(ticketId, { draft, status: "drafted" });
 }
 
@@ -195,6 +311,9 @@ export async function approveSend(
   const repos = getRepositories();
   const ticket = await repos.tickets.findById(ticketId);
   if (!ticket) return { error: "ticket not found" };
+  // Idempotent: an already-sent ticket must not re-send or emit a second
+  // reply_sent event on a retry (that would double-count the outcome ledger).
+  if (ticket.status === "sent") return { ticket };
   const text = approvedText ?? ticket.draft?.text;
   if (!text) return { error: "no draft to send" };
 
@@ -212,6 +331,12 @@ export async function approveSend(
     sent: { text, approvedBy: process.env.DEMO_OPERATOR_NAME ?? "Chaga", sentAt, externalId },
     firstResponseSec,
   });
+
+  // Outcome ledger (ADR-0007): stamp a reply_sent event attributed to the draft's
+  // variant, with meta.editedRatio measuring the operator's edit. Awaited so a
+  // same-request read observes it, but non-blocking on failure (see helper).
+  await recordReplySent(repos, ticket, text);
+
   return { ticket: updated };
 }
 

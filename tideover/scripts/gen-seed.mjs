@@ -52,6 +52,25 @@ function statusToken() {
   const mac = createHmac("sha256", SECRET).update(raw).digest("hex").slice(0, 10);
   return `${raw}.${mac}`;
 }
+// ADR-0007: deterministic, STABLE variant ids derived from
+// merchantId+stageKey+stage via HMAC — NOT the PRNG stream — so re-seeding is
+// idempotent AND generating variants never advances the PRNG that mints
+// order/ticket ids + tokens (those stay byte-identical).
+function variantId(merchantId, stageKey, stage) {
+  const h = createHmac("sha256", SECRET)
+    .update(`var:${merchantId}|${stageKey}|${stage ?? "base"}`)
+    .digest("hex");
+  let out = "";
+  for (let i = 0; i < 12; i++) out += ALPHABET[parseInt(h.slice(i * 2, i * 2 + 2), 16) % ALPHABET.length];
+  return `var_${out}`;
+}
+// Mirrors lib/engines/reassurance.ts dayStageFor (bucket only).
+function dayStageKeyFor(daysInWait) {
+  if (daysInWait <= 7) return "day-7";
+  if (daysInWait <= 30) return "day-30";
+  if (daysInWait <= 60) return "day-60";
+  return "day-89";
+}
 // SEED_EPOCH pins "now" for reproducible output; default keeps demo data fresh.
 const DAY_MS = 86400000;
 const epoch = Date.parse(process.env.SEED_EPOCH ?? "") || Date.now();
@@ -463,6 +482,85 @@ for (const o of orders) {
   }
 }
 
+// ── ADR-0007 outcome ledger: script variants ──
+// Migrate every playbook `base` + `byStage[x]` into an isDefault variant. Ids
+// are HMAC-derived (no PRNG draw), so this block is byte-stable and never shifts
+// any id/token generated above.
+const scriptVariants = [];
+for (const m of merchants) {
+  for (const [stageKey, pb] of Object.entries(m.playbook)) {
+    scriptVariants.push({
+      id: variantId(m.id, stageKey, null),
+      merchantId: m.id,
+      stageKey,
+      productionStage: null,
+      text: pb.base,
+      source: "merchant-default",
+      isDefault: true,
+      status: "active",
+      parentVariantId: null,
+      createdAt: m.createdAt,
+    });
+    for (const [ps, text] of Object.entries(pb.byStage)) {
+      scriptVariants.push({
+        id: variantId(m.id, stageKey, ps),
+        merchantId: m.id,
+        stageKey,
+        productionStage: ps,
+        text,
+        source: "merchant-default",
+        isDefault: true,
+        status: "active",
+        parentVariantId: null,
+        createdAt: m.createdAt,
+      });
+    }
+  }
+}
+
+// ── ADR-0007 outcome ledger: DEMO outcome events (~24) ──
+// One reply_sent per picked ticket, attributed to the variant its order's
+// day-stage selects (base or byStage), with a plausible editedRatio. Generated
+// LAST so its PRNG draws can't shift any id/token above. Both seed merchants are
+// isDemo, so every event inherits demo lineage (never counts toward real stats).
+const variantByKey = new Map(
+  scriptVariants.map((v) => [`${v.merchantId}|${v.stageKey}|${v.productionStage ?? "base"}`, v]),
+);
+const OE_SENTIMENTS = ["calm", "calm", "anxious", "anxious", "hostile", "chargeback-threat"];
+const OE_TARGETS = { mch_lumen0001: 16, mch_atelier02: 8 };
+const outcomeEvents = [];
+for (const m of merchants) {
+  const mTickets = tickets.filter((t) => t.merchantId === m.id);
+  if (mTickets.length === 0) continue;
+  const target = OE_TARGETS[m.id] ?? 8;
+  for (let i = 0; i < target; i++) {
+    const tkt = pick(mTickets);
+    const order = orders.find((o) => o.id === tkt.orderId);
+    if (!order) continue;
+    const daysInWait = Math.round((epoch - Date.parse(order.fulfillmentStart)) / DAY_MS);
+    const stageKey = dayStageKeyFor(daysInWait);
+    const pb = m.playbook[stageKey];
+    const ps = pb.byStage[order.productionStage] !== undefined ? order.productionStage : null;
+    const variant = variantByKey.get(`${m.id}|${stageKey}|${ps ?? "base"}`);
+    if (!variant) continue;
+    // Plausible operator edit: 1-in-4 unchanged (0), else a light edit in [0,0.4).
+    const editedRatio = rng() < 0.25 ? 0 : Math.round(rng() * 400) / 1000;
+    outcomeEvents.push({
+      id: id("oe"),
+      merchantId: m.id,
+      ticketId: tkt.id,
+      orderId: order.id,
+      customerId: tkt.customerId,
+      variantId: variant.id,
+      stageKey,
+      sentimentAtSend: pick(OE_SENTIMENTS),
+      kind: "reply_sent",
+      observedAt: new Date(epoch - int(0, 8) * DAY_MS).toISOString(),
+      meta: { editedRatio },
+    });
+  }
+}
+
 // ── write ──
 const write = (name, data) => writeFileSync(join(DATA, name), JSON.stringify(data, null, 2) + "\n");
 write("merchants.json", merchants);
@@ -472,9 +570,11 @@ write("orders.json", orders);
 write("tickets.json", tickets);
 write("social-feed.json", social);
 write("status-views.json", statusViews);
+write("script-variants.json", scriptVariants);
+write("outcome-events.json", outcomeEvents);
 
 console.log(
-  `seeded: ${merchants.length} merchants, ${customers.length} customers, ${orders.length} orders, ${tickets.length} tickets, ${gifts.length} gifts, ${social.length} social signals, ${statusViews.length} status views`,
+  `seeded: ${merchants.length} merchants, ${customers.length} customers, ${orders.length} orders, ${tickets.length} tickets, ${gifts.length} gifts, ${social.length} social signals, ${statusViews.length} status views, ${scriptVariants.length} script variants, ${outcomeEvents.length} outcome events`,
 );
 console.log("sample status links:");
 orders.slice(0, 3).forEach((o) => console.log(`  /status/${o.statusToken}`));
