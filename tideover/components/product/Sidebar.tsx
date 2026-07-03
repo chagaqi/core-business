@@ -15,6 +15,7 @@ const NAV: Array<{ href: string; label: string; hint: string }> = [
   { href: "/app/inbox", label: "Inbox", hint: "Operator cockpit" },
   { href: "/app/customers", label: "Customers", hint: "LTV + risk" },
   { href: "/app/gifts", label: "Gifts", hint: "Goodwill engine" },
+  { href: "/app/scripts", label: "Scripts", hint: "Performance" },
   { href: "/app/social", label: "Social", hint: "Signal monitor" },
   { href: "/app/updates", label: "Updates", hint: "Workshop feed" },
 ];

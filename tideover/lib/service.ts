@@ -17,7 +17,9 @@ import type {
   Merchant,
   Order,
   OrderTimeline,
+  OutcomeEvent,
   ProductionStageKey,
+  ScriptVariant,
   Ticket,
 } from "@/lib/types";
 
@@ -461,4 +463,71 @@ export async function getDashboard(merchantId: string, now: Date = new Date()): 
     atRisk: queue.filter((r) => r.band !== "standard"),
     ordersInWindow: orders.length,
   };
+}
+
+/**
+ * Script Performance (ADR-0007, task E3): the "measured, not invented" surface.
+ * One row per script variant, carrying only facts folded out of the reply_sent
+ * outcome ledger — it INVENTS NOTHING.
+ */
+export interface ScriptPerformanceRow {
+  variant: ScriptVariant;
+  /** count of kind==='reply_sent' events attributed to this variant. */
+  sends: number;
+  /** mean of meta.editedRatio over those sends, or null when the variant has none. */
+  avgEditedRatio: number | null;
+  /** sample size == sends; surfaces gate any rate on this vs SCRIPT_PERF_MIN_N. */
+  n: number;
+}
+
+/**
+ * Minimum sends before an edit-rate is trustworthy enough to show. Below it the
+ * surface renders "collecting data (n=X)" instead of a rate — small-sample
+ * humility is a proof-only discipline, never a UI nicety. The rollup itself
+ * never suppresses; it reports the raw stat and the caller applies the floor.
+ */
+export const SCRIPT_PERF_MIN_N = 20;
+
+/**
+ * Pure aggregation: group the ledger's reply_sent events by variantId and fold
+ * them onto the merchant's variants. Deterministic — variants keep their input
+ * order, only kind==='reply_sent' counts. A send with no editedRatio is still
+ * counted in `sends` but EXCLUDED from the mean — a missing measurement must not
+ * bias a variant's edit-rate downward (proof-only honesty even off the seed
+ * path). Exported so the rollup is unit-testable with synthetic data.
+ */
+export function aggregateScriptPerformance(
+  variants: ScriptVariant[],
+  events: OutcomeEvent[],
+): ScriptPerformanceRow[] {
+  const statsByVariant = new Map<string, { sends: number; ratios: number[] }>();
+  for (const e of events) {
+    if (e.kind !== "reply_sent") continue;
+    const s = statsByVariant.get(e.variantId) ?? { sends: 0, ratios: [] };
+    s.sends += 1;
+    if (typeof e.meta?.editedRatio === "number") s.ratios.push(e.meta.editedRatio);
+    statsByVariant.set(e.variantId, s);
+  }
+  return variants.map((variant) => {
+    const s = statsByVariant.get(variant.id) ?? { sends: 0, ratios: [] };
+    const avgEditedRatio =
+      s.ratios.length === 0 ? null : s.ratios.reduce((a, b) => a + b, 0) / s.ratios.length;
+    return { variant, sends: s.sends, avgEditedRatio, n: s.sends };
+  });
+}
+
+/**
+ * Per-variant send stats for a merchant, measured from the outcome ledger. Reads
+ * the merchant's variants + its reply_sent events and rolls them up (see
+ * `aggregateScriptPerformance`). Read-only — no schema change, no attribution
+ * write. Demo lineage is not laundered here: the surface renders a SAMPLE DATA
+ * watermark for isDemo merchants so a seeded stat never reads as a real one.
+ */
+export async function computeScriptPerformance(merchantId: string): Promise<ScriptPerformanceRow[]> {
+  const repos = getRepositories();
+  const [variants, events] = await Promise.all([
+    repos.scriptVariants.listByMerchant(merchantId),
+    repos.outcomeEvents.listByMerchant(merchantId),
+  ]);
+  return aggregateScriptPerformance(variants, events);
 }
