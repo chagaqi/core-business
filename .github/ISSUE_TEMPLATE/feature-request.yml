@@ -1,0 +1,33 @@
+name: Feature request
+description: Propose a new Tideover capability or improvement
+title: "[feat] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Merchant problem this solves
+      description: Start from the merchant (or their customer), not the feature.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence / proof
+      description: Research, merchant quotes, comparable products. Proof-only — no invented numbers.
+  - type: dropdown
+    id: gate
+    attributes:
+      label: Needs an ADR first?
+      description: Non-trivial approaches get a 1-page decision record with alternatives before code.
+      options:
+        - "Yes — approach needs research/decision first"
+        - "No — approach is obvious"
+    validations:
+      required: true
