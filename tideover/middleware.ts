@@ -31,6 +31,7 @@ export const config = {
     "/app/:path*",
     "/api/approve-send",
     "/api/draft",
+    "/api/export",
     "/api/gift-catalog/:path*",
     "/api/gift-send",
     "/api/social-signal-feed",

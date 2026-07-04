@@ -76,10 +76,23 @@ export default async function CustomersPage({
             </Link>
           </p>
         </div>
-        <MerchantSwitcher
-          merchants={merchants.map((m) => ({ id: m.id, name: m.name }))}
-          current={merchantId}
-        />
+        <div className="flex flex-col items-end gap-2">
+          <MerchantSwitcher
+            merchants={merchants.map((m) => ({ id: m.id, name: m.name }))}
+            current={merchantId}
+          />
+          <div className="text-right">
+            <a
+              href={`/api/export?merchant=${merchantId}`}
+              download
+              className="text-[13px] font-semibold text-teal no-underline hover:underline"
+              title="Download all of this merchant's data as one open JSON file"
+            >
+              Export all data
+            </a>
+            <p className="text-[11px] text-ink-mute">No lock-in — your data, any time.</p>
+          </div>
+        </div>
       </header>
 
       <section className="panel overflow-hidden">
