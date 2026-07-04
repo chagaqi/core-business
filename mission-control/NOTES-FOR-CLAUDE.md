@@ -63,7 +63,7 @@ _(empty — your "1 day left, what's left?" note is answered under Handled.)_
 6. **Env/infra (30 sec–5 min each):** D16 (`WEBHOOK_ROOT_SECRET` + `CRON_SECRET` in Vercel), F5b (an R2/S3 bucket + key for automated offsite backup), D15 (email-forward DNS if you want that rung live).
 7. **Copy you'd shape:** C8 (de-escalate reply wording — engine mechanics are ready), U6 (stage-transition outbound copy, also needs D15).
 
-**To ship it:** the branch is merge-ready. `tideover/RELEASE.md` is the ritual (verify → merge to main → `vercel --prod` → `npm run smoke` → changelog). Prod is already live on Mongo at www.tideover.app.
+**To ship it:** the branch is merge-ready (I re-ran the full gate: verify + 191 tests green). `tideover/RELEASE.md` is the ritual (verify → merge to main → `vercel --prod` → `npm run smoke` → changelog). **Heads-up:** live prod (www.tideover.app) is still running the EARLY-weekend deploy — the ~13 features I built since (SLA timers, forecast, setup checklist, export, dispute tile, the outcome loop, health endpoint, etc.) are all on the branch but NOT live yet. Deploying the branch puts them live. When you do, **run `npm run seed:mongo -- --force` first** so the date-relative surfaces (dispute tile, SLA chips, forecast) show fresh live data instead of drifting toward "overdue"/$0 — that's the OS9 demo-freshness issue; a reseed on deploy is its practical fix until we do the evergreen version.
 
 **On the Mac:** the migration bundle on your H: drive is still current-enough (pull the branch after `restore-on-mac.sh` to get the weekend's work).
 
