@@ -10,6 +10,7 @@ import {
 } from "@/lib/engines";
 import { getDrafter } from "@/lib/drafting/LlmDrafter";
 import { getSendAdapter } from "@/lib/channel-adapters/registry";
+import { computeDisputeExposure, type DisputeExposure } from "@/lib/dispute-exposure";
 import { containsHardDate } from "@/lib/proof";
 import type { NormalizedTicket } from "@/lib/channel-adapters/ChannelAdapter";
 import type {
@@ -573,6 +574,10 @@ export interface DashboardView {
   riskCurve: Array<{ label: string; risk: number; color: string }>;
   atRisk: QueueRow[];
   ordersInWindow: number;
+  /** M3: merchant's own summed GMV currently exposed to a chargeback dispute,
+   *  split by payment rail. An ESTIMATE for orientation (Visa 13.1), never a
+   *  guarantee — see lib/dispute-exposure. */
+  disputeExposure: DisputeExposure;
 }
 
 function median(nums: number[]): number | null {
@@ -626,6 +631,8 @@ export async function getDashboard(merchantId: string, now: Date = new Date()): 
     riskCurve,
     atRisk: queue.filter((r) => r.band !== "standard"),
     ordersInWindow: orders.length,
+    // M3: reuse the orders already loaded above — no extra I/O. Pure rollup.
+    disputeExposure: computeDisputeExposure(orders, now),
   };
 }
 

@@ -24,6 +24,9 @@ const GROUP_LABEL: Record<string, string> = {
   "new-preorder": "New preorder",
 };
 
+/** whole-dollar money with thousands separators, e.g. 3512900 → "$35,129". */
+const dollars = (cents: number): string => `$${Math.round(cents / 100).toLocaleString("en-US")}`;
+
 /** Delta vs baseline for metrics where LOWER is better (FRT, WISMO). */
 function lowerIsBetterDelta(live: number | null, baseline: number) {
   if (live == null || baseline === 0) return undefined;
@@ -56,7 +59,7 @@ export default async function DashboardPage({
     return <div className="p-8 text-ink-mute">No dashboard data for this merchant.</div>;
   }
 
-  const { baseline, live } = data;
+  const { baseline, live, disputeExposure: exp } = data;
   const baselineDate = new Date(baseline.capturedOn).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -115,6 +118,82 @@ export default async function DashboardPage({
           value={data.ordersInWindow}
           sublabel={`${live.sentCount} replies sent`}
         />
+      </section>
+
+      <section className="panel p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="font-serif text-[20px] text-ink">GMV in open dispute window</h2>
+            <p className="text-[12px] text-ink-mute">
+              Your own order value currently exposed to a chargeback dispute, by rail.
+            </p>
+          </div>
+          <span className="rounded-full border border-border bg-sand px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-ink-mute">
+            Estimate · Visa 13.1 orientation
+          </span>
+        </div>
+
+        {exp.orderCount === 0 ? (
+          <p className="mb-3 rounded-xl border border-dashed border-border bg-sand px-4 py-2.5 text-[12px] leading-relaxed text-ink-mute">
+            No orders are in the open dispute window right now — an order enters it about 15 days
+            after its disclosed delivery estimate. This is a live snapshot; the figure rises as more
+            orders cross that mark
+            {exp.unknownCount > 0
+              ? ` (${exp.unknownCount} ${exp.unknownCount === 1 ? "order is" : "orders are"} not counted — no disclosed ETA)`
+              : ""}
+            .
+          </p>
+        ) : null}
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="flex flex-col gap-1 rounded-xl border border-border bg-sand p-4">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-mute">
+              Money at risk
+            </span>
+            <span className="font-serif text-[30px] leading-none text-ink">
+              {dollars(exp.totalCents)}
+            </span>
+            <span className="text-[12px] text-ink-mute">
+              {exp.orderCount} {exp.orderCount === 1 ? "order" : "orders"} currently in the window
+            </span>
+          </div>
+          <div className="flex flex-col gap-1 rounded-xl border border-border p-4">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-mute">
+              Shopify (card)
+            </span>
+            <span className="font-serif text-[30px] leading-none text-ink">
+              {dollars(exp.shopifyCents)}
+            </span>
+            <span className="text-[12px] text-ink-mute">
+              {exp.shopifyCount} {exp.shopifyCount === 1 ? "order" : "orders"} · Visa 13.1 chargeback path
+            </span>
+          </div>
+          <div className="flex flex-col gap-1 rounded-xl border border-border p-4">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-mute">
+              Kickstarter (pledge)
+            </span>
+            <span className="font-serif text-[30px] leading-none text-ink">
+              {dollars(exp.kickstarterCents)}
+            </span>
+            <span className="text-[12px] text-ink-mute">
+              {exp.kickstarterCount} {exp.kickstarterCount === 1 ? "pledge" : "pledges"} · platform / backer relations
+            </span>
+          </div>
+        </div>
+
+        <p className="mt-4 rounded-xl border border-dashed border-border bg-sand px-4 py-3 text-[12px] leading-relaxed text-ink-mute">
+          Estimate for orientation, not a guarantee: {data.merchant.name}&rsquo;s own summed order value
+          whose Visa reason-code 13.1 window is currently open — past the roughly 15-day issuer wait (so a
+          dispute is filable) and before the window closes (~120 days from expected delivery, capped at 540
+          days from the sale). The rails carry different remedies: Shopify card orders run through a Visa 13.1
+          chargeback path; Kickstarter pledges are handled through the platform and backer relations, not a
+          card chargeback — so they are shown apart, never summed into one figure.
+          {exp.unknownCount > 0
+            ? ` ${exp.unknownCount} ${
+                exp.unknownCount === 1 ? "order has" : "orders have"
+              } no disclosed ETA and ${exp.unknownCount === 1 ? "is" : "are"} not counted.`
+            : ""}
+        </p>
       </section>
 
       <section className="panel p-5">
