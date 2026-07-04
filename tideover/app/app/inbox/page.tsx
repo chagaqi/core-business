@@ -1,9 +1,10 @@
-import { getQueue, getTicketView } from "@/lib/service";
+import { getPreviouslyTold, getQueue, getTicketView } from "@/lib/service";
 import { getRepositories } from "@/lib/repositories";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { QueueList, type QueueItem } from "@/components/product/QueueList";
 import { QueueKeyboard } from "@/components/product/QueueKeyboard";
 import { FactorBreakdown } from "@/components/product/FactorBreakdown";
+import { PreviouslyTold } from "@/components/product/PreviouslyTold";
 import { DraftRail } from "@/components/product/DraftRail";
 import { GiftSuggestion } from "@/components/product/GiftSuggestion";
 import { RiskBadge, Tag } from "@/components/ui/Badge";
@@ -91,6 +92,12 @@ export default async function InboxPage({
       : items.find((i) => i.ticketId !== selectedId)?.ticketId ?? null;
 
   const view = selectedId ? await getTicketView(selectedId) : null;
+  // C3 "Previously told": the selected customer's most-recent prior sent reply,
+  // surfaced above the draft so a new reply never walks back a prior promise.
+  // null on first contact — the strip then renders nothing.
+  const previouslyTold = view
+    ? await getPreviouslyTold(merchantId, view.ticket.customerId, view.ticket.id)
+    : null;
   const queueCleared = items.length === 0;
 
   return (
@@ -223,6 +230,7 @@ export default async function InboxPage({
             </div>
           ) : (
             <div className="flex flex-col gap-4">
+              <PreviouslyTold firstName={view.customer.firstName} prior={previouslyTold} />
               <DraftRail
                 key={view.ticket.id}
                 ticketId={view.ticket.id}

@@ -72,6 +72,55 @@ export async function getTicketView(ticketId: string, now: Date = new Date()): P
   return { ticket, order, customer, merchant, timeline, intel };
 }
 
+/**
+ * "Previously told" (C3): the customer's MOST RECENT prior SENT reply, or null.
+ * Surfaced ABOVE a new draft so the operator keeps it consistent and never walks
+ * back a promise already made — the proof doctrine extended across messages.
+ *
+ * Pure orchestration over repos.tickets.list({merchantId, customerId}), so it
+ * behaves identically on the JSON and Mongo drivers. It returns the merchant's
+ * OWN earlier message verbatim (the sent text + the confidence band that reply
+ * quoted, when one was stamped on its draft) — never a fabricated summary, never
+ * a new date. `currentTicketId` is excluded so the ticket being handled never
+ * quotes itself; `now` bounds the search to replies already sent (a reply dated
+ * after the evaluation instant is not something they were "previously told").
+ */
+export interface PriorSentReply {
+  ticketId: string;
+  text: string;
+  sentAt: string;
+  band: string | null;
+}
+
+export async function getPreviouslyTold(
+  merchantId: string,
+  customerId: string,
+  currentTicketId: string,
+  now: Date = new Date(),
+): Promise<PriorSentReply | null> {
+  const repos = getRepositories();
+  const nowMs = now.getTime();
+  const prior = (await repos.tickets.list({ merchantId, customerId }))
+    .filter(
+      (t) =>
+        // A delivered reply is anything with sent.text — its ticket may since have
+        // moved to "resolved", but the customer was still told it, so it still
+        // counts. Keying on sent.text (not status) keeps the strip correct once
+        // real tickets get resolved.
+        t.id !== currentTicketId &&
+        !!t.sent?.text &&
+        new Date(t.sent.sentAt).getTime() <= nowMs,
+    )
+    .sort((a, b) => new Date(b.sent!.sentAt).getTime() - new Date(a.sent!.sentAt).getTime())[0];
+  if (!prior || !prior.sent) return null;
+  return {
+    ticketId: prior.id,
+    text: prior.sent.text,
+    sentAt: prior.sent.sentAt,
+    band: prior.draft?.confidenceBand ?? null,
+  };
+}
+
 function intelToDraft(intel: TicketIntelligence): DraftReply {
   return {
     id: newId("drf"),
