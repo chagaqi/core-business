@@ -5,6 +5,7 @@ import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { MetricTile } from "@/components/product/MetricTile";
 import { RiskCurve } from "@/components/product/RiskCurve";
 import { RiskBadge, Tag } from "@/components/ui/Badge";
+import { ATTAINMENT_MIN_N } from "@/lib/sla";
 import type { RiskColor } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -59,7 +60,10 @@ export default async function DashboardPage({
     return <div className="p-8 text-ink-mute">No dashboard data for this merchant.</div>;
   }
 
-  const { baseline, live, disputeExposure: exp } = data;
+  const { baseline, live, disputeExposure: exp, slaAttainment: sla } = data;
+  // C5 proof-only: show the % only above the small-n floor; below it, surface the
+  // raw denominator and keep collecting (mirrors the Script Performance surface).
+  const slaHasRate = sla.rate != null;
   const baselineDate = new Date(baseline.capturedOn).toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",
@@ -85,13 +89,23 @@ export default async function DashboardPage({
         />
       </header>
 
-      <section className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <section className="grid grid-cols-2 gap-3 lg:grid-cols-6">
         <MetricTile
           proof
           label="Median first response"
           value={formatFrt(live.medianFrtSec)}
           delta={lowerIsBetterDelta(live.medianFrtSec, baseline.medianFrtSec)}
           sublabel={`baseline ${formatFrt(baseline.medianFrtSec)}`}
+        />
+        <MetricTile
+          proof
+          label="SLA attainment"
+          value={slaHasRate ? `${Math.round((sla.rate as number) * 100)}%` : `n=${sla.answered}`}
+          sublabel={
+            slaHasRate
+              ? `${sla.met}/${sla.answered} first responses on time`
+              : `collecting — rate at n≥${ATTAINMENT_MIN_N}`
+          }
         />
         <MetricTile
           proof

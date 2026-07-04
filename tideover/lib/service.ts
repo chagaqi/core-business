@@ -11,6 +11,7 @@ import {
 import { getDrafter } from "@/lib/drafting/LlmDrafter";
 import { getSendAdapter } from "@/lib/channel-adapters/registry";
 import { computeDisputeExposure, type DisputeExposure } from "@/lib/dispute-exposure";
+import { computeSlaAttainment, type SlaAttainment } from "@/lib/sla";
 import { containsHardDate } from "@/lib/proof";
 import { computeSetupChecklist, type SetupChecklist } from "@/lib/setup";
 import {
@@ -671,6 +672,10 @@ export interface DashboardView {
   riskCurve: Array<{ label: string; risk: number; color: string }>;
   atRisk: QueueRow[];
   ordersInWindow: number;
+  /** C5: first-response SLA attainment over answered tickets, measured against
+   *  the merchant's own configured support windows (ADR-0016). Rate is gated to
+   *  null below the small-n floor — no headline % on a tiny sample. */
+  slaAttainment: SlaAttainment;
   /** M3: merchant's own summed GMV currently exposed to a chargeback dispute,
    *  split by payment rail. An ESTIMATE for orientation (Visa 13.1), never a
    *  guarantee — see lib/dispute-exposure. */
@@ -730,6 +735,8 @@ export async function getDashboard(merchantId: string, now: Date = new Date()): 
     ordersInWindow: orders.length,
     // M3: reuse the orders already loaded above — no extra I/O. Pure rollup.
     disputeExposure: computeDisputeExposure(orders, now),
+    // C5: fold SLA attainment from the tickets already loaded — pure, no extra I/O.
+    slaAttainment: computeSlaAttainment(tickets, merchant.slaWindows),
   };
 }
 

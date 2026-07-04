@@ -7,7 +7,9 @@ import { FactorBreakdown } from "@/components/product/FactorBreakdown";
 import { PreviouslyTold } from "@/components/product/PreviouslyTold";
 import { DraftRail } from "@/components/product/DraftRail";
 import { GiftSuggestion } from "@/components/product/GiftSuggestion";
+import { SlaChip } from "@/components/product/SlaChip";
 import { RiskBadge, Tag } from "@/components/ui/Badge";
+import { slaChip, ticketSlaState } from "@/lib/sla";
 import type { RiskColor, Sentiment } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -55,6 +57,8 @@ export default async function InboxPage({
       ? searchParams.merchant
       : merchants[0].id;
 
+  const merchant = merchants.find((m) => m.id === merchantId)!;
+  const now = new Date();
   const queue = await getQueue(merchantId);
 
   // The priority queue is the OPEN work — a sent ticket has been handled and
@@ -72,6 +76,10 @@ export default async function InboxPage({
     riskScore: r.riskScore,
     color: r.color as RiskColor,
     escalated: escalatedSentiment(r.ticket.sentiment),
+    // C5 — computed first-response SLA chip from the ticket's own timestamps
+    // and the merchant's configured support windows (ADR-0016). Open queue rows
+    // are unanswered, so this is a live countdown/breach state.
+    sla: slaChip(ticketSlaState(r.ticket, merchant.slaWindows, now)),
   }));
 
   // A deep-linked ticket (even an already-sent one) resolves against the full
@@ -102,6 +110,11 @@ export default async function InboxPage({
   // byte-identical to view.intel.reassurance.draftText, so the rail's initial
   // state is unchanged. null on unresolved tickets → the rail hides the toggle.
   const alternates = view ? await getDraftAlternates(view.ticket.id) : null;
+  // C5 — the selected ticket's SLA chip. A deep-linked already-sent ticket shows
+  // met/missed against its target; an open one shows the live countdown.
+  const selectedSla = view
+    ? slaChip(ticketSlaState(view.ticket, view.merchant.slaWindows, now))
+    : null;
   const queueCleared = items.length === 0;
 
   return (
@@ -181,10 +194,13 @@ export default async function InboxPage({
                   </h2>
                   <p className="text-[13px] text-ink-mute">{view.customer.email}</p>
                 </div>
-                <RiskBadge color={view.intel.risk.color as RiskColor}>
-                  Risk {view.intel.risk.riskScore} ·{" "}
-                  {view.intel.risk.band.replace("_", " ")}
-                </RiskBadge>
+                <div className="flex flex-col items-end gap-1.5">
+                  <RiskBadge color={view.intel.risk.color as RiskColor}>
+                    Risk {view.intel.risk.riskScore} ·{" "}
+                    {view.intel.risk.band.replace("_", " ")}
+                  </RiskBadge>
+                  {selectedSla ? <SlaChip chip={selectedSla} /> : null}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">

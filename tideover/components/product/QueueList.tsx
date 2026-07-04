@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { clsx } from "clsx";
 import type { RiskColor } from "@/lib/types";
+import type { SlaChipView } from "@/lib/sla";
 import { RiskBadge, Tag } from "@/components/ui/Badge";
+import { SlaChip } from "@/components/product/SlaChip";
 
 /** Plain, serializable shape passed from the server cockpit page. */
 export interface QueueItem {
@@ -15,6 +17,8 @@ export interface QueueItem {
   riskScore: number;
   color: RiskColor;
   escalated: boolean;
+  /** C5 — the ticket's computed first-response SLA chip (countdown + basis). */
+  sla: SlaChipView;
 }
 
 const GROUP_LABEL: Record<string, string> = {
@@ -78,11 +82,14 @@ export function QueueList({
                 <RiskBadge color={r.color}>{r.riskScore}</RiskBadge>
               </div>
               <p className="mt-1 truncate text-[12px] text-slate">{r.subject}</p>
-              <div className="mt-1.5 flex items-center gap-2">
-                <Tag>{GROUP_LABEL[r.group] ?? r.group}</Tag>
-                <span className="text-[11px] text-ink-mute">
-                  {r.daysInWait}d waiting
+              <div className="mt-1.5 flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
+                  <Tag>{GROUP_LABEL[r.group] ?? r.group}</Tag>
+                  <span className="text-[11px] text-ink-mute">
+                    {r.daysInWait}d waiting
+                  </span>
                 </span>
+                <SlaChip chip={r.sla} />
               </div>
             </Link>
           </li>
