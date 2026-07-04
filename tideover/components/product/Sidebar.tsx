@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { clsx } from "clsx";
 import { Logo } from "@/components/ui/Logo";
 
@@ -12,6 +13,7 @@ import { Logo } from "@/components/ui/Logo";
  */
 const NAV: Array<{ href: string; label: string; hint: string }> = [
   { href: "/app", label: "Dashboard", hint: "Refund-risk overview" },
+  { href: "/app/setup", label: "Setup", hint: "Onboarding checklist" },
   { href: "/app/inbox", label: "Inbox", hint: "Operator cockpit" },
   { href: "/app/customers", label: "Customers", hint: "LTV + risk" },
   { href: "/app/forecast", label: "Forecast", hint: "WISMO load ahead" },
@@ -21,11 +23,39 @@ const NAV: Array<{ href: string; label: string; hint: string }> = [
   { href: "/app/updates", label: "Updates", hint: "Workshop feed" },
 ];
 
+interface SetupSummary {
+  completed: number;
+  total: number;
+  allDone: boolean;
+}
+
 export function Sidebar({ operator }: { operator: string }) {
   const pathname = usePathname();
   const params = useSearchParams();
   const merchant = params.get("merchant");
   const suffix = merchant ? `?merchant=${merchant}` : "";
+
+  // Live "N/5" setup badge, DERIVED from real state via /api/setup-status. Fail-
+  // silent: if it hasn't loaded (or errors) the nav just shows no badge, never a
+  // fabricated count. Re-fetches when the operator switches merchant.
+  const [setup, setSetup] = useState<SetupSummary | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    const q = merchant ? `?merchant=${encodeURIComponent(merchant)}` : "";
+    fetch(`/api/setup-status${q}`, { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!cancelled && d && typeof d.completed === "number" && typeof d.total === "number") {
+          setSetup({ completed: d.completed, total: d.total, allDone: Boolean(d.allDone) });
+        }
+      })
+      .catch(() => {
+        /* badge is optional — a failed load simply shows no badge */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [merchant]);
 
   const isActive = (href: string) =>
     href === "/app" ? pathname === "/app" : pathname.startsWith(href);
@@ -49,13 +79,23 @@ export function Sidebar({ operator }: { operator: string }) {
               )}
               aria-current={active ? "page" : undefined}
             >
-              <span
-                className={clsx(
-                  "text-[14px] font-semibold",
-                  active ? "text-teal" : "text-ink",
-                )}
-              >
-                {item.label}
+              <span className="flex items-center justify-between gap-2">
+                <span
+                  className={clsx(
+                    "text-[14px] font-semibold",
+                    active ? "text-teal" : "text-ink",
+                  )}
+                >
+                  {item.label}
+                </span>
+                {item.href === "/app/setup" && setup && !setup.allDone ? (
+                  <span
+                    className="flex-none rounded-full bg-teal px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-ink-inverse"
+                    title={`${setup.completed} of ${setup.total} setup steps complete`}
+                  >
+                    {setup.completed}/{setup.total}
+                  </span>
+                ) : null}
               </span>
               <span className="text-[11px] text-ink-mute">{item.hint}</span>
             </Link>

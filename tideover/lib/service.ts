@@ -12,6 +12,7 @@ import { getDrafter } from "@/lib/drafting/LlmDrafter";
 import { getSendAdapter } from "@/lib/channel-adapters/registry";
 import { computeDisputeExposure, type DisputeExposure } from "@/lib/dispute-exposure";
 import { containsHardDate } from "@/lib/proof";
+import { computeSetupChecklist, type SetupChecklist } from "@/lib/setup";
 import {
   embeddedBandPhrase,
   generateAlternates,
@@ -898,4 +899,33 @@ export async function computeScriptPerformance(merchantId: string): Promise<Scri
     repos.outcomeEvents.listByMerchant(merchantId),
   ]);
   return aggregateScriptPerformance(variants, events);
+}
+
+/**
+ * Setup checklist (task U4): the thin I/O wrapper around the pure
+ * `computeSetupChecklist`. Loads the merchant + its orders/tickets/updates/
+ * statusViews, then derives the five "you're N of 5 set up" items from that real
+ * state. Nothing is persisted and no flag is stored — the list is recomputed from
+ * what actually exists, so it can never drift from reality.
+ *
+ * StatusViews are keyed by order (there is no listByMerchant on the repo), so the
+ * views are gathered across the merchant's orders. The read is bounded by the
+ * merchant's order count and only powers a status page, so it stays cheap; the
+ * JSON driver resolves each call in-memory. Returns null for an unknown merchant.
+ */
+export async function getSetupChecklist(merchantId: string): Promise<SetupChecklist | null> {
+  const repos = getRepositories();
+  const merchant = await repos.merchants.findById(merchantId);
+  if (!merchant) return null;
+
+  const [orders, tickets, updates] = await Promise.all([
+    repos.orders.listByMerchant(merchantId),
+    repos.tickets.list({ merchantId }),
+    repos.merchantUpdates.listByMerchant(merchantId),
+  ]);
+  const statusViews = (
+    await Promise.all(orders.map((o) => repos.statusViews.listByOrder(o.id)))
+  ).flat();
+
+  return computeSetupChecklist({ merchant, orders, tickets, updates, statusViews });
 }

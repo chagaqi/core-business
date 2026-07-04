@@ -39,6 +39,7 @@ export const config = {
     "/api/onboarding",
     "/api/import",
     "/api/updates",
+    "/api/setup-status",
     "/api/variants/promote",
   ],
 };
