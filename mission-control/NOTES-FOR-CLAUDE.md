@@ -48,6 +48,27 @@ _(empty — your "1 day left, what's left?" note is answered under Handled.)_
 
 ## ✅ Handled
 
+### [x] 2026-07-05 — END OF SPRINT: autonomous work is done; the rest is your call
+
+**Read this first.** Over the weekend I closed out ~13 more tasks (56 done total). The product is complete, hardened, monitored, backed up, and documented. I've now hit the honest end of what I can build without you — **every remaining board task is a decision only you can make.** So the next tick will stop-and-wait unless you unblock something below.
+
+**Shipped since Friday (all on branch `sprint/tideover-finalization`, verify + tests green):** the full outcome loop (CSAT tap, reply/reopen attribution, the resolved_quiet cron, the QA hard-date gate + save-edit-as-variant); the money surfaces (baseline report, GMV-in-dispute tile); the cohort WISMO forecast; the "previously told" strip; draft alternates; SLA timers + attainment; the setup checklist + integration-health signal; the security procurement packet; the ADR log + dev-guide; the SAMPLE DATA watermark across all demo surfaces; Export Everything; a backup tool; a health/uptime endpoint. Two security bugs were caught by adversarial review before commit (a webhook cross-merchant vector, a capability-token leak in the export).
+
+**Your decision list — in leverage order:**
+1. **D17 → unlocks /pricing (G2).** Two answers: the per-tier order caps (Starter $299 / Growth $499 / Scale $749 each need an "up to N presale orders" number), and reconcile the ladder with the live copy that pledges founding partners "$199–299, the lowest I'll offer." Then /pricing is a 1-tick build.
+2. **X2 → unlocks the About-page voice + G4 (lead magnet).** Approve the copy framework (I recommended templating Basecamp; `docs/copy/ABOUT-TEMPLATE.md`).
+3. **M6 framing** — okay the bleed-calculator pitch angle (a public conversion asset; landmines pre-scoped in its board note).
+4. **M5** — the delay-notice's FTC/refund policy (your call, not mine to guess).
+5. **Sign-offs:** D7 (founder story), D9 (55 goldens → reviewed:true).
+6. **Env/infra (30 sec–5 min each):** D16 (`WEBHOOK_ROOT_SECRET` + `CRON_SECRET` in Vercel), F5b (an R2/S3 bucket + key for automated offsite backup), D15 (email-forward DNS if you want that rung live).
+7. **Copy you'd shape:** C8 (de-escalate reply wording — engine mechanics are ready), U6 (stage-transition outbound copy, also needs D15).
+
+**To ship it:** the branch is merge-ready. `tideover/RELEASE.md` is the ritual (verify → merge to main → `vercel --prod` → `npm run smoke` → changelog). Prod is already live on Mongo at www.tideover.app.
+
+**On the Mac:** the migration bundle on your H: drive is still current-enough (pull the branch after `restore-on-mac.sh` to get the weekend's work).
+
+---
+
 ### [x] 2026-07-03 — "1 day left — list what still needs work"
 
 **Bottom line: the software is done and live. What's left is (1) four sign-offs only you can give, and (2) the outreach copy, which is waiting on ONE decision from you.** Nothing on the product itself is blocking.
