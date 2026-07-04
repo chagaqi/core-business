@@ -4,7 +4,7 @@ import { getSetupChecklist } from "@/lib/service";
 import { getRepositories } from "@/lib/repositories";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { Button } from "@/components/ui/Button";
-import type { SetupItemKey } from "@/lib/setup";
+import { integrationHealth, type SetupItemKey } from "@/lib/setup";
 
 /**
  * Setup checklist (task U4) — "you're N of 5 set up".
@@ -52,6 +52,21 @@ export default async function SetupPage({
     return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
   }
   const { items, completed, total, allDone } = checklist;
+
+  // Integration health (F7): flag a connected-but-quiet real helpdesk on the
+  // helpdesk row. Demo merchants are never "quiet" (their data is static).
+  const helpdeskDone = items.find((i) => i.key === "helpdesk")?.done ?? false;
+  const health = integrationHealth({
+    lastInboundAt: checklist.lastInboundAt,
+    helpdeskConnected: helpdeskDone,
+    isDemo: merchant.isDemo,
+  });
+  const lastInboundLabel =
+    health.quietDays == null
+      ? null
+      : health.quietDays === 0
+        ? "today"
+        : `${health.quietDays} day${health.quietDays === 1 ? "" : "s"} ago`;
 
   // ?merchant= is preserved onto the in-app links so the operator stays on the
   // same merchant; the /onboarding links are merchant-agnostic and left as-is.
@@ -168,6 +183,20 @@ export default async function SetupPage({
                   {!item.done && (
                     <p className="mt-1 max-w-[620px] text-[13px] leading-relaxed text-slate">
                       {item.hint}
+                    </p>
+                  )}
+
+                  {/* Integration health (F7), on the helpdesk row only. */}
+                  {item.key === "helpdesk" && lastInboundLabel && (
+                    <p
+                      className={clsx(
+                        "mt-1.5 text-[13px] leading-relaxed",
+                        health.quiet ? "font-medium text-risk-red" : "text-ink-mute",
+                      )}
+                    >
+                      {health.quiet
+                        ? `⚠ No inbound in ${lastInboundLabel} — your helpdesk may have stopped sending. Check the presale rule/webhook is still active.`
+                        : `Last inbound received ${lastInboundLabel}.`}
                     </p>
                   )}
 

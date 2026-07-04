@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { computeSetupChecklist, type SetupState } from "@/lib/setup";
+import {
+  computeSetupChecklist,
+  integrationHealth,
+  INTEGRATION_QUIET_DAYS,
+  type SetupState,
+} from "@/lib/setup";
 import type { Merchant, MerchantUpdate, Order, StatusView, Ticket } from "@/lib/types";
 
 /**
@@ -232,6 +237,49 @@ test("completed count reflects exactly the derived-done items", () => {
   assert.equal(c.completed, 4);
   assert.equal(c.allDone, false);
   assert.equal(itemDone(state, "first-reply"), false);
+});
+
+// ── F7: integration health (lastInboundAt + quiet detection) ─────────────────
+
+test("lastInboundAt = the most recent REAL (non-mock) inbound; mock is excluded", () => {
+  const state: SetupState = {
+    ...EMPTY,
+    tickets: [
+      ticket({ id: "t_mock", channel: "mock", createdAt: "2026-07-04T00:00:00.000Z" }),
+      ticket({ id: "t_old", channel: "email", createdAt: "2026-06-20T00:00:00.000Z" }),
+      ticket({ id: "t_new", channel: "gorgias", createdAt: "2026-06-28T00:00:00.000Z" }),
+    ],
+  };
+  // newest non-mock wins; the newer mock ticket does not count
+  assert.equal(computeSetupChecklist(state).lastInboundAt, "2026-06-28T00:00:00.000Z");
+});
+
+test("lastInboundAt is null when only mock (or no) inbounds exist", () => {
+  const mockOnly: SetupState = { ...EMPTY, tickets: [ticket({ channel: "mock" })] };
+  assert.equal(computeSetupChecklist(mockOnly).lastInboundAt, null);
+  assert.equal(computeSetupChecklist(EMPTY).lastInboundAt, null);
+});
+
+test("integrationHealth flags a connected, non-demo helpdesk gone quiet past the threshold", () => {
+  const now = new Date("2026-07-20T00:00:00.000Z");
+  const stale = "2026-07-01T00:00:00.000Z"; // 19 days before now
+  const h = integrationHealth({ lastInboundAt: stale, helpdeskConnected: true, isDemo: false }, now);
+  assert.equal(h.quiet, true);
+  assert.ok(h.quietDays! >= INTEGRATION_QUIET_DAYS);
+});
+
+test("integrationHealth never flags a demo merchant, or one still within the window", () => {
+  const now = new Date("2026-07-20T00:00:00.000Z");
+  const stale = "2026-07-01T00:00:00.000Z";
+  // demo data is static → never quiet, even when old
+  assert.equal(integrationHealth({ lastInboundAt: stale, helpdeskConnected: true, isDemo: true }, now).quiet, false);
+  // recent inbound → not quiet
+  const recent = "2026-07-18T00:00:00.000Z"; // 2 days
+  assert.equal(integrationHealth({ lastInboundAt: recent, helpdeskConnected: true, isDemo: false }, now).quiet, false);
+  // never any inbound → not quiet (and quietDays null), so no false alarm on a fresh account
+  const none = integrationHealth({ lastInboundAt: null, helpdeskConnected: true, isDemo: false }, now);
+  assert.equal(none.quiet, false);
+  assert.equal(none.quietDays, null);
 });
 
 test("allDone only when all five are truly derived-done", () => {

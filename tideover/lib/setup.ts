@@ -42,6 +42,40 @@ export interface SetupChecklist {
   completed: number;
   total: number;
   allDone: boolean;
+  /**
+   * Integration health (task F7): the createdAt of the most recent REAL (non-mock)
+   * inbound, or null if none. Surfaced on the "helpdesk connected" step so a
+   * silently-severed webhook (merchant deleted the rule → tickets quietly stop) is
+   * visible before anyone notices the queue went empty. Derived, not stored.
+   */
+  lastInboundAt: string | null;
+}
+
+/** A connected helpdesk that hasn't delivered a real inbound in this long is
+ *  probably severed (rule deleted / secret rotated) — worth flagging. */
+export const INTEGRATION_QUIET_DAYS = 7;
+
+export interface IntegrationHealth {
+  /** true = connected, non-demo, and no real inbound within INTEGRATION_QUIET_DAYS. */
+  quiet: boolean;
+  /** whole days since the last real inbound, or null when none has ever arrived. */
+  quietDays: number | null;
+}
+
+/**
+ * Pure integration-health check (F7). Clock is injected for determinism. Only
+ * flags a REAL (non-demo) merchant whose helpdesk is connected but has gone quiet
+ * — demo data is intentionally static, so a demo merchant is never "quiet".
+ */
+export function integrationHealth(
+  args: { lastInboundAt: string | null; helpdeskConnected: boolean; isDemo: boolean },
+  now: Date = new Date(),
+): IntegrationHealth {
+  const { lastInboundAt, helpdeskConnected, isDemo } = args;
+  if (lastInboundAt == null) return { quiet: false, quietDays: null };
+  const days = Math.floor((now.getTime() - new Date(lastInboundAt).getTime()) / 86_400_000);
+  const quiet = helpdeskConnected && !isDemo && days >= INTEGRATION_QUIET_DAYS;
+  return { quiet, quietDays: days };
 }
 
 /**
@@ -124,7 +158,17 @@ export function computeSetupChecklist(state: SetupState): SetupChecklist {
     },
   ];
 
+  // Integration health (F7): the most recent REAL (non-mock) inbound. This is the
+  // last confirmed delivery from the merchant's helpdesk — the signal that the
+  // connection is still alive, derived from ticket dates (no store needed).
+  const lastInboundAt =
+    tickets
+      .filter((t) => t.channel !== "mock")
+      .map((t) => t.createdAt)
+      .sort()
+      .at(-1) ?? null;
+
   const completed = items.filter((i) => i.done).length;
   const total = items.length;
-  return { items, completed, total, allDone: completed === total };
+  return { items, completed, total, allDone: completed === total, lastInboundAt };
 }
