@@ -1,4 +1,5 @@
 import { Tag } from "@/components/ui/Badge";
+import { DemoBadge } from "@/components/ui/DemoBadge";
 import { ConfidenceBand } from "@/components/status/ConfidenceBand";
 import { WaitProgress } from "@/components/status/WaitProgress";
 import { OrderTimeline } from "@/components/status/OrderTimeline";
@@ -29,6 +30,11 @@ export function StatusView({ status, token }: { status: PublicStatus; token: str
 
   return (
     <div className="min-h-screen bg-sand">
+      {/* Per-merchant SAMPLE DATA marker: shown only for a seeded demo merchant,
+          so a real merchant's customer page is never marked. Fixed corner pill,
+          pointer-events:none — tasteful but present on this customer surface. */}
+      {status.merchant.isDemo && <DemoBadge />}
+
       {/* merchant-branded header */}
       <header className="border-b border-border bg-paper">
         <div className="wrap flex items-center gap-3 py-5">

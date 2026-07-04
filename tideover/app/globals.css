@@ -303,6 +303,50 @@
   user-select: none;
 }
 
+/* SAMPLE DATA corner pill — the persistent, unobtrusive marker for the
+   INTERACTIVE demo surfaces (dashboard, cockpit, customers, social, scripts, and
+   demo-merchant status pages). Distinct from the big diagonal .ev-watermark
+   print overlay above: a small fixed bottom-right pill that never blocks
+   interaction (pointer-events:none) yet stays clearly legible in a screenshot.
+   Rendered by <DemoBadge/>; gated by the caller (DEMO_MODE / merchant.isDemo). */
+.demo-badge {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(17, 37, 42, 0.86);
+  color: var(--ink-inverse);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  line-height: 1;
+  border: 1px solid rgba(244, 249, 249, 0.28);
+  box-shadow: 0 6px 18px -8px rgba(17, 37, 42, 0.55);
+  pointer-events: none;
+  user-select: none;
+}
+.demo-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--terracotta);
+  box-shadow: 0 0 0 3px rgba(217, 118, 47, 0.28);
+}
+@media print {
+  /* Print artifacts carry the .ev-watermark overlay instead; hide the pill. */
+  .demo-badge {
+    display: none !important;
+  }
+}
+
 /* ============================================================
    Day-0 Baseline Report (M4) — the cold-outreach proof-of-method artifact.
    Reuses the .evpack print isolation + .ev-* documentary styles above; adds a

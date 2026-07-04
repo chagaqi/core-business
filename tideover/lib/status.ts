@@ -12,7 +12,7 @@ import type { CustomerGroup, DayStageKey, OrderTimeline } from "@/lib/types";
  */
 export interface PublicStatus {
   firstName: string;
-  merchant: { name: string; logoText: string; colors: { primary: string; bg: string; ink: string }; signoff: string };
+  merchant: { name: string; logoText: string; colors: { primary: string; bg: string; ink: string }; signoff: string; isDemo: boolean };
   orderRef: string;
   group: CustomerGroup;
   region: string;
@@ -100,6 +100,10 @@ export async function getPublicStatus(
       logoText: merchant.brand.logoText,
       colors: merchant.brand.colors,
       signoff: merchant.brand.signoff,
+      // Not PII: a merchant-level flag so the customer status page can mark a
+      // SEEDED DEMO merchant's page as sample data (per-merchant, correct on any
+      // deployment). Never leaks customer data.
+      isDemo: merchant.isDemo,
     },
     orderRef: order.id,
     group: order.group,

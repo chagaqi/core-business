@@ -60,6 +60,15 @@ export default async function WidgetPage({ params }: { params: { token: string }
 
           <AskBox token={params.token} accent={accent} compact />
 
+          {status.merchant.isDemo && (
+            <p
+              className="mx-auto rounded-full border border-border bg-sand px-2.5 py-0.5 text-center text-[10px] font-semibold uppercase tracking-wider text-ink-mute"
+              aria-label="Sample data — demo environment"
+            >
+              Sample data
+            </p>
+          )}
+
           <p className="text-center text-[11px] text-ink-mute">
             Powered by{" "}
             <a
