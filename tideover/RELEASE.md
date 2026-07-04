@@ -51,3 +51,21 @@ these steps. Most are one command; the whole thing is a few minutes.
 `vercel --prod` from the previous good commit, then `npm run smoke` to confirm.
 Vercel also keeps prior deployments — promoting an older one in the dashboard is
 the fastest path if the tree is mid-change.
+
+## Uptime monitoring (the dead-man switch)
+
+`GET /api/health` (public, no auth) returns **200 `{status:"ok"}`** when the app is
+up and the data driver is reachable, and **503 `{status:"degraded"}`** when the DB
+can't be reached. It leaks nothing sensitive — just up/down + the driver name.
+
+Point a free external monitor at it so a prod outage pages you instead of a
+prospect finding it:
+
+1. Sign up for UptimeRobot / Cronitor / BetterStack (free tiers are enough).
+2. Add an **HTTP(s)** monitor on `https://www.tideover.app/api/health`, interval
+   1–5 min.
+3. Alert condition: **status code is not 200** (a 503 or a timeout both mean
+   degraded). Send the alert to your email/phone.
+
+That external ping *is* the dead-man switch: if the app or MongoDB goes down, the
+monitor stops seeing 200s and notifies you. Nothing to run on our side.
