@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/marketing/Nav";
 import { Footer } from "@/components/marketing/Footer";
+import { Button } from "@/components/ui/Button";
+import { CAN_SEE, NEVER_SEE, REVOCATION } from "@/lib/security-content";
 
 /**
  * /security — the data-map page for prospects and their legal/ops reviewers.
@@ -15,72 +17,6 @@ export const metadata: Metadata = {
   description:
     "Exactly what Tideover can and can't see, how to cut us off in one action per integration, and how non-presale data is dropped before it touches a database.",
 };
-
-const CAN_SEE: readonly { title: string; body: string }[] = [
-  {
-    title: "The presale tickets you route to us",
-    body: "The subject and body text of the support messages you forward or webhook to Tideover, the customer's email address, an order reference if the message carries one, and when it was sent. That is the message you chose to send us — nothing more from your inbox.",
-  },
-  {
-    title: "The order and customer details needed to match a ticket to a real timeline",
-    body: "For the orders and customers you route or import: first name, email, order value, region, production stage, and the delivery estimate disclosed at purchase. We use these to compute the timeline and risk you see, and the reassurance the buyer sees. Not your whole store — only what a routed ticket needs.",
-  },
-  {
-    title: "Status-page view metadata, for dispute evidence",
-    body: "When a buyer opens a status link you shared, we log the time, a shortened browser user-agent, and only the first two octets of their IP address (e.g. \"203.0\", never the full address). It is a factual \"notified on X, viewed on Y\" record, kept as chargeback evidence.",
-  },
-];
-
-const NEVER_SEE: readonly { title: string; body: string }[] = [
-  {
-    title: "Card or payment data",
-    body: "Tideover never touches checkout or a payment processor. Card numbers, bank details, and payment credentials live with Shopify, Kickstarter, and your processor. There is no code path in Tideover that reads them.",
-  },
-  {
-    title: "Your Shopify admin",
-    body: "Running the pilot needs no app install, no admin password, and no OAuth into your store. The forwarding and webhook rungs move tickets to us without granting any access to your Shopify admin.",
-  },
-  {
-    title: "Your full customer list",
-    body: "We only receive the customers attached to the tickets you route, plus any export you deliberately choose to import. Tideover never performs a bulk pull of your store's customer database.",
-  },
-  {
-    title: "Passwords",
-    body: "No integration rung asks for a login. Forwarding aliases, webhooks with a shared secret, and least-privilege API keys are the only mechanisms — never your password.",
-  },
-  {
-    title: "Anything outside the tickets you send us",
-    body: "Messages you don't route never reach us. Where you scope us to presale tags, anything that isn't presale is discarded at the edge before it is ever stored (see below).",
-  },
-];
-
-const REVOCATION: readonly { rung: string; grants: string; cutoff: string }[] = [
-  {
-    rung: "0 — CSV import",
-    grants: "The order/customer fields from a file you upload yourself.",
-    cutoff: "Nothing recurring to revoke — stop uploading, and email us to delete the imported records.",
-  },
-  {
-    rung: "1 — Email forwarding",
-    grants: "A copy of the presale mail your forwarding rule sends to a Tideover alias.",
-    cutoff: "Delete the forwarding rule in your mail settings. Mail stops reaching us immediately.",
-  },
-  {
-    rung: "2 — Helpdesk webhook",
-    grants: "Presale ticket events your helpdesk fires at our ingest URL (e.g. a Gorgias HTTP integration).",
-    cutoff: "Deactivate or delete the webhook or trigger in your helpdesk. No further events reach us.",
-  },
-  {
-    rung: "3 — Write-back API key",
-    grants: "A least-privilege agent-user key so approved replies post back inside your helpdesk.",
-    cutoff: "Reset the API key (invalidates instantly) or delete the Tideover agent user.",
-  },
-  {
-    rung: "Optional — Shopify custom app",
-    grants: "Read-only order data, if you ever create a custom app with read_orders.",
-    cutoff: "Uninstall the custom app from your Shopify admin.",
-  },
-];
 
 function CheckIcon() {
   return (
@@ -112,6 +48,15 @@ export default function SecurityPage() {
                 "This page is for you and whoever reviews tools before you adopt them. It describes how Tideover actually handles data, in plain terms. We hold as little as the job needs, we drop what isn't presale before it lands in a database, and every integration has a single action that cuts us off. That is the design, not a policy we promise to follow later."
               }
             </p>
+            <div className="mt-6">
+              <Button href="/procurement" variant="ghost">
+                Download the procurement packet
+              </Button>
+              <p className="mt-2 text-[13.5px] text-ink-mute">
+                Everything on this page plus our sub-processors and data-handling, on one printable page to
+                forward to a security or procurement reviewer.
+              </p>
+            </div>
             <nav aria-label="Legal pages" className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-[14px] text-ink-mute">
               <a className="link-quiet" href="/privacy">
                 Privacy

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Nav } from "@/components/marketing/Nav";
 import { Footer } from "@/components/marketing/Footer";
+import { SUB_PROCESSORS, RETENTION, DELETION_EXPORT } from "@/lib/security-content";
 
 /**
  * /privacy — plain-English privacy policy for the Tideover product. Proof-only:
@@ -57,24 +58,15 @@ const SECTIONS: readonly Section[] = [
     paras: [
       "We use a small set of third parties to run the service. We name them all, and we will update this list before adding another:",
     ],
-    bullets: [
-      "Vercel — application hosting.",
-      "MongoDB Atlas — database storage on the production data path.",
-      "Cal.com — the booking embed on our marketing site.",
-      "Resend — configured for future transactional email (e.g. status notifications). It is not active in the pilot: Tideover sends no email to your customers today, and pilot replies are reviewed and sent by you. Listed here in advance of activation.",
-    ],
+    bullets: SUB_PROCESSORS.map((s) => `${s.name} — ${s.role}`),
   },
   {
     heading: "How long we keep it",
-    paras: [
-      "We keep routed tickets and the order and customer records they depend on for as long as your pilot or account is active. Status-page view logs are append-only evidence records, kept for the same period. When you no longer need a record, or when your account ends, we delete it (see below).",
-    ],
+    paras: [RETENTION],
   },
   {
     heading: "Deleting or exporting your data",
-    paras: [
-      "You can ask us to export or delete the data you have routed to us at any time by emailing hello@tideover.app, and we will act on the request within a reasonable period. When your account ends, we delete the data you routed to us. Because you are the controller, you can also cut the flow at the source at any time — the Security page lists the one action that revokes each integration.",
-    ],
+    paras: [DELETION_EXPORT],
   },
   {
     heading: "Where your data is processed",
