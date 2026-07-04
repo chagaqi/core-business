@@ -1,0 +1,45 @@
+# Architecture Decision Records — Tideover
+
+Every non-trivial decision (a new dependency, an engine change, an integration, a pricing or data-exposure choice) is recorded here as a short ADR before the code lands. They are the "why", so a reviewer — or a future maintainer — can reconstruct the reasoning without archaeology. New ADRs use the next number; supersede rather than edit an accepted one.
+
+**Conventions:** `ADR-NNNN-slug.md`, each headed `# ADR-NNNN — Title` with a `**Date · Status · Task**` line. Status is `accepted` unless `superseded by ADR-XXXX`. Use [`TEMPLATE.md`](./TEMPLATE.md).
+
+## The two substrate decisions
+
+| # | Decision | What it fixes |
+|---|----------|---------------|
+| [0001](./ADR-0001-app-architecture.md) | One Next.js app, deterministic engines, seeded-demo-first | The build shape: software (not a service), demoable offline, DB/LLM plug in later |
+| [0002](./ADR-0002-repository-seam-and-proof-doctrine.md) | Repositories seam + one domain model + **proof-only doctrine** | The disciplines every later ADR assumes: storage swap without rewrites; never a fabricated claim |
+
+## By area
+
+**Persistence & auth**
+| # | Decision |
+|---|----------|
+| [0003](./ADR-0003-mongo-driver.md) | MongoDB via the official driver, behind the existing Repositories seam |
+| [0004](./ADR-0004-app-auth.md) | Operator auth: env-gated demo mode + shared-password HMAC-cookie session |
+
+**Engine & proof**
+| # | Decision |
+|---|----------|
+| [0005](./ADR-0005-order-schema-evidence.md) | disclosed-ETA + status-view logging + campaign/wave labels (dispute evidence) |
+| [0006](./ADR-0006-eval-harness.md) | Engine eval harness: invariant sweep (authoritative) + golden regression (review-gated) |
+| [0007](./ADR-0007-outcome-ledger.md) | Outcome ledger Phase 0: script variants + append-only outcome events |
+| [0012](./ADR-0012-outcome-instrumentation.md) | Outcome instrumentation (E2): CSAT tap + reply/reopen attribution + richer panel |
+| [0014](./ADR-0014-reply-qa-and-promoted-variants.md) | Reply QA checklist (hard-date gate) + operator-promoted variants (E4) |
+
+**Integration ladder (the "easy integration" wedge)**
+| # | Decision |
+|---|----------|
+| [0008](./ADR-0008-email-forward-ingest.md) | Email-forward ingest via Resend inbound (Rung 1, the zero-trust wedge) |
+| [0009](./ADR-0009-update-pipeline.md) | Update pipeline: one workshop update → status-page feed + Kickstarter draft |
+| [0010](./ADR-0010-csv-import.md) | CSV import (Rung 0): backer list → customers + orders, parsed client-side |
+| [0011](./ADR-0011-webhook-ingest.md) | Per-merchant helpdesk webhook ingest (Rung 2, the API path, tag-routed) |
+
+**Ops**
+| # | Decision |
+|---|----------|
+| [0013](./ADR-0013-scheduled-jobs.md) | Scheduled jobs (F4): Vercel Cron + the resolved_quiet sweep |
+
+## Reading order for a newcomer
+0001 → 0002 (the substrate) → 0006 (how engine changes are gated) → then whichever area you're touching.
