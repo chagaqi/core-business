@@ -14,6 +14,7 @@ const NAV: Array<{ href: string; label: string; hint: string }> = [
   { href: "/app", label: "Dashboard", hint: "Refund-risk overview" },
   { href: "/app/inbox", label: "Inbox", hint: "Operator cockpit" },
   { href: "/app/customers", label: "Customers", hint: "LTV + risk" },
+  { href: "/app/forecast", label: "Forecast", hint: "WISMO load ahead" },
   { href: "/app/gifts", label: "Gifts", hint: "Goodwill engine" },
   { href: "/app/scripts", label: "Scripts", hint: "Performance" },
   { href: "/app/social", label: "Social", hint: "Signal monitor" },
