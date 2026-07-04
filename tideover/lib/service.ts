@@ -12,6 +12,11 @@ import { getDrafter } from "@/lib/drafting/LlmDrafter";
 import { getSendAdapter } from "@/lib/channel-adapters/registry";
 import { computeDisputeExposure, type DisputeExposure } from "@/lib/dispute-exposure";
 import { containsHardDate } from "@/lib/proof";
+import {
+  embeddedBandPhrase,
+  generateAlternates,
+  type DraftAlternates,
+} from "@/lib/draft-alternates";
 import type { NormalizedTicket } from "@/lib/channel-adapters/ChannelAdapter";
 import type {
   Customer,
@@ -70,6 +75,48 @@ export async function getTicketView(ticketId: string, now: Date = new Date()): P
   });
   const timeline = computeTimeline(order, merchant, now);
   return { ticket, order, customer, merchant, timeline, intel };
+}
+
+/**
+ * C2 — the three toggleable drafts {standard, brief, de-escalate} for one ticket.
+ *
+ * Reuses getTicketView (unchanged shape) for the standard draft, then CALLS the
+ * reassurance engine a second time via computeTicketIntelligence with the ticket's
+ * sentiment overridden to the highest-distress path — the engine's own most-
+ * reassuring output — for the de-escalate view. The engine is never modified; only
+ * its input sentiment changes, so the goldens/invariants stay byte-stable.
+ * `brief` is a deterministic proof-preserving shortening of the standard draft
+ * (see lib/draft-alternates). Returns null when the ticket can't be resolved.
+ */
+export async function getDraftAlternates(
+  ticketId: string,
+  now: Date = new Date(),
+): Promise<DraftAlternates | null> {
+  const view = await getTicketView(ticketId, now);
+  if (!view) return null;
+  const { ticket, order, customer, merchant, timeline } = view;
+  const standard = view.intel.reassurance.draftText;
+
+  // De-escalate: recompute the engine with sentiment overridden to the calmest/
+  // highest-reassurance path. This CALLS the engine with a different input — it
+  // does not change engine logic. draftText is currently sentiment-invariant, so
+  // this commonly equals `standard`; that is acceptable and honest.
+  const repos = getRepositories();
+  const catalog = await repos.gifts.listByMerchant(merchant.id);
+  const ticketsLast7d = await ticketsLast7dFor(merchant.id, customer.id);
+  const deEscalateIntel = computeTicketIntelligence({
+    ticket: { ...ticket, sentiment: "chargeback-threat" },
+    order,
+    customer,
+    merchant,
+    catalog,
+    ticketsLast7d,
+    now,
+  });
+  const deEscalate = deEscalateIntel.reassurance.draftText;
+
+  const bandPhrase = embeddedBandPhrase(timeline.confidenceBand, timeline.overdue);
+  return generateAlternates({ standard, deEscalate, bandPhrase, signoff: merchant.brand.signoff });
 }
 
 /**

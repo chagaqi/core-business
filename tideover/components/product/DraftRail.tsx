@@ -4,6 +4,15 @@ import { useRef, useState } from "react";
 import { TextArea } from "@/components/ui/Field";
 import { ApprovalBar, type ApprovalBarHandle } from "@/components/product/ApprovalBar";
 import { blocksSend, scoreReplyChecks, type ReplyCheckDimension } from "@/lib/qa";
+import type { DraftAlternates } from "@/lib/draft-alternates";
+
+type DraftMode = "standard" | "brief" | "deEscalate";
+
+const MODE_LABEL: Record<DraftMode, string> = {
+  standard: "Standard",
+  brief: "Brief",
+  deEscalate: "De-escalate",
+};
 
 /**
  * Right rail of the cockpit. Confidence-band chip, an editable draft (prefilled),
@@ -24,6 +33,7 @@ export function DraftRail({
   firstResponseSec,
   merchantId,
   nextTicketId,
+  alternates,
 }: {
   ticketId: string;
   draftText: string;
@@ -37,11 +47,42 @@ export function DraftRail({
   firstResponseSec: number | null;
   merchantId: string;
   nextTicketId: string | null;
+  /**
+   * C2 — the three toggleable views of this draft. Optional so the rail behaves
+   * exactly as before when absent. `standard` is byte-identical to `draftText`.
+   */
+  alternates?: DraftAlternates;
 }) {
   const [text, setText] = useState(alreadySent && sentText ? sentText : draftText);
+  const [mode, setMode] = useState<DraftMode>("standard");
   const textRef = useRef(text);
   textRef.current = text;
   const approvalRef = useRef<ApprovalBarHandle>(null);
+
+  // C2 toggle: swap the editor's seed text to the chosen alternate. This only
+  // re-seeds the SAME editable textarea the operator sends from — it changes
+  // nothing about Approve & send (which still posts the live editor text). Shown
+  // only while the draft is still editable (an already-sent reply is frozen).
+  const alternateFor = (m: DraftMode): string =>
+    m === "brief"
+      ? alternates!.brief
+      : m === "deEscalate"
+        ? alternates!.deEscalate
+        : alternates!.standard;
+  // Only offer an alternate that ACTUALLY differs from Standard — a tab that
+  // re-seeds identical text would be misleading (e.g. De-escalate is a no-op
+  // while the engine's wording is sentiment-invariant). Standard always shows;
+  // the toggle appears only when there's a real choice.
+  const visibleModes: DraftMode[] = alternates
+    ? (["standard", "brief", "deEscalate"] as DraftMode[]).filter(
+        (m) => m === "standard" || alternateFor(m) !== alternates.standard,
+      )
+    : [];
+  const showToggle = !alreadySent && alternates != null && visibleModes.length > 1;
+  function selectMode(m: DraftMode) {
+    setMode(m);
+    setText(alternateFor(m));
+  }
 
   // Reply QA (ADR-0014, E4): re-scored live as the operator edits. Two AUTO checks
   // (no hard date — the gate; personalized) + two guidance prompts. Proof-only:
@@ -74,6 +115,42 @@ export function DraftRail({
             Manager note
           </p>
           <p className="mt-0.5 text-[13px] text-slate">{managerNote}</p>
+        </div>
+      ) : null}
+
+      {showToggle ? (
+        <div>
+          <div
+            role="group"
+            aria-label="Draft version"
+            className="inline-flex w-full rounded-lg border border-border bg-sand p-0.5"
+          >
+            {visibleModes.map((m) => {
+              const active = mode === m;
+              return (
+                <button
+                  key={m}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => selectMode(m)}
+                  className={`flex-1 rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors ${
+                    active
+                      ? "bg-teal text-ink-inverse shadow-sm"
+                      : "text-slate hover:text-ink"
+                  }`}
+                >
+                  {MODE_LABEL[m]}
+                </button>
+              );
+            })}
+          </div>
+          <p className="mt-1 text-[11px] leading-snug text-ink-mute">
+            {mode === "brief"
+              ? "Trimmed to the greeting, the confidence band, and the sign-off."
+              : mode === "deEscalate"
+                ? "The engine's calmest, highest-reassurance wording."
+                : "The full drafted reply, as it ships today."}
+          </p>
         </div>
       ) : null}
 

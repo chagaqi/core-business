@@ -1,4 +1,4 @@
-import { getPreviouslyTold, getQueue, getTicketView } from "@/lib/service";
+import { getDraftAlternates, getPreviouslyTold, getQueue, getTicketView } from "@/lib/service";
 import { getRepositories } from "@/lib/repositories";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { QueueList, type QueueItem } from "@/components/product/QueueList";
@@ -98,6 +98,10 @@ export default async function InboxPage({
   const previouslyTold = view
     ? await getPreviouslyTold(merchantId, view.ticket.customerId, view.ticket.id)
     : null;
+  // C2: the three toggleable draft views for the selected ticket. `standard` is
+  // byte-identical to view.intel.reassurance.draftText, so the rail's initial
+  // state is unchanged. null on unresolved tickets → the rail hides the toggle.
+  const alternates = view ? await getDraftAlternates(view.ticket.id) : null;
   const queueCleared = items.length === 0;
 
   return (
@@ -245,6 +249,7 @@ export default async function InboxPage({
                 firstResponseSec={view.ticket.firstResponseSec}
                 merchantId={merchantId}
                 nextTicketId={nextTicketId}
+                alternates={alternates ?? undefined}
               />
               <GiftSuggestion
                 key={view.ticket.id}
