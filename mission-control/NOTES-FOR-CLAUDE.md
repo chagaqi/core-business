@@ -58,8 +58,10 @@ _(empty — your "1 day left, what's left?" note is answered under Handled.)_
 - **X2** — approve the copy framework so I can build the outreach pages (I recommended templating Basecamp's structure; see `docs/copy/ABOUT-TEMPLATE.md`). **This is the unblocker** — /pricing and the lead-magnet page are gated on it.
 - **D16** — set `WEBHOOK_ROOT_SECRET` + `CRON_SECRET` in Vercel (30 sec, any long random strings). Two built features stay dormant/fail-closed until then — safe, but not armed.
 
-**② Copy / GTM still to build (I can do these once X2 is approved — the biggest lever for the $20K goal):**
-- **/pricing page (G2)** — the pricing ladder you approved (D8), as a real page.
+**⚠️ Correction (2026-07-04): /pricing is NOT gated on X2 — it needs a different call from you (now D17).** Building it, I hit two things I won't decide for you: (1) the per-tier **order caps** were never written down (Starter $299 / Growth $499 / Scale $749 each need an "up to N presale orders" number; the D8 decision page is missing); (2) a **live pricing conflict** — `Pilot.tsx`/`FAQ.tsx` say "$199–$499/mo on proof" and `v2-sales-page.md` promises founding partners "$199–299, the lowest I'll offer," so publishing $299 as Starter makes that pledge false. Give me the caps + which numbers win and I ship /pricing + fix the stale copy in one tick. (X2 is still separate — the About-page voice.)
+
+**② Copy / GTM still to build (the biggest lever for the $20K goal):**
+- **/pricing page (G2)** — the pricing ladder you approved (D8), as a real page. **Now blocked on D17 (above), not X2.**
 - **WISMO Teardown lead magnet (G4)** — the cold-outreach lead magnet page + day-14 checkpoint.
 - The cold-email sequence + lead-magnet *content* already exist as docs (`14-cold-email-sequence.md`, `16-lead-magnet.md`); these turn them into site surfaces.
 
