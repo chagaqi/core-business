@@ -42,11 +42,36 @@ Note taken on the word "honest" — I've stopped, and queued a copy sweep to pul
 
 ## 📨 Inbox (newest first)
 
-### [ ] 2026-06-19 — (paste your note here)
-> Replace this line with the note you tried to leave in the dashboard, then tell Claude to check the file.
-> We have **1 day left** in the sprint — list anything that still needs work (VSL, deliverables, copy, etc.).
+_(empty — your "1 day left, what's left?" note is answered under Handled.)_
 
 ---
 
 ## ✅ Handled
+
+### [x] 2026-07-03 — "1 day left — list what still needs work"
+
+**Bottom line: the software is done and live. What's left is (1) four sign-offs only you can give, and (2) the outreach copy, which is waiting on ONE decision from you.** Nothing on the product itself is blocking.
+
+**① Your sign-offs — the real critical path (≈1 hour total):**
+- **D7** — read the "Why I built Tideover" founder story (`docs/founder-story.md`) and say go / change. It's the trust spine of the whole pitch.
+- **D9** — the 55 golden fixtures review (~30 min). They're the engine's reply snapshots; approving them flips `reviewed:false → true` and locks the safety net.
+- **X2** — approve the copy framework so I can build the outreach pages (I recommended templating Basecamp's structure; see `docs/copy/ABOUT-TEMPLATE.md`). **This is the unblocker** — /pricing and the lead-magnet page are gated on it.
+- **D16** — set `WEBHOOK_ROOT_SECRET` + `CRON_SECRET` in Vercel (30 sec, any long random strings). Two built features stay dormant/fail-closed until then — safe, but not armed.
+
+**② Copy / GTM still to build (I can do these once X2 is approved — the biggest lever for the $20K goal):**
+- **/pricing page (G2)** — the pricing ladder you approved (D8), as a real page.
+- **WISMO Teardown lead magnet (G4)** — the cold-outreach lead magnet page + day-14 checkpoint.
+- The cold-email sequence + lead-magnet *content* already exist as docs (`14-cold-email-sequence.md`, `16-lead-magnet.md`); these turn them into site surfaces.
+
+**VSL:** all four VSL landing pages are built and live (`/vsl/landing-vsl`, `/partner-demo`, `/playbook-promo`, `/cold-loom`). What's not done is *recording the actual videos* — that's you on camera; the pages + scripts are ready to shoot against.
+
+**③ Optional product polish (nice-to-have, NOT blockers — I'll do if you want):** cockpit tweaks (draft alternates, "previously told" strip, dashboard v2), a demo-tour-first onboarding, the GMV-in-dispute money tile. The design-taste pass (X1) you already said "later."
+
+**What I'm doing autonomously today** (safe, unblocked): hardening + hygiene tasks that don't need you. If you want me to spend the last day on the **outreach pages instead, just approve X2** and I'll build /pricing + the lead magnet page.
+
+**My rec for your hour:** D7 + D9 + X2 + D16, in that order. That unlocks the outreach build and arms everything for a real pilot.
+
+---
+
+### (earlier handled)
 _(Claude moves done notes here with a one-line outcome.)_
