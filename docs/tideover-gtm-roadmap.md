@@ -1,0 +1,279 @@
+# Tideover — Go-to-Market Roadmap (V2 Venture)
+
+> **What this is.** This document is a lossless migration of the Tideover (V2) venture-strategy object out of Mission Control (`mission-control/data.js`, `ventures.v2`), done on **2026-07-06** so that `mission-control/tideover-hq.html` becomes the single canonical source for Tideover and the duplicate copy in Mission Control's dashboard data can be safely deleted without losing anything. It carries over every sub-key of `ventures.v2` (identity, scores, hormozi value-equation, honest target, positioning, method, gate, beachhead, offer ladder, funnel, the full S0–S5 stage roadmap with daily plans, agents, budget, risks) plus the `[HUMAN]` go-to-market next-steps referenced by the build deliverables (d03, d04, d08, d09, d10, d14, d15, d16, d17, d22). Nothing below has been summarized away — action items, KPIs, numbers, and `[HUMAN]`/`[AGENT]` tags are preserved verbatim from source.
+
+---
+
+## 1. Venture identity
+
+- **id:** `v2`
+- **name:** Tideover
+- **tagline:** The presale-specialist support layer that tides your customers over the 60-120 day paid-but-waiting window — keeping anxious buyers calm and aboard, so refunds and chargebacks don't bleed the brand.
+- **accent:** v2
+
+### Scores
+| Metric | Score |
+|---|---|
+| Opportunity | 9 |
+| Pain | 8 |
+| Builder confidence | 8 |
+| Execution difficulty | 5 |
+
+---
+
+## 2. Positioning & offer
+
+### Hormozi value-equation
+| Component | Score |
+|---|---|
+| Dream outcome | 8 |
+| Likelihood of achievement | 6 |
+| Time delay | 6 |
+| Effort & sacrifice | 6 |
+| **Value** | **48** |
+
+### Honest target
+By calendar-Day-90 (gate likely fired ~Day 35-45): 1-2 design partners live on the concierge service + at least 1 documented leading-indicator win (FRT cut, WISMO volume down, or deflection up) with a clean baseline + (stretch) first paid conversion. NOT 3-5 partners + paid revenue, and NOT a finished refund case study. A full refund-rate delta needs a complete presale cycle (60-120 days) so it lands post-90; we say that plainly to every partner. The 3-5-partner / first-paid outcome is the GATE+90 target, which slips past calendar-Day-90 if the gate is late. Venture 1 cash + balloon rev-share carry the floor while this compounds.
+
+### Positioning
+Engine 2. A specialist support LAYER, not a new helpdesk. Plugs into the merchant's existing Gorgias/Intercom/Tidio and their preorder app, knows each order's real production timeline, and delivers timeline-aware, emotionally-intelligent reassurance at day 7 vs 30 vs 60 vs 89. The moat is NOT the LLM (commoditized) - it is the day-by-day reassurance playbooks plus the outcome data, both of which Chaga's real ~$2M/yr physical-goods operator background (warehouse, in-house shipping, fulfillment, and 'where is my order' comms during long waits) lets him author credibly. No funded player owns 'presale support AI' - greenfield category, no shared vocabulary yet.
+
+### Method — "Concierge-first MVP"
+Prove the language and the impact MANUALLY before writing any software. Chaga + AI run a partner's presale support by hand inside the partner's own helpdesk for one cycle, capture the exact reassurance script at each day-in-wait stage, and manufacture the first real proof. Software (a thin Shopify embedded app) automates only what is already proven - never build automation around an unproven playbook.
+
+### Gate (Mode A / Mode B)
+
+**MODE A — Agent-only scout-and-stage (Day 0 → GATE).** Runs NOW, in parallel with Venture 1, costing Chaga <=20 min/day (approvals only). Agents do everything: Design-Partner-Scout builds the 100-row crowdfunding-graduate prospect list, Pain/Quote-Miner fills the pain bank, Listing/Content drafts the playbook + pilot agreement, the prospect sheet + agent briefs get stood up. NO human outreach, interviews, calls, or onboarding happen in Mode A. The ~21-day cold-email domain warmup is STARTED here on absolute Day 0 so it is deliverable by ~Day 21+ for S4/S5 next-cohort sends.
+
+**MODE B — Human-heavy outreach/concierge (GATE → Day 90).** The full S0->S5 motion: founder outreach, problem interviews, pilot closing, live ticket approval in two fixed AM/PM SLA windows, and the paid ask. Only triggered at the GATE. All human day-numbers in the stages are GATE-relative (T+n), not absolute June dates; only the Mode-A agent prep runs on absolute calendar dates.
+
+**Trigger.** Mode B begins on the FIRST of: (1) Venture 1 cleared its Graduation Bar AND landed first cash (~$3-5K collected, realistically V1 Day 30-45), OR (2) Venture 1 hits ~$6K MRR (the README Engine-2 re-engage trigger, ~Day 60-90), whichever leaves Chaga sustainable founder hours, OR (3) Day 45 (Wed Jul 29) hard backstop IF Venture 1 is delivering and Chaga has >=3 sustainable focused hrs/day free. If Venture 1 is NOT producing cash by Day 45, Tideover stays in Mode A and the gate slides - never start two un-cashed first-cash sprints at once. Combined founder-hours across both ventures must stay under ~8 focused hrs/day; concurrent live ticket-approving partners capped at 1-2 during any overlap; >=1 zero-human Tideover day per week.
+
+### Beachhead
+Kickstarter / Indiegogo / BackerKit graduates moving onto Shopify - within that, hardware + design + made-to-order creators with 60-120 day fulfillment windows and large backer lists.
+
+Why this one:
+1. **Most acute pain** - they juggle three customer groups at once (KS backers, BackerKit late-pledges, new Shopify preorders) on different timelines; verbatim "Support is losing their minds trying to figure out who is who."
+2. **Clearest outbound list** - unlike the listless 'long-wait DTC' segment, crowdfunding graduates are enumerable (campaign pages, BackerKit community, r/kickstarter, r/Crowdfunding) so a scout agent can build a named, time-bound list of campaigns mid-fulfillment.
+3. **Already pay for workflow tools** - BackerKit is paid, 30-50% will pay $100-$300/mo, lower price-sensitivity than micro/solo.
+4. **Founder credibility maps 1:1** to Chaga's long-fulfillment operator world.
+5. **Reusable playbook resells** across the segment and inherits ~80% into made-to-order luxury + drop/scarcity adjacents post-90.
+
+Deprioritized: made-to-order luxury (#2 expansion), drops (#3), micro/solo (too low ARPU), regulated/supplements (timeline-promise liability too high to learn on). Deprioritized entirely: building a full helpdesk.
+
+### Offer ladder
+| Rung | Name | Price | Purpose |
+|---|---|---|---|
+| 0 | Presale Anxiety Playbook (free PDF/Notion lead magnet) | Free | Lead magnet + category-creation; mines pain and builds the prospect list |
+| 1 | Concierge pilot - Chaga + AI run the partner's presale support manually for one cycle | Free (pilot) → intro $199-$299/mo at conversion | Learn the day-by-day language; manufacture the first real proof |
+| 2 | Starter (productized) - thin app automates the proven scripts in their existing helpdesk | $299-$499/mo | Automate what concierge already proved; first defensible paid tier |
+| 3 | Proactive (core) - proactive day-7/30/60/90 timeline-aware outreach + refund-risk scoring | $799-$999/mo | Earned later, only once a real outcome exists; the core recurring product |
+| 4 | Insight add-on / Refund-Risk Dashboard | $200-$500/mo usage-based | Refund-risk curve, deflection + saves reporting; expansion revenue |
+| 5 | Enterprise / agency white-label | $10k+/yr custom | Multi-brand "powered by", rev-share with Gorgias-heavy agencies |
+
+---
+
+## 3. Stage roadmap (S0 → S5)
+
+### S0 — Design-Partner Hunt & Validation
+- **Day range:** GATE → GATE+14 (Mode-A agent prep may begin calendar Day 0)
+- **Goal:** Confirm the pain is real and acute in LIVE conversations, and book the first design partners. (Mode-A agent prep - prospect list, pain bank, drafts, domain warmup - may run on absolute calendar dates before the gate.)
+- **Entry:** Roadmap approved; capture docs read; the Section-0 GATE has fired (Venture-1 first cash landed OR Day-45 backstop reached with sustainable hours free). Mode-A agent prep may run BEFORE the gate.
+- **Exit:** Exhaustive, contiguous bands: >=3 design partners verbally committed to a free concierge pilot AND >=10 problem-interviews logged with pain quotes → PASS, enter S1. Exactly 2 committed → CONDITIONAL HOLD: 5-7 more interviews / 25 more touches across GATE+14→GATE+18, re-gate GATE+18, proceed with 2 if a 3rd is close. 0-1 by GATE+14 → trigger KILL/PIVOT.
+- **KPIs:**
+  - Prospects identified (crowdfunding graduates) — target **100 named**; measure: Scout agent sheet (name, brand, campaign, fulfillment ETA, contact, channel); contacts found via gooseworks skill. (leading)
+  - Outbound touches sent — target **75**; measure: Prospect sheet channel + sent_date + reply columns (DM where handle found / personal-inbox email where verified). (leading)
+  - Problem interviews booked + held — target **10**; measure: Cal.com "Presale Support Interview" bookings + call notes. (leading)
+  - Design partners verbally committed — target **3 (min) → 5 (target)**; measure: Signed 1-page pilot agreement / explicit yes. (lagging)
+- **Kill/scale:** KILL/PIVOT band at GATE+14: 0-1 committed → pause build, run 10 more interviews; if still cold, pivot beachhead to long-wait DTC or made-to-order luxury before sinking build time.
+- **Daily plan:**
+  - Day 0 (absolute, Mode-A, <=20 min): log one dated line in Biz-Ops Decisions - "Beachhead = crowdfunding graduates to Shopify; Tideover v1 approved as Engine 2 (Mode A only until V1 GATE); KILL gate = 0-1 partner by GATE+14." `[HUMAN]`
+  - Day 0 infra (batchable, <=45 min, deferrable to just-before-gate): buy tideover.app (+ .com/.io if available) at Namecheap (~$12-$40) + email forwarding; START the ~21-day cold-email warmup TODAY (SPF/DKIM/DMARC); create the Cal.com "Presale Support Interview" 15-min event; confirm Reddit + Shopify + Gorgias community logins. `[HUMAN]`
+  - Day 0 `[AGENT]`: stand up the prospect sheet with exact columns (brand, campaign, platform, funded date, ETA, contact, contact_source, contact_confidence, channel, sent_date, reply, status) + create Design-Partner-Scout saved agent with scout-brief.md.
+  - Day 1 `[AGENT]`: Scout pulls first 40 named prospects (campaigns mid/post-funding, fulfillment 30-120 days out). Day 1 `[HUMAN, GATE-rel]`: write the no-pitch operator-voice interview DM, embed Cal.com link, reserve the "$2M" figure for warm calls only.
+  - Day 2 `[AGENT]`: Scout adds 30 more (70 total) + runs gooseworks to find a verified email / DM handle + source URL per prospect; Pain-Miner scrapes r/shopify + Shopify + Gorgias communities for 15+ verbatim pain quotes each with permalink. Day 2 `[HUMAN]`: send first 15 outreaches via each row's channel.
+  - Day 3 `[HUMAN]`: send 20 more outreaches (35 cumulative), reply/book responders. `[AGENT+REVIEW]`: draft the 1-page concierge pilot agreement; `[AGENT]` draft the 10-question problem-interview script.
+  - Day 4 `[HUMAN, ~120 min]`: hold 2 interviews batched in one PM block + review/send 10 agent-queued outreaches. `[AGENT]`: build Presale Anxiety Playbook v1 from the pain bank.
+  - Day 5 `[HUMAN]`: hold 2 more interviews, pitch the free concierge pilot on any hot call (aim >=1 verbal "interested"). `[AGENT]`: summarize interviews into a day-stage pain map.
+  - Day 6 `[AGENT]`: Scout tops sheet to 100. `[HUMAN]`: 1 batched non-replier nudge + post 1 genuinely-helpful framework answer in r/shopify from real personal account (no link/pitch).
+  - Day 7 `[HUMAN, weekly gate]`: count verbal commits / interviews / quotes; check on-track for >=3 partners by GATE+14 (ideally a zero-outbound recovery day).
+  - Week 2: send pilot agreements to every warm lead and close 2 partners; build the concierge ops kit + Access Request Checklist; onboard partner #1; push to close partner #3+ (commits, not concurrent onboards); run the GATE+14 S0→S1 gate review against S0 exit criteria only.
+
+### S1 — Concierge MVP (run support manually for partners)
+- **Day range:** GATE+14 → GATE+35
+- **Goal:** Run 1-2 partners' presale support BY HAND (Chaga + AI drafting inside THEIR Gorgias/Intercom/email) and capture the exact reassurance language at each day-in-wait stage. Add partners 3-5 only after Venture-1 load drops or first Tideover cash lands.
+- **Entry:** >=3 partners committed (only 1-2 onboarded live at once); access to their helpdesk/inbox or a shared alias granted via the Access Request Checklist.
+- **Exit:** >=1-2 partners live with a CLEAN BASELINE captured AND a versioned script library covering day-0/7/30/60/90 for >=1 vertical AND >=1 partner clears the volume floor (>=30 presale tickets/wk; else flag as a measurement risk, not a pass).
+- **KPIs:**
+  - Partners live (handling real tickets) — target **1-2 concurrent (overlap cap)**; measure: Per-partner status board. (lagging)
+  - Baseline captured per partner — target **100% (rolling 7-14 day pre-intervention window of FRT + WISMO/100-orders + refund-rate-to-date)**; measure: Baseline snapshot before we touch anything. (leading)
+  - Partner clears ticket-volume floor — target **>=1 partner >=30 presale tickets/wk**; measure: Helpdesk tag counts (gates S2 measurability). (leading)
+  - Reassurance scripts authored + versioned — target **25+ across day-stages**; measure: Script library (git/Notion), versioned. (leading)
+  - Median first-response time (presale tickets) — target **Cut >=50% vs that partner's own baseline, OR under 1 hr - whichever is larger**; measure: Helpdesk timestamps, before/after (true delta, not absolute). (leading)
+- **Kill/scale:** If no partner clears the >=30 tickets/wk volume floor by GATE+40, treat it as a measurement-risk flag (deltas won't be defensible) - prioritize partners with backer lists >=1,000 inside the active wait window set at S0 qualification.
+- **Daily plan:**
+  - Onboard partner #1: send Access Request Checklist (Gorgias - invite chaga@domain as Agent; Intercom - teammate invite; email-only - forwarding rule to support+partner@domain + send-as); confirm you can DRAFT (not send) one real ticket reply inside their tool; capture the rolling 7-14 day baseline (FRT, WISMO/100, refunds-to-date).
+  - Stand up the live-support SLA: human reply approval in TWO fixed daily windows (AM + PM), told to partners up front as the pilot cadence. Outside windows the Script-Drafter agent auto-sends ONLY from a small pre-approved, timeline-safe holding/confirmation template set - never a novel reply.
+  - Begin answering live presale tickets for partner #1 in the two SLA windows only (Chaga approves AI-drafted NOVEL replies; agent auto-sends holding templates between windows; on a WISMO wave only the highest-anxiety/chargeback-threat tickets escalate, rest get templates).
+  - Create Script-Drafter as a saved Biz-Ops prompt taking {order context, day-in-wait} → a draft reply in the partner's voice, wired to read the partner sheet; run one real ticket end-to-end with a Chaga-approved output.
+  - `[AGENT+REVIEW]`: draft partner #1's day-stage reassurance scripts from their REAL production timeline; version every script in the library.
+  - Stand up the leading-indicator tracker tab (date, partner, tickets_total, presale_tickets, first_response_times[], WISMO_count, orders_to_date); pull daily by exporting the Gorgias ticket CSV (or hand-count tagged tickets); Leading-Indicator-Analyst computes median FRT + WISMO/100.
+  - Run the S1/S2 weekly template: Mon partner sync calls + AM-window review; Tue approve novel replies in both SLA windows + refine weak scripts; Wed author/version 3-5 new day-stage scripts from real tickets; Thu build the before/after table for the best partner; Fri log refund/dispute "saves" + ask 1 partner for an experience-only testimonial; Sat ZERO-human day (agent metrics + scout backfills 15 next-cohort prospects); Sun gate review.
+  - Onboard partner #2 ONLY if Venture-1 load that week leaves room AND it stays under the 1-2 concurrent cap; queue partners 3-5 as commits behind the cap.
+
+### S2 — Prove the Leading-Indicator Delta
+- **Day range:** GATE+35 → GATE+55
+- **Goal:** Turn concierge work into a MEASURED, baselined improvement a partner will vouch for - the single outcome that proves the niche is real and unlocks paid conversion + the case study.
+- **Entry:** >=1-2 partners live with rolling baselines; >=1 partner clearing the S1 volume floor (else this stage cannot produce a defensible delta).
+- **Exit:** >=1 partner with a documented before/after leading-indicator win (FRT cut OR WISMO-per-order down OR deflection up, with the baseline) AND >=1 written/recorded experience-only testimonial (responsiveness, reduced manual load, calmer customers - NOT any quantified outcome the partner can't yet attest). FRT is the primary defensible win.
+- **KPIs:**
+  - Documented leading-indicator win — target **>=1 partner**; measure: Before/after table w/ baseline + method note. (lagging)
+  - WISMO tickets per 100 presale orders — target **Down 25%+ vs baseline (normalized to per-100-presale-orders over equal-length >=14-day pre/post windows)**; measure: Helpdesk tag counts / order counts. (leading)
+  - Deflection rate (auto-resolved repetitive presale Qs) — target **floor >=40%, target >=60%**; measure: (presale Qs auto-resolved without a human reply) / (total inbound presale Qs same window), scoped to WISMO/timeline/ETA category. (leading)
+  - Partner testimonial (experience-only) — target **>=1 written or video**; measure: Recorded asset; attests only to what the partner observed - no quantified claim until their own baseline backs the exact number. (leading)
+  - Refund/dispute saves (anecdotal, logged) — target **Log every instance**; measure: Save log w/ ticket link (case-study seed). (leading)
+- **Kill/scale:** KILL: 0 partners reach a documented leading-indicator delta by GATE+55 → the "scripts reduce anxiety" thesis is unproven; do NOT build/encode the app (S3b); reassess whether the wedge is real. SCALE: >=1 documented win + a willing experience testimonial → green-light S3b immediately. (Same single threshold - no 45/50/55 ambiguity.)
+- **Daily plan:**
+  - Build the before/after leading-indicator table for the best-performing partner: FRT primary, normalized WISMO/100 supporting, equal-length pre/post windows (>=14 days each); Chaga sanity-checks the baseline method for cherry-picking.
+  - Drive deflection of repetitive WISMO/timeline/ETA questions via the holding-template set + scripts; measure auto-resolved / total inbound presale Qs in the same window.
+  - Ask 1 happy partner for an experience-only testimonial (written or video) the week the win lands - responsiveness / reduced manual load / calmer customers ONLY; no quantified claim until their own baseline backs it.
+  - Log every refund/dispute "save" with a ticket link into the case-study seed log.
+  - Pre-stage billing in S2 dead-time: create the Stripe account ($0/mo) and draft three reusable Payment Links ($199 / $299 / $499/mo subscriptions); confirm an invoicing entity is ready before the first ask.
+  - Stand up the playbook landing page (Carrd/Framer free) for the lead magnet during dead-time.
+  - On the documented win being banked (~GATE+50-55), fire the SCALE trigger: green-light S3b encoding (S3a scaffold may already be running).
+
+### S3 — Productize (thin software via AI dev agents)
+- **Day range:** GATE+45 → GATE+75 (gated, not date-fixed; if the win lands late, S3b slips and App Store listing submission may slip past calendar-Day-90 - expected under the stagger, not a miss)
+- **Goal:** Encode the PROVEN scripts + timeline logic into a thin Shopify embedded app on a free Partner dev store, with the ONE integration partners actually use. Human role compressed to a single weekly 90-min review block to protect Venture-1's pilot→retainer conversion window.
+- **Entry:** S3a (scaffold) - versioned script library exists. S3b (encode) - >=1 documented leading-indicator win confirmed (the same threshold as the KILL/SCALE rule); do NOT build automation around an unproven playbook.
+- **Exit:** Working app installed on >=1 real partner store via a merchant-side install link (post-Jan-2026 custom apps are created in the Dev Dashboard and installed on the merchant's OWN paid store; dev store is build/test only), pulling live order/production-timeline data via Shopify Order API (+ one integration IF partners share a stack), drafting day-stage replies that match the manual playbook.
+- **KPIs:**
+  - App reads live order + preorder timeline — target **Yes**; measure: Demo on partner data. (leading)
+  - Integrations live — target **Shopify Order API (floor) + 0-1 (Gorgias OR a preorder app, only if partners share it)**; measure: Working webhook/sidebar. (leading)
+  - Scripts automated vs manual baseline — target **>=60% of replies app-drafted**; measure: App logs vs manual log. (leading)
+  - Partner using the app weekly — target **>=1**; measure: App usage logs. (lagging)
+  - AI cost per AI-drafted reply — target **< $0.25/draft, alert at $0.50/draft**; measure: API spend / drafts. (leading)
+  - Fully-loaded AI cost per resolved presale ticket — target **< $1.50, KILL at > $3.00 (industry band $2-4/AI-interaction)**; measure: API spend / resolved tickets. (leading)
+- **Kill/scale:** KILL: fully-loaded AI cost > $3.00/resolved-ticket sustained (or > $0.50/draft) → re-engineer prompts/model tier before scaling. S3b is itself gated on the S2 documented win - never scaffold automation around an unproven playbook.
+- **Daily plan:**
+  - S3a (may start GATE+45, parallel to S2): scaffold a Shopify embedded app from the official Shopify Remix template via Shopify CLI (npm init @shopify/app) using Claude Code (or Cursor) as the dev agent; connect to the free Partner dev store; commit to a git repo. DONE = blank app loads in the dev-store admin. No script logic, no integration yet.
+  - S3a: add the Shopify Order API read (order/production-timeline) against that repo - safe pre-win because it builds nothing partner-specific.
+  - Integration-target decision (set at GATE+12, logged): pick THE single integration = the helpdesk/preorder stack the plurality of live partners share; if split, build Shopify-Order-API-ONLY first and defer the third-party helpdesk integration (its external app-approval lead time must not gate S3 exit). Order-API-only is the floor deliverable.
+  - S3b (starts ONLY after the S2 documented win is banked, ~GATE+50-55): the App-Builder dev agent encodes the PROVEN scripts + the one integration; runs async between reviews.
+  - Human role: ONE weekly 90-min review block (NOT daily Mon-Fri) - direct the dev agent on the next proven flow to encode, verify the Order-API timeline match against a partner's real timeline, confirm the one integration against real workflow, shadow-test app-drafted vs manual replies.
+  - Governance: monitor AI cost per draft (<$0.25, alert $0.50) and per resolved ticket (<$1.50, KILL >$3.00); throttle to batch-drafting or a cheaper model tier on a spike.
+  - Exit: install the working app on >=1 real partner's OWN paid store via the merchant-side install link, pulling live order/timeline data + drafting day-stage replies that match the manual playbook.
+
+### S4 — First Paid + App Store Listing
+- **Day range:** GATE+60 → GATE+85 (may slip past calendar-Day-90 under the stagger - honest, not a miss)
+- **Goal:** Convert proof into the FIRST paid plan(s) and submit the public Shopify App Store listing.
+- **Entry:** App live with >=1 partner; >=1 documented win + experience testimonial.
+- **Exit:** >=1 paid conversion at $199-$499/mo AND App Store listing submitted for review (built off the proof + testimonial under the proof-only rule).
+- **KPIs:**
+  - Paid conversions — target **>=1 (target 2-3)**; measure: Stripe Payment Link / Shopify billing (revenue proof, lagging). (lagging)
+  - MRR — target **$199-$499 (1 paid) → ~$1,500 (3 paid) - a direct function of conversion count**; measure: Billing. (lagging)
+  - App Store listing submitted — target **Yes**; measure: Partner Dashboard status. (leading)
+  - Paid conversions (absolute, in-window) — target **>=1 (target 2-3)**; measure: Stripe; gate on absolute count - defer any conversion-RATE % to post-90 once the pilot denominator is >=15-20 (n<10 % is noise). (lagging)
+- **Kill/scale:** Paid-ask PRECONDITION (gate, not a date): do NOT make a paid ask to any partner lacking a documented leading-indicator win + an experience testimonial. If none qualify by the S4 window, HOLD S4, extend concierge, run the ask the week AFTER the win lands - thin/un-vouchable proof kills deals. SCALE: >=2 paid conversions at intro price → double outbound, consider an agency white-label/rev-share with a Gorgias-heavy agency.
+- **Daily plan:**
+  - Mon `[HUMAN]`: make the paid ask ONLY to partners with a documented win + experience testimonial; quote $199-$499/mo; if none qualify, HOLD and run it the week after the win lands. `[AGENT]`: prep the proof one-pager per partner.
+  - Tue `[AGENT+REVIEW]`: build the Shopify App Store listing - leading-indicator language tied to a named-or-anonymized real partner + the experience testimonial verbatim ONLY; NO refund/chargeback % until a completed-cohort case study exists post-GATE+90; NO invented star ratings/review counts; external stats cited to source. Chaga approves every public claim.
+  - Wed `[HUMAN]`: on conversion, send the pre-staged Stripe Payment Link (account + 3 links created in S2 dead-time) and confirm the subscription is active. `[AGENT]`: Onboarding-Concierge runs the paid onboarding checklist.
+  - Thu `[AGENT]`: Scout fills the next-cohort pipeline (>=30 fresh prospects; tideover domain now warmed → cold email allowed here). `[HUMAN]`: review/send 10-15 batched outreaches.
+  - Submit the App Store listing for review (Shopify Partner one-time registration ~$19-$25 paid here); gate exit on the absolute paid count, not a conversion-rate %.
+  - Honest note: if the stagger pushed S3b late, listing submission may slip past calendar-Day-90 - expected, not a miss.
+
+### S5 — Early Scale
+- **Day range:** GATE+85 → GATE+90+ (and beyond)
+- **Goal:** Lock retention, queue the NEXT cohort, and set up the post-90 refund case study (which needs a completed 60-120 day presale cycle and therefore lands post-GATE+90).
+- **Entry:** >=1 paid partner; listing submitted.
+- **Exit:** Repeatable weekly recruit→onboard loop running; >=1 partner's first preorder cohort scheduled to complete post-GATE+90 for the refund-delta case study; second-cohort outbound pipeline filled (>=30 fresh prospects).
+- **KPIs:**
+  - Refund case study scheduled — target **>=1 cohort dated**; measure: Partner cohort calendar. (leading)
+  - Next-cohort pipeline — target **>=30 fresh prospects**; measure: Scout sheet. (leading)
+  - Paid-partner engagement (leading retention proxy) — target **>=X approved replies/wk in each of the last 2 weeks AND >=1 paid partner has scheduled a cohort-completion review**; measure: App/usage logs (predicts post-90 stickiness). (leading)
+  - Referrals/intros from partners — target **>=2**; measure: CRM. (leading)
+- **Kill/scale:** SCALE: with the next cohort filled, begin made-to-order-luxury expansion outreach and start the post-GATE+90 refund case study; with >=2 paid conversions, consider the agency white-label / Gorgias rev-share channel. The refund-delta case study ("cut presale refunds X% for a $Xm crowdfunding-graduate brand") is the post-90 asset that unlocks the $799-$1,500/mo + performance-fee tier.
+- **Daily plan:**
+  - Fri `[HUMAN]`: schedule each paid partner's first preorder cohort completion date post-GATE+90 for the refund case study; `[AGENT]` add to the cohort calendar.
+  - Thu `[AGENT]`: keep the next-cohort pipeline >=30 fresh prospects (warmed tideover domain now usable for cold email).
+  - Track paid-partner engagement (approved replies/wk over the last 2 weeks) as the leading retention proxy; book a cohort-completion review with >=1 paid partner.
+  - Ask each happy paid partner for >=2 referrals/intros; log in CRM.
+  - Sat/Sun: one zero-human day; `[AGENT]` submit/iterate App Store listing + full metrics + MRR snapshot; `[HUMAN]` 90-day review (Sun only).
+  - Set up the post-GATE+90 refund-delta case study and the made-to-order-luxury / drop-brand expansion outreach as the path beyond Day 90.
+
+---
+
+## 4. Funnel
+
+| Stage | Assumption | Plan with |
+|---|---|---|
+| Lead magnet (Presale Anxiety Playbook) | Crowdfunding-graduate creators in active fulfillment will trade an email for a day-by-day reassurance playbook; ~15% download conversion (IB directional). | Pain/Quote-Miner + Listing/Content agent draft it from the verbatim pain bank; any external stat cited to source, never restated as Tideover data. |
+| Outbound problem-interview booking | A no-pitch, operator-voice DM / personal-inbox email earns a 15-min call from creators mid-fulfillment; 100 named prospects → 75 touches → ~10 interviews held. | Design-Partner-Scout (gooseworks skill) builds + enriches the list; Chaga writes the voice and sends every gate-critical Week-1/2 message himself. |
+| Pilot commit | Acute live pain converts >=3 of ~10 interviews into a verbal yes for a FREE concierge pilot. | Chaga makes the relationship + the ask; Onboarding-Concierge runs the 1-page agreement + Access Request Checklist. |
+| Documented leading-indicator win | Running support by hand inside the partner's helpdesk cuts FRT >=50% (or under 1hr) and WISMO/100-orders >=25% vs that partner's own baseline. | Leading-Indicator-Analyst computes rolling baselines + the before/after table; Chaga verifies the method is honest (no cherry-picking). |
+| Paid conversion | A partner with a documented win + experience testimonial converts free pilot → $199-$499/mo (1-3 paid is the GATE+90 target, not calendar-Day-90 base case). | Chaga makes the paid ask only to qualified partners; pre-staged Stripe Payment Links sent on conversion. |
+
+---
+
+## 5. Agents
+
+| Agent | Owns | Human touch | Active from |
+|---|---|---|---|
+| Design-Partner-Scout (uses gooseworks skill) | Build + enrich the crowdfunding-graduate prospect list; find verified emails / DM handles + source URLs + fulfillment ETAs; refresh the next-cohort pipeline. Output = 100-row prospect sheet. | Chaga writes the actual outreach voice and SENDS every gate-critical message himself. | Mode A / Day 0 (absolute) |
+| Pain/Quote-Miner (uses gooseworks) | Scrape verbatim pain from r/shopify, Shopify + Gorgias communities, and FB with permalinks. Output = pain bank (quote + source URL) that fuels lead-magnet + listing copy. | Chaga validates relevance; external stats cited to source, never restated as Tideover data. | Mode A / Day 0 (absolute) |
+| Listing/Content agent | Draft the App Store listing, the Presale Anxiety Playbook PDF, and community posts. | Chaga approves ALL public claims (proof-only); no refund % / invented ratings; leading-indicator language tied to a real partner + testimonial verbatim only. | Mode A / Day 0 (absolute), drafts; listing in S4 |
+| Script-Drafter | Read order/timeline context, draft day-stage reassurance replies in the partner's voice; auto-send ONLY the pre-approved holding/confirmation template set between SLA windows. Output = versioned script library + per-ticket draft replies. | Chaga approves EVERY novel live reply - no autonomous novel send in the pilot window; only vetted holding templates auto-send. | S1 (GATE+14) |
+| Onboarding-Concierge | Run the partner onboarding checklist (Access Request Checklist, baseline snapshot, tagging setup, paid onboarding). Output = per-partner onboarding record. | Chaga owns the relationship and the paid ask. | S0 close / Week 2 (GATE+8) |
+| Leading-Indicator-Analyst | Compute rolling baselines + before/after FRT/WISMO/deflection (normalized, equal pre/post windows) + cost-per-draft and per-resolved-ticket. Output = weekly metrics snapshot + the before/after win table. | Chaga verifies the baseline method is honest (no cherry-picking). | S1 (GATE+12 tracker stand-up) |
+| App-Builder dev agent (Claude Code / Cursor + Shopify CLI / Remix template) | Scaffold + build the thin Shopify embedded app on the dev store; Shopify Order API + 0-1 integration; runs async between reviews. Output = working app + integration + usage/cost logs. | Chaga confirms it matches real partner timelines and approves scope; S3b encoding only after the documented win. | S3a (GATE+45) |
+
+---
+
+## 6. Budget
+
+| Item | Cost |
+|---|---|
+| Shopify Partner dev store (build/test only) | $0 |
+| Shopify Partner one-time registration (enables App Store listing) - S3, [HUMAN] approve | ~$19-$25 one-time |
+| Custom-app install on partner stores (merchant installs via Dev Dashboard link) | $0 to us |
+| LLM API (Claude/GPT) for drafting - scales with ticket volume; target <$0.25/draft, alert $150/mo, KILL >$3.00/resolved-ticket | ~$30-$200/mo |
+| Domain (tideover.app) + inbox warmup - Day 0, [HUMAN] approve registrar | ~$12-$40/yr |
+| Email/outbound + lightweight CRM (free tiers: Sheet/Notion + personal inbox first) | $0-$30/mo |
+| Payments (Stripe / Shopify Billing) - $0 monthly, ~2.9% + $0.30/charge netted from MRR; create account + 3 Payment Links in S2 dead-time | $0/mo + fees |
+| No-code glue (Make/Zapier, optional - only if the dev agent can't do it natively) | $0-$20/mo |
+| Landing page (Carrd/Framer free, or Shopify) for the playbook lead magnet | $0-$19/mo |
+| Scheduling (Cal.com free) - interview booking event type, Day 0 | $0 |
+| **Total est. 90-day cash spend (comfortably within $500-$750 deployable)** | **~$90-$370** |
+
+---
+
+## 7. Risks
+
+1. **Incumbent fast-follow** - Gorgias / preorder apps bolt on presale AI in 6-18 mo. *Mitigation:* moat = playbooks + outcome data + operator brand + first case study, not the LLM; move fast and own the category vocabulary publicly.
+2. **Attribution / performance-fee trap** - refund-reduction is hard to attribute without controlled cohorts. *Mitigation:* lead with subscription, defer the performance fee until a baselined case study exists, measure leading indicators honestly.
+3. **Integration complexity** - multiple helpdesks + preorder apps. *Mitigation:* concierge-first (zero integration to start); productize only the ONE integration partners actually share, Shopify-Order-API-only as the floor.
+4. **Partner churn / seasonality** - some brands only presale in campaigns. *Mitigation:* target crowdfunding graduates MID-fulfillment (active pain now); keep the next-cohort pipeline full.
+5. **AI-cost runaway / hallucinated timelines** - the most damaging failure in presale. *Mitigation:* hard monthly API cap + alerts; never auto-send NOVEL customer replies in the window; constrain AI to confidence-band ETAs (never hard dates); Chaga approves every novel reply.
+6. **TAM smaller than top-line** (tens of thousands, not hundreds of thousands of stores). *Mitigation:* high-ARPU, high-retention beachhead; broaden to made-to-order luxury + drops post-90.
+7. **Cross-venture founder-hour collision** - stacking two first-cash sprints is not humanly possible solo. *Mitigation:* the Section-0 GATE keeps Tideover agent-only (Mode A) until Venture 1 is producing cash; cap concurrent live partners at 1-2; one zero-human Tideover day per week.
+8. **Proof / credibility risk** - no presale-AI case studies yet, and the "$2M/yr" operator figure must never be inflated. *Mitigation:* PROOF-ONLY - share the operator background as a war story (experience), reserve the "$2M" figure for warm calls where Chaga can substantiate it; never fabricate refund stats; every public claim Chaga-approved.
+
+---
+
+## 8. Go-to-market action items (post-build)
+
+Discrete `[HUMAN]` next-steps pulled from the build deliverables (d03, d04, d08, d09, d10, d14, d15, d16, d17, d22 — `mission-control/data.js` → `deliverables[]`). Informational (non-actionable) deliverable notes are listed underneath for completeness but not checkboxed.
+
+- [ ] Deploy the Tideover landing page to tideover.app + wire the teardown form (d04 — `gtm-assets/v2/tideover-landing-page.html`)
+- [ ] Record the Tideover VSLs when the V2 motion opens, post-gate (cold Loom, landing VSL, partner-pitch, playbook promo) (d09 — `gtm-assets/v2/v2-vsl-scripts.html`)
+- [ ] Stage the Tideover DM outreach system for the gated V2 motion (cold outreach to crowdfunding graduates) (d10 — `gtm-assets/v2/v2-dm-outreach.html`)
+- [ ] Stage the Tideover cold-email system for the gated V2 motion (design-partner + agency-partnership + scarcity sequences) (d14 — `gtm-assets/v2/v2-cold-email.html`)
+- [ ] Use the Tideover sales-call kit when recruiting design partners (problem-interview + free-pilot pitch + objections + paid ask) (d15 — `gtm-assets/v2/v2-sales-call-kit.html`)
+- [ ] Use the Tideover onboarding kit when a partner says yes (founding-partner agreement + intake + SLA + onboarding emails) (d16 — `gtm-assets/v2/v2-onboarding-kit.html`)
+- [ ] Queue the Tideover content engine (~40 LinkedIn posts + newsletters + community templates) (d17 — `gtm-assets/v2/v2-content-bank.html`)
+- [ ] Run the Tideover prospecting SOP when the V2 motion opens (BackerKit/Kickstarter end-date calendar, mid-fulfillment detection, the teardown) (d22 — `gtm-assets/v2/v2-prospecting-sop.html`)
+
+Non-actionable deliverable notes (context only, no separate human step beyond what's captured in the roadmap above):
+- d03 — Tideover Brand Kit (`gtm-assets/tideover-brand-kit.html`): locks the V2 voice; every downstream Tideover asset inherits it.
+- d08 — Tideover Sales Page, long-form (`gtm-assets/v2/v2-sales-page.html`): use as the deep V2 sales page.
