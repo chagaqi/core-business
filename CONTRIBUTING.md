@@ -2,6 +2,8 @@
 
 The single entry point for working on this codebase. It ties together the docs that already exist rather than repeating them.
 
+> **Agents:** the multi-model orchestration + token-discipline charter that governs *how* work is delegated and moved is [`CLAUDE.md`](CLAUDE.md) (auto-loaded each session). This file is the human/repo-specifics companion to it.
+
 ## What this is
 
 Tideover is presale-support software for Shopify merchants with 60–120 day fulfillment waits. One Next.js 14 app (`tideover/`) — marketing + operator app + API — on Vercel, backed by MongoDB Atlas. Start with **[docs/adr/ADR-0001](docs/adr/ADR-0001-app-architecture.md)** (the shape) and **[ADR-0002](docs/adr/ADR-0002-repository-seam-and-proof-doctrine.md)** (the two disciplines everything else assumes). The full decision log is **[docs/adr/README.md](docs/adr/README.md)**.
