@@ -1,0 +1,140 @@
+[
+ {
+  "pattern": "Propose-then-approve as the default AI state, with autonomy earned per ticket-type over time rather than granted globally",
+  "seen_in": "Gorgias / eesel AI Agent rollout guidance",
+  "why": "Staged trust (draft-review before autonomous send) is the safety pattern vendors themselves recommend for new AI deployments — it lets a team verify quality before customers are exposed, and gives a natural, evidence-based on-ramp to autonomy instead of an all-or-nothing switch.",
+  "tideover_application": "Every AI draft in Tideover defaults to a 'needs approval' state. Track approval-without-edit rate per intent category (e.g. 'where is my order'); only after N consecutive clean approvals for that category does Tideover surface an opt-in 'auto-send eligible' toggle for it — autonomy is earned per intent, never granted globally."
+ },
+ {
+  "pattern": "Inline draft lives in the composer itself (Tab to accept, Esc to dismiss, typing silently overrides) instead of a separate 'suggestion card' you must copy from",
+  "seen_in": "Intercom Copilot Smart Replies / macro suggestions in the Inbox composer",
+  "why": "Putting the suggestion where the send action already happens removes a copy-paste step and a decision point; single-key accept/reject keeps the rep's hands on the keyboard and makes rejection frictionless enough that reps actually edit rather than blindly send.",
+  "tideover_application": "AI draft populates directly into the reply textarea, not a side panel. Tab accepts and moves focus to Send; Esc clears it back to blank; the rep typing anything silently discards the suggestion with no confirmation dialog."
+ },
+ {
+  "pattern": "Grounded answers carry inline citations back to the exact source record, and low-retrieval-confidence queries get swapped for an escalation state instead of a hedged guess",
+  "seen_in": "Intercom Fin AI Engine (retrieval + reranking + validation layers, cites help-center articles, escalates on low confidence)",
+  "why": "Citations let a junior rep verify a claim in one click rather than trust the model blind, and confidence-gated escalation stops the AI from confidently fabricating an answer when it shouldn't have one — both are what let a junior rep approve safely instead of rubber-stamping.",
+  "tideover_application": "Each drafted reply shows small source pills underneath it (e.g. 'Order #4821 · Refund Policy §3') linking straight to the record/doc used. If retrieval confidence is below threshold, Tideover replaces the draft with an 'insufficient context — escalate' card instead of emitting a low-confidence guess for the rep to unknowingly approve."
+ },
+ {
+  "pattern": "Color-coded SLA/urgency badge shown on the ticket row in the list view itself (green → amber at 15 min left → red on breach), not only after opening the ticket",
+  "seen_in": "Zendesk Agent Workspace SLA badges",
+  "why": "Triage happens by scanning a list, not by clicking into each ticket to discover urgency — putting the signal on the row is what makes 'which one do I open first' a half-second decision instead of a per-ticket investigation.",
+  "tideover_application": "Queue rows carry a colored response-time chip computed from time-since-received plus customer tier (green/amber/red), so a junior rep triages the whole queue by scanning color down the list before opening anything."
+ },
+ {
+  "pattern": "Claiming/assigning a ticket immediately pulls it out of the shared team queue and drops it into the assignee's personal list",
+  "seen_in": "Front shared inbox assignment behavior",
+  "why": "This kills the two failure modes of shared queues — double-work (two people draft the same reply) and diffusion of responsibility (everyone assumes someone else has it) — by making ownership a visible state change, not just a metadata field.",
+  "tideover_application": "Clicking 'assign to me' on a ticket removes it from the shared queue view for every other rep in real time and surfaces it under 'My tickets' — so two reps can never simultaneously draft-and-approve the same conversation."
+ },
+ {
+  "pattern": "A short, visible delay window between clicking send and the message actually leaving, with an 'Undo' affordance during that window",
+  "seen_in": "Gmail-style undo-send pattern requested by Zendesk community + Zendesk's configurable AI-agent Reply Delay setting",
+  "why": "Reps already expect this from every modern email client; a visible cancel window catches the single most common approval-flow mistake (clicking send before noticing a wrong name, wrong order number, or an AI hallucination) without adding a second confirmation click that trains people to click through it mindlessly.",
+  "tideover_application": "After a rep clicks Approve & Send, Tideover holds the reply for ~8-10 seconds with a visible 'Sending… Undo' bar before it actually posts to the customer, catching last-second catches without a modal 'are you sure' dialog."
+ },
+ {
+  "pattern": "A fixed-position, resizable context panel docked beside the conversation thread, with admin-configured (not agent-configured) widget contents per team",
+  "seen_in": "Zendesk Agent Workspace context panel",
+  "why": "Context panel is a system component that can't be removed or hidden behind a click, guaranteeing junior reps always see the same curated data set senior reps deemed necessary — consistency of what's visible matters more for onboarding than raw customizability.",
+  "tideover_application": "Order/customer data sits in a fixed right rail beside the conversation (never a modal that has to be opened), resizable but not dismissible, with an admin-configured widget set (order status, shipment tracking, ticket history) so every rep — junior or senior — sees the same baseline context without hunting across tabs."
+ },
+ {
+  "pattern": "Context panel renders live structured data pulled by API from connected systems (order status, account tier, ticket count) as a card, never agent-typed notes",
+  "seen_in": "Plain Customer Cards; Gorgias customer sidebar with Shopify/BigCommerce order history",
+  "why": "Structured, API-sourced cards are trustworthy and current by construction; free-text notes decay, go stale, and require someone to have remembered to write them — removing that dependency is what makes context reliable enough for a junior rep to act on without double-checking.",
+  "tideover_application": "The context rail renders a live Customer Card (order status, tracking, tier, prior ticket count) pulled directly from the store/order system tied to the ticket's sender email at render time — never a field a rep has to look up or type in manually."
+ },
+ {
+  "pattern": "New agents get a scoped 'practice' ticket view (tagged/grouped so it's invisible to the rest of the team) to ramp on real ticket shapes before touching live customer tickets",
+  "seen_in": "Zendesk new-agent onboarding practice (dedicated group + tagged training-ticket view)",
+  "why": "Reps learn the tool's actual mechanics — queue, draft, approve, send — against realistic data with zero customer risk, which is a stronger onboarding signal than a generic tutorial overlay because the muscle memory transfers directly.",
+  "tideover_application": "A toggleable 'Practice queue' shows replayed/historical tickets tagged for training, visible only to reps still flagged 'onboarding' — letting a new hire draft-and-approve against real ticket shapes with no risk before Tideover unlocks the live queue for them."
+ },
+ {
+  "pattern": "A manager-facing coaching queue surfaces recurring AI-draft gaps as discrete, one-click-approve suggestions — never auto-applied",
+  "seen_in": "Gorgias Gaia (flags misrouted tickets, broken macros, coaching opportunities; every change waits for one-click approval)",
+  "why": "This closes the loop from 'rep keeps editing the same phrase out of every draft' to 'system stops generating that phrase' without requiring anyone to do manual prompt engineering — it turns correction data that would otherwise be thrown away into a low-effort improvement queue.",
+  "tideover_application": "A 'Draft quality' digest surfaces AI drafts reps repeatedly edited the same way (e.g. always striking a phrase or adding a caveat) as a one-click-approve prompt/macro update — the system improves from correction patterns instead of relying on someone noticing manually."
+ },
+ {
+  "pattern": "Escalation bundles a structured handoff (conversation summary, what was tried, why it stalled, recommended next step) instead of a blind reassignment",
+  "seen_in": "Front tiered assignment + widely-documented handoff best practice against 'blind handoffs' in escalation management",
+  "why": "A blind handoff forces the next person to re-read the whole thread and re-derive context under time pressure — exactly the moment a junior rep is escalating because they're unsure, so the handoff itself is where trust in the system is won or lost.",
+  "tideover_application": "The 'Escalate' action auto-generates a structured handoff note — thread summary, the AI draft that was rejected, the rep's stated reason for escalating, suggested next step — attached automatically when reassigning to a senior rep, so escalating never means dumping the whole thread back on someone else unread."
+ },
+ {
+  "pattern": "Single-letter keyboard shortcuts (J/K to move between conversations, R to reply, A to assign, P to set priority) that only fire outside the composer, discoverable via a searchable Cmd-K palette rather than memorized upfront",
+  "seen_in": "Intercom Inbox keyboard shortcuts + Cmd-K action menu",
+  "why": "Discoverability-via-search means a junior rep doesn't need a cheat sheet on day one but still ramps into keyboard speed naturally, and scoping shortcuts to 'outside the composer' prevents the classic bug of a hotkey firing while someone is typing a reply.",
+  "tideover_application": "Add J/K to move between queue tickets, R to focus the reply composer, E to escalate, and Enter to approve+send — all discoverable through a Cmd-K palette — so junior reps get keyboard speed as they learn without needing onboarding documentation to find the shortcuts."
+ },
+ {
+  "pattern": "Persistent in-product setup checklist that outlives a dismiss click",
+  "seen_in": "Stripe Dashboard (Connect onboarding widget on the dashboard home), Notion (\"Getting Started\" checklist on a new workspace home), Binance (setup widget occupying primary dashboard real estate until complete)",
+  "why": "A wizard modal gets dismissed and forgotten; a checklist that lives where the user already works, shrinks item-by-item, and only disappears on 100% completion keeps forward motion visible without nagging.",
+  "tideover_application": "Pin a checklist card above the ticket queue in app/app/page.tsx for the first 3 milestones (connect a mailbox, ingest first tickets, approve first draft). Each item completes only on a real engine event, not a page visit. It collapses to a \"2 of 3\" sidebar pill once the workspace is no longer empty, and disappears for good on 3/3 (flag on the user record, never re-shown)."
+ },
+ {
+  "pattern": "Empty state that teaches the primary action instead of saying \"nothing here\"",
+  "seen_in": "Linear's zero-issues screen: a restrained illustration paired with one clear CTA that models the exact next action",
+  "why": "Zero-context moments are the highest-leverage teaching moments in the product; a blank screen wastes it, a taught empty state converts dead space into the single next step.",
+  "tideover_application": "Replace the current empty-queue branch in app/app/inbox/page.tsx (openQueue.length === 0) with a greyed-out mock ticket row that shows what a real draft, confidence band, and proof will look like once populated, reusing the existing proof-placeholder styling (lines 184/248) so the taught state visually matches the real loading skeleton, plus a single CTA: \"Connect your first channel to start seeing drafts.\""
+ },
+ {
+  "pattern": "Passive keyboard-shortcut discovery via a \"?\" overlay and a hint footer, no forced tutorial",
+  "seen_in": "Linear (press \"?\" for a searchable shortcut sheet; Cmd+K palette), VS Code (hints Cmd+Shift+P before the palette even opens)",
+  "why": "Shortcuts are invisible by default and most users never open a help page; surfacing them passively at the point of use converts casual clickers into keyboard users without any dedicated training step.",
+  "tideover_application": "Add a bottom-bar hint strip inside ApprovalBar showing the 3 live shortcut chips (A approve, E edit, Cmd+K commands) only while a ticket is open, plus a \"?\" key that opens a static, read-only shortcut-sheet overlay covering inbox and DraftRail. Read-only overlay, so it's safe to ship without touching the hot files' write paths."
+ },
+ {
+  "pattern": "Practice-first onboarding: drill the core loop on synthetic data before real data unlocks",
+  "seen_in": "Superhuman: new users archive/reply/navigate a seeded fake inbox with E/R/J/K before their real inbox is touched, measured at +67% feature adoption vs self-guided onboarding",
+  "why": "Muscle memory forms faster against low-stakes fake data than a user's real, high-stakes queue, and it removes the fear of \"breaking something real\" during the learning phase.",
+  "tideover_application": "Seed each new operator account with 3-5 tickets labeled \"Practice ticket,\" carrying pre-baked drafts and confidence bands, so the first approve/edit/send cycle runs through the real ApprovalBar and DraftRail on fake data. Teaches the proof-only reassurance surface with zero risk of a real customer-facing send."
+ },
+ {
+  "pattern": "Progressive disclosure: collect the minimum to reach value now, defer the rest until it's actually needed",
+  "seen_in": "Stripe Connect: a developer can run a first test-mode charge with almost no business info; KYC, banking, and tax fields appear only when the merchant tries to go live or hits a payout threshold",
+  "why": "Every field asked before value is delivered is a chance to bounce. Asking only what's needed for the very next step keeps time-to-first-value low while still enforcing rigor once the stakes actually rise.",
+  "tideover_application": "Let a new operator connect one inbox and see real drafts before requiring full reassurance-engine configuration (manager-note templates, escalation rules, proof sources). Unlock those settings inline, in context, e.g. the escalation-rule setting surfaces the first time a ticket goes overdue, not as an upfront setup form."
+ },
+ {
+  "pattern": "Fixed status color+label vocabulary, with animation reserved for non-terminal states",
+  "seen_in": "Vercel's Status Dot component: QUEUED / BUILDING / READY / ERROR / CANCELED / DELETED, dot animates only while non-terminal, browser-tab icon mirrors the same state",
+  "why": "A small, consistent color+word pairing (never color alone) lets users triage a whole list at a glance and instantly tells \"still moving\" from \"done\" without a click.",
+  "tideover_application": "Standardize the ticket queue's confidence-band and status chips to a fixed enum with color+text pairing (grey \"queued,\" pulsing amber \"drafting,\" static green \"ready,\" static red \"needs review\") and reserve the pulse for genuinely in-flight reassurance-engine work. Give overdue (view.intel.reassurance.overdue in inbox/page.tsx) its own consistent red terminal state instead of an ad hoc overlay flag."
+ },
+ {
+  "pattern": "Micro-celebration framed as the user's win, tied to the product's actual differentiator",
+  "seen_in": "Loom (first recorded/shared video lands within 2 minutes of signup, the \"aha\" moment), Slack/useronboard.com success-state guidance (celebrate progress toward the user's goal, not just \"you clicked a button\")",
+  "why": "Celebrating an action meaningful to the user's own goal builds the emotional hook that drives day-2 return; celebrating mere clicks reads as decoration and gets ignored.",
+  "tideover_application": "On the very first approve-and-send through ApprovalBar, replace a generic checkmark toast with a one-time inline confirmation tied to the proof-only value prop specifically, e.g. \"Sent with proof attached, zero unverified claims,\" so the celebration reinforces the core differentiator rather than being decoration."
+ },
+ {
+  "pattern": "Contextual-help escalation ladder: inline caption to popover to doc link, never straight to docs",
+  "seen_in": "General SaaS pattern (Chameleon, Archbee): inline hints answer \"what is this,\" a \"?\" icon popover answers \"how does this work,\" and only a genuinely deep question links out to full documentation",
+  "why": "Matching help depth to question depth keeps users from ever leaving the task mid-flow; a new tab should be a last resort, not the default answer.",
+  "tideover_application": "Add a \"?\" affordance next to DraftRail's confidenceBand specifically, opening a small popover that explains how the band is computed and which proof sources fed it. Link out to ADR-0006 only as a \"read the full methodology\" footer line inside that popover, never as the primary answer."
+ },
+ {
+  "pattern": "Personalized starting point from signup answers instead of a full catalog on day one",
+  "seen_in": "Notion: signup answers drive a curated shortlist of 5 templates surfaced first, with the full gallery one click further",
+  "why": "A curated shortlist beats a full catalog for a user with zero context to evaluate options against, and personalization signals the product already understands their situation.",
+  "tideover_application": "Use the 2-3 qualifying questions already asked at Tideover signup (team size, ticket volume, current tool) to pre-select which manager-note templates and escalation-rule presets appear first in settings. Keep the full preset catalog available, but not the default view."
+ },
+ {
+  "pattern": "Skippable, drip-paced first-run messaging triggered by behavior, not a single upfront tour",
+  "seen_in": "Slackbot's onboarding DM: several short messages spread over days on a drip schedule, explicitly skippable for users who already know the product",
+  "why": "Front-loading every instruction in one modal overwhelms and gets dismissed unread; spreading it thin and letting confident users skip respects both the novice and the returning power user.",
+  "tideover_application": "Replace a single welcome-tour modal with 3 short in-app messages triggered by behavior over the operator's first week: day 0 explains how drafts and proof work, the shortcut hint footer unlocks after 5 approvals, the escalation-rule tip appears on the first overdue ticket. Each message dismissible on its own."
+ },
+ {
+  "pattern": "Command palette as a standing teaching surface, not just a power-user launcher",
+  "seen_in": "Superhuman engineering (\"How to build a remarkable command palette\"): the palette shows the bound keyboard shortcut next to every action, every time it's opened, not only on first use",
+  "why": "The palette becomes free, repeated shortcut exposure at the exact moment of intent, which teaches faster than a docs page nobody opens, and lets users graduate from mouse-driven palette use to direct keystrokes on their own schedule.",
+  "tideover_application": "When Tideover's inbox Cmd+K palette ships, list every action (approve, edit draft, snooze, escalate) with its bound key visible to the right of the label on every open, not just the first. Operators self-teach shortcuts through ordinary palette use instead of a separate tutorial."
+ }
+]

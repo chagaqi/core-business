@@ -1,0 +1,1532 @@
+[
+ {
+  "surface": "inbox",
+  "title": "Regenerate produces a new draft server-side but the visible textarea never updates",
+  "problem": "Clicking Regenerate flashes \"Regenerating…\" then shows the OLD draft — the textarea is seeded once from useState and DraftRail is keyed only on ticket.id (unchanged on regenerate), so it never re-syncs; the rep may re-send stale text believing it is new.",
+  "evidence": "tideover/components/product/DraftRail.tsx:56 (`useState(...)` no effect on draftText); tideover/app/app/inbox/page.tsx:255 (`<DraftRail key={view.ticket.id}>`); tideover/components/product/ApprovalBar.tsx:85-96 (regenerate() posts then only router.refresh()); tideover/app/api/draft/route.ts:15 returns fresh draft the caller discards.",
+  "proposal": "Thread the regenerate result into the editor: add an onRegenerated(newText) callback from DraftRail to ApprovalBar, read data.draft.text and setText (reset mode to standard), or include a regen nonce in DraftRail's key so it remounts; guard against clobbering unsaved edits and show a \"New draft ready\" cue.",
+  "severity": "P1",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 4,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified against source: DraftRail.tsx:56 seeds `text` via useState only, no effect syncing to draftText prop; page.tsx:255 keys DraftRail on `view.ticket.id` alone (unchanged by regenerate); ApprovalBar.tsx:85-96 regenerate() posts to /api/draft and discards the response, calling only router.refresh(); api/draft/route.ts:15 confirms the endpoint returns the fresh draft.text that is never read. Net effect: after a server refresh the new draftText prop arrives but React does not reinitialize existing component state for an unchanged key, so the textarea keeps showing stale text while UI implies a fresh regen — a rep (esp. untrained persona A on an escalated ticket) can approve-and-send stale content believing it's new. Proposal (thread callback or bump key/nonce on regenerate) is low-risk, doesn't touch approve/send posting path or ⌘/Ctrl+Enter (which reads live `text` state via getText()), and adds no fabricated copy — proof-only doctrine unaffected. P1 is justified given escalation-grade blast radius and zero existing mitigation."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Escalated/hostile flag in the queue is a near-invisible unlabeled 6px dot",
+  "problem": "The most operationally important triage signal — this customer is hostile or threatening a chargeback — is a 6px dot with no label, independent of the risk-score pill (a ticket can show a calm amber/green risk pill while escalated), so a rep scanning by risk color can walk right past a chargeback threat.",
+  "evidence": "tideover/components/product/QueueList.tsx:72-77 (`aria-label=\"escalated\"` on a bare 6px bg-risk-red span, no visible text/title, unlike SlaChip's title at tideover/components/product/SlaChip.tsx:24); tideover/app/app/inbox/page.tsx:41-43 (escalatedSentiment() is a separate signal from riskScore/color).",
+  "proposal": "Replace the bare dot with a small visible text pill (e.g. `pill pill-red` \"Escalated\") next to the risk badge in QueueList so hostile/chargeback tickets read at a glance without opening them; keep the dot only as decoration.",
+  "severity": "P1",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified at QueueList.tsx:72-77 — escalated flag is literally `h-1.5 w-1.5` (6px) bg-risk-red dot with only an aria-label (screen-reader only, no visible text/title), while SlaChip.tsx:24 uses a visible `title` tooltip and adjacent risk-score pill is the only visible-text signal on the row. inbox/page.tsx:41-43 confirms escalatedSentiment (hostile/chargeback-threat) is computed independently from riskScore/color, so the finding's core claim (calm-colored pill + escalation can co-occur, and the flag is easy to miss scanning by color) holds and is not solved elsewhere in the tree. Proposal (small visible red pill next to risk badge) is low-effort, doesn't touch approve/send flow or keyboard shortcuts (QueueKeyboard untouched), and adds only a static label — no fabricated metrics/dates, no proof-only violation. Given persona A (untrained rep triaging escalations) this is a real miss-a-chargeback-threat risk, so P1 is justified."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "No confirmation that a normal Approve & send worked before the view jumps to the next ticket",
+  "problem": "On the common send path the UI instantly router.replace()s to a different customer with a different draft — no toast, no \"Reply sent\" — so a day-one rep who just replied to a hostile customer can't tell it worked, panics, and may re-click or ask a human.",
+  "evidence": "tideover/components/product/ApprovalBar.tsx:108-131 (approveSend success calls advance() with zero confirmation), :124 (advance fires immediately), vs :152-163 (the \"Reply sent.\" card renders only for already-sent/sentMeta tickets); no aria-live/role=\"status\" in the file.",
+  "proposal": "Before advance(), briefly render the existing \"Reply sent.\" confirmation (hold ~300-700ms or until keypress) wrapped in role=\"status\" aria-live=\"polite\" so sighted and screen-reader operators both perceive success; optionally make auto-advance opt-in or label it.",
+  "severity": "P1",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified against tideover/components/product/ApprovalBar.tsx: approveSend() (98-132) calls advance() unconditionally at line 124 on the normal send path, which immediately router.replace()s to the next ticket with zero rendered feedback. The \"Reply sent.\" card (152-163) is gated behind `sentMeta`, which is only ever set from `alreadySent` at mount (line 48-50) for deep-linked already-sent tickets — the live-send path never sets it, so it can't and doesn't fire on a fresh approve. Repo-wide grep for aria-live/role=\"status\"/toast turns up nothing related to send confirmation anywhere else in the tree, so there's no other component quietly covering this. The proposal (hold the existing \"Reply sent.\" UI briefly or until keypress, wrapped in role=\"status\" aria-live=\"polite\") is feasible: busy state already stays true through the navigation per the code comment, so gating advance() behind a short timeout/keypress is a local, non-breaking change that doesn't touch the hard-date gate, promote flow, or fabricate any metric — it just reuses existing sent copy. It also doesn't conflict with the ⌘/Ctrl+Enter shortcut since the proposal explicitly allows keypress-to-skip for the power-user persona (B). Severity is justified for persona A (untrained rep on a hostile ticket) since silent success plausibly causes real-world duplicate outreach/panic, not just cosmetic annoyance."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "Sidebar \"Demo data\" label is hardcoded, not gated on isDemoMode()",
+  "problem": "Sidebar footer always renders literal \"Demo data\" under the operator name with no conditional, so a real pilot merchant (DEMO_MODE=false) sees live customer/order data falsely labeled \"Demo data\" on every screen, contradicting the proof-only promise.",
+  "evidence": "tideover/components/product/Sidebar.tsx:116-118 (`<p>Demo data</p>` with no isDemo/isDemoMode check); contrast tideover/app/app/layout.tsx:23 `{isDemoMode() && <DemoBadge />}` which gates correctly.",
+  "proposal": "Pass `isDemo={isDemoMode()}` from AppLayout into Sidebar and wrap the \"Demo data\" block in `{isDemo && (...)}`, mirroring the existing DemoBadge pattern.",
+  "severity": "P1",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified at Sidebar.tsx:116-118: literal `<p>Demo data</p>` with zero conditional, confirmed by reading the surrounding footer block. Contrast confirmed at app/app/layout.tsx:23 where DemoBadge correctly gates on isDemoMode(). No other gating exists in the component tree for this label. Fix (pass isDemo prop, wrap in conditional) is trivial, isolated to Sidebar.tsx, doesn't touch approve/send flow, keyboard shortcuts, or introduce fabricated metrics — pure proof-only compliance fix. Real pilot merchants (DEMO_MODE=false) would see live customer data mislabeled as demo data on every screen, which directly undermines the proof-only trust promise for both personas."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "One-click \"Send gift\" spends company money with no confirmation",
+  "problem": "The right rail's Send gift button shows Cost/Perceived/ROI in dollars and logs an irreversible comp on a single click with no confirm, no authorization cue, and no undo — for a first-day rep this is either a freeze (\"am I allowed to spend money?\") or an accidental irreversible mistake.",
+  "evidence": "tideover/components/product/GiftSuggestion.tsx:101 (\"Send gift\" button), :51-72 (send() fires on first click, sets \"Gift logged — X sent.\").",
+  "proposal": "Add a lightweight confirm before spending (inline \"Send this gift? Confirm / Cancel\" or two-step Send → Confirm) plus one line stating the rep is authorized and the value comes from the goodwill budget, so it reads as sanctioned, not personal liability.",
+  "severity": "P1",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified at GiftSuggestion.tsx:51-72,101: send() fires on first onClick with no confirm/undo, and sets \"Gift logged\" immediately on success; dollar Cost/Perceived/ROI stats sit directly above the button (84-86) with no authorization copy anywhere in the file. No confirm modal or guard exists elsewhere in the tree — component is self-contained and this is its only trigger path. Fix (inline confirm/cancel + one line of authorization copy) is a small, isolated client-component change, not on the hot-file serialization list, and adds no fabricated metrics/dates, so it doesn't violate proof-only doctrine. Severity P1 stands for persona A (untrained rep, irreversible spend, escalation-grade tickets)."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Confidence-band chip is hardcoded green even on overdue/escalated tickets, beside a red \"Overdue\" pill",
+  "problem": "On an overdue ticket the rail shows a green pill (green = safe everywhere else) directly next to a red \"Overdue\" pill for the same ticket — a conflicting color signal that undercuts persona A's instant \"is this safe?\" read.",
+  "evidence": "tideover/components/product/DraftRail.tsx:97 (`<span className=\"pill pill-green\">{confidenceBand}</span>` unconditional), :104-106 (conditional `pill pill-red` \"Overdue\" in the same flex-wrap row).",
+  "proposal": "Render the confidence-band chip as a neutral informational chip (border-border bg-sand text-ink-mute, matching SlaChip's \"ok\" tone) always, letting the adjacent Overdue/Escalated pills carry the only color-coded risk signal; green should appear only when nothing is wrong.",
+  "severity": "P1",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified: lib/time.ts:80-82 sets confidenceBand to \"running a little longer than planned…\" when overdue, but DraftRail.tsx:97 hardcodes pill-green with no conditional, while the red Overdue pill (104-106) sits directly below in the same card header block. Minor evidence imprecision — they're in two stacked flex divs, not literally one flex-wrap row — but the visual contradiction is real and immediately adjacent. Proposal is a pure CSS-class swap to a neutral chip (mirrors existing SlaChip \"ok\" tone), doesn't touch send/approve logic or add fabricated copy, so it's proof-only compliant and low effort. For persona A (untrained CS rep needing an instant trust read on escalation-grade tickets), a green \"safe\" signal beside a red \"overdue\" signal on the same ticket is a real, high-impact contradiction — P1 stands."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "The operator lands on a CFO finance dashboard, not the queue; only path is a jargon \"Open cockpit\" link",
+  "problem": "Told \"handle the presale queue,\" the rep logs in to /app — a wall of finance metrics with no ticket to answer — and freezes (\"where do I reply?\"); the only path to work is a small \"Open cockpit\" text link buried in a section header, and \"cockpit\" is jargon a day-one rep won't map to \"my inbox.\"",
+  "evidence": "tideover/app/app/page.tsx:78 (h1 \"Refund-risk dashboard\"), :228 (only queue link reads \"Open cockpit\"); tideover/app/login/page.tsx:16 (next defaults to \"/app\").",
+  "proposal": "Route the operator/rep landing to /app/inbox (set login next default, or add a full-width primary \"Answer your queue (N waiting) →\" as the first dashboard element); replace \"cockpit\" with \"Inbox\" everywhere it faces the rep.",
+  "severity": "P1",
+  "effort": "M",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified: page.tsx h1 is \"Refund-risk dashboard\", the only queue link reads \"Open cockpit\" (buried in a section header at ~line 228), and login/page.tsx:16 defaults next to \"/app\". Grep confirms \"cockpit\" is pervasive rep-facing jargon (inbox page itself titled \"Operator cockpit\", setup/onboarding CTAs too) — not an isolated slip with an existing fix elsewhere in the tree. Proposal (default login next to /app/inbox, or add a primary queue CTA; rename cockpit->Inbox in rep-facing copy) is low-risk: pure routing default + copy/label change, doesn't touch approve/send logic or keyboard shortcuts, and introduces no fabricated metrics/dates (no proof-only conflict). P1 is justified given persona A is a zero-training junior CS rep landing on a finance-metrics wall with no ticket in sight."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Dashboard at-risk count + table never clear as you work (sent tickets still show as fires)",
+  "problem": "After clearing the inbox to \"Queue clear,\" the dashboard still says \"5 flagged at-risk\" with 5 rows that link into the cockpit as if they need work — already-answered customers look identical to unanswered ones, so the operator can't trust the dashboard and re-opens handled tickets.",
+  "evidence": "tideover/lib/service.ts:734 (`atRisk: queue.filter((r) => r.band !== \"standard\")` — no sent filter) vs tideover/app/app/inbox/page.tsx:68 (`openQueue = queue.filter((r) => r.ticket.status !== \"sent\")`); header count tideover/app/app/page.tsx:83; table rows :245-269 carry no replied marker though QueueRow holds ticket.status.",
+  "proposal": "In getDashboard exclude sent tickets from the work-count and At-risk table (`&& r.ticket.status !== \"sent\"`) so header and table match the inbox and drop toward 0 as the queue clears; or render a \"Replied\" chip on sent rows and count only open ones.",
+  "severity": "P1",
+  "effort": "M",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified at cited lines: service.ts:734 atRisk = queue.filter(band !== \"standard\") with no sent-status exclusion, while a comment at inbox/page.tsx:64-67 explicitly acknowledges \"sent tickets still count toward the dashboard's before/after metrics.\" Dashboard header (page.tsx:83) and at-risk table (page.tsx:245-269) render straight from atRisk with no replied/status marker and rows link into the cockpit via the same URL pattern as open tickets. Fix (exclude sent from atRisk, or add a status chip) is low-risk, doesn't touch send/approve flow, keyboard shortcuts, or proof-only/SAMPLE DATA concerns. P1 holds for both a zero-training CS rep (re-opens already-answered tickets, wastes time, risk of duplicate replies) and a 15-min/day solo founder (loses trust in the one dashboard meant to show \"am I done yet\")."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "No live \"is anything on fire\" signal — SLA shown only as a lagging %, no overdue/breach count",
+  "problem": "The one screen meant to answer \"am I okay right now?\" gives only \"SLA attainment 96%\" (a lagging average) and never \"3 replies are overdue\" — live breach state exists per-ticket but is never aggregated to the landing screen.",
+  "evidence": "tideover/app/app/page.tsx:100-109 (SLA attainment is a backward-looking aggregate), :81-84 (header only says \"N flagged at-risk\"); live per-ticket breach state already computed via ticketSlaState/slaChip at tideover/app/app/inbox/page.tsx:82 and tideover/lib/sla, never surfaced on the dashboard.",
+  "proposal": "Add a compact status strip under the H1: \"N waiting · X overdue · Y breaching first-response SLA,\" each figure a link into the cockpit filtered to those tickets, derived by running ticketSlaState over open tickets (counts only, no fabricated metric).",
+  "severity": "P1",
+  "effort": "M",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified at tideover/app/app/page.tsx:100-109: SLA attainment is only a lagging %/n-count; header at :81-84 shows atRisk which is refund-risk score (lib/engines/refund-risk.ts), not SLA breach. Live per-ticket breach state (ticketSlaState/slaChip, lib/sla.ts) is computed only in inbox/page.tsx:82,116 and never aggregated on the dashboard. Proposal is feasible: dashboard already pulls repos+merchant via getDashboard/getRepositories, can run ticketSlaState over open tickets same as inbox does; counts-only satisfies proof-only doctrine (no fabricated dates/metrics), and it's a read-only addition that doesn't touch approve/send or keyboard shortcuts (page.tsx is a listed hot file, so serialize the edit, but that's a process note not a refutation). Severity P1 is right for persona B (solo founder, 15 min/day) since this is exactly the landing-screen \"am I okay right now\" check."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "\"Escalate\" button is cosmetic: nothing is persisted, no manager is notified",
+  "problem": "On a hostile/chargeback-threat ticket the rep clicks Escalate, sees \"Flagged for manager review,\" and moves on believing a human will catch it, but the flag is local React state that vanishes on advance/refresh — the safety valve the \"delegate escalation to a junior\" pitch depends on is copy theater.",
+  "evidence": "tideover/components/product/ApprovalBar.tsx:45 (local useState), :216-220 (\"Flagged for manager review this window.\"), :233-239 (onClick toggles local state, no fetch/post); tideover/app/app/inbox/page.tsx:78 (queue's own escalated flag derived from ticket.sentiment, unrelated); repo-wide grep of app/api and lib for \"escalat\" returns zero routes/fields.",
+  "proposal": "Wire Escalate to a persisted POST /api/escalate that writes an `escalated-by:<operator>`+timestamp tag (reuse the gift-sent tag pattern) and surface flagged tickets in the queue/dashboard; until built, remove copy implying a manager was notified (relabel e.g. \"Mark for my own follow-up\") and persist the flag so it survives navigation.",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 6,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Evidence checks out exactly: ApprovalBar.tsx:45 local useState, :216-220 hardcoded \"Flagged for manager review this window.\", :233-239 pure client toggle with no fetch/POST. Repo-wide grep confirms zero escalation API routes and zero manager/role/notification infrastructure anywhere; \"manager\" only appears as a static reassurance-engine advisory string (managerNote) shown in DraftRail, never routed to anyone. inbox/page.tsx:78's queue `escalated` flag is auto-derived from ticket.sentiment (hostile/chargeback-threat), confirming it's independent of the button as the auditor said. Downgraded P1->P2: the underlying safety net isn't as broken as the framing implies — hostile/chargeback tickets stay auto-flagged in the queue by sentiment regardless of the button click, so the ticket doesn't silently vanish from view; the real defect is a false claim of manager notification/persistence (a trust/copy bug), not a lost-ticket bug. Proposal is feasible and correctly proof-only-aligned: fix the false claim (relabel + persist self-flag) before attempting real manager routing, which would need role/notification infra this codebase doesn't have."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Dashboard metric tiles show undefined jargon (WISMO, Deflection, Saves, SLA); MetricTile has no gloss slot",
+  "problem": "The first screen a day-one rep sees is dense with acronyms and finance jargon defined nowhere in rendered UI (WISMO's only plain-English tie lives in source comments), and MetricTile structurally has no slot to explain the terms where they appear.",
+  "evidence": "tideover/app/app/page.tsx:100-109/112/117-121/119/125 (labels \"WISMO / 100 orders\", \"Saves logged\", \"Deflection\", \"SLA attainment\", plus \"Visa 13.1\"/GMV, none glossed); tideover/components/product/Sidebar.tsx:19 (\"WISMO load ahead\"); tideover/app/app/forecast/page.tsx:31,86,95,136 (WISMO never glossed inline); tideover/components/product/MetricTile.tsx:8-51 (no title/info prop).",
+  "proposal": "Add an optional `info?: string` prop to MetricTile that renders `title={info}` on the label span (mirroring FactorBreakdown.tsx:31); populate the jargon tiles (WISMO → '\"where is my order?\" tickets per 100 orders', Deflection → \"resolved without escalation\", SLA → \"replies that beat your promised first-response time\") and spell WISMO on first use on the dashboard, Sidebar hint, and Forecast page.",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 4,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: MetricTile.tsx:8-51 has no info/title prop, and dashboard page.tsx:100-128 renders bare jargon labels (\"WISMO / 100 orders\", \"Deflection\", \"SLA attainment\") with no gloss. Sidebar.tsx:19 hint \"WISMO load ahead\" also ungl glossed. The codebase already has the exact fix pattern one file over — FactorBreakdown.tsx:31 uses `title={hint}` on the label span for identical purpose — so this is a real, cheap, low-risk gap, not already solved for MetricTile itself. Proposal (native title tooltip, descriptive not fabricated definitions) respects proof-only doctrine and doesn't touch approve/send flow or shortcuts. Downgrading from P1 to P2: this is an onboarding/comprehension gap fixable with a tooltip, not a broken workflow or data-integrity/safety issue — real risk for persona A on day one but not blocking, so P2 fits better than P1."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "No error boundary or 404/not-found page anywhere under app/",
+  "problem": "Any unexpected throw or a mistyped/stale URL dumps the operator onto Next's raw default error/404 page with no Sidebar, no branding, and no recovery path — the exact fear-of-breaking-things moment the product promises to prevent.",
+  "evidence": "No error.tsx/not-found.tsx under tideover/app (find + Glob return zero); tideover/app/app/layout.tsx:17-26 only wraps {children}; the one handled case tideover/app/app/orders/[orderId]/evidence/page.tsx:53-66 gives no link back; tideover/app/status/[token]/page.tsx:18-36 hand-rolls its own card.",
+  "proposal": "Add tideover/app/app/error.tsx (client, error/reset) and tideover/app/app/not-found.tsx rendered inside AppLayout chrome with calm copy + a primary Button to /app; add a root tideover/app/not-found.tsx and tideover/app/error.tsx as outermost catch-alls.",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 3,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: no error.tsx/not-found.tsx anywhere under tideover/app (only Next's auto _not-found build artifact); app/app/layout.tsx:17-26 only wraps {children}; evidence/page.tsx NotFound has no return link. Proposal is standard, low-risk, doesn't touch hot files or proof-only copy. Downgraded to P2 from P1: this is a fallback-path gap (mistyped URL/unhandled throw), not a defect in the core approve/send workflow itself — real but not blocking daily operation for either persona."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "No loading feedback anywhere in /app — merchant switch and queue navigation just freeze",
+  "problem": "Every /app page is force-dynamic and every navigation (MerchantSwitcher onChange, QueueKeyboard j/k, clicking a row) triggers a server round-trip, but there is no loading.tsx, no useTransition/isPending, and no skeleton, so on any latency the screen sits frozen with no sign a click registered — which for a founder speed-running CS reads as the app hanging.",
+  "evidence": "No loading.tsx under app/app (find); no useTransition/isPending/NProgress matches across app/ and components/; tideover/components/product/MerchantSwitcher.tsx:29 (router.push) and tideover/components/product/QueueKeyboard.tsx:100-105/103 (router.replace) fire with no pending state.",
+  "proposal": "Add tideover/app/app/inbox/loading.tsx (3-column skeleton) and a lightweight tideover/app/app/loading.tsx (metric-tile grid skeleton); wrap MerchantSwitcher's router.push in useTransition and dim/disable the Select while isPending.",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 3,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified directly: grep confirms zero loading.tsx under app/app, zero useTransition/isPending/NProgress in app/ or components/. MerchantSwitcher.tsx:29 fires router.push with no pending state; QueueKeyboard.tsx:103 fires router.replace on j/k with no pending state; all 11 /app pages are force-dynamic (grep). Finding is accurate, not mischaracterized, and no existing solution elsewhere handles this. Proposal (loading.tsx skeletons + useTransition/isPending dim on MerchantSwitcher) is standard low-risk App Router pattern, doesn't touch approve/send logic or keyboard-handler logic, adds no fabricated copy/metrics, and doesn't conflict with SAMPLE DATA watermark. Neither MerchantSwitcher.tsx nor QueueKeyboard.tsx is on the CLAUDE.md hot-file serialization list, though new loading.tsx siblings sit next to hot files app/app/inbox/page.tsx and app/app/page.tsx so should still respect the one-in-flight-change rule for that route tree. Severity P2 is appropriate: for the zero-training CS rep persona, an ambiguous frozen screen during escalation-grade tickets risks double-actions/lost trust; for the 15-min/day founder it wastes the scarcest resource — real but not data-loss/P1-grade."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "No in-app help / support / \"ask a teammate\" affordance anywhere in the operator app",
+  "problem": "Persona A was told \"the tool has the answers,\" but when stuck (unfamiliar term, unsure a draft is safe, hostile customer) there is nowhere in the app to get help — the only escape hatch is to physically find a human, the #1 adoption killer.",
+  "evidence": "grep for mailto:/support@/help@/docs./Contact support across tideover/app/app and tideover/components/ui returns zero; tideover/components/product/Sidebar.tsx:106-119 (footer is only avatar+name+\"Demo data\") and :14-24 (nav has none); tideover/app/app/inbox/page.tsx:122-131 (header is only title+merchant switcher).",
+  "proposal": "Add a persistent \"Need help?\"/\"?\" affordance in the Sidebar footer (or inbox header) linking to a mailto: support address or a short \"how this works / what's safe to send\" panel — even one static link closes the biggest orientation gap for a zero-training rep.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: grep for mailto:/support@/help@/docs. across app/app + components/ui/product returns zero hits; Sidebar.tsx:106-119 footer is only avatar+name+\"Demo data\" text, nav array (14-24) has no help entry; inbox header (122-131) is only kicker+title+MerchantSwitcher. Claim and evidence are accurate, no existing escape hatch elsewhere. Proposal (static mailto or help panel in Sidebar footer) is low-effort, doesn't touch hot-file serialization list, doesn't fabricate proof-only metrics/dates. Downgrading P1→P2: this is a real gap for a zero-training junior rep (persona A) facing a hostile customer or unfamiliar term, but it's an orientation/QoL gap rather than a flow-breaking or data-risk bug — no escalation state is silently mishandled, the rep can still fall back to not sending (approve/send flow itself has no dead end). Solo-founder persona B is less affected since they know the tool. Worth fixing quickly given effort:S, but P1 (business-critical) overstates it for a missing static link."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Draft-mode toggle (Standard/Brief/De-escalate) silently overwrites in-progress edits",
+  "problem": "Once the operator has customized the draft, clicking any mode tab immediately replaces the entire textarea with the alternate's canned text — no confirmation, no recovery — so a rep who tweaked wording for a hostile customer and then previews \"Brief\" loses that work with one click.",
+  "evidence": "tideover/components/product/DraftRail.tsx:82-85 (`function selectMode(m){ setMode(m); setText(alternateFor(m)); }` — direct overwrite), :121-155/128-145 (toggle buttons call selectMode with no dirty-check).",
+  "proposal": "In selectMode compare current text against the seed for the active mode; when the operator has diverged, show a lightweight inline confirm (\"Switch and discard your edit?\") before setText, matching the confirm-before-discard pattern in the sibling ApprovalBar flow.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified at DraftRail.tsx:82-85 and 128-145: selectMode unconditionally calls setText(alternateFor(m)) with zero dirty-check, and every toggle button invokes selectMode directly — no confirm, no undo. No other guard exists in the component tree. Proposal (inline confirm mirroring ApprovalBar's discard pattern) doesn't touch approve/send, ⌘/Ctrl+Enter, or proof-only/SAMPLE-DATA concerns. Severity P2 is right: silent loss of hand-tuned wording for a hostile-customer reply is a real repeated-work/trust hit for the untrained rep persona, but it doesn't auto-send wrong content or corrupt data."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Approve & send has no differentiated consequence cue or confirm for escalated/hostile tickets",
+  "problem": "The send action is byte-identical in friction for a calm WISMO and a chargeback-threat ticket — ApprovalBar never even receives the ticket's priority, so it can't add a checkpoint or a \"this emails the customer, no recall\" line for the highest-stakes tickets persona A most needs reassurance on.",
+  "evidence": "tideover/components/product/ApprovalBar.tsx:30-40 (prop list has no priority/escalated), :206-240 (single undifferentiated button block, no pre-send consequence copy), :152-163 (post-send shows only \"Reply sent.\"); DraftRail.tsx:100-106 renders an \"Escalated priority\" pill ApprovalBar never reads.",
+  "proposal": "Pass priority into ApprovalBar; when escalated, make the first Approve & send press an explicit confirm state (\"Confirm send to {firstName} — chargeback risk\") requiring a second press and/or render one extra line \"This sends immediately to the customer's inbox — there's no recall,\" reusing the existing busy/state machine; keep normal tickets ceremony-free.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: ApprovalBar's typed prop list (lines 30-40) has no priority/escalated field, and its local `escalated` state (line 45) is just a manual manager-review flag, unrelated to the ticket's actual priority. DraftRail owns a `priority: 'normal'|'escalated'` prop (line 41) and renders it as a pill (line 102) but never forwards it into <ApprovalBar> (call site at line 175+ passes no priority arg) - confirming no existing solution differentiates send friction. Proposal is additive, reuses the existing busy/blocked/postSend state-machine already in the file, doesn't touch the approve-send POST contract or the Cmd/Ctrl+Enter path, and its copy is factual (no fabricated metrics/dates) - proof-only compliant. P2 fits: real safeguard gap for an untrained persona-A rep on escalation-grade tickets, but it's a consequence-cue UX gap, not a correctness or data-loss bug."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Lead the dashboard with the daily action instead of two analytics panels",
+  "problem": "Landing on /app the founder scrolls past six baseline tiles, a big \"money at risk\" panel, and a risk-curve chart before reaching the At-risk queue and the only \"Open cockpit\" link — the thing they came to act on — and the biggest, boldest number on the page is an anxiety estimate with no next step attached.",
+  "evidence": "tideover/app/app/page.tsx:92 (tiles), :137/:167-169 (GMV panel 30px $ figures), :213 (risk curve), then :221/:224-229 (At-risk queue + \"Open cockpit\" at the bottom); the header :73-135 contains only descriptive stats.",
+  "proposal": "Insert a one-line conditional action banner under the header before the tiles (\"{N} tickets need a reply today → Open cockpit\" when atRisk>0, calm \"All caught up\" when 0) and/or reorder the At-risk queue with its CTA directly under the header, demoting the GMV panel and risk curve below it so the next action is above the fold.",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "B",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified against tideover/app/app/page.tsx: header (75-90) is purely descriptive (merchant name, order/at-risk counts, merchant switcher — no action link), then six MetricTile baseline tiles (92-135), the GMV/money-at-risk panel with 30px $ figures (137-211), and the risk-curve panel (213-219) all precede the At-risk queue + only \"Open cockpit\" CTA (221-244+). Evidence is accurate, not mischaracterized. The proposed banner text (\"{N} tickets need a reply today\") uses data.atRisk.length, a real already-computed value shown elsewhere on the page (line 83) — not a fabricated metric, so it doesn't violate proof-only doctrine, and this is the dashboard page (not inbox/DraftRail/ApprovalBar), so no hot-file serialization or keyboard-shortcut risk. It's a simple additive JSX insertion, feasible without touching approve/send flow. For persona B (founder doing CS in 15 min/day) burying the one actionable link below two analytics-heavy panels is a real daily-friction cost; P2 (not P1, since the link does exist and is reachable by scroll, and not P3 since it recurs every session for the primary user)."
+  }
+ },
+ {
+  "surface": "global",
+  "title": "ink-mute fails WCAG AA contrast and carries most of the cockpit's secondary + QA copy",
+  "problem": "--ink-mute (#6A7B80) computes to ~4.16:1 on --sand and ~4.41:1 on --paper — both below the 4.5:1 AA minimum for normal text — yet it colors the bulk of small supporting copy including the QA-checklist hint that tells a rep exactly what to fix before a blocked send.",
+  "evidence": "tideover/app/globals.css:10-11 (--sand:#fbf8f2), :26 (--ink-mute:#6a7b80), tideover/tailwind.config.ts:35; used at tideover/components/product/DraftRail.tsx:227 (QA hint) and tideover/app/app/inbox/page.tsx:286-293 (DetailStat label); ~76 uses of text-ink-mute across the 11 page files.",
+  "proposal": "Darken --ink-mute (and the matching tailwind hex) to clear 4.5:1 on both --paper and --sand (roughly #5A6B70 or darker, verify with a checker) — a single-token change that cascades to every surface; keep slate for anything under 12px.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified the contrast math independently: --ink-mute #6A7B80 vs --sand #fbf8f2 computes to ~4.16:1 and vs --paper #ffffff to ~4.41:1, both below the 4.5:1 AA threshold for normal text — matches the finding exactly. Confirmed usage sites: DraftRail.tsx:227 QA-hint text is 11.5px and inbox/page.tsx:289 DetailStat label is 11px — both well under the 18px/14px-bold large-text exemption, so full AA applies and both fail. Grep shows 164 uses across 45 files (auditor undercounted at ~76 but direction is right) with no alternate higher-contrast token already covering these hint/label spots — not solved elsewhere. Proposal (darken the single CSS/tailwind token) is feasible, doesn't touch approve/send logic or shortcuts, and introduces no fabricated copy — proof-only doctrine is untouched. P2 is right: real accessibility defect hitting the exact QA-checklist hint text both personas rely on under pressure, but text remains legible to most users so it's not flow-blocking like a P1."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Left-rail risk score pill has zero explanation of the number or the color scale",
+  "problem": "In the priority queue (the first thing a rep triages by) each row shows a colored dot plus a bare number like \"72\" with no label, scale, or tooltip; the only place the 0-100 scale and red/amber/green meaning are explained is the RiskCurve legend on a different page — persona B's \"am I okay?\" glance relies on color intuition alone.",
+  "evidence": "tideover/components/product/QueueList.tsx:82 (`<RiskBadge color={r.color}>{r.riskScore}</RiskBadge>` no label); tideover/components/ui/Badge.tsx:6-24 (RiskBadge renders only a dot + children, no title prop) vs tideover/components/product/SlaChip.tsx:21-24 (sibling chip already carries a title); the only legend is RiskCurve.tsx:51-58.",
+  "proposal": "Add a title prop to RiskBadge and pass a short string (\"Refund-risk score, 0-100. Red = act now, amber = watch, green = standard.\") at every bare-score call site (QueueList.tsx:82, customers/page.tsx:141, page.tsx:266), mirroring SlaChip.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": true,
+  "persona": "B",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed: Badge.tsx:6-24 RiskBadge takes no title/label prop; QueueList.tsx:82 renders only the bare riskScore number with a color dot. SlaChip.tsx:21-24 is a directly adjacent sibling chip in the same row that already carries a native `title` tooltip explaining its value/basis, so the asymmetry is real and the fix pattern (mirror SlaChip's title prop) is proven in-codebase, low-risk, and doesn't touch approve/send flow, keyboard shortcuts, or fabricate any metrics/dates (it's a static scale explanation) — no proof-only violation. P2 is fair: it's a QoL/comprehension gap for persona B's fast glance-triage, not a broken flow or data-integrity issue."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "\"Previously told\" prior reply is hard-truncated with no way to read the rest",
+  "problem": "The Previously-told strip exists so the operator never contradicts a promise already made, but the prior reply is clamped to 6 lines with no expand control, so a longer prior message (containing the exact date or compensation already promised) can be invisibly cut off right when consistency matters most.",
+  "evidence": "tideover/components/status/PreviouslyTold.tsx:50 (`className=\"… line-clamp-6\"` on the prior reply <p>, no expand affordance anywhere in the file).",
+  "proposal": "Add a small \"Show full reply\" toggle under the clamped text that removes line-clamp-6 on click (local useState), so nothing the merchant already promised is hidden from the reviewing operator.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": true,
+  "persona": "A",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed at PreviouslyTold.tsx:50 — line-clamp-6 on the prior reply text with zero expand affordance anywhere in the file or its only call site (inbox/page.tsx:253); no parent component adds one. Proposal (local useState toggle removing the clamp class) is trivial, touches only this read-only display component, doesn't interact with approve/send flow, keyboard shortcuts, or fabricate any data — it just reveals existing verbatim text, consistent with the proof-only doctrine stated in the file's own header comment. Severity P2 is fair: this is exactly the strip whose job is preventing contradicted promises, and persona A (untrained CS rep under escalation pressure) is the one most likely to need the cut-off compensation/date detail and least likely to know to go dig for it elsewhere."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "At-risk count is a gray mid-sentence number with no color weight or click-through",
+  "problem": "Persona B's 15-minute \"am I okay?\" read hinges on the at-risk count, but it's buried mid-sentence in gray text with no color and no link, rendering identically whether it is 0 or 40.",
+  "evidence": "tideover/app/app/page.tsx:81-84 (`{data.ordersInWindow} orders … · {data.atRisk.length} flagged at-risk` in plain text-ink-mute, no conditional color, no Link, identical weight to the neutral order count).",
+  "proposal": "Pull data.atRisk.length into its own emphasized element after the merchant name (a RiskBadge-style pill: red/bold \"{N} at-risk\" if >0, quiet \"All clear\" if 0) wrapped in `<Link href={/app/inbox?merchant=…}>` so it is colored for instant good/bad read and one click from the fix.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified tideover/app/app/page.tsx:81-84: the at-risk count is plain text-ink-mute prose, no conditional color, no Link — exactly as cited. RiskBadge is already imported (line 7) and unused here, and /app/inbox already accepts ?merchant= (inbox/page.tsx:48-58), so the fix is a genuine low-effort reuse, not new design/infra. No proof-only violation (real count, no fabricated metric/date) and no conflict with approve/send flow or keyboard shortcuts. Downgraded from P1 to P2: for persona B this is a real friction point but not on the critical path of an in-progress escalation (that's the inbox/DraftRail/ApprovalBar hot-file territory) — it's a dashboard glance-ability gap, annoying but not blocking a task."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "SLA attainment tile renders raw \"n=7\" statistical notation below the sample floor",
+  "problem": "Below the sample floor the tile's 30px headline literally shows \"n=7\"/\"n=0\"; a day-one rep with no stats background reads \"n=0\" as a broken/blank stat rather than \"still collecting.\"",
+  "evidence": "tideover/app/app/page.tsx:103 (`value={slaHasRate ? … : `n=${sla.answered}`}`); tideover/lib/sla.ts:29 (ATTAINMENT_MIN_N=10) and :304 (rate null below the floor) confirm the deliberate small-n gate.",
+  "proposal": "Change the ungated value to plain language — `${sla.answered} answered` (or \"No data yet\" when answered===0) — and keep the n≥10 mechanism only in the existing sublabel.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Evidence checks out exactly: page.tsx:103 renders raw `n=${sla.answered}` at 30px font with no headline context; sla.ts:29 confirms ATTAINMENT_MIN_N=10 gate. MetricTile.tsx has no tooltip/aria-label mitigating it — only the small sublabel explains \"collecting\". Proposal (plain-language \"N answered\"/\"No data yet\") is a trivial one-line copy change in a non-hot-file computed value, stays proof-only (no fabricated numbers, just relabels an existing computed fact), and doesn't touch approve/send flow or shortcuts. Downgraded from P1 to P2: this is a passive dashboard glance metric, not something blocking ticket handling/escalation for persona A — confusing but not workflow-breaking."
+  }
+ },
+ {
+  "surface": "global",
+  "title": "Terracotta is simultaneously the primary-CTA color, the risk-amber caution color, and a decorative tag fill",
+  "problem": "The audit's core question — does one unmistakable color mean \"act/click here\" — fails: the same orange marks \"Approve & send\", an amber caution risk pill, and a neutral \"Add-on\" label, so color anchors no glance-read.",
+  "evidence": "tideover/app/globals.css:18 (`--terracotta:#d9762f`) is byte-identical to :30 (`--risk-amber:#d9762f`); .btn-primary gradient :134-138; .pill-amber :203-207 uses text-terracotta-600; tideover/components/product/SlaChip.tsx:15 amber tone; RiskColor 'amber' at tideover/lib/types.ts:38; tideover/app/app/social/page.tsx:41 solid bg-terracotta on a non-CTA \"Add-on\" tag.",
+  "proposal": "Add a distinct caution var (e.g. --amber-status, a warm yellow-gold not sharing terracotta's hue) and repoint --risk-amber/.pill-amber/SlaChip's amber tone to it; reserve --terracotta/.btn-primary/bg-terracotta for clickable primary actions only; restyle the social \"Add-on\" badge as a neutral Tag.",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified in code: --terracotta and --risk-amber are the identical hex #d9762f (globals.css:18/30), .btn-primary uses the terracotta gradient (134-138), .pill-amber and SlaChip's amber tone both key off terracotta-600/rgba(217,118,47,...) (SlaChip.tsx:15), and social/page.tsx:41 puts solid bg-terracotta on a non-CTA \"Add-on\" tag — so one orange really does triple-duty as CTA/caution/decoration. Fix is a token-only change (add --amber-status, repoint consumers, retag Add-on as neutral Tag) — doesn't touch approve/send logic, shortcuts, or proof-only copy, so feasible. Downgraded from P1 to P2: text labels still disambiguate meaning (nothing is mis-clicked or factually wrong), so this is a glance-read/aesthetic clarity issue rather than a functional blocker for either persona."
+  }
+ },
+ {
+  "surface": "global",
+  "title": "Form inputs suppress the app's own 3px focus-visible outline",
+  "problem": "Every TextInput/TextArea/Select — including the cockpit's editable draft the rep tabs into before sending — loses the 3px keyboard-focus outline every button/link gets, leaving only a faint 1px teal border, inconsistent within the same screen.",
+  "evidence": "tideover/components/ui/Field.tsx:6-7 (`outline-none … focus:border-teal` in baseInput, applied at :28,32,36); tideover/app/globals.css:74-78 (`:focus-visible { outline: 3px solid var(--terracotta) }` in @layer base, overridden by the later utilities-layer outline-none); same pattern at tideover/components/product/UpdateComposer.tsx:188.",
+  "proposal": "Remove outline-none from Field.tsx's baseInput (and UpdateComposer.tsx:188) so the global 3px terracotta :focus-visible outline applies to inputs the same as buttons/links; keep focus:border-teal as a secondary accent.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed exactly as cited: Field.tsx:7 baseInput has `outline-none … focus:border-teal`, applied to TextInput/TextArea/Select at lines 28/32/36; globals.css:74-78 sets a 3px terracotta :focus-visible outline in @layer base, which Tailwind's utilities-layer `outline-none` overrides on all form fields. UpdateComposer.tsx:188 has the same pattern on the read-only Kickstarter-draft textarea. No other component re-adds the outline, so the mischaracterization risk is nil. Fix (drop outline-none, keep focus:border-teal as secondary accent) is trivial CSS, touches no hot files, doesn't affect approve/send logic or keyboard shortcuts, and has no proof-only/SAMPLE-DATA implications. Downgraded from P1 to P2: a visible fallback (1px teal border + background/transition) already exists, so focus is degraded/inconsistent rather than invisible — a real accessibility and consistency gap worth fixing, but not a blocker on the escalation/approve-send critical path for either persona."
+  }
+ },
+ {
+  "surface": "global",
+  "title": "Disabled buttons render pixel-identical to enabled ones",
+  "problem": "A blocked \"Approve & send\" (hard-date QA gate) or a busy \"Regenerating…\" looks as vivid and clickable as an active button (same gradient, cursor:pointer), so a full-color button that silently does nothing on click reads as broken, not blocked.",
+  "evidence": "tideover/app/globals.css:110-158 (.btn/.btn-primary/.btn-ghost/.link-quiet — no :disabled selector); tideover/components/ui/Button.tsx:54-58 (disabled passed to <button> with no conditional class); tideover/components/product/ApprovalBar.tsx:222-229 (Approve & send disabled with no visual differentiation).",
+  "proposal": "Add `.btn:disabled, .btn[disabled] { opacity:.5; cursor:not-allowed; box-shadow:none; }` (and .link-quiet:disabled) to globals.css — one change fixes every disabled button (Approve & send, Regenerate, Escalate, Post update, Send gift).",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: globals.css has no :disabled/[disabled] rule for .btn/.btn-primary/.btn-ghost/.link-quiet; Button.tsx (line 54-58) forwards disabled to <button> with no conditional class; ApprovalBar.tsx does add a text warning banner when blocked, but the Approve & send button itself remains full-gradient with default pointer cursor. Fix is a tiny, isolated CSS addition — no risk to approve/send logic, keyboard shortcuts, proof-only doctrine, or SAMPLE DATA watermark. Downgrading from P1 to P2: the text banner already signals \"blocked\" for the QA-gate case, so the disabled Approve button isn't fully silent-fail there; Regenerate/Escalate-adjacent buttons during busy states have no such text cue though, so the visual gap is still real and worth fixing but not top-severity."
+  }
+ },
+ {
+  "surface": "status",
+  "title": "Customer-facing \"Order\" tag leaks the raw internal database ID",
+  "problem": "The order reference shown to the backer is the raw nanoid (\"ord_4f8a2k9dq0pl\"), which matches nothing in their confirmation email — on a branded reassurance page it reads as a data-leak/phishing red flag rather than reassurance.",
+  "evidence": "tideover/app/status/[token]/StatusView.tsx:59 (`<Tag>Order {status.orderRef}</Tag>`); tideover/lib/status.ts:108 (`orderRef: order.id`); tideover/lib/ids.ts:16-19 (format is `ord_`+12-char nanoid, an internal entity ID).",
+  "proposal": "Stop surfacing order.id as the customer reference — plumb the merchant's own order number (e.g. Shopify order name) if captured on ingest, or remove the \"Order {ref}\" Tag entirely rather than show an internal ID the customer won't recognize.",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: StatusView.tsx:59 renders `Order {status.orderRef}`, status.ts:108 sets orderRef = order.id (raw entity id from ids.ts, format `ord_`+12-char nanoid). Checked for an escape hatch — no merchant-facing order-number field exists anywhere on the Order type (types.ts:117-150 has no shopify/external order-number field; Ticket.externalId and SentReply.externalId are dedup keys for tickets/replies, not order numbers; NormalizedTicket.orderRef is itself just a lookup key resolved via findById back to this same internal id, per service.ts:406 and webhook-ingest.test.ts). So the finding isn't mischaracterized or already solved — there is genuinely no better reference to plumb through today. Proposal (drop the tag, or add a real merchant order-number field on ingest) is feasible, doesn't touch the approve/send flow, keyboard shortcuts, or proof-only doctrine (no fabricated metric/date involved), and the cheap fix (delete the Tag) is trivial. I downgrade severity from P1 to P2: the page's branded header, first-name greeting, and merchant name give strong legitimacy signals already: an odd-looking order-id tag is a minor trust wrinkle, not a plausible \"phishing\" trigger, and doesn't block either persona (junior CS rep or solo founder) from doing their job. Cosmetic/trust polish, worth fixing, not urgent-blocking."
+  }
+ },
+ {
+  "surface": "widget",
+  "title": "Widget invalid-token state has zero actionable element",
+  "problem": "The embedded widget's broken-link state is plain prose with nothing to click — worse than the status page's misdirected button — so a customer inside the merchant's site has no path but to email the merchant themselves, routing straight back to the inbox Tideover is meant to deflect.",
+  "evidence": "tideover/app/widget/[token]/page.tsx:26-39 (the `if (!status)` branch renders only two <p> tags inside WidgetFrame, no Button/link/mailto).",
+  "proposal": "Add a minimal actionable element to the widget's invalid-token branch — at minimum a merchant-configurable \"Contact us\" link/button, matching the escape-hatch pattern used by AskBox elsewhere on the surface.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed at tideover/app/widget/[token]/page.tsx:26-39: the `!status` branch renders exactly two `<p>` tags inside WidgetFrame (which is just a height-reporting div, adds no chrome) — no Button/link/mailto, matching the finding exactly. Feasible and low-risk: this file has no dependency on approve/send flow, keyboard shortcuts, or the reassurance engine, so it's outside the hot-file serialization list; a contact link/mailto adds no fabricated metrics or dates (proof-only safe) and the demo watermark is irrelevant here since merchant/isDemo is never resolved on this branch. One real caveat the auditor missed: for a genuinely invalid/expired token, verifyStatusToken (lib/ids.ts:51) fails or the order/merchant lookup returns null *before* merchant identity is known, so a \"merchant-configurable\" contact link as literally proposed isn't achievable in this branch without a broader change (e.g. encoding merchant id separately from the signed token). A generic platform-level \"Contact us\"/mailto fallback is still trivially buildable and would solve the deflection problem, just not the merchant-branded version proposed. Severity: real gap in the widget's core deflection job, but it's an edge-case path (broken/expired links only), so P2 rather than P1."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Inbox \"Queue clear\" empty state falsely congratulates a brand-new merchant who never imported anything",
+  "problem": "queueCleared is derived purely from items.length===0 with no check for whether the merchant has ever had orders, so a brand-new operator who skipped import lands on the same \"Queue clear — you've cleared the at-risk queue\" checkmark as an experienced one, giving false praise and zero nudge toward the real next step (import backers).",
+  "evidence": "tideover/app/app/inbox/page.tsx:118 (`const queueCleared = items.length === 0;`) and rendered copy :176-182 (\"Queue clear … New tickets land here the moment they arrive.\").",
+  "proposal": "Also thread whether the merchant has any orders (reuse the setup checklist's backersImported signal); when items.length===0 && no orders ever, render a distinct first-run empty state (\"Nothing here yet — import your backer list\" + Button to /onboarding or /app/setup) instead of the checkmark.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified inbox/page.tsx:118 (queueCleared = items.length===0) and :177-181 (checkmark + \"Queue clear\" copy) — matches the finding exactly. Confirmed no existing gating solves this: middleware.ts only guards auth (not onboarding state), app/app/page.tsx has no setup redirect, but lib/setup.ts:105 already computes `backersImported = orders.length > 0` from the orders repo — a signal the inbox page can cheaply reuse (repos.orders already available server-side). Proposal adds a distinct first-run state + CTA to /app/setup: no fabricated metrics/dates (proof-only respected), doesn't touch approve/send flow or QueueKeyboard shortcuts. Inbox page.tsx is a listed hot file, so implementation needs the standard single-in-flight-edit discipline, but that's process not a refutation. Severity: for persona A (junior rep, zero training) this is a soft false-positive congratulation, not a crash or data-loss risk; for persona B (solo founder, 15 min/day) it's a missed nudge toward the one action (import backers) that makes the product function at all for a new merchant. P2 fits — real but not urgent/blocking."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Dashboard shows a wall of zeros/dashes for a new merchant with no link back to setup",
+  "problem": "For a merchant who finished onboarding but imported no orders, every tile shows 0/—/n=0 and nothing tells the founder this is because setup isn't finished rather than because all is fine, with no CTA back to /app/setup from the page they land on right after onboarding.",
+  "evidence": "tideover/app/app/page.tsx:73-135 (header + six MetricTiles) and :231-232 (\"No at-risk customers right now.\") — no branch checks data.ordersInWindow===0 or links to /app/setup.",
+  "proposal": "After computing data, if data.ordersInWindow===0 render a banner above the tiles (styled like the dashed proof notes): \"You haven't imported any orders yet — finish setup to see live numbers here\" with a `<Button href={/app/setup?merchant=…}>Finish setup</Button>`.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified at tideover/app/app/page.tsx:73-135 and 231-232: no branch on data.ordersInWindow===0, no link to /app/setup anywhere on the page. A merchant with zero imported orders sees identical zeroed tiles and the generic 'No at-risk customers right now' placeholder as a merchant that's fully live with no risk — ambiguous for persona B (solo founder) landing here right after onboarding. Proposal is feasible, doesn't touch approve/send/inbox flow or shortcuts, reuses existing dashed-border proof-placeholder styling, and adds no fabricated metrics/dates. P2 fits: confusing first-run state, not a blocker."
+  }
+ },
+ {
+  "surface": "onboarding",
+  "title": "Onboarding wizard has no draft persistence — a refresh or back-navigation silently wipes all answers",
+  "problem": "The entire multi-step wizard (brand voice, tone, banned words, day-bands, the pasted \"toughest message\") lives only in React useState with no storage backing, so a founder who accidentally hits back, refreshes, or has the tab crash loses everything typed, including a long pasted customer message, with zero warning.",
+  "evidence": "tideover/app/onboarding/OnboardingWizard.tsx:78-109 (all wizard state via useState only); grep for localStorage|sessionStorage|beforeunload across app/onboarding/ returns zero.",
+  "proposal": "Add a useEffect that serializes the collected fields (brandName, voice, tone, banned, signoff, helpdesk, preorderApp, windowMin/Max, stages, worstStory, step) to sessionStorage on change and hydrates initial useState from it on mount; clear the draft on successful submit().",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed: OnboardingWizard.tsx:78-109 holds all wizard fields (brandName, voice, tone, banned, signoff, helpdesk, preorderApp, windowMin/Max, stages, worstStory, step, result) in plain useState; grep for localStorage|sessionStorage|beforeunload across app/onboarding/ returns nothing, so refresh/back/crash silently wipes everything including a long pasted worstStory. Proposal (sessionStorage sync + clear on submit success) is feasible, touches none of the hot-files list, doesn't affect approve/send flow, keyboard shortcuts, or proof-only copy (it's just persisting form state, no fabricated metrics). Severity P2 is fair: it's a one-time setup flow so blast radius is lower than inbox/approval bugs, but losing a pasted \"toughest customer message\" mid-wizard for a time-poor solo founder (persona B) is a real, avoidable trust hit."
+  }
+ },
+ {
+  "surface": "onboarding",
+  "title": "CSV import gives no upfront format guidance, and unrecognized-headers detection is styled like a success",
+  "problem": "ImportPanel never states expected columns before file pick, and when the parser can't recognize headers it falls back to best-effort Kickstarter mapping but renders that caveat in the same plain slate text as a confident detection, so an unsupported-platform export can be silently mismapped with no strong visual signal.",
+  "evidence": "tideover/app/onboarding/ImportPanel.tsx:24-28 (FORMAT_LABEL \"unrecognized headers — mapping best-effort as Kickstarter\") and :116-121 (detected-format line uses the same text-slate styling regardless of format).",
+  "proposal": "Add an expected-columns hint above the file picker (\"Works with Kickstarter backer reports and BackerKit exports — first name, email, pledge amount, ETA\") and at :116-121 branch styling on format===\"unknown\" to the terracotta warning classes (as at :155) so a best-effort mapping reads as \"double-check this.\"",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified at ImportPanel.tsx:24-28 and :116-121: unknown-format caveat text is real, and the detected-format line uses unconditional text-slate/text-ink styling with no branch on format==='unknown', while terracotta warning classes already exist in-file at :155 unused for this case. No upfront column-list guidance exists anywhere above the file picker (lines 91-99 only name platforms). Fix is copy + conditional className only — doesn't touch approve/send flow, keyboard shortcuts, or fabricate metrics/dates, and isn't a SAMPLE DATA surface. P2 is right: silent mismap on first-run import risks bad customer/order data for a solo founder with no training, but it's recoverable (re-import) and confined to onboarding."
+  }
+ },
+ {
+  "surface": "onboarding",
+  "title": "Timeline editor accepts nonsensical day-band inputs with zero validation",
+  "problem": "The fulfillment-window and per-stage day-range inputs have no client-side sanity check, so a founder can enter an earliest window greater than the latest, or a stage's to less than its from, and hit \"Generate my playbook\" with no feedback — baking a backwards/overlapping day-band into every generated reassurance script.",
+  "evidence": "tideover/app/onboarding/OnboardingWizard.tsx:371-457 (TimelineEditor windowMin/windowMax/stage from/to TextInputs have min={0} only); no comparison/validation in the component or in next()/submit() :125-195.",
+  "proposal": "In TimelineEditor add inline validation: if windowMin>windowMax or any stage from>to, render a terracotta warning under the offending field (reuse the text-terracotta-600 styling from :324) and disable Continue/Generate until corrected.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed at OnboardingWizard.tsx:390-441: windowMin/windowMax and stage from/to are plain number inputs with min={0} only, no comparison. next() (125-133) only checks brandName; submit() (146-195) only checks brandValid — no ordering check either place. Server route.ts:24-26 uses z.number().default() with no .refine() for min<max, so a backwards window/stage reaches the generator unimpeded. Proposal (inline terracotta warning, reused from existing error styling, disable Continue/Generate) is low-risk, client-only, doesn't touch approve/send/reassurance engine or keyboard shortcuts, and has no proof-only implications. Severity P2 fits: solo founder (persona B) filling this out solo with no review step could easily fat-finger a reversed range and never notice until scripts look wrong downstream."
+  }
+ },
+ {
+  "surface": "global",
+  "title": "\"No merchants seeded.\" dev-facing copy is shown verbatim to real operators on every /app page",
+  "problem": "Eleven /app pages independently fall back to the identical raw \"No merchants seeded.\" string in unstyled gray text when merchants.list() returns empty — dev debug copy with no recovery action, and exactly the path a transient data-layer hiccup would take (returning empty rather than throwing), a dead-end a real operator could hit mid-shift.",
+  "evidence": "Identical `<div className=\"p-8 text-ink-mute\">No merchants seeded.</div>` in 11 files: tideover/app/app/page.tsx:51, inbox/page.tsx:53, setup/page.tsx:42 and 52, customers/page.tsx:27, updates/page.tsx:31, gifts/page.tsx:27, scripts/page.tsx:93, social/page.tsx:23, forecast/page.tsx:45, baseline/page.tsx:39.",
+  "proposal": "Extract a shared `<NoMerchantState/>` (components/product/NoMerchantState.tsx) with operator-facing copy (\"We couldn't load your account. Refresh the page, or contact support if this keeps happening.\") plus a refresh Button, and swap it in for the 11 raw-string fallbacks.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified all 11 file:line citations verbatim — each independently renders the exact same unstyled `<div className=\"p-8 text-ink-mute\">No merchants seeded.</div>` when `repos.merchants.list()` returns empty, with no retry/refresh/support action. No shared empty-state component exists yet (components/product/ has no NoMerchantState), no layout-level guard intercepts this path, and it's distinct from the SAMPLE DATA watermark (that's for populated demo data, not the empty-repo case). Proposal is feasible and low-risk: a shared component with a refresh button doesn't touch approve/send flow, keyboard shortcuts, or fabricate any metrics/dates — respects proof-only doctrine. Two of the 11 files (app/app/page.tsx, app/app/inbox/page.tsx) are on the CLAUDE.md hot-file serialization list, so this fix must be sequenced one-at-a-time with any other in-flight changes to those files, but that's a scheduling note, not a reason to refute. Severity P2 is fair for both personas — a junior CS rep hitting a dead-end mid-shift during a data hiccup, or a founder confused during onboarding, with zero guidance either way."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Queue order is never explained, and the sort key isn't the number shown",
+  "problem": "The queue is sorted server-side by priorityRank (then age) but each row shows only riskScore, and nothing states what the queue is sorted by, so if the two diverge a ticket with a visibly lower risk number can sit above a higher one with no explanation — undermining the operator's \"why is this on top?\" trust.",
+  "evidence": "tideover/lib/service.ts:654-658 (`rows.sort((a,b) => a.priorityRank - b.priorityRank || …createdAt…)`); tideover/app/app/inbox/page.tsx:76-77 (queue item carries riskScore, not priorityRank), header :138-147 shows only \"Priority queue\"+count+shortcut hint.",
+  "proposal": "Add a one-line caption under \"Priority queue\" (\"Sorted by refund risk, oldest wait first\"); if priorityRank and riskScore can diverge, show priorityRank alongside/instead of riskScore or make riskScore the actual sort key so the visible number matches the visible order.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed: service.ts:654-658 sorts by priorityRank, and refund-risk.ts:105 defines priorityRank = (escalated ? 0 : 1000) + (1000 - riskScore) — so an escalated ticket with a low riskScore (e.g. 40) always outranks a non-escalated one with a high riskScore (e.g. 95), while the row only ever displays riskScore (inbox/page.tsx:76, QueueList.tsx:82) and the header (page.tsx:138-147) states no sort explanation. One mitigating detail the auditor missed: QueueList.tsx:72-77 does render a small red dot for escalated tickets, so there's a weak visual cue for the override case, but it's an unlabeled dot, not an explanation of sort order — doesn't fully solve the \"why is this on top\" problem the finding raises. Proposal (one-line caption, or surfacing priorityRank) is cheap, doesn't touch approve/send flow, keyboard shortcuts, or fabricate any metric — priorityRank is already a real computed value. No proof-only violation. P2 is right: real trust/legibility gap for both personas but not a functional blocker."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Deflection tile's percent has no small-n floor like its SLA neighbor",
+  "problem": "The tile beside SLA attainment (which correctly hides its % below n=10) computes Deflection with no floor, so on day one with 1-2 tickets it prints a hard \"100%\"/\"0%\" from a sample of one — one tile honestly says \"collecting\" while the tile next to it confidently prints a percentage.",
+  "evidence": "tideover/lib/service.ts:715-716 (`const deflectionPct = tickets.length ? Math.round((resolved/tickets.length)*100) : null;` — no minimum-n gate) unlike computeSlaAttainment at tideover/lib/sla.ts:304 which nulls the rate below ATTAINMENT_MIN_N.",
+  "proposal": "Apply the same small-n gate to deflectionPct (reuse ATTAINMENT_MIN_N); below the floor render the tile the way the SLA tile does (n={tickets.length} / \"collecting\" sublabel) instead of a hard percentage.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified at tideover/lib/service.ts:716 (deflectionPct = resolved/tickets.length, no n-floor) vs tideover/lib/sla.ts:304 (rate nulled below ATTAINMENT_MIN_N=10) and app/app/page.tsx:102-126 where the SLA tile renders \"collecting — rate at n>=10\" but Deflection just shows the raw percent (or \"—\" only at n=0). Finding is accurate, not already solved, trivial low-risk fix (reuse ATTAINMENT_MIN_N, mirror the SLA tile's collecting-state), and aligns with proof-only doctrine against misleading precision. P2 fits: not blocking core approve/send flow but a visible day-one credibility inconsistency for the target personas."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "GMV-in-dispute-window dollar figures are a dead end — no click-through to the orders behind them",
+  "problem": "The \"Money at risk\" panel is the scariest number for a solo founder but answers \"how much\" and never \"so what do I do,\" since the three dollar blocks show totals with no way to see which orders/customers make up the figure.",
+  "evidence": "tideover/app/app/page.tsx:162-196 (the three stat blocks Money at risk / Shopify / Kickstarter render dollars() and counts with no anchor/Link).",
+  "proposal": "Wrap each stat block (at minimum \"Money at risk\") in `<Link href={/app/inbox?merchant=…}>` so the number is one click from the queue; an in-page anchor-scroll to the At-risk queue table below is an acceptable zero-new-route interim fix.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed at tideover/app/app/page.tsx:162-196 — the three stat blocks (Money at risk, Shopify, Kickstarter) render dollars()/counts as plain divs with no Link or anchor; nothing else in the file wraps them. The page already uses next/link for \"Open cockpit\" → /app/inbox?merchant=${merchantId} at line 224-229, so wrapping stat blocks in the same Link pattern (or an in-page anchor to the At-risk queue table at line 221+) is a trivial, low-risk addition — no auth/hot-file conflicts, no fabricated metrics (numbers are already computed and real), no SAMPLE DATA watermark issue since this isn't a demo-only surface question. Severity P2 and effort S both look right for a solo-founder (persona B) dashboard whose core job is triage speed."
+  }
+ },
+ {
+  "surface": "status",
+  "title": "Merchant-accent fills behind fixed near-white glyphs skip the app's own contrast-safety check",
+  "problem": "Every other accent usage on this page runs through readableAccent() to survive light merchant colors, but the header avatar-initial and the \"done\" timeline dot hardcode near-white glyph color over the raw unchecked accent, so a pale brand color (pastel, light gold, mint — a real onboarding input) makes the letter or checkmark illegible on the very first thing the customer sees.",
+  "evidence": "tideover/app/status/[token]/StatusView.tsx:41-47 (text-white on style background:accent); tideover/components/status/StageDot.tsx:18-29 (text-ink-inverse on style background:accent for done); tideover/app/globals.css:25 (--ink-inverse:#f4f9f9); contrast rationale in tideover/lib/color.ts:1-12.",
+  "proposal": "In the avatar span and StageDot's done span, pick glyph color the way the rest of the page does: compute relativeLuminance(accent) (already in lib/color.ts) and use ink-inverse only when luminance is low enough to keep AA, else a dark ink color.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: StatusView.tsx:29 computes textAccent via readableAccent(accent) but never uses it — the avatar span (line 41-46) hardcodes text-white over raw `accent`. StageDot.tsx (line 18-29) hardcodes text-ink-inverse (#f4f9f9, near-white per globals.css) over raw `accent` for the done state, ignoring readableAccent entirely — it isn't even passed into StageDot. No onboarding validation constrains merchant primary color to be dark (grepped onboarding/color-picker paths — none found), and widget/[token]/page.tsx reuses the same unguarded `accent`, so the bug is not solved elsewhere in the tree. Proposal (branch glyph color on relativeLuminance(accent), reusing lib/color.ts, which the file's own doc comment says is for exactly this text/thin-edge case) is feasible, respects proof-only doctrine (no fabricated metrics), doesn't touch SAMPLE DATA badge logic, and doesn't affect approve/send flow or keyboard shortcuts — pure rendering fix on the customer status page. Severity P2 is reasonable: it's a real accessibility/legibility defect on the first thing a customer sees for any merchant with a pale brand color, but it's cosmetic/conditional (only manifests for light-brand merchants) rather than blocking a core flow, so P2 over P1 is right; P3 would undersell that it can make an avatar initial or completion checkmark fully illegible."
+  }
+ },
+ {
+  "surface": "status",
+  "title": "No loading state for /status/[token] or /widget/[token] — blank screen while the order resolves",
+  "problem": "Both routes are async server components that await a DB round-trip before anything paints, with no loading.tsx, so on a slow mobile connection an anxious backer sees a blank white page — easy to mistake for a broken link and bounce or re-click, the opposite of the glanceable \"am I okay?\" reassurance this surface exists to give.",
+  "evidence": "tideover/app/status/[token]/page.tsx:16 (`await getPublicStatus(...)`, no Suspense) and tideover/app/widget/[token]/page.tsx:24 (same); no loading.tsx exists under tideover/app for these routes.",
+  "proposal": "Add tideover/app/status/[token]/loading.tsx and tideover/app/widget/[token]/loading.tsx rendering a static sand-background skeleton (a dimmed panel outline matching WaitProgress/ConfidenceBand) so first paint is instant and reads as \"loading your order,\" not \"broken.\"",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: no loading.tsx under app/status or app/widget; both page.tsx files do a blocking `await getPublicStatus(...)` (lib/status.ts:60, DB round-trip) before any JSX returns, no Suspense boundary. Proposal (static loading.tsx skeleton) is standard Next.js convention, additive only — doesn't touch approve/send flow, keyboard shortcuts, or proof-only copy. Severity P2 is right: undermines the glanceable reassurance purpose on slow connections but isn't broken/blocking."
+  }
+ },
+ {
+  "surface": "status",
+  "title": "Two independently-computed day-ranges on one screen can visibly contradict each other",
+  "problem": "WaitProgress's \"Day N of your ~lo–hi-day window\" is derived from confidence-band math while OrderTimeline directly below shows each stage's static configured dayBand, and nothing reconciles them — so a customer can see \"Day 45 of your ~50–65-day window\" at top and \"days 32–72\" right underneath for the same wait, on the one page whose job is to look precise.",
+  "evidence": "tideover/components/status/WaitProgress.tsx:78-80 (hi/variance/lo from confidenceBand math) vs tideover/components/status/OrderTimeline.tsx:55 (`days {stage.dayBand.from}–{stage.dayBand.to}`, a static StageDef field, tideover/lib/types.ts:52-58).",
+  "proposal": "Either derive the per-stage day-band chips in OrderTimeline from the same lo/hi computation WaitProgress uses, or drop the numeric day-band chip from non-active stage rows and keep only qualitative done/active/upcoming state, leaving WaitProgress as the single canonical number.",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified in lib/time.ts:60-100: WaitProgress's lo/hi (tideover/components/status/WaitProgress.tsx:78-80) is reconstructed per-order from daysInWait + daysRemainingUpper, where remainingHi = min(stageRemaining/windowRemaining, ...) + bandVariance(total) — total is the order's actual fulfillmentStart/End window. OrderTimeline (line 55) prints the raw, unadjusted merchant.stages[i].dayBand template values (lib/types.ts:52-58) for every stage including the active one, with no reconciliation to the order-specific computed band. Since bandVariance recomputes off a possibly different total than the merchant's static per-stage template, any order whose actual window deviates from the template (rush, delay, custom lead time) will show visibly different numbers for the same stage/moment, right below WaitProgress. Proposal (unify math or drop numeric chips off non-active rows, keep qualitative state) is feasible, doesn't touch hot files or approve/send flow, and adds no fabricated metrics — consistent with proof-only doctrine. Severity P2 is reasonable: not a functional break, but a visible internal contradiction on the one page whose entire value prop is precision/reassurance, which is worse for an untrained junior CS rep fielding a customer who points it out."
+  }
+ },
+ {
+  "surface": "status",
+  "title": "CsatTap gives no way to correct a mis-tap",
+  "problem": "The component's own docstring says re-tapping should replace the prior answer, but once state is \"done\" the thumbs buttons unmount and only a static thank-you renders — so a customer who fat-fingers 👎 instead of 👍 (two 44px targets 8px apart on mobile) is stuck showing the wrong feedback with no way to fix it.",
+  "evidence": "tideover/components/status/CsatTap.tsx:12-13 (docstring \"Re-tapping replaces the prior answer rather than stacking\") vs :37-54 (the state===\"done\" branch returns only the thank-you card, no buttons).",
+  "proposal": "Keep a small \"change your answer\" affordance after tapping (a text link under the thank-you at :37-54 that resets state to \"idle\") so the UI delivers the re-tap behavior the code already claims.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Read CsatTap.tsx in full: docstring (lines 11-12) explicitly promises re-tap replaces prior answer, but the done-state branch (37-54) renders only a static thank-you card with no interactive element and no reset path anywhere in the file — the claimed behavior is simply absent, not solved elsewhere. Fix (a text-link resetting state to idle) is trivial, doesn't touch fetch/approve/send logic, has no keyboard-shortcut or proof-only implications. Severity P2 is right: real UX gap with fat-finger-plausible 44px adjacent targets, but customer-facing not CS-console-facing, so not P1."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Up to 7 differently-shaped pill/badge elements stack on a single escalated ticket, drowning the one that matters",
+  "problem": "On an escalated overdue ticket a rep sees RiskBadge, SlaChip, sentiment Tag, confidence pill, \"Escalated priority\" badge, \"Overdue\" pill, and \"Draft only · human-approved\" badge before even reaching the QA checklist — visual noise competing with the one badge that matters, not a calm cockpit.",
+  "evidence": "tideover/app/app/inbox/page.tsx:197-203 (RiskBadge+SlaChip) and :219 (sentiment Tag) above tideover/components/product/DraftRail.tsx:93-110 (confidence pill + priority badge + optional Overdue pill + static \"Draft only\" badge) — 7 pill-shaped elements in view at once.",
+  "proposal": "Demote the two static/non-urgent badges (\"Escalated priority\"/\"Normal priority\" and \"Draft only · human-approved\") from pills to plain inline caption text so pill-shape is reserved for the 3 true state signals a rep must react to (RiskBadge, SlaChip, Overdue).",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified at cited lines: page.tsx:197-202 renders RiskBadge+SlaChip, :219 renders sentiment Tag; DraftRail.tsx:97 renders confidence pill, :101-103 priority pill, :104-106 conditional Overdue pill, :107-109 static \"Draft only\" badge — 7 pill-shaped elements confirmed, all visible simultaneously on an escalated/overdue ticket with no existing de-emphasis mechanism elsewhere in the tree. Proposal (demote the 2 static/non-urgent ones to plain caption text) is low-risk: touches only badge markup, not send/approve logic or keyboard shortcuts, adds no fabricated metrics/dates, and doesn't touch SAMPLE DATA watermarking. For persona A (junior CS rep handling escalations with zero training) the noise-to-signal ratio genuinely matters, but it's a visual hierarchy fix, not a functional blocker, so P2 is right rather than P1."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "\"Escalate\" renders as a bare quiet link squeezed into a row of two real buttons",
+  "problem": "In the same row as \"Approve & send\" (solid terracotta) and \"Regenerate\" (teal-bordered), Escalate uses the quiet variant, which drops the .btn base entirely (no border/background/padding), so it reads as plain underlined text — the weakest-looking affordance mapped to a real escalation action for the persona least sure what's safe to click.",
+  "evidence": "tideover/components/product/ApprovalBar.tsx:221-239 (all three actions in one flex row, Escalate at :233-239 uses variant=\"quiet\"); tideover/components/ui/Button.tsx:10-17 (quiet = link-quiet, the only variant without the shared btn base classes).",
+  "proposal": "Give Escalate its own small button treatment distinct from primary/ghost — e.g. a btn-ghost variant with a risk-red or amber-status border (border-risk-red text-risk-red) — so it reads as a real, deliberately different-colored action rather than a stray link.",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed at ApprovalBar.tsx:221-239: Approve&send (primary), Regenerate (ghost/teal-bordered), Escalate (quiet). Button.tsx:12-17 confirms quiet maps to \"link-quiet\" only, skipping the shared btn base classes used by primary/ghost — so it genuinely renders as bare underlined text next to two real buttons, exactly as claimed. No existing visual differentiation for escalation elsewhere in the row or component. Proposal (a distinct ghost-style variant with risk-red/amber border) is feasible without touching approve/send logic or proof-only copy — it's pure styling via Button.tsx's VARIANT map, no fabricated metrics involved. For persona A (untrained junior CS rep handling escalation-grade issues), an escalation action rendering as the weakest-looking affordance is a real risk of being overlooked or under-trusted; P2 is appropriate (not P1 since the action still works and there's no data loss, just poor discoverability/confidence signaling).</note>\n</invoke>\n"
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "SLA \"still collecting\" placeholder (n=12) uses the identical big-serif treatment as a real measured percentage",
+  "problem": "Below the minimum sample size the tile shows \"n=12\" in the same bold 30px serif slot that normally holds \"94%,\" the only cue being a 12px muted sublabel, so a founder scanning tiles can misread a not-yet-real number as a real metric.",
+  "evidence": "tideover/app/app/page.tsx:100-109 (`value={slaHasRate ? `${…}%` : `n=${sla.answered}`}` renders through the same slot) and tideover/components/product/MetricTile.tsx:31 (`font-serif text-[30px] leading-none text-ink` whether or not slaHasRate).",
+  "proposal": "When !slaHasRate, render the value in text-ink-mute instead of text-ink (or drop the font-serif for a smaller sans \"Collecting…\") so an in-progress metric is visually distinct at a glance, not only on close reading.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed at cited lines: page.tsx:100-109 passes `n=${sla.answered}` through the same `value` prop as the real percentage, and MetricTile.tsx:31 renders `value` unconditionally in font-serif text-[30px] text-ink regardless of slaHasRate — the `proof` prop only toggles the bg-sand background, not text weight/color. No existing distinct styling elsewhere for the not-yet-real state; only cue is the 12px sublabel. Fix (conditional text-ink-mute or non-serif treatment) is a scoped MetricTile/page.tsx change with no touch to approve/send flow, keyboard shortcuts, or fabricated data — it still shows the real n=12 count, so no proof-only violation. P2 is fair for persona B (founder glance-scanning tiles) since misreading collecting-data as a real SLA% could shape decisions during a fast 15-min check-in."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "Sidebar's operator row looks like an account menu but is dead — /api/logout is unreachable from any UI",
+  "problem": "The Sidebar bottom shows an avatar, name, and \"Operator\" role styled like a clickable account-menu trigger, but it's a non-interactive div with no sign-out or settings link; a working /api/logout route exists but nothing in the UI calls it, so an operator can never sign out through the product.",
+  "evidence": "tideover/components/product/Sidebar.tsx:106-119 (bare <div> for the avatar/name/role block, no onClick/Link/button); grep for api/logout across the repo finds only app/api/logout/route.ts, middleware.ts, lib/session.ts, app/api/login/route.ts — zero UI callers.",
+  "proposal": "Make the footer row a real control: wrap it in a button that `fetch('/api/logout',{method:'POST'}).then(() => router.push('/login'))`, replacing the static div.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified Sidebar.tsx:106-119 is a bare div with no onClick/Link/button, and grep confirms /api/logout (app/api/logout/route.ts) has zero UI callers repo-wide. Fix is a small, self-contained client button in Sidebar.tsx — no touch on approve/send flow, no proof-only violation, demo-data watermark unaffected. P2 is right: a real dead-control bug but not escalation-blocking for either persona."
+  }
+ },
+ {
+  "surface": "global",
+  "title": "Marketing site has no link back into the app — returning operators have no discoverable sign-in path",
+  "problem": "Persona B checks in for ~15 minutes a day; if they lose their /app tab the natural place to look is tideover.com's nav, but the marketing Nav only offers Home/How it works/Who it's for/Pricing/Security plus a \"Book a pilot\" CTA — there is no \"Sign in\" link anywhere on the public site.",
+  "evidence": "tideover/components/marketing/Nav.tsx:19-25 (LINKS array) and :57 (CalButton \"Book a pilot\") — no /login entry; grep for href=\"/login\" matches only middleware.ts, .env.example, CHANGELOG.md, lib/auth.ts, app/api/login/route.ts, and app/login/page.tsx.",
+  "proposal": "Add a small \"Sign in\" text link to Nav.tsx's LINKS render (desktop row ~:44-54 and mobile panel ~:79-94) pointing to /login, placed left of the \"Book a pilot\" CTA.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Read Nav.tsx:19-24 (LINKS) and the desktop/mobile render blocks (~44-54, ~79-94) — confirmed no /login entry anywhere in nav, only CalButton \"Book a pilot\". Fix is a trivial additive text link, doesn't touch /app, approve/send flow, or keyboard shortcuts, and isn't a proof-only violation (no fabricated claims). Persona B fit is correct given the 15-min/day usage pattern described elsewhere in the codebase's persona docs. P2 is right: real recurring friction but not blocking since /login is still directly reachable by typing the URL."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Chargeback-window explainer is a dense always-on paragraph, fighting the 15-minute glance",
+  "problem": "The GMV panel always renders a ~90-word Visa reason-code paragraph (13.1, 15-day issuer wait, 120-day window, 540-day cap) below the stat cards, so a solo founder doing CS in 15 minutes has to read dense chargeback-rules prose every visit just to get past the top-line dollar figure.",
+  "evidence": "tideover/app/app/page.tsx:198-210 (the always-rendered <p> starting \"Estimate for orientation, not a guarantee: …\", ~90 words of Visa reason-code mechanics).",
+  "proposal": "Wrap that paragraph in a native `<details><summary>How this is calculated</summary>…</details>` (no new JS) so the default view is the three stat cards plus the existing one-line subtitle at :142; the full mechanics stay one click away.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified tideover/app/app/page.tsx:198-210 — the always-rendered ~90-word Visa 13.1 mechanics paragraph matches exactly as described, sitting below the stat cards with no collapse/toggle anywhere in this component tree. The one-line subtitle at :142 already exists and would remain visible, so wrapping the dense paragraph in native <details><summary> is feasible with zero JS, doesn't touch approve/send flow, keyboard shortcuts, or DraftRail/ApprovalBar hot files, and adds no fabricated metrics (just reveals existing proof-only text on click). P2 is right: real daily friction for persona B's 15-min glance, but not blocking or safety-critical."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Blocked-send message never shows WHERE the hard date is in the draft",
+  "problem": "When the \"No hard delivery date\" check fails, the checklist and send-blocked banner give a generic \"remove the date\" instruction but nothing highlights or quotes the offending phrase inside the (often multi-paragraph) draft, so under a hostile ticket a rep has to re-read the whole reply hunting for the date before they can fix it.",
+  "evidence": "tideover/lib/qa.ts:101,108-113 (noHardDate is a boolean only; containsHardDate never returns the matched substring); tideover/components/product/DraftRail.tsx:210-228 (QaRow renders only the static d.hint); tideover/components/product/ApprovalBar.tsx:211-214 (blocked banner repeats the generic instruction with no location).",
+  "proposal": "Have the hard-date predicate return the matched substring alongside the boolean, thread it through ReplyCheckDimension as an optional match?: string, and render it in QaRow as a quoted excerpt (\"Found: 'by March 15th' — remove it to send\") so the rep can Ctrl+F it.",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed at cited lines: containsHardDate (qa.ts:101) is a plain boolean predicate with no substring capture; QaRow (DraftRail.tsx:209-232) renders only the static d.hint; ApprovalBar's blocked banner (211-214) is generic with no draft location. No existing highlight/quote mechanism found in these components. Proposal (thread an optional match string through the existing dimension object) is additive, doesn't touch send/approve logic, keyboard shortcuts, or proof-only copy (quoting the rep's own drafted text is not a fabricated metric/date). Severity P2 fits: it's friction/error-risk for an untrained rep under a hostile ticket, but doesn't block the workflow outright."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "QA checklist gives screen-reader users no signal when a check passes",
+  "problem": "Each Reply QA row shows a ✓/✕/○ mark that is aria-hidden; a failing item gets a hint sentence and a Blocked pill, but a passing item has literally no textual indication in the DOM that it passed — a screen-reader user hears only the bare label for what is supposed to be the rep's confidence signal that a draft is safe to send.",
+  "evidence": "tideover/components/product/DraftRail.tsx:209-231 (QaRow: `<span aria-hidden=\"true\">{mark}</span>`; the hint/Blocked pill only render when !d.pass / blockedFail — nothing renders when d.pass is true besides the hidden mark and a color change).",
+  "proposal": "Add a visually-hidden status string per row (`<span className=\"sr-only\">{d.pass ? 'Passed' : blockedFail ? 'Blocked, needs fix' : 'Guidance, not yet addressed'}</span>`) right after the label so every state is announced.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed at DraftRail.tsx:209-232: mark is aria-hidden (215), hint/Blocked pill only render when !d.pass or blockedFail (225-228); passing rows have no text signal for screen readers. sr-only class already in use elsewhere in the app (app/procurement, app/security), so fix is low-risk and feasible without touching approve/send or shortcuts; no fabricated metrics involved. Severity is real but moderate since sighted reps (the primary persona) already get color+mark+auto/guidance label; P2/S is appropriately scoped, not P1."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Evidence/audit-trail pack is unreachable from the ticket the rep is actually working",
+  "problem": "A printable evidence pack (comm log + who-approved-what) exists at /app/orders/[orderId]/evidence but the only link in is from the Customers list, so a rep mid-ticket on a dispute-risk case — the exact moment they'd want the audit trail — has no path to it; compounding this, the \"Reply sent\" confirmation never shows who approved it either, though approvedBy is captured.",
+  "evidence": "tideover/app/app/customers/page.tsx:151 (only reference to the evidence route in app/app); tideover/app/app/inbox/page.tsx:189-241 (ticket detail has view.order in scope, no such link); tideover/lib/evidence.ts:167 (`actor: `${t.sent.approvedBy} (operator)``) vs tideover/components/product/ApprovalBar.tsx:152-163 (\"Reply sent.\" shows only first-response time).",
+  "proposal": "Add a \"View evidence pack\" ghost button in the inbox ticket detail (next to the sentiment Tag, :216-230) linking to /app/orders/${view.order.id}/evidence, and add a \"Sent by {approvedBy}\" line to ApprovalBar's post-send card (:152-163) using the same field.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: customers/page.tsx:151 is the only evidence-route link; inbox ticket detail (189-241) has view.order in scope but no link out despite being the dispute-moment context. ApprovalBar's sentMeta (line 48) only tracks {frt}; confirmed no approvedBy display, though ticket.sent.approvedBy (types.ts:234) is populated and already used in evidence.ts:167. Fix is additive (a Link + a text line), doesn't touch send/approve logic or keyboard shortcuts, and approvedBy is a real captured field (not a fabricated metric), so no proof-only violation. Requires plumbing view.ticket.sent?.approvedBy as a new ApprovalBar prop since only firstResponseSec is currently passed from inbox/page.tsx -- modest but feasible; touches two hot files (inbox/page.tsx, ApprovalBar.tsx) under the one-in-flight-change serialization rule. P2 is right: for persona A (untrained junior rep on an escalation-grade dispute) the audit trail being unreachable at the exact moment it's needed is real friction, but it doesn't block sending or corrupt data, and persona B (solo founder) already IS the approver so half the fix is lower-value there -- keeps it below P1."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Unsent draft edits are silently discarded on any queue/merchant navigation",
+  "problem": "The edited draft lives only in DraftRail's local state, so clicking another ticket, switching merchants, or using j/k all trigger a client route change with zero dirty-check — a founder who hand-edits a draft and then clicks the next queue row (a natural next action) loses the edit with no warning, not even a toast.",
+  "evidence": "tideover/components/product/QueueList.tsx:58-61 (plain Link per row, no guard); tideover/components/product/MerchantSwitcher.tsx:29 (router.push, no guard); tideover/components/product/QueueKeyboard.tsx:103-105 (router.replace on j/k, no guard); tideover/components/product/DraftRail.tsx:56-59 (edited text only in local useState, no dirty flag exported).",
+  "proposal": "Compute `dirty = text !== (alreadySent && sentText ? sentText : draftText)` in DraftRail and lift it so QueueList/MerchantSwitcher/QueueKeyboard can check before navigating; cheapest first step: when dirty, show a persistent inline banner (\"Unsaved edit — Approve & send or it will be lost when you switch tickets\").",
+  "severity": "P2",
+  "effort": "M",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified all four citations: QueueList.tsx uses plain Link, MerchantSwitcher.tsx does router.push, QueueKeyboard.tsx does router.replace, all with zero dirty-check, and grep confirms no dirty/beforeunload/confirm guard exists anywhere in components/product. DraftRail's edited text is local useState, never exported. Proposal (derived boolean + inline banner) is low-risk, doesn't touch approve/send or keyboard shortcuts, no proof-only violation. Severity P2 is right for persona B: silent loss of a hand-edited draft during natural next-ticket navigation is a real recurring papercut, not corruption-level but not merely cosmetic either."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "The \"N/5\" Setup badge pulls a rep into founder-only setup tasks",
+  "problem": "A colored \"N/5\" badge on the Setup nav item reads as \"something I must finish before I can work,\" but clicking through lands on founder/admin work a rep can't and shouldn't do (Connect your helpdesk, Import your backer list, Review brand & voice), so the rep either freezes (\"am I blocked?\") or wastes time trying.",
+  "evidence": "tideover/components/product/Sidebar.tsx:92-98 (renders the teal completed/total badge on the Setup row); tideover/app/app/setup/page.tsx:28-31 (CTA labels \"Import your backer list\" / \"Connect your helpdesk\").",
+  "proposal": "Scope Setup + its badge to a founder/admin role and hide it from a rep, or reframe the page so a rep sees \"Your account owner still needs to finish setup — you can start answering tickets now\" instead of a to-do list aimed at her.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "confidence": "high",
+   "real": true,
+   "severity": "P2",
+   "note": "Evidence checks out exactly: Sidebar.tsx:91-98 renders a teal N/5 badge on Setup whenever !allDone, and setup/page.tsx's CTA_LABEL (28-31, confirmed lines 26-32) is literally \"Import your backer list\" / \"Connect your helpdesk\" / \"Review brand & voice\" — founder/admin actions. Grepping lib/ and app/app/layout.tsx confirms there is no role concept anywhere in this codebase (only a single flat `operator` string from getDemoOperator(), no auth roles) — so this isn't already solved elsewhere, and the \"scope to founder/admin role\" half of the proposal would actually require building a new role/permission system, not an S-effort tweak. The copy-reframe half of the proposal (\"account owner still needs to finish setup, you can start answering tickets now\") is cheap and feasible, touches no hot files, adds no fabricated metrics/dates, and doesn't affect approve/send or keyboard shortcuts, so the finding survives with a real, low-cost fix path even though the role-gating half is underscoped on effort. P2 is right — confusing/wasteful for an untrained rep but not blocking, and she'd likely just navigate back to Inbox rather than being truly stuck."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Keyboard send loop breaks after every auto-advance — the new draft isn't re-focused, so ⌘↵ silently does nothing",
+  "problem": "The header promises \"⌘↵ to send,\" but ⌘↵ only fires inside the focused draft textarea; after a send auto-advances to the next ticket the new textarea is NOT focused, so pressing ⌘↵ again does nothing and the rep must press Enter to re-focus before every single send — breaking the rhythm the hint advertises.",
+  "evidence": "hint at tideover/app/app/inbox/page.tsx:144-146; tideover/components/product/QueueKeyboard.tsx:73 (`if (e.metaKey||e.ctrlKey||e.altKey) return` ignores ⌘↵ from queue focus); ⌘↵ handled only inside the textarea DraftRail.tsx:160-166; advance() ApprovalBar.tsx:77-83 navigates but never refocuses; focus only on Enter via focusDraftEditor QueueKeyboard.tsx:124-135.",
+  "proposal": "After a successful send/advance, auto-focus the newly mounted draft textarea (a DraftRail mount effect, or call focusDraftEditor for the advanced ticket) so ⌘↵ works cycle-to-cycle; or reword the hint to \"Enter to open, then ⌘↵ to send\" so the extra step is honest.",
+  "severity": "P2",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified at cited lines: QueueKeyboard.tsx:73 bails on any modifier combo (by design, so ⌘/Ctrl+Enter falls through to native textarea handling); DraftRail.tsx:160-166 binds ⌘/Ctrl+Enter only on the focused textarea; ApprovalBar.tsx:77-83 advance() is a bare router.replace with no focus call; grepped DraftRail.tsx for autoFocus/.focus() — none exists, so the newly mounted textarea after auto-advance is genuinely unfocused. Header hint (page.tsx:144-146) literally reads \"⌘↵ to send\" with no caveat, so the claim is accurate, not mischaracterized. Not a safety issue (nothing silently sends wrong content; the rep just sees no advance and re-presses Enter), but it does break the promised rhythm every single cycle for persona B's 15-min/day workflow. Fix is feasible and low-risk: either call focusDraftEditor-equivalent logic in a DraftRail mount effect keyed on ticketId, or soften the hint copy — neither touches proof-only doctrine, SAMPLE DATA watermarking, or the approve/send path itself. P2 is right: real, cheap to fix, but not escalation-grade/blocking."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Keyboard-shortcut send hint shows only the Mac ⌘ glyph, no Ctrl equivalent",
+  "problem": "The header hint shows \"⌘↵ to send\" with no mention of Ctrl+Enter, even though the code explicitly supports both, so a first-day rep on Windows — the platform this workspace runs on — has no textual cue that Ctrl+Enter works and may never discover the shortcut.",
+  "evidence": "tideover/app/app/inbox/page.tsx:145 (`J/K to move · Enter to open · ⌘↵ to send`); tideover/components/product/DraftRail.tsx:163 (`if ((e.metaKey || e.ctrlKey) && e.key === \"Enter\")` — Ctrl fully supported but never surfaced).",
+  "proposal": "Change the hint to \"J/K to move · Enter to open · Ctrl/⌘+Enter to send\" (matching the code comment's own ⌘/Ctrl+Enter phrasing), and spell \"Enter\" rather than ↵, so Windows operators see the shortcut that actually works.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 3,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified: inbox/page.tsx:145 shows only \"⌘↵ to send\" and DraftRail.tsx:163 confirms Ctrl+Enter is fully functional but never surfaced anywhere in user-visible text (only in code comments). No other tooltip/label in ApprovalBar.tsx mentions Ctrl either. Proposal is a one-line copy change, no logic/proof-only/watermark risk, doesn't touch send flow. Severity P3 is right: it's a discoverability gap, not a broken flow — Ctrl+Enter still works, reps can fall back to mouse-click send, and this only affects first-day onboarding friction for Windows users (persona A most affected)."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Keyboard shortcuts are poorly discoverable — one 11px muted caption, only on the Inbox when the queue is non-empty",
+  "problem": "J/K nav, Enter-to-open, and ⌘/Ctrl+Enter-to-send are core to the fast-triage promise but documented in exactly one place: a single 11px ink-mute line at the top of the queue column that only renders when items exist, styled identically to any caption, so a day-one rep (or one who cleared the queue) may never see it.",
+  "evidence": "tideover/app/app/inbox/page.tsx:143-147 (`<p className=\"mt-1 text-[11px] text-ink-mute\">J/K to move · Enter to open · ⌘↵ to send</p>`, only when items.length>0); tideover/components/product/QueueKeyboard.tsx implements the full handler with no other discovery surface.",
+  "proposal": "Style the hint as keycap-styled chips (`<kbd>`-like spans) so it reads as pressable keys rather than a caption, and add a persistent \"Shortcuts\" affordance in the Sidebar footer so it's discoverable from anywhere, not just one page in one state.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at page.tsx:143-147 — the hint is a single 11px ink-mute caption gated on items.length>0, and QueueKeyboard.tsx (headless, renders null) has no other discovery surface. Proposal is feasible: kbd-chip styling and a sidebar footer affordance are pure UI additions that don't touch the approve/send flow, keyboard handler logic, or proof-only copy (no metrics/dates involved). Downgrading from P2 to P3 though — this is discoverability of an accelerator for an already-functional mouse/click flow, not a blocker for either persona (junior rep can fully triage via clicks with zero training; founder isn't blocked either), so it's QOL, not escalation-risk."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "Baseline report and Evidence pack are orphaned from the persistent nav — no \"you are here\", no way back",
+  "problem": "/app/baseline and /app/orders/[orderId]/evidence are real operator pages with no sidebar entry, so isActive() never matches and the whole sidebar shows no highlight when a rep lands there via a shared link/bookmark/back-button, leaving zero indication of where they are and no way back except re-navigating from scratch.",
+  "evidence": "tideover/components/product/Sidebar.tsx:14-24 (NAV has no baseline/orders entries) and :60-61 (isActive() only tests those 9 hrefs); the only links in are tideover/app/app/customers/page.tsx:71 (baseline) and :151 (evidence); baseline/page.tsx and evidence/page.tsx toolbars have no back-link.",
+  "proposal": "Add a \"Baseline\" (or \"Day-0 baseline\") item to the sidebar NAV (grouped near Forecast) preserving ?merchant=, and add a \"‹ Back to Customers\" link into the no-print toolbar of both baseline/page.tsx and evidence/page.tsx.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified: Sidebar.tsx NAV (14-24) has no baseline/orders entries and isActive() (60-61) only matches those 9 hrefs; app/app/layout.tsx wraps baseline and orders/[orderId]/evidence pages with this same Sidebar, and neither page's no-print toolbar (baseline/page.tsx:56-66, evidence/page.tsx:74-80) has a back-link — so the finding's core claim (no highlight, no breadcrumb) is accurate. However the \"no way back except re-navigating from scratch\" claim is overstated: Sidebar.tsx:66 renders a persistent Logo→/app link in every render regardless of active state, unconditionally visible on both orphaned pages, so a one-click way back already exists. That mitigation downgrades this from a real navigation dead-end to a minor polish gap (missing active-state feedback / explicit contextual back-link), which is why I set P3 not P2. Proposal is feasible and safe: Sidebar.tsx is not a hot file, adding a nav item + back-links is pure navigation with no fabricated metrics, no proof-only violation, and doesn't touch approve/send flow or keyboard shortcuts."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "\"Save this edit as a variant\" prompt uses undefined jargon and blocks the send flow",
+  "problem": "After a >30% edit the rep is stopped by \"Save it as a tracked variant so it competes in the panel?\" — \"tracked variant\" and \"the panel\" are unexplained at the moment of decision, it never says what happens to the edit on \"Not now,\" and the whole ask blocks what should just be \"sent, next.\"",
+  "evidence": "tideover/components/product/ApprovalBar.tsx:182-185 (\"Save it as a tracked variant so it competes in the panel?\"), :193 (\"Save this edit as a variant\"), :196-198 (\"Not now\" with no copy about the decline path).",
+  "proposal": "Lead with \"Reply sent ✓\" and demote the ask, naming the destination and clarifying decline: \"Optional: save this wording to Script Performance so it's tracked next to your templates? If you skip this, the edit still sends — it just won't be tracked as its own script.\" Or gate it behind a role so junior reps never see it.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Code matches the cited copy exactly (ApprovalBar.tsx:170,182-185,193-198): jargon \"tracked variant\"/\"the panel\" is unexplained and \"Not now\" gives no decline-path copy. But the finding overstates impact — \"Reply sent.\" is already rendered above the ask (line 170) before the promote question, so send already succeeded and isn't blocked; only advancing to the next ticket waits on this choice, and declining is safe (no data loss, just skips tracking). The proposal's \"lead with Reply sent\" is already implemented; only the jargon/decline-clarity fix is net-new. For a zero-training junior rep this is confusing but low-stakes (post-send, reversible-by-inaction), so P3 rather than P2."
+  }
+ },
+ {
+  "surface": "global",
+  "title": "Hover-only tooltips have no visual affordance, so reps never discover them (and they don't fire on touch)",
+  "problem": "Good explainers exist (FactorBreakdown labels, SlaChip's chip, Customers links) but they're plain text with a native title and zero visual cue — no dotted underline, no (?) glyph — so a first-day rep has no reason to hover, and native title tooltips don't fire on touch at all.",
+  "evidence": "tideover/components/product/FactorBreakdown.tsx:8-14/31 (hint via title only, no visual cue); tideover/components/product/SlaChip.tsx:24 (same); tideover/app/app/customers/page.tsx:73,89,153 (three title= links styled like non-tooltipped links).",
+  "proposal": "Add a shared `.has-hint` utility (dotted underline + cursor-help) applied wherever a bare title carries real explanatory content — and/or render the FactorBreakdown hints as small visible captions under each label — so the affordance is visible before hovering.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 2,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at all three cited spots: FactorBreakdown.tsx:31 (label span has only `title={hint}`, no visual cue), SlaChip.tsx:24 (chip has `title={chip.title}` only), customers/page.tsx:73/89/153 (three Links styled as plain teal/muted links with `title=` and nothing else) — no dotted underline, cursor-help, or glyph anywhere, and native `title` indeed doesn't fire on touch. Fix (a `.has-hint` utility class) is pure CSS, doesn't touch approve/send flow, shortcuts, or proof-only copy, and is low risk. But severity is overstated: in every case the hovered element is either a fully functional visible link (\"View day-0 baseline\", \"Evidence pack\") or a self-explanatory label with a supplementary detail, so a first-day rep loses a nice-to-have clarification, not the ability to act — nothing blocks or misleads. That's a discoverability/polish gap, not an escalation-risk problem for persona A, and irrelevant for persona B's skim-in-15-min flow. P3/QoL, not P2."
+  }
+ },
+ {
+  "surface": "status",
+  "title": "Invalid-token status page's only CTA sends the customer to Tideover's marketing site",
+  "problem": "An anxious backer with a broken/expired link is told to \"reach out to the store,\" but the one clickable action takes them to Tideover.com — a vendor they've never heard of — reading as a wrong-destination/scam moment and guaranteeing the rep still gets the ticket.",
+  "evidence": "tideover/app/status/[token]/page.tsx:30-32 (`<Button href=\"/\" variant=\"ghost\">Go to Tideover</Button>` inside the `if (!status)` branch).",
+  "proposal": "Drop the \"Go to Tideover\" button on the invalid-token branch (render no button — the prose already says contact the store — or, if a fallback is wanted, point it at the referring merchant when derivable, never at Tideover.com).",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "medium",
+   "severity": "P3",
+   "note": "Code confirmed as cited (page.tsx:30-32): invalid-token branch's only CTA is `<Button href=\"/\" variant=\"ghost\">Go to Tideover</Button>`. But the \"scam moment\" framing is overstated — there's no white-label/custom domain in this codebase (.env.example confirms the customer link is a tideover.app URL itself, merchant identity rides only in the token), so the backer is already on tideover's own domain when they see this page, not being redirected to an unfamiliar third party. The real defect is smaller: the CTA is a dead-end to the marketing homepage that doesn't help an anxious customer or reduce the rep's ticket load. Fix is trivial (drop the button per the prose's own advice) and doesn't touch approve/send flow, keyboard shortcuts, proof-only doctrine, or SAMPLE DATA watermarking — feasible as proposed. Given it's a rarely-hit edge branch (expired/broken links only) with no functional breakage, P1 is too high; this is cosmetic/QoL-adjacent, P3."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Refund-risk curve bars aren't clickable into the matching ticket",
+  "problem": "Each bar represents one customer's risk score but the identity shows only in a hover tooltip (lost on mouse-out) and clicking does nothing, so the curve — sitting directly above the At-risk queue table with working links — is decorative rather than a shortcut into the riskiest customer's ticket.",
+  "evidence": "tideover/components/product/RiskCurve.tsx:31-48 (bar div has only a title + hover-only span, no onClick/Link); tideover/lib/service.ts:718-721 builds riskCurve from {label,risk,color} only — no ticket id threaded through.",
+  "proposal": "Add ticketId (and merchant context) to each riskCurve point in service.ts:718-721, then wrap each bar in RiskCurve.tsx in `<Link href={/app/inbox?merchant=…&ticket=…}>` so clicking the tallest/reddest bar opens that customer's ticket, mirroring the At-risk queue rows (page.tsx:251-256).",
+  "severity": "P3",
+  "effort": "M",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at RiskCurve.tsx:37-44: bar div only has title (hover tooltip) and no onClick/Link, and service.ts:718-721 drops ticket id when building riskCurve. The fix is trivial and safe: queue rows already carry r.ticket.id (same array used for atRisk at page.tsx:251-256 which already does the exact Link pattern proposed), so this is a one-line thread-through, not new plumbing. No proof-only or approve/send-flow risk. Downgrading from P2 to P3: for persona B (solo founder, 15 min/day) the At-risk table directly below already provides the identical clickable shortcut with the same info: the curve is a visual summary, not the only path to the ticket, so the missing click is a nice-to-have consistency fix rather than a blocked workflow."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "Sidebar's 9 nav items carry identical visual weight, with no cue for where the daily workflow lives",
+  "problem": "Persona B does CS in ~15 minutes a day and needs the next action obvious, but the sidebar renders all nine items with the same padding/size and only an active-state color change, so \"Inbox\" (the ticket-answering workflow) looks exactly as important as \"Social\" (an add-on signal monitor).",
+  "evidence": "tideover/components/product/Sidebar.tsx:14-24 (flat NAV array); render loop :69-104 applies one uniform className pattern to every item with no grouping or divider.",
+  "proposal": "Split NAV into visually-separated groups with a small uppercase kicker divider (Daily → Dashboard, Inbox; Insights → Customers, Forecast, Scripts, Social, Gifts; Account → Setup, Updates), each separated by a thin border-t + gap, so the eye lands on the daily-workflow cluster first.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed: Sidebar.tsx:14-24 is a flat NAV array, and the render loop (69-104, map at 70-103) applies the identical clsx pattern to every item — no grouping, divider, or weight differentiation beyond active-state color. Proposal (group + kicker dividers) is low-risk: cosmetic-only change to a non-hot-file, doesn't touch approve/send flow, keyboard shortcuts, or fabricate any copy/metrics, and demo-data watermark stays untouched. Downgraded P2→P3 because each item already carries a distinguishing hint subtitle (e.g. \"Operator cockpit\" vs \"Signal monitor\") and aria-current/active-color exists, so this is a discoverability polish item rather than a functional blocker for either persona — real but minor QOL."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "The \"estimate, not a guarantee\" qualifier on GMV-at-risk is the smallest, dimmest text on the card",
+  "problem": "The dispute-exposure card leads with a 30px bold serif dollar figure while the two disclaimers that keep it honest are both 11-12px ink-mute — the least prominent styling on the page — so a founder who could react emotionally to a large figure easily skips past the qualifying context.",
+  "evidence": "tideover/app/app/page.tsx:145-147 (11px uppercase badge disclaimer) vs :167-169 (font-serif text-[30px] dollar value) and :198-210 (12px muted paragraph disclaimer) — a ~2.5x size/weight gap between the number and its caveat.",
+  "proposal": "Pin a short higher-contrast qualifier directly adjacent to the number (e.g. a text-[13px] font-semibold text-ink-mute \"Estimate, not a bill\" under the $ figure at :169) in addition to the corner badge and footer paragraph, so the caveat registers in the same glance.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at page.tsx:145-147 (11px badge), :167-169 (30px serif $ figure), :198-210 (12px footer paragraph) — the size/weight gap is real and the proposed 13px semibold caveat under the number is a trivial, isolated JSX addition (no state, no flow/shortcut risk) that doesn't add any new claim, only upsizes existing \"estimate, not a guarantee\" language already in the footer paragraph, so it's proof-only-compliant. Downgraded P2→P3: the qualifier isn't actually absent from the immediate glance — a matching \"Estimate\" badge already sits in the section header directly above this same number within the same panel, so the risk is stylistic emphasis, not missing disclosure."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "FactorBreakdown's \"top driver\" is only named in text — none of the five bars visually match it",
+  "problem": "The \"why is this ticket risky\" panel renders all five factor bars in identical teal regardless of magnitude, then separately states \"Top driver: Wait pressure\" in a callout, so a rep has to manually re-scan the five labels to find which bar the sentence refers to — no visual line connects the claim to the evidence.",
+  "evidence": "tideover/components/product/FactorBreakdown.tsx:26-57 (every bar bg-teal regardless of key; the topDriver callout :54-56 is plain text with no reference back to a specific row).",
+  "proposal": "When a row matches topDriver (match on label or add a key field to the payload), bold that row's label and swap its bar fill to bg-terracotta (or add a 2px left accent border) so the named top driver is visually anchored to its bar.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Evidence confirmed exactly: line 43 all bars use `bg-teal` unconditionally, line 54-56 topDriver callout is plain text with no row reference — no existing highlight logic elsewhere in the file or FactorBreakdown's usage in inbox. Proposal (conditional class/border on matching row) is trivial and safe: no fabricated metrics, no proof-only violation, doesn't touch approve/send flow or keyboard shortcuts. However severity is overstated at P2 — there are only 5 short labels and the callout names the driver explicitly by label text, so a rep (even untrained) matches it in under a second; this is a minor visual-polish nit, not an escalation-handling risk for persona A or a time-cost issue for persona B. Downgrading to P3."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "Every /app/* page shares one long marketing tab title — open tabs are indistinguishable",
+  "problem": "8 of 11 /app pages export no page-level metadata, so their tab title falls back to the root layout's full marketing title, and persona B who keeps a Dashboard tab and an Inbox tab open while triaging sees the identical truncated title on both with no way to tell them apart.",
+  "evidence": "grep 'export const metadata' across tideover/app/app matches only forecast/page.tsx, baseline/page.tsx, orders/[orderId]/evidence/page.tsx — nothing in page.tsx, inbox, customers, gifts, scripts, social, updates, setup; tideover/app/layout.tsx:25 sets the fallback marketing title.",
+  "proposal": "Add `export const metadata: Metadata = { title: \"Inbox — Tideover\" }` (etc., matching each page's kicker) to the 8 page.tsx files, the way forecast/baseline/evidence already do.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Evidence checks out exactly: grep confirms only baseline/forecast/evidence export page metadata; the other 8 app/app pages (page.tsx, inbox, customers, gifts, scripts, setup, social, updates) are server components (no \"use client\"), so adding `export const metadata` per-page is trivially feasible, matches the existing pattern, and touches no proof-only copy or hot-file logic (title string only, not the flagged inbox/DraftRail/ApprovalBar/reassurance render paths). Downgrading from P2 to P3: for persona B (solo founder, 15 min/day CS) this is a real but minor tab-hygiene annoyance, not an escalation-risk or workflow-blocking issue — doesn't affect approve/send or keyboard shortcuts, just browser tab labels."
+  }
+ },
+ {
+  "surface": "inbox, customers, gifts",
+  "title": "\"LTV\" shown as a bare acronym with no explainer",
+  "problem": "The ticket detail stat, the Customers table column header, and the gift eligibility line all print raw \"LTV\" with no tooltip or expansion, so a day-one rep reading a ticket has no way to learn in-context that this is a dollar figure (lifetime value), unlike nearby self-explanatory stats.",
+  "evidence": "tideover/app/app/inbox/page.tsx:213 (`<DetailStat label=\"Customer LTV\" …/>`); tideover/app/app/customers/page.tsx:104 (`<th>LTV</th>`, no title); tideover/app/app/gifts/page.tsx:97-98 (\"Eligible at LTV ≥ {dollars(...)}\").",
+  "proposal": "Add `title=\"Lifetime value — total this customer has spent with the merchant\"` to the Customers <th> (matching the title-tooltip pattern already on that page at :73/89/153) and spell \"Lifetime value\" on first use in the inbox DetailStat and gifts line, abbreviating after.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified all three citations: inbox.tsx:213 DetailStat label \"Customer LTV\" (unexpanded), customers/page.tsx:104 bare `<th>LTV</th>` with no title while sibling headers at :73/:89/:153 do use title tooltips, gifts/page.tsx:97 \"Eligible at LTV ≥ $X\". Proposal is additive-only (tooltip + spell-out), doesn't touch approve/send/shortcuts, no fabricated data, no proof-only conflict. Downgraded to P3: it's a real comprehension gap for a zero-training rep but the dollar figure is still visible and never blocks any action — pure clarity polish, not a workflow blocker."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Engine's \"which playbook stage fired\" attribution is computed but never shown",
+  "problem": "The reassurance engine computes stageKey and variantKey explicitly to explain why a draft is trustworthy, but none of it reaches the cockpit — the rail shows a confidence band and a priority pill but never says which day-stage/production-stage rule wrote this text, so the rep has no \"why is this draft safe for this order\" cue beyond trusting the pill.",
+  "evidence": "tideover/lib/engines/reassurance.ts:31-45 (ReassuranceResult.stageKey/.variantKey, comment \"identifying which playbook template produced this draft\"); tideover/components/product/DraftRail.tsx:23-54 (prop list has neither); tideover/app/app/inbox/page.tsx:254-269 (DraftRail call passes neither though view.intel.reassurance carries them).",
+  "proposal": "Add stageKey/variantKey props to DraftRail, pass them from view.intel.reassurance, and render a small caption under the \"Reassurance draft\" header (~:94-98) e.g. \"Sourced from: Day 30 playbook · production-stage override.\"",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Evidence checks out exactly: reassurance.ts:31-45 computes stageKey/variantKey, DraftRail.tsx:23-54 doesn't accept them, inbox/page.tsx:254-269 doesn't pass them, and DraftRail's render (93-110) shows only confidenceBand/priority/overdue — no existing surface reveals attribution. Proposal is safe (additive props + a caption, no send-flow/keyboard/state changes) and proof-only-compliant if the caption stays qualitative (no dates/scores). Downgrading to P3: the confidence-band pill + \"Draft only · human-approved\" tag already give the rep what they need to decide send/edit; stageKey/variantKey read as audit/outcome-ledger metadata (per the ADR-0007 comment) more than a rep-facing trust signal, so this is a real but minor QoL gap, not an escalation-risk blocker."
+  }
+ },
+ {
+  "surface": "customers",
+  "title": "Customers page shows a bare empty table with no teaching copy for a merchant with zero customers",
+  "problem": "Every other list-style /app page has an explicit .proof-placeholder empty state, but the customers table renders just the header row (\"0 on file\") and an empty tbody with zero customers, giving a first-time operator no explanation or next step.",
+  "evidence": "tideover/app/app/customers/page.tsx:98-166 (the <table> is rendered unconditionally with rows.map(...) and no rows.length===0 branch), unlike tideover/app/app/gifts/page.tsx:75-76/108-111 which use .proof-placeholder for the same zero-data case.",
+  "proposal": "Wrap the <table> in a check: if rows.length===0 render `<div className=\"proof-placeholder\">No customers yet — import your backer list to populate this page.</div>` (matching gifts/updates) instead of the empty table.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified tideover/app/app/customers/page.tsx:98-166 renders <table> unconditionally with no rows.length===0 branch, while gifts/page.tsx:75-76 and 108-111 use .proof-placeholder for identical empty-data cases. Proposal is trivial, static copy only (no fabricated metrics/dates), doesn't touch approve/send flow or shortcuts. Correct severity P3 for both personas — cosmetic first-run gap, not a blocker."
+  }
+ },
+ {
+  "surface": "onboarding",
+  "title": "No \"already set up? Sign in\" affordance on the onboarding page",
+  "problem": "The onboarding wizard offers no path back to /login, so a returning founder whose session expired and who navigates to /onboarding from memory/bookmark/stale link gets no signal they may already have an account and could re-run the full wizard, generating a second merchant/playbook.",
+  "evidence": "tideover/app/onboarding/OnboardingWizard.tsx (full file) and tideover/app/onboarding/page.tsx:10-16 — the only nav element is `<Logo href=\"/\" />` (:256); no Link/Button to /login anywhere.",
+  "proposal": "Add a small text line near the wizard header (around :254-266) e.g. `<Link href=\"/login\" className=\"link-quiet text-[13px]\">Already set up? Sign in</Link>`.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": true,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at OnboardingWizard.tsx:254-266: the only nav element in the wizard header is `<Logo href=\"/\" />` plus the fast-start toggle — no Link to /login anywhere in the file, and page.tsx wraps it with no additional nav. A returning founder with an expired session landing here has no signal to sign in instead of re-onboarding, risking a duplicate merchant/playbook. Fix is a trivial one-line Link addition, doesn't touch approve/send flow, keyboard shortcuts, or proof-only copy — no fabricated metrics involved. P3/S is appropriately low since it's a rare-path QoL nav gap, not a blocking or safety issue for either persona."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Gloss the \"Visa 13.1\" jargon pill on the money panel",
+  "problem": "The GMV panel's header badge reads \"Estimate · Visa 13.1 orientation\" — dense chargeback-industry jargon as the very first thing a reader sees on the panel, well before the plain-language explanation that only appears in a small paragraph at the bottom.",
+  "evidence": "tideover/app/app/page.tsx:145-147 (`…Estimate · Visa 13.1 orientation`); the plain-language gloss doesn't appear until the footer paragraph :198-210.",
+  "proposal": "Shorten the badge to plain language (\"Estimate, not a guarantee\") and move \"Visa 13.1\" terminology entirely into the already-existing explanatory footer paragraph where it's contextualized.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at page.tsx:145-147 — badge literally reads \"Estimate · Visa 13.1 orientation\" as the first thing seen, while the plain-language gloss is a footer paragraph at :198-210 (48+ lines later). Finding is accurate, not mischaracterized. Proposal is low-effort, feasible (pure copy change on a static badge, no state/approve-send/shortcut interaction), and doesn't violate proof-only doctrine — \"Estimate, not a guarantee\" is arguably more proof-only-compliant than the jargon version, and \"Visa 13.1\" already legitimately appears in the Shopify tile subtext (line 182) and footer, so nothing is lost by trimming the badge. For persona B (founder, 15 min/day) this is a minor glance-friction issue, not a blocker — P3 is the right call, matching the auditor's own rating."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Give the metric-tile row a visual hierarchy instead of six equal-weight tiles",
+  "problem": "All six top-row tiles render at identical size, weight, and background via the same proof MetricTile styling, so per the 30-second-comprehension bar nothing reads first and the founder must read all six before deciding what matters today.",
+  "evidence": "tideover/app/app/page.tsx:92-135 (six `<MetricTile proof …/>` calls with no differentiating props); tideover/components/product/MetricTile.tsx:22-27 (same panel bg-sand class on every tile when proof).",
+  "proposal": "Reorder so risk-relevant tiles (SLA attainment, WISMO) lead ahead of pure ops metrics, and visually promote one headline tile (span 2 columns, larger value type, accent left-border) so the row has a clear first read.",
+  "severity": "P3",
+  "effort": "M",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified at page.tsx:92-135: all six MetricTile calls pass proof (no differentiating span/order props), and MetricTile.tsx:22-27 applies identical `panel p-4` + conditional `bg-sand` class regardless of which metric — no size/weight/accent variation exists anywhere in the component. Proposal (reorder + span-2 + accent-border on one tile) is cosmetic-only, touches no data/copy (no fabricated metrics, doesn't affect proof-only sourcing), and doesn't touch approve/send flow or keyboard shortcuts — though page.tsx is a listed hot file so the edit needs normal serialization discipline. Severity P3 is appropriate: real usability friction for the 15-min/day founder persona but not blocking or risk-bearing."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Add trend deltas to the tiles that currently have none, or explicitly mark them untracked",
+  "problem": "Only 2 of 6 tiles (Median FRT, WISMO) show a colored trend vs baseline; SLA attainment, Saves logged, Deflection, and Orders in window show none, so scanning left-to-right the eye pattern breaks — half the row answers \"good or bad?\" and half is a bare static number with no way to tell if that's intentional.",
+  "evidence": "tideover/app/app/page.tsx:93-99 and :110-116 pass a delta prop (via lowerIsBetterDelta); the tiles at :100-109, :117-122, :123-128, :129-134 pass no delta; tideover/lib/types.ts:106-112 (Merchant['baseline'] has only medianFrtSec/wismoPer100Orders/ticketsPerWeek/repeatWismoPct).",
+  "proposal": "Where a baseline exists or can be cheaply added, wire matching deltas; for tiles with no baseline concept (e.g. Saves logged), add a small \"no baseline tracked\" sublabel so the omission reads as deliberate.",
+  "severity": "P3",
+  "effort": "M",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at page.tsx:93-134 and MetricTile.tsx: only 2/6 tiles (FRT, WISMO) render a colored delta pill via lowerIsBetterDelta; SLA/Saves/Deflection/Orders pass none, so MetricTile just renders a plain sublabel with no trend indicator. Not a total UX break — SLA and Saves already carry explanatory sublabels (\"collecting — rate at n≥N\", \"dispute-risk replies + gifts\") — but the visual inconsistency (colored delta vs bare number) across the row is real and matches the finding. Proposal is proof-only safe (no fabricated deltas, just an honest \"not tracked\" sublabel for concepts with no baseline in Merchant['baseline']) and low-risk/cosmetic — doesn't touch approve/send flow or shortcuts. P3 is right: cosmetic scanability polish, irrelevant to the escalation-handling persona (A) and a minor annoyance at most for the 15-min/day founder (B)."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Add a native tooltip to truncated ticket subjects in the at-risk queue",
+  "problem": "The Subject column truncates long text at 280px with no way to see the full line without clicking in, so a founder scanning the queue for the scariest subject (\"THREATENING CHARGEBACK\") has to open each ticket to confirm what a truncated line actually says.",
+  "evidence": "tideover/app/app/page.tsx:262-264 (`<td className=\"max-w-[280px] truncate …\">{r.ticket.subject}</td>` has no title attribute), unlike the RiskCurve bars just above which set title at tideover/components/product/RiskCurve.tsx:43.",
+  "proposal": "Add `title={r.ticket.subject}` to the <td> so hovering shows the full subject via native tooltip, matching RiskCurve.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": true,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed: page.tsx:262-264 td has truncate with no title attribute, while RiskCurve.tsx:43 sets title on its bars — inconsistent affordance. Fix is a one-line native title attr using existing ticket.subject data (no fabricated content, proof-only doctrine untouched, no interference with approve/send flow or shortcuts). Correctly scoped as low-severity QoL polish for the founder-scanning persona (B); not escalation-relevant for persona A."
+  }
+ },
+ {
+  "surface": "status",
+  "title": "AskBox is a one-shot dead end — no way to send a follow-up question in the same visit",
+  "problem": "After a customer sends one question the form is permanently replaced by a static \"someone will follow up\" card for the rest of the session (on /status and inside the /widget iframe), so if they remember another detail their only option is a full reload most backers won't think to do — and the extra thought never reaches the rep.",
+  "evidence": "tideover/components/status/AskBox.tsx:38-53 (the state===\"sent\" branch is a terminal return with no path back to the form).",
+  "proposal": "Add a small \"Ask another question\" link inside the sent-confirmation card that resets state to \"idle\" and clears the message, so a customer can send a second message without reloading.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": true,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at AskBox.tsx:38-53: the \"sent\" state is a terminal return with setMessage/setState only reachable via submit(), and no parent (StatusView.tsx, widget page.tsx) remounts or resets AskBox, so the finding's characterization is accurate — a customer really is stuck until full reload. Proposal (a link resetting state to \"idle\") is trivial, local, doesn't touch send/approve flow or shortcuts, and adds no fabricated copy. Severity P3 is reasonable: it's a real dead-end but low-frequency (most customers send one question) and workaround (reload) exists, matching QOL not escalation-blocking for either persona."
+  }
+ },
+ {
+  "surface": "status",
+  "title": "AskBox/TextArea font-size (15px) triggers iOS Safari's auto-zoom on focus",
+  "problem": "iOS Safari zooms the whole page in when a focused field's computed font-size is under 16px; AskBox's textarea — used on both the status page and inside the widget iframe, the mobile \"glance and reply\" path — is 15px, so tapping in to ask a question jars the layout with an unexpected zoom on iPhone.",
+  "evidence": "tideover/components/ui/Field.tsx:6-7 (`const baseInput = \"…text-[15px]…\"` shared by TextInput/TextArea/Select); tideover/components/status/AskBox.tsx:5,64-73 uses this TextArea.",
+  "proposal": "Bump baseInput's font-size to 16px in Field.tsx:7 (or add a mobile-specific override) so focusing the AskBox textarea never triggers iOS auto-zoom.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed: Field.tsx:6-7 baseInput is text-[15px] with no override, AskBox.tsx uses this TextArea with no wrapping style fix. iOS Safari's sub-16px zoom-on-focus is real, well-known behavior. Fix (16px font or mobile override) is trivial CSS, no copy/metrics involved, doesn't touch approve/send flow. Severity P3 is right: momentary cosmetic jar on a customer-facing textarea, not a task blocker for either persona."
+  }
+ },
+ {
+  "surface": "status",
+  "title": "Fixed \"Sample data\" demo pill can visually sit on top of live controls on mobile",
+  "problem": "The DemoBadge pill is position:fixed bottom-right z-index:50 on the demo merchant's status page, so on a mobile viewport whatever scrolls to the bottom-right (the AskBox Send button, CsatTap's thumbs) sits under it; pointer-events:none keeps it clickable-through but it still visually covers a live button, reading as a rendering glitch.",
+  "evidence": "tideover/app/globals.css:312-327 (`.demo-badge { position:fixed; right:14px; bottom:14px; z-index:50; …}`); rendered at tideover/app/status/[token]/StatusView.tsx:36.",
+  "proposal": "Add bottom padding to the status page's main scroll container equal to the badge height + margin whenever status.merchant.isDemo, so the fixed pill always has clear space below the last interactive control.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified: globals.css:312-334 confirms fixed bottom-right pointer-events:none pill at z-index:50; StatusView.tsx:36 renders it gated on merchant.isDemo. Claim is accurate — it can visually overlap bottom controls on mobile though clicks pass through. This is a demo-only, cosmetic overlap (not a functional block, not proof-only violation, no fabricated data) on a customer status page, not the CS-rep console — so P3/S is right for both personas; a junior rep never sees this surface as their working tool, and a founder skimming demo screenshots would just see a slightly awkward but harmless overlap. Proposed fix (conditional bottom padding on scroll container when isDemo) is simple, low-risk, and doesn't touch approve/send flow or shortcuts."
+  }
+ },
+ {
+  "surface": "status",
+  "title": "\"Powered by Tideover\" footer link navigates away in-tab, unlike the widget's version",
+  "problem": "On the full status page the footer \"Tideover\" link navigates the customer away in the same tab with no target=\"_blank,\" so a stray tap loses their place with only browser-back to recover, while the widget's identical footer link correctly opens a new tab — inconsistent behavior for the same link text.",
+  "evidence": "tideover/app/status/[token]/StatusView.tsx:96 (`<a href=\"/\">Tideover</a>` no target/rel) vs tideover/app/widget/[token]/page.tsx:74-77 (`<a href=\"/\" target=\"_blank\" rel=\"noreferrer\">Tideover</a>`).",
+  "proposal": "Add `target=\"_blank\" rel=\"noreferrer\"` to the footer link in StatusView.tsx:96 to match the widget and stop a stray tap from ejecting the customer from their own status page.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified both lines match the finding exactly: StatusView.tsx:96 footer link lacks target/rel while widget/page.tsx:74-79 has target=\\\"_blank\\\" rel=\\\"noreferrer\\\" on the same link text. Trivial, isolated fix; no interaction with approve/send flow, shortcuts, proof-only doctrine, or sample-data watermark. P3 is appropriate given this is a footer vanity link, not an escalation-critical control."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "DraftRail reimplements the shared Tag component's markup by hand, with a subtly different text color",
+  "problem": "The \"Escalated priority\"/\"Normal priority\" badge and the \"Draft only · human-approved\" badge duplicate Tag's exact class string instead of using the component, and one copy swaps text-slate for text-ink-mute, so two semantically-equivalent neutral labels render at slightly different weight and a future Tag palette change silently won't apply to them.",
+  "evidence": "tideover/components/ui/Badge.tsx:27-33 (Tag class string ends text-slate); tideover/components/product/DraftRail.tsx:101-103 copies it exactly and :107-109 copies it again but with text-ink-mute.",
+  "proposal": "Replace both inline spans in DraftRail with `<Tag>Escalated priority</Tag>` / `<Tag>Normal priority</Tag>` and `<Tag>Draft only · human-approved</Tag>`, importing Tag from components/ui/Badge (combine with the demote-to-plain-text proposal if that is adopted instead).",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified at cited lines: Tag (Badge.tsx:27-33) ends text-slate; DraftRail.tsx:101-103 duplicates the exact class string, :107-109 duplicates again but with text-ink-mute instead of text-slate — a real color drift plus duplication. Fix (swap to <Tag> import) is trivial, doesn't touch send/approve flow, keyboard shortcuts, proof-only copy, or SAMPLE DATA watermarks. Purely cosmetic/DRY, not a comprehension or escalation-handling blocker for either persona, so P3 is right."
+  }
+ },
+ {
+  "surface": "global",
+  "title": "No favicon/app icon anywhere in the repo",
+  "problem": "There is no favicon of any kind, so every tab (marketing and app) shows the browser's generic default icon — combined with the identical tab titles, a Tideover tab is invisible at a glance among a normal tab strip.",
+  "evidence": "Glob **/favicon* and **/icon.* across tideover/ returns no files; tideover/app/layout.tsx metadata object (:29-43) has no icons field.",
+  "proposal": "Add tideover/app/icon.tsx (Next.js file-convention favicon) using the Logo's wave-mark strokes (components/ui/Logo.tsx:20-32) on a small square, so it renders across every route including /login and /app/*.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A+B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified: no favicon/icon files exist anywhere in tideover/ (find turned up nothing), and app/layout.tsx's metadata object has no icons field, confirming every route falls back to the browser default tab icon. Logo.tsx:20-32 does have the wave-mark SVG strokes cited, so the proposed Next.js icon.tsx file-convention fix is feasible and trivial — it's a static asset with no proof-only, data-exposure, or hot-file-serialization implications. Severity P3/effort S is right: it's a real polish gap but doesn't block escalation handling for either persona (junior CS rep or solo founder) — it only affects tab findability among many open tabs, not task completion."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "Switching merchant silently drops page-specific query state (e.g. the Forecast horizon)",
+  "problem": "MerchantSwitcher rebuilds the URL as just `${pathname}?merchant=<id>`, discarding other query params, so on /app/forecast?merchant=X&horizon=30 picking a different merchant resets the staffing window to the 7-day default with no indication — breaking the \"just change merchant, keep my place\" model persona B relies on.",
+  "evidence": "tideover/components/product/MerchantSwitcher.tsx:29 (`router.push(`${pathname}?merchant=${e.target.value}`)`); tideover/app/app/forecast/page.tsx:114-126 (builds horizon links as …&horizon=${h}).",
+  "proposal": "Read the current searchParams (via useSearchParams, as Sidebar.tsx:34 does) and preserve every param except merchant: `const next = new URLSearchParams(searchParams); next.set('merchant', value); router.push(`${pathname}?${next}`)`.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed both cited lines: MerchantSwitcher.tsx:29 rebuilds URL as bare `${pathname}?merchant=${id}`, discarding params; forecast/page.tsx:114-126 shows horizon is a real, meaningful query param that gets silently reset to default on merchant switch. No existing param-preservation logic elsewhere. Fix is feasible, low-risk (not a hot file, no proof-only/keyboard-shortcut impact), matches the proposed useSearchParams pattern already used in Sidebar.tsx. Severity P3 is appropriate — a UX papercut/QoL loss, not data-loss or escalation-grade for either persona."
+  }
+ },
+ {
+  "surface": "shell",
+  "title": "Sidebar has no responsive/collapse behavior for narrow windows",
+  "problem": "The operator Sidebar is a fixed 240px column with zero responsive classes and the Inbox lays a fixed 300px+360px three-column grid on top (~960px+ min width), so on a narrower laptop, half a monitor, or a tablet the shell has no fallback (no hamburger, no collapse) — unlike the marketing site which already has a working mobile menu.",
+  "evidence": "tideover/components/product/Sidebar.tsx:64 (`className=\"flex w-60 shrink-0 flex-col…\"` no md:/sm: classes); tideover/app/app/inbox/page.tsx:133 (`grid-cols-[300px_minmax(0,1fr)_360px]`); contrast tideover/components/marketing/Nav.tsx:58-94 (hamburger + slide-down panel).",
+  "proposal": "Reuse the marketing Nav's hamburger pattern for the Sidebar: collapse to an icon-only rail or off-canvas drawer below a breakpoint (e.g. lg), toggled by a button in the page header next to MerchantSwitcher.",
+  "severity": "P3",
+  "effort": "M",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified Sidebar.tsx:64 is fixed w-60 with zero responsive classes, and inbox/page.tsx:133 lays a fixed 300px+360px grid on top — no hamburger/collapse/overflow fallback exists anywhere in these files, matching the finding. Proposal (off-canvas drawer reusing Nav's pattern) is pure shell/layout work, doesn't touch QueueKeyboard shortcuts, approve/send flow, or proof-only copy. Severity P3 is reasonable given this is an internal operator tool likely used on a real desktop, not phone-first."
+  }
+ },
+ {
+  "surface": "scripts",
+  "title": "Script table column jargon (Edit rate, CSAT, Quiet resolution) defined only in a paragraph below, not on the headers",
+  "problem": "The table's column headers are all abbreviations/jargon, and the definitions sit in one dense paragraph under the table disconnected from the columns, so a rep has to cross-reference a wall of text to know what \"Quiet resolution\" or \"CSAT\" means instead of hovering the header — inconsistent with the tooltip pattern used elsewhere.",
+  "evidence": "tideover/app/app/scripts/page.tsx:158-164 (bare <th> labels \"Edit rate\", \"Customer reply (calm)\", \"Reopen rate\", \"CSAT\", \"Quiet resolution\"); definitions only in the paragraph :141-149.",
+  "proposal": "Add a `title=\"…\"` to each <th>, lifted verbatim from the sentences already at :144-148 (e.g. `<th title=\"How much operators changed the draft before sending\">Edit rate</th>`), keeping the paragraph as secondary reference.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified at tideover/app/app/scripts/page.tsx:141-164: headers are bare jargon with no title/tooltip, definitions only in a disconnected paragraph. Proposal is additive (title attrs lifted verbatim from existing paragraph text), doesn't touch hot files, approve/send flow, or fabricate metrics. Real friction but minor/cosmetic for both personas — P3 is right."
+  }
+ },
+ {
+  "surface": "inbox, dashboard",
+  "title": "\"KS backer\" abbreviation is inconsistent with the spelled-out label on the evidence pack",
+  "problem": "The inbox queue, ticket detail, and dashboard at-risk table show the group as \"KS backer\" (assuming the rep knows KS = Kickstarter) while the Evidence Pack spells out \"Kickstarter backer\" for the identical value, so a day-one rep sees two different labels for the same concept depending on the screen.",
+  "evidence": "tideover/app/app/inbox/page.tsx:18 (`\"ks-backer\": \"KS backer\"`), tideover/components/product/QueueList.tsx:25 (same), tideover/app/app/page.tsx:23 (same) vs tideover/app/app/orders/[orderId]/evidence/page.tsx:37 (`\"ks-backer\": \"Kickstarter backer\"`).",
+  "proposal": "Replace \"KS backer\" with \"Kickstarter backer\" in the three GROUP_LABEL maps to match the evidence pack; if pill width is a real constraint in the queue, keep \"KS backer\" there only but add `title=\"Kickstarter backer\"`.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed by grep: app/app/inbox/page.tsx:18, components/product/QueueList.tsx:25, app/app/page.tsx:23 all map \"ks-backer\" → \"KS backer\", while app/app/orders/[orderId]/evidence/page.tsx:37 and app/status/[token]/StatusView.tsx:14 map the same key to \"Kickstarter backer\" — the inconsistency is real, not mischaracterized. Fix is a trivial string swap in three label maps, no proof-only or approve/send-flow risk, no hidden solution elsewhere. Severity P3 is fair: it's a cosmetic label mismatch, not a workflow blocker even for a zero-training rep — the abbreviation is guessable and doesn't gate any action."
+  }
+ },
+ {
+  "surface": "dashboard",
+  "title": "Refund-risk curve's per-customer detail is mouse-hover only, unreachable by keyboard",
+  "problem": "Each bar reveals its customer name and score via a title + group-hover tooltip, both mouse-only, so a keyboard-only user gets nothing beyond the chart's single aggregate aria-label and can't inspect any individual bar; the At-risk table below softens this but the chart itself is not keyboard-operable.",
+  "evidence": "tideover/components/product/RiskCurve.tsx:28 (aggregate-only aria-label on the outer <figure>), :37-47 (per-bar title + .group-hover tooltip span, no tabIndex/onFocus on the bar div).",
+  "proposal": "Make each bar focusable (`<button type=\"button\">` or add tabIndex={0} + onFocus/onBlur mirroring the hover handlers) so the same tooltip appears on group-focus, giving keyboard users parity with mouse users.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Evidence confirmed exactly: RiskCurve.tsx:28 aggregate-only aria-label, :37-44 per-bar title+group-hover tooltip with no tabIndex/onFocus — a keyboard user gets zero per-bar detail from the chart. But app/app/page.tsx:221-272 shows the At-risk queue table right below it is a real, natively focusable HTML table with customer name, risk badge, and a link straight into the inbox ticket — i.e. the actionable subset (red/amber) already has full keyboard parity with deep-link action, which is what both personas (junior CS rep escalating, founder doing 15min/day triage) actually need. The chart itself is a supplementary aggregate visualization; its unreachable green/standard bars carry no action anyway. Fix (tabIndex/onFocus or swap div to button, add group-focus-within to the tooltip span) is small, doesn't touch approve/send flow or keyboard shortcuts, and introduces no fabricated data — just surfaces the same risk score already rendered. Auditor's own qualifier ('softens this') matches what I found, so P3/S is the right call, not higher."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "The \"never a hard date\" guardrail is only shown after it's already tripped",
+  "problem": "The proof-only guarantee (\"Tideover only sends confidence bands, never a promised date\") only renders once a hard date is detected and the send is blocked, so a day-one rep never sees the boundary stated up front — they discover it reactively after tripping the gate rather than knowing it as a standing safety net.",
+  "evidence": "tideover/components/product/ApprovalBar.tsx:211-215 (`{blocked ? <p>…Tideover only sends confidence bands.</p> : null}` — conditional); tideover/components/product/DraftRail.tsx:107-109 (standing pill only says \"Draft only · human-approved\") and :189-206 (QaChecklist footer explains mechanics, not the guarantee).",
+  "proposal": "Add one persistent line to the QaChecklist footer (~:201-204): \"Tideover never lets a hard delivery date go out — only confidence bands,\" so the rep learns the boundary before hitting it, not only when blocked.",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Evidence checks out: DraftRail.tsx:107-109 standing pill only says \"Draft only · human-approved,\" QaChecklist footer (201-204) explains mechanics not the guarantee, and ApprovalBar.tsx:211-215 only surfaces the \"confidence bands, never a promised date\" line once `blocked` is true — no proactive statement exists elsewhere in the tree. Proposal is a one-line addition to an already-rendered footer, doesn't touch send/approve logic or the Cmd/Ctrl+Enter shortcut, and states a system guarantee (not a fabricated metric or hard date) so it's proof-only-compliant. For a zero-training junior rep (persona A) this is a real trust/onboarding gap but purely informational and non-blocking, so P3/S as the auditor scored it is right, not an under- or over-call."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "Draft version tabs use jargon (\"De-escalate\") and don't signal they won't send",
+  "problem": "Above the draft the rep sees \"Standard / Brief / De-escalate\"; \"De-escalate\" is CS jargon a beginner may not know, and nothing says these tabs just re-seed the editable text (they don't send or change anything permanent), so a cautious first-day rep may avoid clicking them for fear of triggering an action.",
+  "evidence": "tideover/components/product/DraftRail.tsx:12-14 (MODE_LABEL deEscalate: \"De-escalate\"); :148-153 (mode blurb text).",
+  "proposal": "Rename \"De-escalate\" to plain language (\"Calmer\" / \"Softer tone\") and add a one-line reassurance under the tabs: \"Switches the wording in the box below — nothing sends until you click Approve & send.\"",
+  "severity": "P3",
+  "effort": "S",
+  "qol": false,
+  "persona": "A",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at DraftRail.tsx:9-15 and 121-155: MODE_LABEL literally renders \"De-escalate\" as tab text, and the only explanatory copy is the blurb under the tabs (\"The engine's calmest, highest-reassurance wording\") — it never states the tabs are non-destructive re-seeds of the editable textarea (that reassurance only exists in a code comment at line 62-65, invisible to the rep). So the finding's claim is accurate, not mischaracterized. Proposal is feasible and safe: pure copy/label change plus one added line of static text, no logic touched, doesn't affect approve/send or the Ctrl/Cmd+Enter shortcut (lines 160-167), and adds no fabricated metrics or dates (proof-only compliant). Severity: P3 is right — for persona A this is a real hesitation/confusion risk but low-stakes (no destructive action is actually possible if clicked, and Standard is always the default/safe state), and for persona B (15 min/day, presumably not a first-time user) it's non-issue. Not a P2 since no data loss/wrong-send risk exists, just clarity friction."
+  }
+ },
+ {
+  "surface": "inbox",
+  "title": "No at-a-glance or batch path — every ticket must be opened, read, and approved one at a time",
+  "problem": "A founder with 12 near-identical low-risk WISMO tickets has no way to move faster than open → read → Approve & send, twelve times — no multi-select, no send-from-queue, no way to knock out a stack of standard-confidence greens — so for the 15-minutes-a-day promise the queue offers no leverage beyond auto-advance.",
+  "evidence": "tideover/components/product/QueueList.tsx:59-94 (rows are single links that open one ticket, no selection/checkbox); sending lives only inside the opened DraftRail/ApprovalBar (DraftRail.tsx:175-184).",
+  "proposal": "Add a lighter clearing path that still respects proof-only/human-approval: let ⌘↵ from the queue send the selected ticket's standard draft (one deliberate action, still runs the QA gate, never sends a blocked/escalated draft), and/or a review-then-send batch limited to standard-confidence, QA-passing green tickets with a per-item preview; never bulk-send escalated or blocked drafts.",
+  "severity": "P3",
+  "effort": "L",
+  "qol": true,
+  "persona": "B",
+  "sources": 1,
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at QueueList.tsx:59-94: rows are plain Links with no checkbox/selection state, and QueueList.tsx never imports ApprovalBar — sending only happens inside the opened DraftRail (DraftRail.tsx:157-184), whose ⌘/Ctrl+Enter shortcut (lines 160-167) calls approvalRef.current.send() scoped to the single open ticket, not queue-wide. So the claim (open→read→approve, one at a time, no batch/multi-select path) is accurate, not mischaracterized, and not solved elsewhere. Proposal is feasible and proof-only-safe: it reuses the existing per-ticket QA gate/ApprovalBar send path rather than fabricating a new bulk-send bypass, and explicitly excludes escalated/blocked drafts, so it doesn't threaten the approve/send flow or keyboard-shortcut discipline. For persona B (solo founder, 15 min/day, batches of near-identical WISMO tickets) this is a genuine throughput gap but it's an efficiency/QoL enhancement on top of a working, safe flow rather than a broken or misleading interaction — P3 (as labeled) is the right call, not higher.</note>\n</invoke>\n"
+  }
+ }
+]
