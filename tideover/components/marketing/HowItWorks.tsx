@@ -1,10 +1,17 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { Button } from "@/components/ui/Button";
 
 /**
  * "How it works" — the presale-specialist layer. Four feature cards, then a
  * routing diagram (your data → Tideover presale layer routing WISMO only → your
  * helpdesk, which stays as-is), then the comparison table with the Tideover
  * column highlighted in bg-accent-card. All styled divs/arrows — no chart libs.
+ *
+ * Single source of truth for both the Home overview and the standalone
+ * /how-it-works page: pass `condensed` to render only the intro + 4 feature
+ * cards (Home's teaser, with a link to the full page); omit it (default) for
+ * the full section — cards + routing diagram + comparison table — used on
+ * /how-it-works.
  */
 function FeatureIcon({ path }: { path: React.ReactNode }) {
   return (
@@ -81,7 +88,7 @@ function Arrow() {
   );
 }
 
-export function HowItWorks() {
+export function HowItWorks({ condensed = false }: { condensed?: boolean } = {}) {
   return (
     <section id="how" className="section section-sand2 scroll-mt-20">
       <div className="wrap">
@@ -97,7 +104,7 @@ export function HowItWorks() {
         </Reveal>
 
         {/* 4 feature cards */}
-        <div className="mb-11 grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4">
+        <div className={condensed ? "grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4" : "mb-11 grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4"}>
           {FEATURES.map((f, i) => (
             <Reveal key={f.title} index={i}>
               <div className="h-full rounded-[18px] border border-border bg-paper p-[26px] shadow-card">
@@ -109,6 +116,18 @@ export function HowItWorks() {
           ))}
         </div>
 
+        {condensed && (
+          <Reveal index={4}>
+            <div className="mt-8">
+              <Button href="/how-it-works" variant="quiet">
+                See how it works &rarr;
+              </Button>
+            </div>
+          </Reveal>
+        )}
+
+        {!condensed && (
+        <>
         {/* routing diagram */}
         <Reveal index={0}>
           <div className="mb-11 rounded-[22px] border border-border bg-paper p-6 shadow-card md:p-10">
@@ -222,6 +241,8 @@ export function HowItWorks() {
             </p>
           </div>
         </Reveal>
+        </>
+        )}
       </div>
     </section>
   );

@@ -18,7 +18,7 @@ const INCLUDED: readonly string[] = [
 
 export function Pilot() {
   return (
-    <section id="pilot" className="section section-dark scroll-mt-20">
+    <section id="pricing" className="section section-dark scroll-mt-20">
       <div className="wrap">
         <Reveal index={0}>
           <div className="mb-11 max-w-[720px]">
