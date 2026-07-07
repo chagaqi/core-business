@@ -104,3 +104,134 @@ test("importBackerRows throws on an unknown merchant", async () => {
     /unknown merchant/,
   );
 });
+
+const DAY = 86_400_000;
+
+test("imported order anchors dates to the parsed pledge date, not import time", async () => {
+  const merchant = await freshMerchant();
+  const now = new Date("2026-06-01T00:00:00.000Z");
+  const pledged = new Date(now.getTime() - 92 * DAY).toISOString();
+
+  await importBackerRows(
+    merchant.id,
+    [
+      {
+        firstName: "Fay",
+        email: "fay@example.com",
+        orderValueCents: 6000,
+        orderDate: pledged,
+        disclosedEtaValue: "weeks 9–11",
+      },
+    ],
+    now,
+  );
+
+  const repos = getRepositories();
+  const fay = await repos.customers.findByEmail(merchant.id, "fay@example.com");
+  assert.ok(fay);
+  const [o] = await repos.orders.listByCustomer(fay.id);
+  assert.equal(o.fulfillmentStart, pledged, "start is the pledge date, not now()");
+  assert.equal(o.createdAt, pledged);
+  // fulfillmentEnd stays computed = fulfillmentStart + windowMax (120 here)
+  assert.equal(o.fulfillmentEnd, new Date(new Date(pledged).getTime() + 120 * DAY).toISOString());
+  // the ETA was disclosed at purchase — disclosedAt tracks the pledge date
+  assert.equal(o.disclosedEta?.disclosedAt, pledged);
+});
+
+test("productionStage is seeded from real elapsed wait vs the merchant day-bands", async () => {
+  const merchant = await freshMerchant();
+  const now = new Date("2026-06-01T00:00:00.000Z");
+  const iso = (daysAgo: number) => new Date(now.getTime() - daysAgo * DAY).toISOString();
+
+  await importBackerRows(
+    merchant.id,
+    [
+      { firstName: "S", email: "s@x.com", orderDate: iso(5) }, // sourcing [0,12)
+      { firstName: "P", email: "p@x.com", orderDate: iso(50) }, // production [32,72)
+      { firstName: "F", email: "f@x.com", orderDate: iso(92) }, // freight [84,104)
+      { firstName: "D", email: "d@x.com", orderDate: iso(110) }, // dispatch [104,118)
+    ],
+    now,
+  );
+
+  const repos = getRepositories();
+  const stageOf = async (email: string) => {
+    const c = await repos.customers.findByEmail(merchant.id, email);
+    assert.ok(c);
+    const [o] = await repos.orders.listByCustomer(c.id);
+    return o.productionStage;
+  };
+  assert.equal(await stageOf("s@x.com"), "sourcing");
+  assert.equal(await stageOf("p@x.com"), "production");
+  assert.equal(await stageOf("f@x.com"), "freight");
+  assert.equal(await stageOf("d@x.com"), "dispatch");
+});
+
+test("a row with no parseable date falls back to import time and is counted", async () => {
+  const merchant = await freshMerchant();
+  const now = new Date("2026-06-01T00:00:00.000Z");
+  const res = await importBackerRows(
+    merchant.id,
+    [
+      { firstName: "G", email: "g@x.com", orderDate: "2026-05-01T00:00:00.000Z" },
+      { firstName: "H", email: "h@x.com" }, // no date → fallback to now(), counted
+    ],
+    now,
+  );
+  assert.equal(res.datelessRows, 1);
+
+  const repos = getRepositories();
+  const h = await repos.customers.findByEmail(merchant.id, "h@x.com");
+  assert.ok(h);
+  const [ho] = await repos.orders.listByCustomer(h.id);
+  assert.equal(ho.fulfillmentStart, now.toISOString());
+});
+
+test("LTV accumulates pledge value across a backer's orders", async () => {
+  const merchant = await freshMerchant();
+  await importBackerRows(merchant.id, [
+    { firstName: "Ivy", email: "ivy@x.com", orderValueCents: 6000, sourceKey: "A1" },
+    { firstName: "Ivy", email: "ivy@x.com", orderValueCents: 4000, sourceKey: "A2" },
+  ]);
+
+  const repos = getRepositories();
+  const ivy = await repos.customers.findByEmail(merchant.id, "ivy@x.com");
+  assert.ok(ivy);
+  assert.equal(ivy.orderIds.length, 2);
+  assert.equal(ivy.ltvCents, 10000, "6000 seed + 4000 second pledge, not just the first");
+});
+
+test("unparseable-money rows default to the floor and are counted", async () => {
+  const merchant = await freshMerchant();
+  const res = await importBackerRows(merchant.id, [
+    { firstName: "J", email: "j@x.com", orderValueCents: 6000 },
+    { firstName: "K", email: "k@x.com" }, // no amount → floor, counted
+  ]);
+  assert.equal(res.unparseableMoneyRows, 1);
+
+  const repos = getRepositories();
+  const k = await repos.customers.findByEmail(merchant.id, "k@x.com");
+  assert.ok(k);
+  assert.equal(k.ltvCents, 5000); // DEFAULT_ORDER_VALUE_CENTS floor
+});
+
+test("re-importing an id-less export does NOT duplicate (synthesized dedupe key)", async () => {
+  const merchant = await freshMerchant();
+  const now = new Date("2026-06-01T00:00:00.000Z");
+  const rows: MappedRow[] = [
+    // no sourceKey/id column at all
+    { firstName: "Lee", email: "lee@x.com", orderValueCents: 6000, orderDate: "2026-03-01T00:00:00.000Z" },
+  ];
+
+  const first = await importBackerRows(merchant.id, rows, now);
+  assert.equal(first.ordersCreated, 1);
+
+  const second = await importBackerRows(merchant.id, rows, now);
+  assert.equal(second.ordersCreated, 0, "no id column, but the synthesized key dedupes");
+  assert.equal(second.skipped, 1);
+
+  const repos = getRepositories();
+  const lee = await repos.customers.findByEmail(merchant.id, "lee@x.com");
+  assert.ok(lee);
+  assert.equal(lee.orderIds.length, 1);
+});

@@ -148,7 +148,15 @@ test("route: a canonical payload to a seeded merchant's token ingests, and a red
   assert.equal(ticket!.externalId, externalId);
   assert.equal(ticket!.subject, "where is my order??");
   assert.equal(ticket!.type, "wismo");
-  assert.ok(ticket!.draft, "ingest should auto-draft");
+  // buyer@example.com matches no seeded backer and no order_ref, so ingest must
+  // NOT borrow a stranger's order (the old data-provenance bug). It ties the ticket
+  // to a placeholder customer keyed by the real sender, order-less + flagged for
+  // manual match, with no order-derived draft.
+  assert.equal(ticket!.orderId, "", "unmatched inbound must not attach a stranger's order");
+  assert.ok(ticket!.tags.includes("presale:unmatched"), "unmatched inbound is flagged for manual match");
+  assert.ok(!ticket!.draft, "no order → no order-derived draft");
+  const sender = await repos.customers.findById(ticket!.customerId);
+  assert.equal(sender?.email, "buyer@example.com", "ticket is tied to its real sender, not a stranger");
 
   // redelivery of the SAME external_id de-dupes, not double-creates
   const res2 = await handleCanonicalIngest(ingestRequest(payload), "webhook", merchant.inboxToken);

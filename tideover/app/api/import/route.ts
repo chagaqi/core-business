@@ -13,6 +13,7 @@ const Row = z.object({
   email: z.string(),
   group: z.enum(["ks-backer", "late-pledge", "new-preorder"]).optional(),
   orderValueCents: z.number().int().nonnegative().optional(),
+  orderDate: z.string().optional(),
   disclosedEtaValue: z.string().optional(),
   sourceKey: z.string().optional(),
   etaSource: z.enum(["campaign-page", "checkout"]).optional(),

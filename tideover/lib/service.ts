@@ -409,37 +409,79 @@ export async function ingestTicket(
     const orders = await repos.orders.listByCustomer(customer.id);
     order = orders[0] ?? null;
   }
-  if (!order || !customer) {
-    // demo fallback: attach to the merchant's most-waited open order so the
-    // native widget always lands somewhere sensible.
-    const orders = await repos.orders.listByMerchant(n.merchantId);
-    order = order ?? orders.sort((a, b) => a.fulfillmentStart.localeCompare(b.fulfillmentStart))[0] ?? null;
-    customer = customer ?? (order ? await repos.customers.findById(order.customerId) : null);
+  // An order_ref matched but the sender email isn't a known customer: attach the
+  // cited order's OWN customer (its legitimate owner) — a real match, never a
+  // stranger. This keeps the matched path below. (Unchanged behavior.)
+  if (order && !customer) customer = await repos.customers.findById(order.customerId);
+
+  // Nothing matched. The old fallback silently attached the ticket to the
+  // merchant's OLDEST open order AND that order's customer, so risk/gift/
+  // reassurance then ran against the WRONG person's LTV/order/value
+  // (DATA-PROVENANCE-HANDOFF: unmatched-ticket mis-attribution). Never borrow a
+  // stranger's order. Instead associate the ticket with a lightweight placeholder
+  // customer keyed by the REAL sender's email (created once, reused on re-contact
+  // so ticketCount accrues to the right person), leave it order-less, and flag it
+  // needs-manual-match. With no order the per-ticket engines have nothing to
+  // score, so the ticket is intentionally kept OUT of the order-derived cockpit —
+  // getQueue / getTicketView already skip a ticket whose order doesn't resolve —
+  // degrading to NO order-based factors, never wrong ones.
+  if (!order) {
+    customer =
+      customer ??
+      (await repos.customers.create({
+        id: newId("cus"),
+        merchantId: merchant.id,
+        email: n.customerEmail,
+        firstName: n.customerEmail.split("@")[0]?.trim() || "there",
+        ltvCents: 0,
+        orderIds: [],
+        ticketCount: 0,
+        lastSentiment: "calm",
+      }));
   }
-  if (!order || !customer) return { error: "could not match an order" };
+  // Only reachable if a matched order references a missing customer (corrupt/orphan
+  // order); the placeholder branch above always yields a customer otherwise.
+  if (!customer) return { error: "could not resolve a customer" };
 
-  const drafter = getDrafter();
-  const drafted = await drafter.draft({ ticket: { sentiment: n.sentiment } as Ticket, order, customer, merchant });
+  // Only a MATCHED order yields an order-derived draft: drafting/scoring reads the
+  // order's timeline, value and stage, so running it on anything but the buyer's
+  // real order is exactly the bug. Everything inside this guard is the ORIGINAL
+  // matched-path logic, unchanged; an unmatched ticket simply carries no draft.
+  let draft: DraftReply | undefined;
+  if (order) {
+    const drafter = getDrafter();
+    const drafted = await drafter.draft({ ticket: { sentiment: n.sentiment } as Ticket, order, customer, merchant });
 
-  const catalog = await repos.gifts.listByMerchant(merchant.id);
-  const ticketsLast7d = await ticketsLast7dFor(merchant.id, customer.id);
-  const intel = computeTicketIntelligence({
-    ticket: { sentiment: n.sentiment } as Ticket,
-    order,
-    customer,
-    merchant,
-    catalog,
-    ticketsLast7d,
-  });
+    const catalog = await repos.gifts.listByMerchant(merchant.id);
+    const ticketsLast7d = await ticketsLast7dFor(merchant.id, customer.id);
+    const intel = computeTicketIntelligence({
+      ticket: { sentiment: n.sentiment } as Ticket,
+      order,
+      customer,
+      merchant,
+      catalog,
+      ticketsLast7d,
+    });
 
-  // Outcome ledger (ADR-0007): stamp the draft with the variant that produced it.
-  const variantId = await resolveVariantId(repos, merchant.id, intel.reassurance);
+    // Outcome ledger (ADR-0007): stamp the draft with the variant that produced it.
+    const variantId = await resolveVariantId(repos, merchant.id, intel.reassurance);
+    draft = {
+      ...intelToDraft(intel),
+      text: drafted.text,
+      confidenceBand: drafted.confidenceBand,
+      priority: drafted.priority,
+      draftedBy: drafted.draftedBy,
+      ...(variantId ? { variantId } : {}),
+    };
+  }
 
   const ticket: Ticket = {
     id: newId("tkt"),
     merchantId: merchant.id,
     customerId: customer.id,
-    orderId: order.id,
+    // "" = no order. getQueue / getTicketView resolve this to null and skip the
+    // ticket, so the cockpit never shows a fabricated order/LTV for an unmatched one.
+    orderId: order ? order.id : "",
     channel: n.channel,
     externalId: n.externalId,
     subject: n.subject,
@@ -448,18 +490,11 @@ export async function ingestTicket(
     sentiment: n.sentiment,
     createdAt: n.createdAt,
     firstResponseSec: null,
-    status: "drafted",
-    draft: {
-      ...intelToDraft(intel),
-      text: drafted.text,
-      confidenceBand: drafted.confidenceBand,
-      priority: drafted.priority,
-      draftedBy: drafted.draftedBy,
-      ...(variantId ? { variantId } : {}),
-    },
-    tags: ["presale", `presale:${n.type}`].concat(
-      n.sentiment === "chargeback-threat" ? ["presale:dispute-risk"] : [],
-    ),
+    status: order ? "drafted" : "open",
+    ...(draft ? { draft } : {}),
+    tags: ["presale", `presale:${n.type}`]
+      .concat(n.sentiment === "chargeback-threat" ? ["presale:dispute-risk"] : [])
+      .concat(order ? [] : ["presale:unmatched"]),
   };
   try {
     await repos.tickets.create(ticket);

@@ -157,7 +157,15 @@ test("route: email.received to a seeded merchant's inbox address ingests a ticke
   assert.equal(ticket!.externalId, emailId);
   assert.equal(ticket!.subject, "where is my order??");
   assert.equal(ticket!.type, "wismo");
-  assert.ok(ticket!.draft, "ingest should auto-draft");
+  // buyer@example.com matches no seeded backer and no order_ref, so ingest must
+  // NOT borrow a stranger's order (the old data-provenance bug). It associates the
+  // ticket with a placeholder customer keyed by the real sender, leaves it
+  // order-less, and flags it needs-manual-match — no order-derived draft.
+  assert.equal(ticket!.orderId, "", "unmatched inbound must not attach a stranger's order");
+  assert.ok(ticket!.tags.includes("presale:unmatched"), "unmatched inbound is flagged for manual match");
+  assert.ok(!ticket!.draft, "no order → no order-derived draft");
+  const sender = await repos.customers.findById(ticket!.customerId);
+  assert.equal(sender?.email, "buyer@example.com", "ticket is tied to its real sender, not a stranger");
   assert.equal(fetchCalls, 1);
 
   // Resend retries: a redelivery of the SAME email_id must de-dupe, not double-create.

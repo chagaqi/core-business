@@ -6,6 +6,7 @@ import {
   mapKickstarterRow,
   mapRows,
   parseCsv,
+  parseDate,
   parseMoneyToCents,
 } from "@/lib/csv";
 
@@ -97,4 +98,56 @@ test("mapRows detects the format and maps every parsed row end-to-end", () => {
   assert.equal(rows[0].email, "ada@example.com");
   assert.equal(rows[0].disclosedEtaValue, "weeks 9–11");
   assert.equal(rows[1].disclosedEtaValue, undefined); // empty ETA cell → omitted
+});
+
+// ── date parsing (the central import fix) ───────────────────────────────────
+
+test("parseDate reads ISO date, ISO datetime, and KS pledged-at style", () => {
+  assert.equal(parseDate("2026-03-01"), "2026-03-01T00:00:00.000Z");
+  assert.equal(parseDate("2026-03-01T14:22:07Z"), "2026-03-01T00:00:00.000Z");
+  // KS "Pledged At": "yyyy-mm-dd hh:mm:ss ±zone" → date part, timezone-independent
+  assert.equal(parseDate("2015-08-19 14:22:07 -0700"), "2015-08-19T00:00:00.000Z");
+});
+
+test("parseDate reads US numeric M/D/Y (2- and 4-digit years) and dashes", () => {
+  assert.equal(parseDate("3/15/2026"), "2026-03-15T00:00:00.000Z");
+  assert.equal(parseDate("03/15/26"), "2026-03-15T00:00:00.000Z");
+  assert.equal(parseDate("3-15-2026"), "2026-03-15T00:00:00.000Z");
+  // day-first when the first field can't be a month
+  assert.equal(parseDate("25/12/2026"), "2026-12-25T00:00:00.000Z");
+});
+
+test("parseDate reads month-name formats", () => {
+  assert.equal(parseDate("March 2026"), "2026-03-01T00:00:00.000Z"); // no day → 1st
+  assert.equal(parseDate("March 15, 2026"), "2026-03-15T00:00:00.000Z");
+  assert.equal(parseDate("Mar 15 2026"), "2026-03-15T00:00:00.000Z");
+  assert.equal(parseDate("15 March 2026"), "2026-03-15T00:00:00.000Z");
+});
+
+test("parseDate returns undefined for junk, ETA bands, and impossible dates", () => {
+  assert.equal(parseDate(undefined), undefined);
+  assert.equal(parseDate(""), undefined);
+  assert.equal(parseDate("weeks 9–11"), undefined); // an ETA band is not a date
+  assert.equal(parseDate("free"), undefined);
+  assert.equal(parseDate("2026-02-31"), undefined); // rejects calendar overflow
+});
+
+test("mapping captures the order/pledge date column as an ISO orderDate", () => {
+  const ks = mapKickstarterRow({
+    "Backer Name": "Jane Doe",
+    Email: "jane@example.com",
+    "Pledged At": "2026-01-04 09:00:00 -0500",
+  });
+  assert.equal(ks.orderDate, "2026-01-04T00:00:00.000Z");
+
+  const bk = mapBackerkitRow({
+    "First Name": "Bo",
+    Email: "bo@example.com",
+    "Order Date": "March 15, 2026",
+  });
+  assert.equal(bk.orderDate, "2026-03-15T00:00:00.000Z");
+
+  // no date column → orderDate omitted (importer falls back to now + counts it)
+  const none = mapKickstarterRow({ Email: "x@example.com" });
+  assert.equal(none.orderDate, undefined);
 });
