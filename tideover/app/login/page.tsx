@@ -13,7 +13,8 @@ export default function LoginPage({
 }: {
   searchParams: { next?: string; error?: string };
 }) {
-  const next = searchParams.next || "/app";
+  // UX-07(a): land the operator on their queue, not the dashboard, post-login.
+  const next = searchParams.next || "/app/inbox";
   return (
     <div className="flex min-h-screen items-center justify-center bg-sand px-6">
       <div className="panel w-full max-w-[400px] p-8">

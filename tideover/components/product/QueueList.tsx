@@ -17,6 +17,8 @@ export interface QueueItem {
   riskScore: number;
   color: RiskColor;
   escalated: boolean;
+  /** F/UX-10 — operator persisted a follow-up self-flag on this ticket. */
+  flagged: boolean;
   /** C5 — the ticket's computed first-response SLA chip (countdown + basis). */
   sla: SlaChipView;
 }
@@ -68,23 +70,28 @@ export function QueueList({
               aria-current={active ? "true" : undefined}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className="flex items-center gap-2 truncate">
-                  {r.escalated ? (
-                    <span
-                      aria-label="escalated"
-                      className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-risk-red"
-                    />
-                  ) : null}
-                  <span className="truncate text-[14px] font-semibold text-ink">
-                    {r.firstName}
-                  </span>
+                <span className="truncate text-[14px] font-semibold text-ink">
+                  {r.firstName}
                 </span>
-                <RiskBadge color={r.color}>{r.riskScore}</RiskBadge>
+                <span className="flex shrink-0 items-center gap-1.5">
+                  {r.escalated ? (
+                    // UX-02: a labeled, visible red pill (act-now) beside the risk
+                    // badge — replaces the near-invisible 6px dot. aria-label kept.
+                    <span aria-label="escalated" className="pill pill-red">
+                      Escalated
+                    </span>
+                  ) : null}
+                  <RiskBadge color={r.color}>{r.riskScore}</RiskBadge>
+                </span>
               </div>
               <p className="mt-1 truncate text-[12px] text-slate">{r.subject}</p>
               <div className="mt-1.5 flex items-center justify-between gap-2">
                 <span className="flex items-center gap-2">
                   <Tag>{GROUP_LABEL[r.group] ?? r.group}</Tag>
+                  {r.flagged ? (
+                    // F/UX-10: persisted operator follow-up flag (caution gold).
+                    <span className="pill pill-amber">Flagged</span>
+                  ) : null}
                   <span className="text-[11px] text-ink-mute">
                     {r.daysInWait}d waiting
                   </span>

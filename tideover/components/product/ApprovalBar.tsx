@@ -11,8 +11,9 @@ export interface ApprovalBarHandle {
 
 /**
  * Action row for the cockpit draft rail. Regenerate (POST /api/draft), Approve &
- * copy reply (POST /api/approve-send with the edited text), and Escalate (manager
- * note). The core action is honest manual delivery: approve marks the ticket sent
+ * copy reply (POST /api/approve-send with the edited text), and Escalate (POST
+ * /api/escalate — a PERSISTED operator follow-up self-flag, not a manager
+ * notification). The core action is honest manual delivery: approve marks the ticket sent
  * server-side, and the reply — WITH the customer's status link appended — is
  * copied to the clipboard for the operator to paste into their helpdesk.
  *
@@ -62,7 +63,7 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
   ref,
 ) {
   const router = useRouter();
-  const [busy, setBusy] = useState<"draft" | "send" | null>(null);
+  const [busy, setBusy] = useState<"draft" | "send" | "escalate" | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [escalated, setEscalated] = useState(false);
   // UX-16: armed chargeback-risk confirm state (escalated tickets, first click).
@@ -102,10 +103,12 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
   }
 
   function advance() {
+    // UX-52: carry a post-send focus signal so the next ticket's draft textarea
+    // takes focus on mount and ⌘↵ chains straight into the next send.
     router.replace(
       nextTicketId
-        ? `/app/inbox?merchant=${merchantId}&ticket=${nextTicketId}`
-        : `/app/inbox?merchant=${merchantId}`,
+        ? `/app/inbox?merchant=${merchantId}&ticket=${nextTicketId}&focus=draft`
+        : `/app/inbox?merchant=${merchantId}&focus=draft`,
     );
   }
 
@@ -149,6 +152,23 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
       // UX-01: thread the fresh draft back into the editor so it no longer shows
       // stale text. No router.refresh() — the textarea is client-owned now.
       if (data?.draft?.text) onRegenerated?.(data.draft.text);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  // UX-10/EN-25: persist (or clear) the follow-up self-flag through /api/escalate,
+  // replacing the old local-only toggle that vanished on refresh. On success the
+  // flag surfaces on the queue row + dashboard status strip and survives a reload.
+  async function toggleEscalate() {
+    const undo = escalated;
+    setBusy("escalate");
+    setError(null);
+    try {
+      await post("/api/escalate", { ticketId, undo });
+      setEscalated(!undo);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -314,8 +334,10 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
         </p>
       ) : null}
       {escalated ? (
+        // Honest copy (UX-10): a persisted self-flag for follow-up — nothing is
+        // dispatched to a manager. It stays flagged after a refresh.
         <p className="rounded-lg border border-risk-amber/30 bg-[rgba(138,102,18,0.08)] px-3 py-2 text-[12px] text-amber-status">
-          Flagged for manager review this window.
+          Flagged for your follow-up. It stays flagged after a refresh.
         </p>
       ) : null}
       <div className="flex flex-wrap items-center gap-2">
@@ -334,8 +356,14 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
         <Button variant="ghost" onClick={regenerate} disabled={busy !== null}>
           {busy === "draft" ? "Regenerating…" : "Regenerate"}
         </Button>
-        <Button variant="quiet" onClick={() => setEscalated((v) => !v)} disabled={busy !== null}>
-          {escalated ? "Un-escalate" : "Escalate"}
+        <Button variant="quiet" onClick={toggleEscalate} disabled={busy !== null}>
+          {busy === "escalate"
+            ? escalated
+              ? "Removing…"
+              : "Flagging…"
+            : escalated
+              ? "Un-escalate"
+              : "Escalate"}
         </Button>
       </div>
     </div>

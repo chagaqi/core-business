@@ -16,11 +16,12 @@ import { getDemoOperator, isDemoMode } from "@/lib/auth";
  */
 export default function AppLayout({ children }: { children: ReactNode }) {
   const operator = getDemoOperator();
+  const demo = isDemoMode();
   return (
     <div className="flex min-h-screen bg-sand">
-      <Sidebar operator={operator} />
+      <Sidebar operator={operator} isDemo={demo} />
       <main className="min-w-0 flex-1">{children}</main>
-      {isDemoMode() && <DemoBadge />}
+      {demo && <DemoBadge />}
     </div>
   );
 }

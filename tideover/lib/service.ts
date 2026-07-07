@@ -11,7 +11,8 @@ import {
 import { getDrafter } from "@/lib/drafting/LlmDrafter";
 import { getSendAdapter } from "@/lib/channel-adapters/registry";
 import { computeDisputeExposure, type DisputeExposure } from "@/lib/dispute-exposure";
-import { computeSlaAttainment, type SlaAttainment } from "@/lib/sla";
+import { computeSlaAttainment, ticketSlaState, type SlaAttainment } from "@/lib/sla";
+import { formatEscalationTag, isEscalationTag, isFlagged } from "@/lib/escalation";
 import { containsHardDate } from "@/lib/proof";
 import { computeSetupChecklist, type SetupChecklist } from "@/lib/setup";
 import {
@@ -698,6 +699,37 @@ export async function promoteVariant(
   return { variant: created };
 }
 
+/**
+ * Escalate self-flag (UX-10 / EN-25): persist an operator's follow-up flag on the
+ * ticket by writing an `escalated-by:{operator}:{iso}` tag through the repository
+ * seam — no new schema field, works on both drivers, survives a refresh. This is
+ * a self-flag, NOT a manager notification: nothing is dispatched to anyone.
+ *
+ * Idempotent + re-stampable: any prior escalation tag is dropped before the new
+ * one is written, so re-escalating simply refreshes the operator/instant/reason
+ * (never accumulating duplicate flags). `undo` clears the flag entirely.
+ */
+export async function escalateTicket(
+  ticketId: string,
+  operator: string,
+  opts: { reason?: string; undo?: boolean } = {},
+): Promise<{ ticket: Ticket; escalated: boolean } | { error: string }> {
+  const repos = getRepositories();
+  const ticket = await repos.tickets.findById(ticketId);
+  if (!ticket) return { error: "ticket not found" };
+
+  // Drop any existing escalation flag first, so re-flagging re-stamps rather than
+  // piling on a second tag, and undo removes it cleanly.
+  const withoutFlag = ticket.tags.filter((t) => !isEscalationTag(t));
+  if (opts.undo) {
+    const updated = await repos.tickets.update(ticketId, { tags: withoutFlag });
+    return { ticket: updated, escalated: false };
+  }
+  const tags = [...withoutFlag, formatEscalationTag(operator, new Date(), opts.reason)];
+  const updated = await repos.tickets.update(ticketId, { tags });
+  return { ticket: updated, escalated: true };
+}
+
 /** Operator queue: every open/drafted ticket with computed risk, sorted. */
 export interface QueueRow {
   ticket: Ticket;
@@ -765,6 +797,21 @@ export interface DashboardView {
   riskCurve: Array<{ label: string; risk: number; color: string }>;
   atRisk: QueueRow[];
   ordersInWindow: number;
+  /**
+   * UX-09 live status strip: counts of the operator's OPEN work (status !==
+   * "sent"), derived by running the existing SLA state over each open ticket —
+   * measured state only, nothing fabricated. `waiting` matches the inbox queue
+   * length so "Answer your queue (N)" and the strip agree.
+   */
+  queueStatus: {
+    waiting: number;
+    /** open tickets whose first-response SLA is already breached. */
+    overdue: number;
+    /** open tickets within the near-breach amber window. */
+    dueSoon: number;
+    /** open tickets carrying an operator escalation self-flag. */
+    flagged: number;
+  };
   /** C5: first-response SLA attainment over answered tickets, measured against
    *  the merchant's own configured support windows (ADR-0016). Rate is gated to
    *  null below the small-n floor — no headline % on a tiny sample. */
@@ -813,6 +860,22 @@ export async function getDashboard(merchantId: string, now: Date = new Date()): 
     .map((r) => ({ label: r.customer.firstName, risk: r.riskScore, color: r.color }))
     .sort((a, b) => b.risk - a.risk);
 
+  // UX-08 + UX-09: the operator's OPEN work — a sent ticket is handled and drops
+  // out, so both the at-risk table and the status strip shrink toward 0 as the
+  // queue is cleared (matching the inbox's own status !== "sent" definition).
+  const openRows = queue.filter((r) => r.ticket.status !== "sent");
+  let overdue = 0;
+  let dueSoon = 0;
+  let flagged = 0;
+  for (const r of openRows) {
+    const st = ticketSlaState(r.ticket, merchant.slaWindows, now);
+    if (!st.answered) {
+      if (st.state === "breach") overdue += 1;
+      else if (st.state === "amber") dueSoon += 1;
+    }
+    if (isFlagged(r.ticket.tags)) flagged += 1;
+  }
+
   return {
     merchant,
     baseline: merchant.baseline,
@@ -824,8 +887,9 @@ export async function getDashboard(merchantId: string, now: Date = new Date()): 
       deflectionPct,
     },
     riskCurve,
-    atRisk: queue.filter((r) => r.band !== "standard"),
+    atRisk: openRows.filter((r) => r.band !== "standard"),
     ordersInWindow: orders.length,
+    queueStatus: { waiting: openRows.length, overdue, dueSoon, flagged },
     // M3: reuse the orders already loaded above — no extra I/O. Pure rollup.
     disputeExposure: computeDisputeExposure(orders, now),
     // C5: fold SLA attainment from the tickets already loaded — pure, no extra I/O.

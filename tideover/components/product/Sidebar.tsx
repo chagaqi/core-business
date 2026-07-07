@@ -23,7 +23,7 @@ const NAV_GROUPS: Array<{
     label: "Daily",
     items: [
       { href: "/app", label: "Dashboard", hint: "Refund-risk overview" },
-      { href: "/app/inbox", label: "Inbox", hint: "Operator cockpit" },
+      { href: "/app/inbox", label: "Inbox", hint: "Operator inbox" },
     ],
   },
   {
@@ -51,7 +51,7 @@ interface SetupSummary {
   allDone: boolean;
 }
 
-export function Sidebar({ operator }: { operator: string }) {
+export function Sidebar({ operator, isDemo }: { operator: string; isDemo: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const params = useSearchParams();
@@ -194,9 +194,14 @@ export function Sidebar({ operator }: { operator: string }) {
           </div>
         ) : null}
 
-        <p className="mt-3 rounded-md border border-dashed border-border px-2.5 py-1.5 text-[10px] uppercase tracking-wider text-ink-mute">
-          Demo data
-        </p>
+        {/* UX-04: only demo mode is seeded sample data — a real-mode merchant
+            must never see their live data mislabeled. Gated on the host-derived
+            mode (ADR-0017), mirroring the layout's DemoBadge. */}
+        {isDemo ? (
+          <p className="mt-3 rounded-md border border-dashed border-border px-2.5 py-1.5 text-[10px] uppercase tracking-wider text-ink-mute">
+            Demo data
+          </p>
+        ) : null}
       </div>
     </aside>
   );

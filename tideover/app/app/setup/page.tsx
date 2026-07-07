@@ -28,7 +28,7 @@ const CTA_LABEL: Record<SetupItemKey, string> = {
   brand: "Review brand & voice",
   import: "Import your backer list",
   helpdesk: "Connect your helpdesk",
-  "first-reply": "Open the cockpit",
+  "first-reply": "Open the inbox",
   "status-visible": "Post an update",
 };
 
@@ -131,7 +131,7 @@ export default async function SetupPage({
           <div className="mt-1 flex flex-wrap gap-3">
             <Button href={`/app${suffix}`}>Go to the dashboard</Button>
             <Button href={`/app/inbox${suffix}`} variant="ghost">
-              Open the cockpit
+              Open the inbox
             </Button>
           </div>
         </section>

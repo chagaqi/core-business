@@ -8,8 +8,10 @@ import { PreviouslyTold } from "@/components/product/PreviouslyTold";
 import { DraftRail } from "@/components/product/DraftRail";
 import { GiftSuggestion } from "@/components/product/GiftSuggestion";
 import { SlaChip } from "@/components/product/SlaChip";
+import { FocusDraft } from "@/components/product/FocusDraft";
 import { RiskBadge, Tag } from "@/components/ui/Badge";
 import { slaChip, ticketSlaState } from "@/lib/sla";
+import { isFlagged } from "@/lib/escalation";
 import type { Channel, RiskColor, Sentiment } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -56,7 +58,7 @@ function escalatedSentiment(s: Sentiment): boolean {
 export default async function InboxPage({
   searchParams,
 }: {
-  searchParams: { merchant?: string; ticket?: string };
+  searchParams: { merchant?: string; ticket?: string; focus?: string };
 }) {
   const repos = getRepositories();
   const merchants = await repos.merchants.list();
@@ -87,6 +89,8 @@ export default async function InboxPage({
     riskScore: r.riskScore,
     color: r.color as RiskColor,
     escalated: escalatedSentiment(r.ticket.sentiment),
+    // F/UX-10: persisted operator follow-up self-flag (survives refresh).
+    flagged: isFlagged(r.ticket.tags),
     // C5 — computed first-response SLA chip from the ticket's own timestamps
     // and the merchant's configured support windows (ADR-0016). Open queue rows
     // are unanswered, so this is a live countdown/breach state.
@@ -132,7 +136,7 @@ export default async function InboxPage({
     <div className="flex h-screen flex-col">
       <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-paper px-5 py-3">
         <div>
-          <p className="kicker">Operator cockpit</p>
+          <p className="kicker">Operator inbox</p>
           <h1 className="font-serif text-[22px] leading-tight text-ink">Inbox</h1>
         </div>
         <MerchantSwitcher
@@ -261,6 +265,10 @@ export default async function InboxPage({
             </div>
           ) : (
             <div className="flex flex-col gap-4">
+              {/* UX-52: only after a send auto-advance (?focus=draft) do we pull
+                  focus into the fresh draft, so ⌘↵ chains — plain j/k nav leaves
+                  the queue keyboard in control. */}
+              {searchParams.focus === "draft" ? <FocusDraft key={view.ticket.id} /> : null}
               <PreviouslyTold firstName={view.customer.firstName} prior={previouslyTold} />
               <DraftRail
                 key={view.ticket.id}

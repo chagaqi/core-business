@@ -60,7 +60,8 @@ export default async function DashboardPage({
     return <div className="p-8 text-ink-mute">No dashboard data for this merchant.</div>;
   }
 
-  const { baseline, live, disputeExposure: exp, slaAttainment: sla } = data;
+  const { baseline, live, disputeExposure: exp, slaAttainment: sla, queueStatus: q } = data;
+  const inboxHref = `/app/inbox?merchant=${merchantId}`;
   // C5 proof-only: show the % only above the small-n floor; below it, surface the
   // raw denominator and keep collecting (mirrors the Script Performance surface).
   const slaHasRate = sla.rate != null;
@@ -82,12 +83,49 @@ export default async function DashboardPage({
             {data.ordersInWindow} orders in the fulfillment window ·{" "}
             {data.atRisk.length} flagged at-risk
           </p>
+          {/* UX-09 live status strip: measured open-queue state, each figure a
+              link into the inbox. Red is reserved for overdue; caution gold for
+              due-soon + flagged. */}
+          <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12.5px]">
+            <StatusFigure href={inboxHref} value={q.waiting} label="waiting" tone="neutral" />
+            <Dot />
+            <StatusFigure href={inboxHref} value={q.overdue} label="overdue" tone="red" />
+            <Dot />
+            <StatusFigure href={inboxHref} value={q.dueSoon} label="due soon" tone="amber" />
+            <Dot />
+            <StatusFigure href={inboxHref} value={q.flagged} label="flagged" tone="amber" />
+          </div>
         </div>
         <MerchantSwitcher
           merchants={merchants.map((m) => ({ id: m.id, name: m.name }))}
           current={merchantId}
         />
       </header>
+
+      {/* UX-07(b): the dashboard's first action — land the operator on their
+          open work. Terracotta primary only when there's a queue to answer;
+          a calm panel when the queue is clear (nothing to click). */}
+      {q.waiting > 0 ? (
+        <Link
+          href={inboxHref}
+          className="btn btn-primary btn-lg w-full justify-between gap-3 text-left no-underline"
+        >
+          <span>Answer your queue ({q.waiting} waiting)</span>
+          <span aria-hidden="true">→</span>
+        </Link>
+      ) : (
+        <div className="panel flex items-center gap-3 px-5 py-4">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-card text-teal">
+            <CheckMark />
+          </span>
+          <div>
+            <p className="text-[15px] font-semibold text-ink">All caught up</p>
+            <p className="text-[12px] text-ink-mute">
+              Every at-risk buyer has a reply out. New tickets land in your inbox as they arrive.
+            </p>
+          </div>
+        </div>
+      )}
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-6">
         <MetricTile
@@ -221,11 +259,8 @@ export default async function DashboardPage({
       <section className="panel overflow-hidden">
         <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
           <h2 className="font-serif text-[20px] text-ink">At-risk queue</h2>
-          <Link
-            href={`/app/inbox?merchant=${merchantId}`}
-            className="link-quiet text-[13px]"
-          >
-            Open cockpit
+          <Link href={inboxHref} className="link-quiet text-[13px]">
+            Open inbox
           </Link>
         </div>
         {data.atRisk.length === 0 ? (
@@ -278,5 +313,62 @@ export default async function DashboardPage({
         no refund-reduction figure is invented.
       </p>
     </div>
+  );
+}
+
+/** One figure in the UX-09 status strip: a value + label linking into the inbox.
+ *  Tone colors the number only when it's non-zero — red for overdue (act-now),
+ *  caution gold for due-soon/flagged, neutral otherwise. */
+function StatusFigure({
+  href,
+  value,
+  label,
+  tone,
+}: {
+  href: string;
+  value: number;
+  label: string;
+  tone: "neutral" | "red" | "amber";
+}) {
+  const active = value > 0;
+  const color =
+    tone === "red" && active
+      ? "text-risk-red"
+      : tone === "amber" && active
+        ? "text-amber-status"
+        : "text-ink";
+  return (
+    <Link href={href} className="link-quiet no-underline">
+      <span className={`font-semibold tabular-nums ${color}`}>{value}</span>{" "}
+      <span className="text-ink-mute">{label}</span>
+    </Link>
+  );
+}
+
+/** Quiet separator dot for the status strip. */
+function Dot() {
+  return (
+    <span aria-hidden="true" className="text-ink-mute">
+      ·
+    </span>
+  );
+}
+
+/** Small calm check for the "All caught up" state. Inherits currentColor. */
+function CheckMark() {
+  return (
+    <svg
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
   );
 }
