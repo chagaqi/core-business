@@ -41,6 +41,7 @@ export const config = {
     "/api/export",
     "/api/gift-catalog/:path*",
     "/api/gift-send",
+    "/api/escalate",
     "/api/social-signal-feed",
     "/api/orders/:path*",
     "/api/onboarding",

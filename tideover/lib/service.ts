@@ -1,5 +1,6 @@
 import { newId } from "@/lib/ids";
 import { getRepositories, type Repositories } from "@/lib/repositories";
+import { resolveDatastoreModeFromRequest } from "@/lib/request-mode";
 import { computeTimeline } from "@/lib/time";
 import {
   computeTicketIntelligence,
@@ -540,9 +541,15 @@ export async function regenerateDraft(ticketId: string): Promise<Ticket | null> 
  */
 export const PROMOTE_THRESHOLD = 0.3;
 
-/** Base origin for customer-facing links. APP_URL in prod; a stable public
- *  default otherwise. Mirrors lib/ingest-templates so both surfaces agree. */
+/** Base origin for customer-facing links. Tied to the request's DATASTORE mode
+ *  (ADR-0017): a real merchant's order + statusToken live only in tideover_live,
+ *  served only on the real host — so in real mode the link MUST point there, not
+ *  at the global APP_URL/demo default (else the backer gets a dead link resolved
+ *  against the demo store). Mirrors lib/ingest-templates so both surfaces agree. */
 function appUrl(): string {
+  if (resolveDatastoreModeFromRequest() === "real") {
+    return `https://${(process.env.REAL_APP_HOST ?? "app.tideover.app").replace(/\/$/, "")}`;
+  }
   return (process.env.APP_URL ?? "https://www.tideover.app").replace(/\/$/, "");
 }
 

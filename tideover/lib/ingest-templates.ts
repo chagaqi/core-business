@@ -1,4 +1,5 @@
 import { deriveWebhookSecret } from "@/lib/webhook-secret";
+import { resolveDatastoreModeFromRequest } from "@/lib/request-mode";
 import type { Merchant } from "@/lib/types";
 
 /**
@@ -23,8 +24,14 @@ export interface HelpdeskSetup {
   instructions: string[];
 }
 
-/** Base origin for copy-paste URLs. APP_URL in prod; a stable public default otherwise. */
+/** Base origin for the copy-paste webhook URL. Tied to the request's datastore
+ *  mode (ADR-0017): a real merchant's ingest endpoint lives on the real host, so
+ *  the URL they paste into their helpdesk must point there — not the demo default.
+ *  Falls back to the APP_URL/demo default outside a request scope (tests/scripts). */
 function baseUrl(): string {
+  if (resolveDatastoreModeFromRequest() === "real") {
+    return `https://${(process.env.REAL_APP_HOST ?? "app.tideover.app").replace(/\/$/, "")}`;
+  }
   return (process.env.APP_URL ?? "https://www.tideover.app").replace(/\/$/, "");
 }
 

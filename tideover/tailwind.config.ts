@@ -41,7 +41,7 @@ const config: Config = {
         border: "#EBE2D0", // warm card borders/dividers
         "risk-red": "#C0463B",
         "risk-amber": "#8A6612", // = amber-status; caution ≠ terracotta action
-        "risk-green": "#3E8E6E",
+        "risk-green": "#2C7A57",
       },
       fontFamily: {
         // Fraunces (warm serif ≈ Iowan Old Style) display; Inter body.
