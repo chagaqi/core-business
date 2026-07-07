@@ -75,6 +75,21 @@ export interface TicketRepository {
   create(ticket: Ticket): Promise<Ticket>;
   /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */
   update(id: string, patch: Partial<Ticket>): Promise<Ticket>;
+  /**
+   * Atomic compare-and-set on status (EN-09/PR-10). Applies `patch` (which itself
+   * sets the new status) ONLY if the ticket's current status is one of
+   * `fromStatuses`; returns the updated ticket, or null when it didn't match (a
+   * concurrent writer already moved it). On Mongo this is one
+   * findOneAndUpdate({ id, status: { $in } }); on the JSON store the read+write
+   * runs in a single synchronous tick — so two concurrent approveSend calls can
+   * never both claim the same ticket (no double-send). Patch values must not be
+   * explicitly `undefined`.
+   */
+  compareAndSetStatus(
+    id: string,
+    fromStatuses: Ticket["status"][],
+    patch: Partial<Ticket>,
+  ): Promise<Ticket | null>;
 }
 
 export interface GiftRepository {

@@ -153,6 +153,16 @@ const tickets: TicketRepository = {
   async update(id, p) {
     return patch(store.tickets, id, p);
   },
+  async compareAndSetStatus(id, fromStatuses, p) {
+    // Read + guard + write run in ONE synchronous tick (no await between), so a
+    // concurrent approveSend can't interleave and double-claim. Returns null when
+    // the ticket is missing or its status isn't in the allowed `fromStatuses`.
+    const i = store.tickets.findIndex((t) => t.id === id);
+    if (i === -1) return null;
+    if (!fromStatuses.includes(store.tickets[i].status)) return null;
+    store.tickets[i] = { ...store.tickets[i], ...p };
+    return store.tickets[i];
+  },
 };
 
 const gifts: GiftRepository = {

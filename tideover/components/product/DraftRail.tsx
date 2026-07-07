@@ -33,6 +33,7 @@ export function DraftRail({
   firstResponseSec,
   merchantId,
   nextTicketId,
+  helpdesk,
   alternates,
 }: {
   ticketId: string;
@@ -47,6 +48,8 @@ export function DraftRail({
   firstResponseSec: number | null;
   merchantId: string;
   nextTicketId: string | null;
+  /** Display name of the merchant's helpdesk, for the copy confirmation label. */
+  helpdesk: string;
   /**
    * C2 — the three toggleable views of this draft. Optional so the rail behaves
    * exactly as before when absent. `standard` is byte-identical to `draftText`.
@@ -55,13 +58,23 @@ export function DraftRail({
 }) {
   const [text, setText] = useState(alreadySent && sentText ? sentText : draftText);
   const [mode, setMode] = useState<DraftMode>("standard");
+  // The last text the rail seeded programmatically (initial draft, an alternate,
+  // or a regenerate). Anything typed since diverges from it → the editor is dirty.
+  const seededRef = useRef(text);
   const textRef = useRef(text);
   textRef.current = text;
   const approvalRef = useRef<ApprovalBarHandle>(null);
+  // UX-01: a brief "New draft ready" cue after a regenerate updates the editor.
+  const [regenCue, setRegenCue] = useState(false);
+
+  function updateText(next: string) {
+    setText(next);
+    if (regenCue) setRegenCue(false); // any edit clears the cue
+  }
 
   // C2 toggle: swap the editor's seed text to the chosen alternate. This only
   // re-seeds the SAME editable textarea the operator sends from — it changes
-  // nothing about Approve & send (which still posts the live editor text). Shown
+  // nothing about Approve & copy (which still posts the live editor text). Shown
   // only while the draft is still editable (an already-sent reply is frozen).
   const alternateFor = (m: DraftMode): string =>
     m === "brief"
@@ -80,8 +93,23 @@ export function DraftRail({
     : [];
   const showToggle = !alreadySent && alternates != null && visibleModes.length > 1;
   function selectMode(m: DraftMode) {
+    const next = alternateFor(m);
     setMode(m);
-    setText(alternateFor(m));
+    seededRef.current = next; // a deliberate re-seed, not an unsaved edit
+    updateText(next);
+  }
+
+  // UX-01: apply the regenerated draft to the visible editor. Guard unsaved edits
+  // with a confirm so a regenerate never silently discards the operator's typing.
+  function handleRegenerated(next: string) {
+    const dirty = textRef.current !== seededRef.current;
+    if (dirty && typeof window !== "undefined") {
+      const ok = window.confirm("Discard your edits and load the fresh draft?");
+      if (!ok) return;
+    }
+    seededRef.current = next;
+    setText(next);
+    setRegenCue(true);
   }
 
   // Reply QA (ADR-0014, E4): re-scored live as the operator edits. Two AUTO checks
@@ -90,20 +118,31 @@ export function DraftRail({
   const checks = scoreReplyChecks({ text, firstName });
   const blocked = blocksSend(checks);
 
+  // UX-06: the confidence-band chip is neutral by default. Green is reserved for
+  // when NOTHING is wrong (not overdue, normal priority) — so a green chip never
+  // sits next to a red Overdue pill or an escalated ticket.
+  const nothingWrong = !overdue && priority === "normal";
+
   return (
     <div className="panel flex flex-col gap-3 p-4">
       <div className="flex items-center justify-between gap-2">
         <h3 className="text-[14px] font-semibold text-ink">Reassurance draft</h3>
-        <span className="pill pill-green">{confidenceBand}</span>
+        <span
+          className={
+            nothingWrong
+              ? "pill pill-green"
+              : "inline-flex items-center rounded-full border border-border bg-sand px-2.5 py-0.5 text-[11px] font-medium text-ink-mute"
+          }
+        >
+          {confidenceBand}
+        </span>
       </div>
 
       <div className="flex flex-wrap gap-2">
         <span className="inline-flex items-center rounded-full border border-border bg-sand px-2.5 py-0.5 text-[11px] font-medium text-slate">
           {priority === "escalated" ? "Escalated priority" : "Normal priority"}
         </span>
-        {overdue ? (
-          <span className="pill pill-red">Overdue</span>
-        ) : null}
+        {overdue ? <span className="pill pill-red">Overdue</span> : null}
         <span className="inline-flex items-center rounded-full border border-border bg-sand px-2.5 py-0.5 text-[11px] font-medium text-ink-mute">
           Draft only · human-approved
         </span>
@@ -134,9 +173,7 @@ export function DraftRail({
                   aria-pressed={active}
                   onClick={() => selectMode(m)}
                   className={`flex-1 rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors ${
-                    active
-                      ? "bg-teal text-ink-inverse shadow-sm"
-                      : "text-slate hover:text-ink"
+                    active ? "bg-teal text-ink-inverse shadow-sm" : "text-slate hover:text-ink"
                   }`}
                 >
                   {MODE_LABEL[m]}
@@ -154,11 +191,17 @@ export function DraftRail({
         </div>
       ) : null}
 
+      {regenCue ? (
+        <p className="text-[11px] font-medium text-teal" role="status" aria-live="polite">
+          New draft ready.
+        </p>
+      ) : null}
+
       <TextArea
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={(e) => updateText(e.target.value)}
         onKeyDown={(e) => {
-          // The one input-context shortcut: ⌘/Ctrl+Enter = Approve & send,
+          // The one input-context shortcut: ⌘/Ctrl+Enter = Approve & copy,
           // routed through ApprovalBar's existing send path (no duplicate fetch).
           if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
             e.preventDefault();
@@ -181,7 +224,16 @@ export function DraftRail({
         firstResponseSec={firstResponseSec}
         merchantId={merchantId}
         nextTicketId={nextTicketId}
+        priority={priority}
+        helpdesk={helpdesk}
+        onRegenerated={handleRegenerated}
       />
+
+      {!alreadySent ? (
+        <p className="text-[11px] leading-snug text-ink-mute">
+          Your customer&rsquo;s status link is included when you copy.
+        </p>
+      ) : null}
     </div>
   );
 }

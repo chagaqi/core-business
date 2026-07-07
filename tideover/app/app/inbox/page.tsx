@@ -10,9 +10,20 @@ import { GiftSuggestion } from "@/components/product/GiftSuggestion";
 import { SlaChip } from "@/components/product/SlaChip";
 import { RiskBadge, Tag } from "@/components/ui/Badge";
 import { slaChip, ticketSlaState } from "@/lib/sla";
-import type { RiskColor, Sentiment } from "@/lib/types";
+import type { Channel, RiskColor, Sentiment } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+
+// Display name of the merchant's helpdesk, for the "Copied — paste into …" label.
+// "manual" is a send strategy, not an inbound channel, so it maps generically.
+const HELPDESK_LABEL: Record<Channel, string> = {
+  mock: "your helpdesk",
+  gorgias: "Gorgias",
+  tidio: "Tidio",
+  intercom: "Intercom",
+  email: "your email",
+  manual: "your helpdesk",
+};
 
 const GROUP_LABEL: Record<string, string> = {
   "ks-backer": "KS backer",
@@ -265,6 +276,7 @@ export default async function InboxPage({
                 firstResponseSec={view.ticket.firstResponseSec}
                 merchantId={merchantId}
                 nextTicketId={nextTicketId}
+                helpdesk={HELPDESK_LABEL[view.merchant.helpdesk] ?? view.merchant.helpdesk}
                 alternates={alternates ?? undefined}
               />
               <GiftSuggestion

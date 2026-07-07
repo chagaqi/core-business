@@ -539,46 +539,103 @@ export async function regenerateDraft(ticketId: string): Promise<Ticket | null> 
  */
 export const PROMOTE_THRESHOLD = 0.3;
 
+/** Base origin for customer-facing links. APP_URL in prod; a stable public
+ *  default otherwise. Mirrors lib/ingest-templates so both surfaces agree. */
+function appUrl(): string {
+  return (process.env.APP_URL ?? "https://www.tideover.app").replace(/\/$/, "");
+}
+
+/**
+ * PR-02 — the customer's status link, appended to the approved reply at SEND
+ * TIME in the SERVICE layer (never inside the reassurance engine, so the eval
+ * harness's goldens/invariants stay byte-stable). Proof-only safe: the line
+ * carries no date and no metric, only the order's opaque status token. Returns
+ * the text unchanged when the ticket has no resolved order — there's nothing to
+ * link to (an unmatched ticket).
+ */
+function withStatusLink(text: string, order: Order | null): string {
+  if (!order) return text;
+  return `${text.trimEnd()}\n\nTrack your order anytime: ${appUrl()}/status/${order.statusToken}`;
+}
+
+/** Statuses a ticket can be sent FROM — every state except an already-sent one.
+ *  Used as the compare-and-set guard so a send is claimed exactly once. */
+const SENDABLE_STATUSES: Ticket["status"][] = ["open", "drafted", "approved", "resolved"];
+
 /**
  * Send result carries the two E4 facts the cockpit needs after a send:
  * `editedRatio` (the measured operator edit) and `canPromote` (that edit cleared
  * PROMOTE_THRESHOLD AND the reply was attributable to a parent variant, so a
  * promotion has a real provenance to carry). Both derive from the same
  * recordReplySent attribution — no re-computation, no fabricated number.
+ * `alreadySent` is true when this call did NOT perform the send (the ticket was
+ * already delivered, or a concurrent approve won the race) — the cockpit still
+ * copies the stored reply and shows the confirmation, but records nothing.
  */
 export async function approveSend(
   ticketId: string,
   approvedText?: string,
   channelOverride?: Ticket["channel"],
-): Promise<{ ticket: Ticket; editedRatio: number; canPromote: boolean } | { error: string }> {
+): Promise<
+  | { ticket: Ticket; editedRatio: number; canPromote: boolean; alreadySent: boolean }
+  | { error: string }
+> {
   const repos = getRepositories();
   const ticket = await repos.tickets.findById(ticketId);
   if (!ticket) return { error: "ticket not found" };
-  // Idempotent: an already-sent ticket must not re-send or emit a second
-  // reply_sent event on a retry (that would double-count the outcome ledger).
-  if (ticket.status === "sent") return { ticket, editedRatio: 0, canPromote: false };
-  const text = approvedText ?? ticket.draft?.text;
-  if (!text) return { error: "no draft to send" };
+  // Idempotent fast path: an already-sent ticket must not re-send or emit a
+  // second reply_sent event. Return the STORED reply so a double-click / retry
+  // still copies the same text and shows the confirmation.
+  if (ticket.status === "sent") {
+    return { ticket, editedRatio: 0, canPromote: false, alreadySent: true };
+  }
+  const baseText = approvedText ?? ticket.draft?.text;
+  if (!baseText) return { error: "no draft to send" };
 
+  const [merchant, order] = await Promise.all([
+    repos.merchants.findById(ticket.merchantId),
+    ticket.orderId ? repos.orders.findById(ticket.orderId) : Promise.resolve(null),
+  ]);
+  // A real merchant routes to the ManualAdapter (an honest record of the human
+  // paste); a demo merchant keeps the simulated MockAdapter send so the seeded
+  // walk is unchanged. A merchant that fails to resolve is treated as demo (the
+  // safe, side-effect-free path).
+  const isDemo = !merchant || merchant.isDemo || merchant.helpdesk === "mock";
   const channel = channelOverride ?? ticket.channel;
-  const adapter = getSendAdapter(channel);
-  const { externalId, sentAt } = await adapter.sendReply(ticketId, text);
+  const adapter = getSendAdapter(channel, isDemo);
+  const { externalId, sentAt } = await adapter.sendReply(ticketId, baseText);
 
+  // The delivered reply = the operator's approved text PLUS the customer's status
+  // link. The link is appended here, after the edit is captured, so the outcome
+  // ledger below measures only the operator's edit — not the appended link.
+  const sentText = withStatusLink(baseText, order);
   const firstResponseSec = Math.max(
     0,
     Math.round((new Date(sentAt).getTime() - new Date(ticket.createdAt).getTime()) / 1000),
   );
 
-  const updated = await repos.tickets.update(ticketId, {
+  // EN-09/PR-10 — atomic claim: transition to "sent" ONLY if the ticket hasn't
+  // already been sent. A second concurrent approve (double-click / two tabs)
+  // finds status === "sent" here, gets null, and is rejected — no double-send.
+  const updated = await repos.tickets.compareAndSetStatus(ticketId, SENDABLE_STATUSES, {
     status: "sent",
-    sent: { text, approvedBy: process.env.DEMO_OPERATOR_NAME ?? "Dylan", sentAt, externalId },
+    sent: { text: sentText, approvedBy: process.env.DEMO_OPERATOR_NAME ?? "Dylan", sentAt, externalId },
     firstResponseSec,
   });
+  if (!updated) {
+    // Lost the race: another approve already claimed this ticket. Return its
+    // stored reply as an already-sent result; do NOT record a second outcome.
+    const current = await repos.tickets.findById(ticketId);
+    return current
+      ? { ticket: current, editedRatio: 0, canPromote: false, alreadySent: true }
+      : { error: "ticket not found" };
+  }
 
-  // Outcome ledger (ADR-0007): stamp a reply_sent event attributed to the draft's
-  // variant, with meta.editedRatio measuring the operator's edit. Awaited so a
-  // same-request read observes it, but non-blocking on failure (see helper).
-  const attribution = await recordReplySent(repos, ticket, text);
+  // Outcome ledger (ADR-0007): the WINNER stamps exactly one reply_sent event
+  // attributed to the draft's variant, meta.editedRatio measuring the operator's
+  // edit (against the base text, link excluded). Awaited so a same-request read
+  // observes it, non-blocking on failure (see helper).
+  const attribution = await recordReplySent(repos, ticket, baseText);
 
   return {
     ticket: updated,
@@ -586,6 +643,7 @@ export async function approveSend(
     // Offer the promote flow only when the edit is meaningful AND the reply had a
     // real parent variant to promote from (attribution !== null).
     canPromote: attribution != null && attribution.editedRatio > PROMOTE_THRESHOLD,
+    alreadySent: false,
   };
 }
 

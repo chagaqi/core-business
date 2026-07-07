@@ -181,6 +181,21 @@ const tickets: TicketRepository = {
   async update(id, p) {
     return updateById<Ticket>("tickets", id, p);
   },
+  async compareAndSetStatus(id, fromStatuses, p) {
+    // A single atomic findOneAndUpdate gated on { id, status: { $in } }: the DB
+    // matches-and-sets in one operation, so a concurrent approve that already
+    // moved the ticket to "sent" finds no match here and returns null. Mirrors
+    // updateById's undefined-stripping so the $set matches the JSON driver.
+    const c = await col<Ticket>("tickets");
+    const set: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(p)) if (v !== undefined) set[k] = v;
+    const doc = await c.findOneAndUpdate(
+      { id, status: { $in: fromStatuses } } as Filter<Ticket>,
+      { $set: set as MatchKeysAndValues<Ticket> },
+      { returnDocument: "after", projection: { _id: 0 } },
+    );
+    return (doc as Ticket | null) ?? null;
+  },
 };
 
 const gifts: GiftRepository = {

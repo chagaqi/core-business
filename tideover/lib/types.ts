@@ -13,7 +13,10 @@
  */
 
 // ─── enums ──────────────────────────────────────────────────────────────
-export type Channel = "mock" | "gorgias" | "tidio" | "intercom" | "email";
+// "manual" is not an inbound channel — it's the honest SEND strategy for a real
+// merchant with no write-back integration yet (the operator copies the reply and
+// pastes it into their own helpdesk). Inbound never arrives as "manual".
+export type Channel = "mock" | "gorgias" | "tidio" | "intercom" | "email" | "manual";
 
 export type ProductionStageKey =
   | "sourcing"
@@ -233,7 +236,9 @@ export interface SentReply {
   text: string;
   approvedBy: string;
   sentAt: string;
-  externalId: string;
+  // null when the delivery carried no external id — e.g. the ManualAdapter, where
+  // the operator pastes the reply into their own helpdesk and no vendor assigns one.
+  externalId: string | null;
 }
 
 export interface Ticket {

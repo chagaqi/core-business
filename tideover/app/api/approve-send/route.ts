@@ -41,6 +41,12 @@ export async function POST(req: Request) {
     sentAt: result.ticket.sent?.sentAt,
     externalId: result.ticket.sent?.externalId,
     firstResponseSec: result.ticket.firstResponseSec,
+    // The delivered reply WITH the customer's status link appended — the exact
+    // text the cockpit copies to the clipboard for the operator to paste.
+    sentText: result.ticket.sent?.text,
+    // true when this call didn't perform the send (already delivered / lost a
+    // concurrent race). The cockpit still copies + confirms, but doesn't re-send.
+    alreadySent: result.alreadySent,
     // E4: measured operator edit + whether it clears the promote threshold (with a
     // real parent variant), so the cockpit can offer "save this edit as a variant".
     editedRatio: result.editedRatio,

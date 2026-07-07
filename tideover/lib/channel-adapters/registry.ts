@@ -5,11 +5,13 @@ import { GorgiasAdapter } from "@/lib/channel-adapters/GorgiasAdapter";
 import { TidioAdapter } from "@/lib/channel-adapters/TidioAdapter";
 import { IntercomAdapter } from "@/lib/channel-adapters/IntercomAdapter";
 import { EmailAdapter } from "@/lib/channel-adapters/EmailAdapter";
+import { ManualAdapter } from "@/lib/channel-adapters/ManualAdapter";
 
 /**
  * Adapter registry. Resolves a Channel to its adapter. The demo always operates
  * the MockAdapter for sending (native surface), while normalizeInbound/verify on
- * the real adapters document the bolt-on contract.
+ * the real adapters document the bolt-on contract. `manual` is the honest send
+ * strategy for a real merchant with no write-back integration yet.
  */
 const ADAPTERS: Record<Channel, ChannelAdapter> = {
   mock: new MockAdapter(),
@@ -17,6 +19,7 @@ const ADAPTERS: Record<Channel, ChannelAdapter> = {
   tidio: new TidioAdapter(),
   intercom: new IntercomAdapter(),
   email: new EmailAdapter(),
+  manual: new ManualAdapter(),
 };
 
 export function getAdapter(channel: Channel): ChannelAdapter {
@@ -24,12 +27,19 @@ export function getAdapter(channel: Channel): ChannelAdapter {
 }
 
 /**
- * In the seeded demo, outbound send always succeeds through the MockAdapter even
- * if a ticket's source channel is a (stubbed) real helpdesk — this lets the full
- * approve→send flow be demonstrated end-to-end without live vendor credentials.
+ * Resolve the adapter that actually delivers a reply.
+ *
+ * - Demo merchants keep the working MockAdapter: the seeded walk simulates a send
+ *   end-to-end with no vendor credentials, so the demo is unchanged.
+ * - A real merchant on a real helpdesk channel routes to the ManualAdapter — an
+ *   honest record of the reply the operator copies and pastes in themselves,
+ *   until a true write-back integration ships. (The real channel adapters still
+ *   throw NotImplementedError on send; they document the future bolt-on.)
+ * - A real merchant already on the native `mock` channel keeps the MockAdapter.
  */
-export function getSendAdapter(channel: Channel): ChannelAdapter {
+export function getSendAdapter(channel: Channel, isDemo: boolean): ChannelAdapter {
+  if (isDemo) return ADAPTERS.mock;
   const real = getAdapter(channel);
   if (real.name === "mock") return real;
-  return process.env.DEMO_FORCE_MOCK_SEND === "false" ? real : ADAPTERS.mock;
+  return ADAPTERS.manual;
 }

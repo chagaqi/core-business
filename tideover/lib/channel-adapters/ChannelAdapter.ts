@@ -35,8 +35,12 @@ export interface ChannelAdapter {
   readonly name: Channel;
   /** read tickets (baseline snapshot + live queue) */
   listTickets(merchantId: string, range?: DateRange): Promise<Ticket[]>;
-  /** send an approved reply out through the channel */
-  sendReply(ticketId: string, text: string): Promise<{ externalId: string; sentAt: string }>;
+  /**
+   * Send an approved reply out through the channel. `externalId` is the vendor's
+   * id for the delivered message, or null when the strategy assigns none (the
+   * ManualAdapter — the operator pastes the reply into their own helpdesk).
+   */
+  sendReply(ticketId: string, text: string): Promise<{ externalId: string | null; sentAt: string }>;
   /** normalize an inbound webhook payload to our shape */
   normalizeInbound(raw: unknown): NormalizedTicket;
   /**
