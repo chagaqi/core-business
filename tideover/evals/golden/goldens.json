@@ -17,7 +17,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": "gft_ctzt2e9m1yc5",
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Sofia"
       ],
@@ -101,7 +101,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Aisha"
       ],
@@ -129,7 +129,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Greta"
       ],
@@ -185,7 +185,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Mara"
       ],
@@ -213,7 +213,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Tomás"
       ],
@@ -297,7 +297,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Chen"
       ],
@@ -325,7 +325,7 @@
       "priority": "normal",
       "riskBand": "watch",
       "topDriver": "long time already waiting",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Greta"
       ],
@@ -353,7 +353,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Noor"
       ],
@@ -381,7 +381,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Chen"
       ],
@@ -437,7 +437,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Tomás"
       ],
@@ -493,7 +493,7 @@
       "priority": "normal",
       "riskBand": "watch",
       "topDriver": "long time already waiting",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Greta"
       ],
@@ -521,7 +521,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Noor"
       ],
@@ -549,7 +549,7 @@
       "priority": "escalated",
       "riskBand": "standard",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Dana"
       ],
@@ -577,7 +577,7 @@
       "priority": "normal",
       "riskBand": "watch",
       "topDriver": "high order value at stake",
-      "giftId": "gft_c3ox3a0gfjib",
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Chen"
       ],
@@ -605,7 +605,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "high order value at stake",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Rosa"
       ],
@@ -661,7 +661,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Liam"
       ],
@@ -689,7 +689,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "asking repeatedly",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Liam"
       ],
@@ -717,7 +717,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Mara"
       ],
@@ -745,7 +745,7 @@
       "priority": "normal",
       "riskBand": "watch",
       "topDriver": "high order value at stake",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Mara"
       ],
@@ -773,7 +773,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Mara"
       ],
@@ -801,7 +801,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "long time already waiting",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Greta"
       ],
@@ -857,7 +857,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_3nrvh9dolwps",
       "mustContain": [
         "Kwame"
       ],
@@ -885,7 +885,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "high order value at stake",
-      "giftId": null,
+      "giftId": "gft_uz7g4lx577xh",
       "mustContain": [
         "Mara"
       ],
@@ -913,7 +913,7 @@
       "priority": "escalated",
       "riskBand": "standard",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_3nrvh9dolwps",
       "mustContain": [
         "Kwame"
       ],
@@ -941,7 +941,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_3nrvh9dolwps",
       "mustContain": [
         "Greta"
       ],
@@ -997,7 +997,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_3nrvh9dolwps",
       "mustContain": [
         "Mara"
       ],
@@ -1053,7 +1053,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_3nrvh9dolwps",
       "mustContain": [
         "Mara"
       ],
@@ -1081,7 +1081,7 @@
       "priority": "escalated",
       "riskBand": "watch",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_3nrvh9dolwps",
       "mustContain": [
         "Greta"
       ],
@@ -1137,7 +1137,7 @@
       "priority": "normal",
       "riskBand": "watch",
       "topDriver": "high order value at stake",
-      "giftId": null,
+      "giftId": "gft_3nrvh9dolwps",
       "mustContain": [
         "Otto"
       ],
@@ -1165,7 +1165,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "long time already waiting",
-      "giftId": null,
+      "giftId": "gft_uz7g4lx577xh",
       "mustContain": [
         "Hassan"
       ],
@@ -1277,7 +1277,7 @@
       "priority": "normal",
       "riskBand": "watch",
       "topDriver": "high order value at stake",
-      "giftId": null,
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Mara"
       ],
@@ -1305,7 +1305,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "frustrated tone",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Mara"
       ],
@@ -1389,7 +1389,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "asking repeatedly",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Liam"
       ],
@@ -1445,7 +1445,7 @@
       "priority": "normal",
       "riskBand": "watch",
       "topDriver": "high order value at stake",
-      "giftId": "gft_c3ox3a0gfjib",
+      "giftId": "gft_wj9bznuqh5q1",
       "mustContain": [
         "Chen"
       ],
@@ -1501,7 +1501,7 @@
       "priority": "normal",
       "riskBand": "standard",
       "topDriver": "asking repeatedly",
-      "giftId": null,
+      "giftId": "gft_c3ox3a0gfjib",
       "mustContain": [
         "Liam"
       ],

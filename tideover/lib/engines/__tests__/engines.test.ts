@@ -96,17 +96,18 @@ test("refund-risk: chargeback threat scores higher than calm", () => {
   assert.ok(cb.priorityRank < calm.priorityRank);
 });
 
-test("gift gate: recommends for high-LTV deep-wait, declines for low-LTV", () => {
+test("gift unlock: risk band picks the best unlocked tier; LTV no longer gates", () => {
   const catalog: Gift[] = [
-    { id: "gft_a", merchantId: "mch_t", name: "Priority dispatch", kind: "priority-dispatch", costCents: 1200, perceivedValueCents: 6000, eligibility: { minLtvCents: 50000, minWaitDays: 45, minRiskScore: 50 } },
-    { id: "gft_b", merchantId: "mch_t", name: "Founder note", kind: "founder-note", costCents: 500, perceivedValueCents: 3000, eligibility: { minLtvCents: 0, minWaitDays: 45, minRiskScore: 50 } },
+    { id: "gft_a", merchantId: "mch_t", name: "Priority dispatch", kind: "priority-dispatch", tier: "mid", costCents: 1200, perceivedValueCents: 6000, eligibility: { minLtvCents: 50000, minWaitDays: 45, minRiskScore: 50 } },
+    { id: "gft_b", merchantId: "mch_t", name: "Founder note", kind: "founder-note", tier: "mid", costCents: 500, perceivedValueCents: 3000, eligibility: { minLtvCents: 0, minWaitDays: 45, minRiskScore: 50 } },
   ];
-  const yes = recommendGift({ customer, order: orderDaysAgo(50), daysInWait: 50, riskScore: 70, highTierCents: 50000, catalog });
-  assert.ok(yes.gift);
-  assert.equal(yes.gift?.id, "gft_a");
-  const lowLtv = { ...customer, ltvCents: 1000 };
-  const no = recommendGift({ customer: lowLtv, order: orderDaysAgo(50), daysInWait: 50, riskScore: 70, highTierCents: 50000, catalog });
-  assert.equal(no.gift, null);
+  // watch band (score ≥ 50) unlocks mid — best perceived value wins, regardless of LTV.
+  const watch = recommendGift({ riskScore: 70, escalated: false, catalog, daysInWait: 0 });
+  assert.ok(watch.gift);
+  assert.equal(watch.gift?.id, "gft_a");
+  // standard band (score < 50) unlocks only base — this catalog has no base gift, so nothing is offered.
+  const standard = recommendGift({ riskScore: 10, escalated: false, catalog, daysInWait: 0 });
+  assert.equal(standard.gift, null);
 });
 
 test("social-signal flags negative brand mention, ignores noise", () => {

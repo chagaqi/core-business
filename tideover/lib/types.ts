@@ -47,6 +47,13 @@ export type GiftKind =
   | "digital-perk"
   | "next-order-credit";
 
+/**
+ * Unlock tier (UX-86, Dylan D-GIFT model). A gift is available iff its tier is
+ * unlocked for the customer's refund-risk band (standard→base, watch→base+mid,
+ * at_risk|escalated→base+mid+full). LTV is no longer a gate — it feeds priority.
+ */
+export type GiftTier = "base" | "mid" | "full";
+
 export type DraftedBy = "deterministic" | "llm";
 
 export type LtvTierKey = "standard" | "high" | "vip";
@@ -266,8 +273,14 @@ export interface Gift {
   merchantId: string;
   name: string;
   kind: GiftKind;
+  /** unlock tier — availability is gated on this + the customer's risk band. */
+  tier: GiftTier;
   costCents: number;
   perceivedValueCents: number;
+  /**
+   * Retained for the ticket gift panel + future tuning. The ENGINE no longer
+   * gates on these (LTV gate dropped, UX-86): availability is tier-vs-band.
+   */
   eligibility: {
     minLtvCents: number;
     minWaitDays: number;

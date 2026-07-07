@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getRepositories } from "@/lib/repositories";
 import { computeTimeline } from "@/lib/time";
-import { recommendGift, scoreRefundRisk, stageCeilDayFor } from "@/lib/engines";
+import { isEscalatedSentiment, recommendGift, scoreRefundRisk, stageCeilDayFor } from "@/lib/engines";
 import { ticketsLast7dFor } from "@/lib/service";
 
 /** GET /api/gift-catalog/[customerId] — recommended gift for a customer. */
@@ -30,12 +30,10 @@ export async function GET(_req: Request, { params }: { params: { customerId: str
   });
 
   const rec = recommendGift({
-    customer,
-    order,
-    daysInWait: timeline.daysInWait,
     riskScore: risk.riskScore,
-    highTierCents: merchant.ltvTiers.high,
+    escalated: isEscalatedSentiment(customer.lastSentiment),
     catalog,
+    daysInWait: timeline.daysInWait,
   });
 
   return NextResponse.json({

@@ -11,7 +11,7 @@
  * Fails loudly with the exact input on any violation; exits nonzero. Pure calls,
  * no I/O beyond reading the seed once — runs in well under 2s.
  */
-import { computeTicketIntelligence } from "@/lib/engines/index";
+import { computeTicketIntelligence, ltvPriorityBoost } from "@/lib/engines/index";
 import { scoreFeed, DEFAULT_SOCIAL_CONFIG } from "@/lib/engines/social-signal";
 import { containsHardDate } from "@/lib/proof";
 import {
@@ -36,8 +36,9 @@ const VALID_DAY_STAGES = new Set(["day-7", "day-30", "day-60", "day-89"]);
 const seed = loadSeed();
 
 // ── representative shapes: min / median / max LTV customer per merchant, each
-// with a real owned order. This spans the gift LTV gate (below-high, high, vip)
-// and varies order value + region + group with real seed data. ──────────────
+// with a real owned order. Spans the LTV range (which now feeds the priority
+// boost, not the gift gate) and varies order value + region + group with real
+// seed data. ────────────────────────────────────────────────────────────────
 function pickShapes() {
   const shapes = [];
   for (const merchant of seed.merchants) {
@@ -77,7 +78,6 @@ function check(cond, ctx, msg) {
 // ── per-ticket engine sweep ────────────────────────────────────────────────
 for (const shape of shapes) {
   const { merchant, customer, catalog } = shape;
-  const highTier = merchant.ltvTiers.high;
 
   // Non-vacuous banned-word proof (once per shape). The seed templates contain
   // no banned word, so the main-loop banned check alone can never exercise
@@ -181,36 +181,46 @@ for (const shape of shapes) {
           );
           check(VALID_RISK_BANDS.has(risk.band), ctx, `invalid risk band: ${risk.band}`);
           check(VALID_RISK_COLORS.has(risk.color), ctx, `invalid risk color: ${risk.color}`);
-          // priorityRank = (escalated?0:1000) + (1000 - score); score∈[0,100].
-          const rankLo = shouldEscalate ? 900 : 1900;
-          const rankHi = shouldEscalate ? 1000 : 2000;
+          // priorityRank = (escalated?0:1000) + (1000 - score) − LTV priority boost.
+          // The boost is priority-only (never touches score/band) and 0 for
+          // crowdfunding pledges — which every seed order is — so it re-derives
+          // here EXACTLY from ltvPriorityBoost, keeping the sweep authoritative.
+          const boost = ltvPriorityBoost(order, customer);
+          const baseRank = (shouldEscalate ? 0 : 1000) + (1000 - risk.riskScore);
           check(
-            risk.priorityRank >= rankLo && risk.priorityRank <= rankHi,
+            risk.priorityRank === baseRank - boost,
             ctx,
-            `priorityRank out of expected band: ${risk.priorityRank}`,
+            `priorityRank mismatch: got=${risk.priorityRank} expected=${baseRank - boost} (boost=${boost})`,
           );
           check(VALID_DAY_STAGES.has(reassurance.stageKey), ctx, `invalid stageKey: ${reassurance.stageKey}`);
 
-          // 7. gift recommended IFF the LTV/wait/risk gate passes AND a catalog
-          //    gift is eligible. Gate re-derived from gift.ts; both directions.
-          const highValue = customer.ltvCents >= highTier;
-          const deepWait = days >= 45;
-          const elevatedRisk = risk.riskScore >= 60;
-          const gatePass = highValue && (deepWait || elevatedRisk);
-          const eligibleExists = catalog.some(
-            (g) =>
-              g.eligibility.minLtvCents <= customer.ltvCents &&
-              g.eligibility.minWaitDays <= days &&
-              g.eligibility.minRiskScore <= risk.riskScore,
-          );
-          const expectRecommend = gatePass && eligibleExists;
+          // 7. a gift is PROACTIVELY recommended IFF (a) the customer's risk band
+          //    unlocks at least one catalog gift TIER (standard→base, watch→
+          //    base+mid, at_risk|escalated→base+mid+full; LTV no longer gates) AND
+          //    (b) a goodwill gesture is WARRANTED — escalated OR band watch/at_risk
+          //    OR daysInWait ≥ 45 (deep wait). A calm, standard-band, short-wait
+          //    ticket keeps its tier AVAILABLE but is NOT proactively recommended.
+          //    Re-derived independently here; both directions.
+          const unlockedTierSet =
+            shouldEscalate || risk.band === "at_risk"
+              ? new Set(["base", "mid", "full"])
+              : risk.band === "watch"
+                ? new Set(["base", "mid"])
+                : new Set(["base"]);
+          const unlockedGifts = catalog.filter((g) => unlockedTierSet.has(g.tier));
+          const warranted = shouldEscalate || risk.band !== "standard" || days >= 45;
+          const expectRecommend = unlockedGifts.length > 0 && warranted;
           check(
             (gift.gift !== null) === expectRecommend,
             ctx,
-            `gift decision mismatch: got=${gift.gift ? gift.gift.id : null} expectRecommend=${expectRecommend} (gate=${gatePass}, eligible=${eligibleExists})`,
+            `gift decision mismatch: got=${gift.gift ? gift.gift.id : null} expectRecommend=${expectRecommend} (band=${risk.band}, escalated=${shouldEscalate}, days=${days}, warranted=${warranted}, unlocked=${unlockedGifts.length})`,
           );
-          // direction A, explicit: a recommended gift implies the gate passed.
-          if (gift.gift !== null) check(gatePass, ctx, "gift recommended but gate did not pass");
+          // direction A, explicit: a recommended gift is itself an unlocked tier
+          // AND is only recommended when warranted.
+          if (gift.gift !== null) {
+            check(unlockedTierSet.has(gift.gift.tier), ctx, `recommended a locked-tier gift: ${gift.gift.tier}`);
+            check(warranted, ctx, `recommended a gift without a warrant (band=${risk.band}, escalated=${shouldEscalate}, days=${days})`);
+          }
         }
       }
     }

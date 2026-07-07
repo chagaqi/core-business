@@ -64,6 +64,21 @@ for (const t of tickets) {
   fk(`ticket ${t.id}.orderId`, t.orderId, oids);
 }
 for (const g of gifts) fk(`gift ${g.id}.merchantId`, g.merchantId, mids);
+
+// ── UX-86 gift tiers: every gift carries a valid unlock tier, and every merchant
+// keeps a sendable catalog — ≥1 base gift (so a standard-band customer always has
+// something unlocked) and ≥3 gifts total. ──
+const GIFT_TIERS = new Set(["base", "mid", "full"]);
+const giftsByMerchant = {};
+for (const g of gifts) {
+  if (!GIFT_TIERS.has(g.tier)) errors.push(`gift ${g.id}.tier: invalid (${g.tier})`);
+  (giftsByMerchant[g.merchantId] ??= []).push(g);
+}
+for (const m of merchants) {
+  const mg = giftsByMerchant[m.id] ?? [];
+  if (mg.length < 3) errors.push(`merchant ${m.id}: fewer than 3 gifts (${mg.length})`);
+  if (!mg.some((g) => g.tier === "base")) errors.push(`merchant ${m.id}: no base-tier gift (a standard-band customer would have nothing unlocked)`);
+}
 for (const s of social) fk(`social ${s.id}.merchantId`, s.merchantId, mids);
 // ADR-0005: every status-view FK must resolve, and the row must be well-formed.
 const svIds = new Set();

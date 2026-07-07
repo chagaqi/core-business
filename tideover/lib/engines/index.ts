@@ -3,6 +3,7 @@ import { computeTimeline } from "@/lib/time";
 import { draftReassurance, type ReassuranceResult } from "@/lib/engines/reassurance";
 import {
   DEFAULT_PROFILE,
+  isEscalatedSentiment,
   scoreRefundRisk,
   stageCeilDayFor,
   type RiskProfile,
@@ -13,6 +14,7 @@ import { recommendGift, type GiftResult } from "@/lib/engines/gift";
 export * from "@/lib/engines/reassurance";
 export * from "@/lib/engines/refund-risk";
 export * from "@/lib/engines/gift";
+export * from "@/lib/engines/risk-bands";
 export * from "@/lib/engines/social-signal";
 
 /**
@@ -66,12 +68,10 @@ export function computeTicketIntelligence(input: IntelInput): TicketIntelligence
   });
 
   const gift = recommendGift({
-    customer,
-    order,
-    daysInWait: timeline.daysInWait,
     riskScore: risk.riskScore,
-    highTierCents: merchant.ltvTiers.high,
+    escalated: isEscalatedSentiment(ticket.sentiment),
     catalog,
+    daysInWait: timeline.daysInWait,
   });
 
   return { risk, reassurance, gift };

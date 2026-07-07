@@ -4,6 +4,7 @@
     "merchantId": "mch_lumen0001",
     "name": "Early access to the next drop",
     "kind": "early-access",
+    "tier": "base",
     "costCents": 0,
     "perceivedValueCents": 4000,
     "eligibility": {
@@ -17,6 +18,7 @@
     "merchantId": "mch_lumen0001",
     "name": "Handwritten founder note",
     "kind": "founder-note",
+    "tier": "mid",
     "costCents": 500,
     "perceivedValueCents": 3000,
     "eligibility": {
@@ -30,6 +32,7 @@
     "merchantId": "mch_lumen0001",
     "name": "Priority dispatch (first out the door)",
     "kind": "priority-dispatch",
+    "tier": "mid",
     "costCents": 1200,
     "perceivedValueCents": 6000,
     "eligibility": {
@@ -43,6 +46,7 @@
     "merchantId": "mch_lumen0001",
     "name": "Digital perk pack (wallpapers + guide)",
     "kind": "digital-perk",
+    "tier": "base",
     "costCents": 0,
     "perceivedValueCents": 2000,
     "eligibility": {
@@ -56,6 +60,7 @@
     "merchantId": "mch_lumen0001",
     "name": "$25 next-order credit",
     "kind": "next-order-credit",
+    "tier": "full",
     "costCents": 2500,
     "perceivedValueCents": 2500,
     "eligibility": {
@@ -69,6 +74,7 @@
     "merchantId": "mch_atelier02",
     "name": "Early access to the next drop",
     "kind": "early-access",
+    "tier": "base",
     "costCents": 0,
     "perceivedValueCents": 4000,
     "eligibility": {
@@ -82,6 +88,7 @@
     "merchantId": "mch_atelier02",
     "name": "Handwritten founder note",
     "kind": "founder-note",
+    "tier": "mid",
     "costCents": 500,
     "perceivedValueCents": 3000,
     "eligibility": {
@@ -95,6 +102,7 @@
     "merchantId": "mch_atelier02",
     "name": "Priority dispatch (first out the door)",
     "kind": "priority-dispatch",
+    "tier": "mid",
     "costCents": 1200,
     "perceivedValueCents": 6000,
     "eligibility": {
@@ -108,6 +116,7 @@
     "merchantId": "mch_atelier02",
     "name": "Digital perk pack (wallpapers + guide)",
     "kind": "digital-perk",
+    "tier": "base",
     "costCents": 0,
     "perceivedValueCents": 2000,
     "eligibility": {
@@ -121,6 +130,7 @@
     "merchantId": "mch_atelier02",
     "name": "$25 next-order credit",
     "kind": "next-order-credit",
+    "tier": "full",
     "costCents": 2500,
     "perceivedValueCents": 2500,
     "eligibility": {

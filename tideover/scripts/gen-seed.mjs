@@ -218,12 +218,15 @@ const merchants = [
 ];
 
 // ── gifts (5 per merchant) ──
+// tier (UX-86): base = always available; mid = watch-risk+; full = high-risk/escalated.
+// Low-cost goodwill is base; the priority-dispatch / founder touch is mid; the
+// hard-money next-order credit is reserved for full (highest risk / escalation).
 const giftKinds = [
-  { kind: "early-access", name: "Early access to the next drop", cost: 0, pv: 4000, minLtv: 0, minWait: 30, minRisk: 40 },
-  { kind: "founder-note", name: "Handwritten founder note", cost: 500, pv: 3000, minLtv: 0, minWait: 45, minRisk: 50 },
-  { kind: "priority-dispatch", name: "Priority dispatch (first out the door)", cost: 1200, pv: 6000, minLtv: 50000, minWait: 45, minRisk: 60 },
-  { kind: "digital-perk", name: "Digital perk pack (wallpapers + guide)", cost: 0, pv: 2000, minLtv: 0, minWait: 7, minRisk: 30 },
-  { kind: "next-order-credit", name: "$25 next-order credit", cost: 2500, pv: 2500, minLtv: 60000, minWait: 60, minRisk: 65 },
+  { kind: "early-access", tier: "base", name: "Early access to the next drop", cost: 0, pv: 4000, minLtv: 0, minWait: 30, minRisk: 40 },
+  { kind: "founder-note", tier: "mid", name: "Handwritten founder note", cost: 500, pv: 3000, minLtv: 0, minWait: 45, minRisk: 50 },
+  { kind: "priority-dispatch", tier: "mid", name: "Priority dispatch (first out the door)", cost: 1200, pv: 6000, minLtv: 50000, minWait: 45, minRisk: 60 },
+  { kind: "digital-perk", tier: "base", name: "Digital perk pack (wallpapers + guide)", cost: 0, pv: 2000, minLtv: 0, minWait: 7, minRisk: 30 },
+  { kind: "next-order-credit", tier: "full", name: "$25 next-order credit", cost: 2500, pv: 2500, minLtv: 60000, minWait: 60, minRisk: 65 },
 ];
 const gifts = [];
 for (const m of merchants) {
@@ -235,6 +238,7 @@ for (const m of merchants) {
       merchantId: m.id,
       name: g.name,
       kind: g.kind,
+      tier: g.tier,
       costCents: g.cost,
       perceivedValueCents: g.pv,
       eligibility: { minLtvCents: g.minLtv, minWaitDays: g.minWait, minRiskScore: g.minRisk },
