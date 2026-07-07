@@ -14,6 +14,7 @@ import { getSendAdapter } from "@/lib/channel-adapters/registry";
 import { computeDisputeExposure, type DisputeExposure } from "@/lib/dispute-exposure";
 import { computeSlaAttainment, ticketSlaState, type SlaAttainment } from "@/lib/sla";
 import { formatEscalationTag, isEscalationTag, isFlagged } from "@/lib/escalation";
+import { isBaselineMeasured } from "@/lib/baseline";
 import { containsHardDate } from "@/lib/proof";
 import { computeSetupChecklist, type SetupChecklist } from "@/lib/setup";
 import {
@@ -793,7 +794,17 @@ export async function getQueue(merchantId: string, now: Date = new Date()): Prom
 /** Merchant refund-risk dashboard view model — all proof-only (deltas vs baseline). */
 export interface DashboardView {
   merchant: Merchant;
-  baseline: Merchant["baseline"];
+  /**
+   * The merchant's own day-0 baseline. medianFrtSec / wismoPer100Orders are
+   * widened to `number | null`: a freshly-onboarded merchant carries an all-zero
+   * baseline (the unset sentinel), and surfacing that as "baseline 0s" would be a
+   * proof-only lie. getDashboard nulls those two when the baseline is unmeasured,
+   * so the dashboard renders no baseline sublabel/delta instead of a fabricated 0.
+   */
+  baseline: Omit<Merchant["baseline"], "medianFrtSec" | "wismoPer100Orders"> & {
+    medianFrtSec: number | null;
+    wismoPer100Orders: number | null;
+  };
   live: {
     medianFrtSec: number | null;
     wismoPer100Orders: number;
@@ -883,9 +894,18 @@ export async function getDashboard(merchantId: string, now: Date = new Date()): 
     if (isFlagged(r.ticket.tags)) flagged += 1;
   }
 
+  // Proof-only: a fresh merchant's all-zero baseline is the unset sentinel, not a
+  // real reading of zero — null those two metrics so the dashboard shows no
+  // "baseline 0s" sublabel/delta. A measured (e.g. demo) baseline is unchanged.
+  const baselineMeasured = isBaselineMeasured(merchant.baseline);
+
   return {
     merchant,
-    baseline: merchant.baseline,
+    baseline: {
+      ...merchant.baseline,
+      medianFrtSec: baselineMeasured ? merchant.baseline.medianFrtSec : null,
+      wismoPer100Orders: baselineMeasured ? merchant.baseline.wismoPer100Orders : null,
+    },
     live: {
       medianFrtSec,
       wismoPer100Orders,

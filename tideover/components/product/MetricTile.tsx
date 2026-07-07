@@ -11,12 +11,16 @@ export function MetricTile({
   sublabel,
   delta,
   proof = false,
+  info,
 }: {
   label: string;
   value: ReactNode;
   sublabel?: ReactNode;
   delta?: { text: string; tone: "up" | "down" | "flat" };
   proof?: boolean;
+  /** Optional plain-language gloss shown as a hover/`title` tooltip on the label
+   *  (e.g. spelling out a jargon metric like WISMO). */
+  info?: string;
 }) {
   return (
     <div
@@ -25,7 +29,13 @@ export function MetricTile({
         proof && "bg-sand",
       )}
     >
-      <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-mute">
+      <span
+        title={info}
+        className={clsx(
+          "text-[11px] font-semibold uppercase tracking-wider text-ink-mute",
+          info && "cursor-help",
+        )}
+      >
         {label}
       </span>
       <span className="font-serif text-[30px] leading-none text-ink">{value}</span>

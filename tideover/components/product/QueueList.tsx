@@ -29,6 +29,13 @@ const GROUP_LABEL: Record<string, string> = {
   "new-preorder": "New preorder",
 };
 
+/** Worded risk severity (a11y): a non-color channel for the RiskBadge, so the
+ *  queue's risk signal isn't conveyed by hue alone. */
+function riskLabel(color: RiskColor, score: number): string {
+  const severity = color === "red" ? "High refund-risk" : color === "amber" ? "Watch" : "Standard";
+  return `${severity} (${score})`;
+}
+
 export function QueueList({
   rows,
   selectedId,
@@ -81,7 +88,9 @@ export function QueueList({
                       Escalated
                     </span>
                   ) : null}
-                  <RiskBadge color={r.color}>{r.riskScore}</RiskBadge>
+                  <RiskBadge color={r.color} title={riskLabel(r.color, r.riskScore)}>
+                    {r.riskScore}
+                  </RiskBadge>
                 </span>
               </div>
               <p className="mt-1 truncate text-[12px] text-slate">{r.subject}</p>

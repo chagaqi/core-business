@@ -26,6 +26,8 @@ const config: Config = {
         terracotta: "#D9762F",
         "terracotta-600": "#C25C29",
         "terracotta-300": "#E0833D",
+        "terracotta-700": "#B85422", // AA-safe terracotta for small-text labels
+
         tan: "#E9B486", // warm tan, dark-section emphasis
 
         // ink / type

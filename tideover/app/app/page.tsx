@@ -28,9 +28,10 @@ const GROUP_LABEL: Record<string, string> = {
 /** whole-dollar money with thousands separators, e.g. 3512900 → "$35,129". */
 const dollars = (cents: number): string => `$${Math.round(cents / 100).toLocaleString("en-US")}`;
 
-/** Delta vs baseline for metrics where LOWER is better (FRT, WISMO). */
-function lowerIsBetterDelta(live: number | null, baseline: number) {
-  if (live == null || baseline === 0) return undefined;
+/** Delta vs baseline for metrics where LOWER is better (FRT, WISMO). A null
+ *  baseline (unmeasured — fresh merchant) yields no delta, never a fake "0". */
+function lowerIsBetterDelta(live: number | null, baseline: number | null) {
+  if (live == null || baseline == null || baseline === 0) return undefined;
   if (live === baseline) return { text: "flat vs baseline", tone: "flat" as const };
   const better = live < baseline;
   const pct = Math.round((Math.abs(live - baseline) / Math.max(1, baseline)) * 100);
@@ -133,7 +134,9 @@ export default async function DashboardPage({
           label="Median first response"
           value={formatFrt(live.medianFrtSec)}
           delta={lowerIsBetterDelta(live.medianFrtSec, baseline.medianFrtSec)}
-          sublabel={`baseline ${formatFrt(baseline.medianFrtSec)}`}
+          sublabel={
+            baseline.medianFrtSec != null ? `baseline ${formatFrt(baseline.medianFrtSec)}` : "no baseline yet"
+          }
         />
         <MetricTile
           proof
@@ -148,9 +151,12 @@ export default async function DashboardPage({
         <MetricTile
           proof
           label="WISMO / 100 orders"
+          info={'"where is my order?" tickets per 100 orders'}
           value={live.wismoPer100Orders}
           delta={lowerIsBetterDelta(live.wismoPer100Orders, baseline.wismoPer100Orders)}
-          sublabel={`baseline ${baseline.wismoPer100Orders}`}
+          sublabel={
+            baseline.wismoPer100Orders != null ? `baseline ${baseline.wismoPer100Orders}` : "no baseline yet"
+          }
         />
         <MetricTile
           proof
@@ -266,7 +272,8 @@ export default async function DashboardPage({
         {data.atRisk.length === 0 ? (
           <div className="proof-placeholder m-5">No at-risk customers right now.</div>
         ) : (
-          <table className="w-full text-left text-[14px]">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[640px] text-left text-[14px]">
             <thead>
               <tr className="border-b border-border text-[11px] uppercase tracking-wider text-ink-mute">
                 <th className="px-5 py-2.5 font-semibold">Customer</th>
@@ -298,12 +305,20 @@ export default async function DashboardPage({
                     {r.ticket.subject}
                   </td>
                   <td className="px-5 py-3 text-right">
-                    <RiskBadge color={r.color as RiskColor}>{r.riskScore}</RiskBadge>
+                    <RiskBadge
+                      color={r.color as RiskColor}
+                      title={`${
+                        r.color === "red" ? "High refund-risk" : r.color === "amber" ? "Watch" : "Standard"
+                      } (${r.riskScore})`}
+                    >
+                      {r.riskScore}
+                    </RiskBadge>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
 

@@ -30,7 +30,7 @@ const NAV_GROUPS: Array<{
     label: "Insights",
     items: [
       { href: "/app/customers", label: "Customers", hint: "LTV + risk" },
-      { href: "/app/forecast", label: "Forecast", hint: "WISMO load ahead" },
+      { href: "/app/forecast", label: "Forecast", hint: "WISMO (where-is-my-order) load ahead" },
       { href: "/app/scripts", label: "Scripts", hint: "Performance" },
       { href: "/app/social", label: "Social", hint: "Signal monitor" },
       { href: "/app/gifts", label: "Gifts", hint: "Goodwill engine" },
@@ -58,6 +58,12 @@ export function Sidebar({ operator, isDemo }: { operator: string; isDemo: boolea
   const merchant = params.get("merchant");
   const suffix = merchant ? `?merchant=${merchant}` : "";
   const [helpOpen, setHelpOpen] = useState(false);
+  // Mobile off-canvas drawer (below lg the sidebar is a fixed panel). Closes on
+  // any route change so tapping a nav item dismisses it.
+  const [mobileOpen, setMobileOpen] = useState(false);
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   // Live "N/5" setup badge, DERIVED from real state via /api/setup-status. Fail-
   // silent: if it hasn't loaded (or errors) the nav just shows no badge, never a
@@ -90,10 +96,57 @@ export function Sidebar({ operator, isDemo }: { operator: string; isDemo: boolea
   };
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-paper">
-      <div className="border-b border-border px-5 py-5">
+    <>
+      {/* Mobile top bar (below lg): in-flow above the page, holds the logo + a
+          menu button that opens the drawer. Hidden at lg where the aside is a
+          static column. */}
+      <div className="flex items-center justify-between border-b border-border bg-paper px-4 py-3 lg:hidden">
         <Logo href={`/app${suffix}`} />
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          aria-label="Open navigation menu"
+          aria-expanded={mobileOpen}
+          aria-controls="app-sidebar"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-ink hover:bg-sand"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <path d="M3 6h18M3 12h18M3 18h18" />
+          </svg>
+        </button>
       </div>
+
+      {/* Scrim behind the open drawer (mobile only). */}
+      {mobileOpen ? (
+        <div
+          className="fixed inset-0 z-40 bg-ink/40 lg:hidden"
+          aria-hidden="true"
+          onClick={() => setMobileOpen(false)}
+        />
+      ) : null}
+
+      <aside
+        id="app-sidebar"
+        className={clsx(
+          "flex w-60 shrink-0 flex-col overflow-y-auto border-r border-border bg-paper",
+          // Off-canvas drawer below lg; static in-flow column at lg+.
+          "fixed inset-y-0 left-0 z-50 transition-transform duration-200 lg:static lg:z-auto lg:translate-x-0 lg:transition-none",
+          mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
+        )}
+      >
+        <div className="flex items-center justify-between border-b border-border px-5 py-5">
+          <Logo href={`/app${suffix}`} />
+          <button
+            type="button"
+            onClick={() => setMobileOpen(false)}
+            aria-label="Close navigation menu"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-ink-mute hover:bg-sand hover:text-ink lg:hidden"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
       <nav className="flex flex-1 flex-col gap-3 p-3">
         {NAV_GROUPS.map((group, groupIndex) => (
@@ -173,7 +226,7 @@ export function Sidebar({ operator, isDemo }: { operator: string; isDemo: boolea
           <button
             type="button"
             onClick={handleSignOut}
-            className="font-medium text-terracotta underline-offset-2 hover:underline"
+            className="font-medium text-terracotta-700 underline-offset-2 hover:underline"
           >
             Sign out
           </button>
@@ -203,6 +256,7 @@ export function Sidebar({ operator, isDemo }: { operator: string; isDemo: boolea
           </p>
         ) : null}
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }

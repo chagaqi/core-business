@@ -133,7 +133,10 @@ export default async function InboxPage({
   const queueCleared = items.length === 0;
 
   return (
-    <div className="flex h-screen flex-col">
+    // Mobile: natural height so the whole shell scrolls with the page (the stacked
+    // rail is reachable). Desktop: fixed-height cockpit with independently
+    // scrolling columns (unchanged).
+    <div className="flex min-h-screen flex-col lg:h-screen">
       <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-border bg-paper px-5 py-3">
         <div>
           <p className="kicker">Operator inbox</p>
@@ -145,9 +148,13 @@ export default async function InboxPage({
         />
       </header>
 
-      <div className="grid min-h-0 flex-1 grid-cols-[300px_minmax(0,1fr)_360px]">
+      {/* Responsive shell: below lg the three columns stack and the whole shell
+          scrolls (so the Send rail is always reachable — it used to clip off a
+          fixed 3-col grid on narrow laptops/tablets); at lg+ it's the original
+          3-col grid with each column scrolling independently. */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto lg:grid-cols-[300px_minmax(0,1fr)_360px] lg:overflow-hidden">
         {/* LEFT — priority queue */}
-        <div className="min-h-0 overflow-y-auto border-r border-border bg-paper">
+        <div className="border-b border-border bg-paper lg:min-h-0 lg:overflow-y-auto lg:border-b-0 lg:border-r">
           <div className="sticky top-0 z-10 border-b border-border bg-paper px-4 py-2.5">
             <div className="flex items-center justify-between">
               <span className="text-[12px] font-semibold uppercase tracking-wider text-ink-mute">
@@ -170,7 +177,7 @@ export default async function InboxPage({
         </div>
 
         {/* CENTER — ticket detail */}
-        <div className="min-h-0 overflow-y-auto px-6 py-5">
+        <div className="px-6 py-5 lg:min-h-0 lg:overflow-y-auto">
           {!view ? (
             queueCleared ? (
               <div className="mx-auto mt-16 flex max-w-[320px] flex-col items-center gap-3 text-center">
@@ -225,7 +232,11 @@ export default async function InboxPage({
                   label="Stage"
                   value={STAGE_LABEL[view.order.productionStage] ?? view.order.productionStage}
                 />
-                <DetailStat label="Customer LTV" value={dollars(view.customer.ltvCents)} />
+                <DetailStat
+                  label="Pledge value"
+                  value={dollars(view.customer.ltvCents)}
+                  info="Pledge value — total this backer has spent"
+                />
               </div>
 
               <div className="panel p-4">
@@ -258,7 +269,7 @@ export default async function InboxPage({
         </div>
 
         {/* RIGHT — draft rail + gift */}
-        <div className="min-h-0 overflow-y-auto border-l border-border bg-sand px-4 py-5">
+        <div className="border-t border-border bg-sand px-4 py-5 lg:min-h-0 lg:overflow-y-auto lg:border-l lg:border-t-0">
           {!view ? (
             <div className="proof-placeholder">
               {queueCleared ? "Nothing to draft — queue clear." : "No ticket selected."}
@@ -279,6 +290,9 @@ export default async function InboxPage({
                 managerNote={view.intel.reassurance.managerNote}
                 overdue={view.intel.reassurance.overdue}
                 alreadySent={view.ticket.status === "sent"}
+                // F/UX-10 (4b): the persisted operator follow-up flag, so the
+                // action reflects "Flagged — undo" on load, not a stale "Flag".
+                flagged={isFlagged(view.ticket.tags)}
                 sentText={view.ticket.sent?.text ?? null}
                 firstName={view.customer.firstName}
                 firstResponseSec={view.ticket.firstResponseSec}
@@ -304,10 +318,15 @@ export default async function InboxPage({
   );
 }
 
-function DetailStat({ label, value }: { label: string; value: string }) {
+function DetailStat({ label, value, info }: { label: string; value: string; info?: string }) {
   return (
     <div className="panel p-3">
-      <div className="text-[11px] uppercase tracking-wider text-ink-mute">{label}</div>
+      <div
+        title={info}
+        className={`text-[11px] uppercase tracking-wider text-ink-mute${info ? " cursor-help" : ""}`}
+      >
+        {label}
+      </div>
       <div className="mt-0.5 text-[15px] font-semibold text-ink">{value}</div>
     </div>
   );

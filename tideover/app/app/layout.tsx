@@ -23,7 +23,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const operator = getDemoOperator(merchants[0]?.name);
   const demo = isDemoMode();
   return (
-    <div className="flex min-h-screen bg-sand">
+    // Stack on narrow widths (Sidebar renders its own mobile top bar + drawer),
+    // restore the fixed sidebar + main row at lg. Desktop layout is unchanged.
+    <div className="flex min-h-screen flex-col bg-sand lg:flex-row">
       <Sidebar operator={operator} isDemo={demo} />
       <main className="min-w-0 flex-1">{children}</main>
       {demo && <DemoBadge />}

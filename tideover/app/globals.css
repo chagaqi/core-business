@@ -18,6 +18,10 @@
   --terracotta: #d9762f;
   --terracotta-600: #c25c29;
   --terracotta-300: #e0833d;
+  /* darkest terracotta — still the action hue, but dark enough to clear WCAG AA
+     (~4.8:1 on white) as small text; used where terracotta sits as a 12px label
+     (e.g. the sidebar Sign out link). */
+  --terracotta-700: #b85422;
   --tan: #e9b486;
 
   /* caution / watch — a warm gold, deliberately distinct from terracotta (which

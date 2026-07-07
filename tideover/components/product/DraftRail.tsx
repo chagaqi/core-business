@@ -28,6 +28,7 @@ export function DraftRail({
   managerNote,
   overdue,
   alreadySent,
+  flagged,
   sentText,
   firstName,
   firstResponseSec,
@@ -43,6 +44,9 @@ export function DraftRail({
   managerNote: string | null;
   overdue: boolean;
   alreadySent: boolean;
+  /** F/UX-10 (4b): the ticket's persisted operator follow-up flag, so the
+   *  approval action reflects the flagged state on first paint. */
+  flagged: boolean;
   sentText: string | null;
   firstName: string;
   firstResponseSec: number | null;
@@ -220,6 +224,7 @@ export function DraftRail({
         ticketId={ticketId}
         getText={() => textRef.current}
         alreadySent={alreadySent}
+        initialFlagged={flagged}
         blocked={blocked}
         firstResponseSec={firstResponseSec}
         merchantId={merchantId}

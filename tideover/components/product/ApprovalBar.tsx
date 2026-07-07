@@ -37,6 +37,9 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
   ticketId: string;
   getText: () => string;
   alreadySent: boolean;
+  /** F/UX-10 (4a): the ticket's persisted follow-up flag, so the action shows
+   *  "Flagged — undo" on load instead of a stale "Flag for follow-up". */
+  initialFlagged: boolean;
   blocked: boolean;
   firstResponseSec: number | null;
   merchantId: string;
@@ -52,6 +55,7 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
     ticketId,
     getText,
     alreadySent,
+    initialFlagged,
     blocked,
     firstResponseSec,
     merchantId,
@@ -65,7 +69,9 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
   const router = useRouter();
   const [busy, setBusy] = useState<"draft" | "send" | "escalate" | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [escalated, setEscalated] = useState(false);
+  // The operator follow-up flag (finding #8: "flag", NOT the sentiment-derived
+  // "escalated" signal). Seeded from the persisted tag so it survives a reload.
+  const [flagged, setFlagged] = useState(initialFlagged);
   // UX-16: armed chargeback-risk confirm state (escalated tickets, first click).
   const [confirming, setConfirming] = useState(false);
   // Set once at mount: shows the "Reply sent." confirmation when a deep-linked
@@ -162,13 +168,13 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
   // UX-10/EN-25: persist (or clear) the follow-up self-flag through /api/escalate,
   // replacing the old local-only toggle that vanished on refresh. On success the
   // flag surfaces on the queue row + dashboard status strip and survives a reload.
-  async function toggleEscalate() {
-    const undo = escalated;
+  async function toggleFlag() {
+    const undo = flagged;
     setBusy("escalate");
     setError(null);
     try {
       await post("/api/escalate", { ticketId, undo });
-      setEscalated(!undo);
+      setFlagged(!undo);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -333,9 +339,9 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
           Chargeback risk — sends immediately, no recall. Click again to confirm.
         </p>
       ) : null}
-      {escalated ? (
-        // Honest copy (UX-10): a persisted self-flag for follow-up — nothing is
-        // dispatched to a manager. It stays flagged after a refresh.
+      {flagged ? (
+        // A persisted self-flag for follow-up — nothing is dispatched to a
+        // manager. It stays flagged after a refresh.
         <p className="rounded-lg border border-risk-amber/30 bg-[rgba(138,102,18,0.08)] px-3 py-2 text-[12px] text-amber-status">
           Flagged for your follow-up. It stays flagged after a refresh.
         </p>
@@ -356,14 +362,16 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
         <Button variant="ghost" onClick={regenerate} disabled={busy !== null}>
           {busy === "draft" ? "Regenerating…" : "Regenerate"}
         </Button>
-        <Button variant="quiet" onClick={toggleEscalate} disabled={busy !== null}>
+        {/* Finding #8: the operator ACTION creates a follow-up flag ("Flagged"),
+            distinct from the customer-sentiment "Escalated" queue signal. */}
+        <Button variant="quiet" onClick={toggleFlag} disabled={busy !== null}>
           {busy === "escalate"
-            ? escalated
+            ? flagged
               ? "Removing…"
               : "Flagging…"
-            : escalated
-              ? "Un-escalate"
-              : "Escalate"}
+            : flagged
+              ? "Flagged — undo"
+              : "Flag for follow-up"}
         </Button>
       </div>
     </div>

@@ -80,8 +80,10 @@ const NOT_YET_MEASURED = "Not yet measured";
 /**
  * A baseline is "measured" once any of the four numbers is non-zero. The
  * all-zero starting state is the unset sentinel, not a real reading of zero.
+ * Exported so the dashboard view model shares one definition of "measured"
+ * (a fresh merchant must never surface a fabricated "baseline 0s").
  */
-function isBaselineMeasured(b: Merchant["baseline"]): boolean {
+export function isBaselineMeasured(b: Merchant["baseline"]): boolean {
   return (
     b.medianFrtSec > 0 ||
     b.wismoPer100Orders > 0 ||
