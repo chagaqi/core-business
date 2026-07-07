@@ -28,6 +28,15 @@ function withExt(base) {
   return candidates.find(isFile) ?? base;
 }
 
+// Bare Next.js subpath exports (e.g. `next/headers`) that the Next bundler
+// resolves via its own module map but the node ESM loader cannot: `next` ships
+// no "exports" field, so node won't append the ".js" the file actually has.
+// Map them to the real file so the repository seam (which statically imports
+// next/headers through lib/request-mode.ts) loads under `node --test` / eval.
+const NEXT_SUBPATH_FILES = {
+  "next/headers": "node_modules/next/headers.js",
+};
+
 export async function resolve(specifier, context, next) {
   if (specifier.startsWith("@/")) {
     const resolved = withExt(join(ROOT, specifier.slice(2)));
@@ -37,6 +46,10 @@ export async function resolve(specifier, context, next) {
       ? { ...context.importAttributes, type: "json" }
       : context.importAttributes;
     return { url: pathToFileURL(resolved).href, importAttributes, shortCircuit: true };
+  }
+  const nextFile = NEXT_SUBPATH_FILES[specifier];
+  if (nextFile) {
+    return { url: pathToFileURL(join(ROOT, nextFile)).href, shortCircuit: true };
   }
   return next(specifier, context);
 }

@@ -97,6 +97,43 @@ async function main() {
     record("GET /api/status/<token>", false, e.message);
   }
 
+  // 4. Real-app host gate (ADR-0017), opt-in via SMOKE_REAL_URL. Points at the
+  //    live operator subdomain (e.g. https://app.tideover.app). Asserts the auth
+  //    gate is STRUCTURAL: an operator route must NOT return 200 (it 401s for an
+  //    API path, or redirects unauthenticated browsers to /login), while a
+  //    public route still 200s. Skipped entirely when SMOKE_REAL_URL is unset.
+  const realBase = process.env.SMOKE_REAL_URL?.replace(/\/$/, "");
+  if (realBase) {
+    console.log(`\nreal-mode gate: ${realBase}`);
+    async function getReal(path) {
+      const res = await fetch(`${realBase}${path}`, {
+        redirect: "manual",
+        headers: { "user-agent": "tideover-smoke" },
+      });
+      return { status: res.status, location: res.headers.get("location") ?? "" };
+    }
+    // Operator route: must be gated — NOT 200. Accept 401 or a redirect to /login.
+    try {
+      const { status, location } = await getReal("/app");
+      const redirectToLogin = status >= 300 && status < 400 && /\/login\b/.test(location);
+      const gated = status === 401 || redirectToLogin;
+      record(
+        "real /app is gated (401 or redirect to /login, never 200)",
+        gated,
+        gated ? `got ${status}` : `got ${status}${location ? ` → ${location}` : ""}`,
+      );
+    } catch (e) {
+      record("real /app is gated", false, e.message);
+    }
+    // Public route: still open on the real host.
+    try {
+      const { status } = await getReal("/");
+      record("real / (public) → 200", status === 200, status === 200 ? "" : `got ${status}`);
+    } catch (e) {
+      record("real / (public) → 200", false, e.message);
+    }
+  }
+
   const failed = results.filter((r) => !r.ok);
   console.log(`\n${results.length - failed.length}/${results.length} checks passed.`);
   if (failed.length) {
