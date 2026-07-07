@@ -79,12 +79,18 @@ The tier packaging is **customer-facing copy + business model — entirely your 
 
 ## Decisions needed from you (these gate the onboarding/gift build)
 
-**D-GIFT — the important one.** The gift engine rarely fires for real crowdfunding backers because of the $500 LTV gate vs $25–100 pledges. What's your intent?
-- **(a)** Gifts are a **goodwill lever driven by risk/wait, not LTV** — decouple LTV from tiering, lower or remove the high-LTV gate, so a $5 founder note *can* go to any anxious backer. (My lean — it matches the emotional-goodwill intent and actually fires for your ICP.)
-- **(b)** Keep LTV gating but **lower the default high-tier threshold** to something crowdfunding-real (e.g. $150) and surface it in onboarding so the merchant sets it.
-- **(c)** Keep as-is (gifts are a VIP-only lever) and accept they rarely fire — mostly a demo/high-value flourish.
+**D-GIFT — RESOLVED (Dylan, 2026-07-06).** Drop the LTV *gate* entirely — gifts unlock purely by **risk band + wait** (the existing unlock matrix: standard→base, watch→+mid, at_risk/escalated→full). LTV is no longer a gate; it becomes a **score boost**:
+- **Boost = +2% per whole multiple of (LTV ÷ order value).** Example: $250 order, $1000 LTV = 4× → **+8%**. Formula: `boostPct = 2 × floor(ltvCents / orderValueCents)`. If LTV < order value (ratio < 1) → 0%.
+- **Kickstarter / crowdfunding campaigns → 0% boost** by default (a backer's "LTV" is just their pledge; the multiple isn't meaningful). Gate on `merchant`/order `group` (ks-backer) or a per-merchant `campaignType` flag.
+- **Cap the boost** (recommend +20% max) so a whale can't force every tier open — flag the cap value for Dylan.
 
-**D-HELP — helpdesk scope** (also PR-12 in pilot doc): only Gorgias is wired. **(a)** trim the picker to Gorgias + email-forwarding, label the rest "coming soon" (my lean); **(b)** invest in Tidio/Intercom templates now (adds real scope).
+**Two implementation calls Fable is making (flag for Dylan to veto):**
+1. **The boost feeds a PRIORITY/eligibility score, NOT the displayed refund-risk number.** The refund-risk score is a proof-only metric that must honestly predict refund/chargeback likelihood; inflating it because a customer is high-value would make the dashboard's "at-risk" count and GMV-in-dispute dishonest. The code already separates `priorityRank` from `riskScore` (queue sorts by priorityRank). So: LTV boost raises the **priority/gift-eligibility score** (queue order + which gift tiers unlock), while `riskScore` stays the honest refund-risk prediction. High-LTV loyal customers get prioritized and more gift options — the intent — without corrupting the risk metric.
+2. **Graceful degradation on LTV availability.** The boost needs *real per-customer LTV*, which almost certainly requires a Shopify integration (the data-provenance audit is confirming this now). Until real LTV is wired, **boost = 0 for everyone** (identical to the KS default) so the feature ships and degrades cleanly; it activates for Shopify merchants once LTV retrieval exists. This makes the whole gift feature buildable now and LTV-boost-enhanced later — no blocking dependency.
+
+*(Superseded options, for the record: keep-LTV-gate and lower-threshold were rejected in favor of the boost model above.)*
+
+**D-HELP — RESOLVED (Dylan, 2026-07-06): defer nothing.** Set up and verify each integration properly, one by one — read the API docs, make a trial/sandbox account, test end-to-end. The data-provenance + integrations audit (running 2026-07-06) produces the concrete list: per integration, what metrics it supplies, its auth model, how to get a free test account, and the cheapest way to verify it works. Build order: Shopify + the merchant's actual helpdesk first (they carry the core loop + real LTV/order data), then the rest. This also feeds D-1 (reply delivery): real helpdesk integrations may enable actual write-back per channel rather than only copy-to-clipboard — the audit will say which helpdesks support it, and I'll bring the grounded reply-delivery options back once it lands.
 
 **D-TAG — checklist truth:** should typing a presale tag in onboarding count as "Helpdesk connected," or stay red until a real ticket lands? (My lean: **stay red** — the checklist should compute truth from real data, which is its whole value.)
 
