@@ -11,9 +11,24 @@ import { resolveModeFromRequest } from "@/lib/request-mode";
  */
 const DEMO_OPERATOR_COOKIE = "tideover_demo_operator";
 
-export function getDemoOperator(): string {
+/**
+ * Display name for the signed-in operator. Resolution order:
+ *   1. an explicit `tideover_demo_operator` cookie (used to relabel the demo),
+ *   2. an env override (`APP_OPERATOR_NAME`, or the legacy `DEMO_OPERATOR_NAME`),
+ *   3. the demo default "Dylan" — ONLY on the demo surface,
+ *   4. the caller-supplied fallback (the merchant's own brand name) or a generic
+ *      "Operator" in real mode.
+ * The founder's name must never surface to a real paying merchant, so "Dylan" is
+ * gated behind demo mode; a real pilot shows its own brand name (threaded in by
+ * the app layout) or a neutral label.
+ */
+export function getDemoOperator(fallbackName?: string): string {
   const c = cookies().get(DEMO_OPERATOR_COOKIE);
-  return c?.value || process.env.DEMO_OPERATOR_NAME || "Dylan";
+  if (c?.value) return c.value;
+  const configured = process.env.APP_OPERATOR_NAME || process.env.DEMO_OPERATOR_NAME;
+  if (configured) return configured;
+  if (isDemoMode()) return "Dylan";
+  return fallbackName?.trim() || "Operator";
 }
 
 export function isDemoMode(): boolean {

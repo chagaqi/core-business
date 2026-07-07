@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import { CalButton } from "@/components/booking/CalButton";
 
@@ -37,9 +38,9 @@ export function Footer() {
             Watch
           </span>
           {VSL_LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="no-underline hover:underline" style={{ color: "#E9B486" }}>
+            <Link key={l.href} href={l.href} className="no-underline hover:underline" style={{ color: "#E9B486" }}>
               {l.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -50,9 +51,9 @@ export function Footer() {
 
         <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px]" style={{ color: "#A9C2C0" }}>
           {LEGAL_LINKS.map((l) => (
-            <a key={l.href} href={l.href} className="no-underline hover:underline" style={{ color: "#A9C2C0" }}>
+            <Link key={l.href} href={l.href} className="no-underline hover:underline" style={{ color: "#A9C2C0" }}>
               {l.label}
-            </a>
+            </Link>
           ))}
         </div>
       </div>

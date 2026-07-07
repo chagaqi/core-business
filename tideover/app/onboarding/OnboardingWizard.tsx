@@ -1,12 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { clsx } from "clsx";
 import { Button } from "@/components/ui/Button";
 import { Field, TextInput, TextArea, Select } from "@/components/ui/Field";
 import { Stepper } from "@/components/ui/Stepper";
 import { Logo } from "@/components/ui/Logo";
-import { ConnectPanel } from "@/app/onboarding/ConnectPanel";
 import { DataSourcePicker } from "@/components/product/DataSourcePicker";
 import {
   GiftCatalogEditor,
@@ -123,8 +122,6 @@ export function OnboardingWizard() {
   const steps = fast ? FAST_STEPS : FULL_STEPS;
   const lastStep = steps.length - 1;
   const brandValid = brandName.trim().length > 0;
-
-  const sampleToken = useMemo(() => "dflvtbcslipuv80vdkkg17us.bf07a04f58", []);
 
   function toggleTone(t: string) {
     setTone((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
@@ -277,17 +274,10 @@ export function OnboardingWizard() {
           </div>
         ) : null}
 
-        {result.connect ? (
-          <ConnectPanel gorgias={result.connect.gorgias} zendesk={result.connect.zendesk} />
-        ) : null}
-
         <DataSourcePicker merchantId={result.merchantId} />
 
         <div className="mt-9 flex flex-wrap items-center gap-4">
           <Button href={`/app?merchant=${result.merchantId}`}>See your cockpit</Button>
-          <Button href={`/status/${sampleToken}`} variant="ghost">
-            View a sample customer page
-          </Button>
         </div>
       </div>
     );

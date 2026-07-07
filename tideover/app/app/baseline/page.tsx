@@ -84,7 +84,9 @@ export default async function BaselinePage({
 
       {/* The four baseline metrics */}
       <section className="ev-section mb-5">
-        <p className="ev-label mb-3">The baseline — four measured numbers</p>
+        <p className="ev-label mb-3">
+          {baseline.measured ? "The baseline — four measured numbers" : "The baseline — not captured yet"}
+        </p>
         <div className="bl-grid">
           {baseline.metrics.map((m) => (
             <div key={m.key} className="bl-stat">
@@ -100,18 +102,35 @@ export default async function BaselinePage({
       <section className="ev-section mb-5">
         <p className="ev-label mb-2">How this was captured</p>
         <div className="ev-card bl-hero">
-          <p className="text-[13.5px] leading-relaxed text-ink">
-            These numbers were measured from {baseline.merchantName}&rsquo;s own helpdesk export at
-            onboarding — or, where no export was available, from a seven-day silent-measurement
-            window that watched real ticket flow without altering it. They are measured facts, not
-            self-reported guesses or round-number estimates.
-          </p>
-          <p className="ev-meta mt-3 max-w-[70ch]">
-            A baseline is only useful if it is real. Nothing here is projected, and no future
-            outcome is claimed — this is the before-picture on its own terms. Later reports show
-            the current value of each number next to its baseline, so any change is visible and
-            attributable.
-          </p>
+          {baseline.measured ? (
+            <>
+              <p className="text-[13.5px] leading-relaxed text-ink">
+                These numbers were measured from {baseline.merchantName}&rsquo;s own helpdesk export at
+                onboarding — or, where no export was available, from a seven-day silent-measurement
+                window that watched real ticket flow without altering it. They are measured facts, not
+                self-reported guesses or round-number estimates.
+              </p>
+              <p className="ev-meta mt-3 max-w-[70ch]">
+                A baseline is only useful if it is real. Nothing here is projected, and no future
+                outcome is claimed — this is the before-picture on its own terms. Later reports show
+                the current value of each number next to its baseline, so any change is visible and
+                attributable.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-[13.5px] leading-relaxed text-ink">
+                {baseline.merchantName}&rsquo;s baseline hasn&rsquo;t been captured yet. Connect a
+                helpdesk export at onboarding, or run a seven-day silent-measurement window, and these
+                four numbers fill in.
+              </p>
+              <p className="ev-meta mt-3 max-w-[70ch]">
+                Until then they read &ldquo;not yet measured&rdquo; — never a zero result. A baseline
+                is only useful if it is real, so nothing is shown here until it has actually been
+                measured.
+              </p>
+            </>
+          )}
         </div>
       </section>
 

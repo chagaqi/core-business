@@ -59,11 +59,35 @@ export interface FormattedBaseline {
   merchantName: string;
   /** merchant.isDemo — drives the SAMPLE DATA watermark on the report. */
   isDemo: boolean;
+  /**
+   * Whether a real baseline has actually been captured. A freshly-onboarded
+   * merchant starts with an all-zero baseline (onboarding seeds zeros until an
+   * export is measured); showing those zeros as a MEASUREMENT would be a
+   * proof-only lie ("0s first response"). When false, every metric value reads
+   * "Not yet measured" instead of a fabricated zero.
+   */
+  measured: boolean;
   /** readable capture date, e.g. "May 29, 2026". */
   capturedOn: string;
   /** raw ISO capture stamp, for a <time dateTime> attribute. */
   capturedOnIso: string;
   metrics: BaselineMetric[];
+}
+
+/** Sentinel text shown for every metric when no baseline has been captured yet. */
+const NOT_YET_MEASURED = "Not yet measured";
+
+/**
+ * A baseline is "measured" once any of the four numbers is non-zero. The
+ * all-zero starting state is the unset sentinel, not a real reading of zero.
+ */
+function isBaselineMeasured(b: Merchant["baseline"]): boolean {
+  return (
+    b.medianFrtSec > 0 ||
+    b.wismoPer100Orders > 0 ||
+    b.ticketsPerWeek > 0 ||
+    b.repeatWismoPct > 0
+  );
 }
 
 /**
@@ -75,34 +99,36 @@ export function formatBaseline(
   merchant: Pick<Merchant, "name" | "isDemo" | "baseline">,
 ): FormattedBaseline {
   const b = merchant.baseline;
+  const measured = isBaselineMeasured(b);
   return {
     merchantName: merchant.name,
     isDemo: merchant.isDemo,
+    measured,
     capturedOn: formatCaptureDate(b.capturedOn),
     capturedOnIso: b.capturedOn,
     metrics: [
       {
         key: "medianFrt",
         label: "Median first-response time",
-        value: formatSeconds(b.medianFrtSec),
+        value: measured ? formatSeconds(b.medianFrtSec) : NOT_YET_MEASURED,
         gloss: "Half of first replies to a waiting customer took longer than this.",
       },
       {
         key: "wismoPer100",
         label: "WISMO tickets per 100 orders",
-        value: `${b.wismoPer100Orders} per 100 orders`,
+        value: measured ? `${b.wismoPer100Orders} per 100 orders` : NOT_YET_MEASURED,
         gloss: "“Where is my order?” tickets raised for every 100 orders placed.",
       },
       {
         key: "ticketsPerWeek",
         label: "Support tickets per week",
-        value: `${b.ticketsPerWeek} / week`,
+        value: measured ? `${b.ticketsPerWeek} / week` : NOT_YET_MEASURED,
         gloss: "Total support tickets the team handled in an average week.",
       },
       {
         key: "repeatWismo",
         label: "Repeat-WISMO rate",
-        value: `${b.repeatWismoPct}%`,
+        value: measured ? `${b.repeatWismoPct}%` : NOT_YET_MEASURED,
         gloss: "Share of WISMO askers who came back to ask about the same order again.",
       },
     ],

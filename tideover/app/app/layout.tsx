@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Sidebar } from "@/components/product/Sidebar";
 import { DemoBadge } from "@/components/ui/DemoBadge";
 import { getDemoOperator, isDemoMode } from "@/lib/auth";
+import { getRepositories } from "@/lib/repositories";
 
 /**
  * Product shell for every /app surface: fixed Sidebar + scrollable main column.
@@ -14,8 +15,12 @@ import { getDemoOperator, isDemoMode } from "@/lib/auth";
  * three print artifacts' .ev-watermark and, being a bottom-right corner pill,
  * never overlaps that centered diagonal overlay.
  */
-export default function AppLayout({ children }: { children: ReactNode }) {
-  const operator = getDemoOperator();
+export default async function AppLayout({ children }: { children: ReactNode }) {
+  // Real merchants must never see the founder's name in the sidebar (ADR-0004
+  // single-operator seam): fall back to the merchant's own brand name. Demo mode
+  // ignores the fallback and keeps "Dylan".
+  const merchants = await getRepositories().merchants.list();
+  const operator = getDemoOperator(merchants[0]?.name);
   const demo = isDemoMode();
   return (
     <div className="flex min-h-screen bg-sand">

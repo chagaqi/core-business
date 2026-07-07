@@ -139,8 +139,8 @@ export function DataSourcePicker({ merchantId }: { merchantId: string }) {
               ))}
             </div>
             <p className="mt-3 text-[12px] leading-relaxed text-ink-mute">
-              For now, tickets can still reach Tideover by forwarded email or the helpdesk webhook
-              rule from the previous step &mdash; no direct connection needed yet.
+              For now, tickets reach Tideover by forwarding your support email &mdash; no direct
+              helpdesk connection needed yet.
             </p>
           </div>
         </div>

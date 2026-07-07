@@ -89,6 +89,9 @@ export function ImportPanel({ merchantId }: ImportPanelProps) {
   }
 
   const preview = mapped.slice(0, 5);
+  // Rows whose pledge amount didn't parse fall back to the $50 floor; surface the
+  // count so a defaulted value is never mistaken for a real parsed one.
+  const defaultedValueRows = mapped.filter((r) => r.orderValueCents === undefined).length;
 
   return (
     <div className="panel mt-6 p-6">
@@ -152,7 +155,18 @@ export function ImportPanel({ merchantId }: ImportPanelProps) {
                   <td className="px-3 py-2">{r.firstName || "—"}</td>
                   <td className="px-3 py-2">{r.email}</td>
                   <td className="px-3 py-2">{r.group ?? "ks-backer"}</td>
-                  <td className="px-3 py-2">{dollars(r.orderValueCents ?? DEFAULT_ORDER_VALUE_CENTS)}</td>
+                  <td className="px-3 py-2">
+                    {r.orderValueCents !== undefined ? (
+                      dollars(r.orderValueCents)
+                    ) : (
+                      <span className="text-ink-mute">
+                        {dollars(DEFAULT_ORDER_VALUE_CENTS)}
+                        <span className="ml-1.5 rounded bg-sand px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+                          default
+                        </span>
+                      </span>
+                    )}
+                  </td>
                   <td className="px-3 py-2">{r.disclosedEtaValue ?? "—"}</td>
                 </tr>
               ))}
@@ -161,6 +175,13 @@ export function ImportPanel({ merchantId }: ImportPanelProps) {
           {mapped.length > preview.length ? (
             <p className="border-t border-border px-3 py-2 text-[12px] text-ink-mute">
               + {mapped.length - preview.length} more row{mapped.length - preview.length === 1 ? "" : "s"} will import
+            </p>
+          ) : null}
+          {defaultedValueRows > 0 ? (
+            <p className="border-t border-border px-3 py-2 text-[12px] text-ink-mute">
+              {defaultedValueRows} row{defaultedValueRows === 1 ? "" : "s"} had no parseable pledge
+              amount and use the {dollars(DEFAULT_ORDER_VALUE_CENTS)} default (marked above) &mdash;
+              correct these later from your cockpit.
             </p>
           ) : null}
         </div>

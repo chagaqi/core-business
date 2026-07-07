@@ -27,6 +27,10 @@ const description =
   "Tideover is the presale-specialist support layer for Shopify brands with 60–120 day waits. It reads each order's real timeline and drafts calm, day-stage reassurance — bolted onto the helpdesk you already run.";
 
 export const metadata: Metadata = {
+  // Absolute base for OG/Twitter image URLs. Without this, file-based image
+  // routes (opengraph-image / twitter-image) fail to prerender with "Invalid
+  // URL" because Next can't resolve their relative path to an absolute one.
+  metadataBase: new URL(process.env.APP_URL ?? "https://www.tideover.app"),
   title,
   description,
   openGraph: {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import { CalButton } from "@/components/booking/CalButton";
 
@@ -43,13 +44,13 @@ export function Nav() {
         {/* desktop links */}
         <div className="hidden items-center gap-1 md:flex">
           {LINKS.map((l) => (
-            <a
+            <Link
               key={l.href}
               href={l.href}
               className="rounded-full px-3 py-2 text-[15px] font-medium text-slate no-underline transition-colors hover:bg-[rgba(14,83,102,0.07)] hover:text-teal"
             >
               {l.label}
-            </a>
+            </Link>
           ))}
         </div>
 
@@ -80,14 +81,14 @@ export function Nav() {
         <div id="mobile-nav" className="border-t border-border md:hidden">
           <div className="wrap flex flex-col py-2">
             {LINKS.map((l) => (
-              <a
+              <Link
                 key={l.href}
                 href={l.href}
                 onClick={() => setOpen(false)}
                 className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-slate no-underline transition-colors hover:bg-[rgba(14,83,102,0.07)] hover:text-teal"
               >
                 {l.label}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
