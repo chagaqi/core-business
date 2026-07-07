@@ -1,0 +1,122 @@
+[
+ {
+  "area": "security",
+  "title": "The only rate limiter (public status page) is per-lambda, client-spoofable, and never evicts",
+  "problem": "GET /api/status/[token] rate-limits via a module-level Map keyed on x-forwarded-for. On Vercel each serverless instance gets its own Map (state isn't shared across instances), so the 60/min cap is effectively cap×instance-count and resets on cold start; the key is fully client-spoofable (rotate XFF to reset); and the Map never evicts, growing unbounded as distinct backer IPs accumulate over a campaign. It reads as protection but is theater on the one genuinely public, high-fan-out surface.",
+  "evidence": "tideover/app/api/status/[token]/route.ts:9-23",
+  "proposal": "Move rate limiting to a shared/durable store (Upstash/Vercel KV) keyed on the token, or drop the in-memory limiter and rely on token entropy plus platform WAF limits. At minimum add TTL eviction and use the platform's trusted client IP, not raw XFF.",
+  "severity": "P3",
+  "effort": "M",
+  "sources": 2
+ },
+ {
+  "area": "security",
+  "title": "Session cookie is an unrevocable bearer token that signs only its own expiry",
+  "problem": "The session value is `<expires>.<HMAC(AUTH_SECRET, expires)>` with a 7-day TTL and no session id, nonce, or user binding. A stolen/leaked cookie is valid up to 7 days and CANNOT be revoked except by rotating AUTH_SECRET (which logs out everywhere); logout only clears the client cookie, the value stays valid if captured; and there's no way to force re-auth after a suspected compromise. No incident lever.",
+  "evidence": "tideover/lib/session.ts:36-65",
+  "proposal": "Include a random session id in the signed payload and keep a small server-side allow/deny (or version counter) so individual sessions can be revoked without a global secret rotation; shorten TTL and/or add idle timeout.",
+  "severity": "P3",
+  "effort": "M",
+  "sources": 1
+ },
+ {
+  "area": "ops",
+  "title": "No security headers at all (no HSTS/CSP/X-Frame-Options/X-Content-Type-Options)",
+  "problem": "next.config.mjs sets only reactStrictMode; there is no headers() block. The public status page, the embeddable widget, and the send-capable operator cockpit ship with no HSTS, CSP, X-Frame-Options/frame-ancestors, or X-Content-Type-Options, leaving clickjacking of the operator UI, MIME-sniffing, and downgrade attacks unmitigated for a pilot handling customer PII.",
+  "evidence": "tideover/next.config.mjs:1-6",
+  "proposal": "Add a headers() entry: Strict-Transport-Security, X-Content-Type-Options: nosniff, Referrer-Policy, and a CSP with frame-ancestors 'none' (or an explicit allowlist) on /app; scope the widget's frame-ancestors to the merchant's domains only if it must be embeddable.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1
+ },
+ {
+  "area": "security",
+  "title": "Tidio/Email webhook secrets compared with non-constant-time === (vs timingSafeEqual elsewhere)",
+  "problem": "TidioAdapter and EmailAdapter authenticate their webhook with plain `headers.get(...) === secret` string equality, unlike GorgiasAdapter/Intercom (timingSafeEqual) and the per-merchant HMAC path — a timing side-channel on the raw secret. Contained today because these adapters are only reachable via the legacy /api/ticket-ingest route (hard-disabled 410 once DEMO_MODE=false), but the secret becomes timing-leakable if that route is re-enabled or an adapter is wired to a live path.",
+  "evidence": "tideover/lib/channel-adapters/TidioAdapter.ts:50-51, tideover/lib/channel-adapters/EmailAdapter.ts:53-54, tideover/app/api/ticket-ingest/route.ts:55-60",
+  "proposal": "Replace the === secret checks with an equal-length-guarded timingSafeEqual (the same helper webhook-secret.ts/svix.ts already use) so all adapters share one constant-time comparison.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1
+ },
+ {
+  "area": "tests",
+  "title": "seed-check validates FKs but not the createdAt field the Mongo sort depends on, nor customer core fields",
+  "problem": "seed-check.mjs enforces referential integrity and token signatures thoroughly but never asserts orders/tickets/customers/merchants carry a well-formed createdAt — the exact field the Mongo findWhere sort keys on. If gen-seed ever emits a doc without createdAt, seed-check stays green but in Mongo that doc sorts to the FRONT (missing key sorts first) while JSON keeps file position — a silent ordering corruption only visible in prod. It also doesn't validate Customer's required scalar fields (ltvCents, ticketCount, lastSentiment, orderIds types) beyond the orderIds FK, so shape drift between gen-seed.mjs and types.ts could ship.",
+  "evidence": "tideover/scripts/seed-check.mjs:38-65, tideover/lib/repositories/mongo/repositories.ts:46-53, tideover/lib/types.ts:117-212",
+  "proposal": "Add assertions that every order/ticket/merchant (and customer if createdAt is added) has an ISO createdAt, and validate Customer's required scalar fields/types, closing the gap between the sort key the prod driver relies on and what CI guarantees.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1
+ },
+ {
+  "area": "data",
+  "title": "CSAT re-tap is a non-atomic delete-then-insert on the public token-authed endpoint",
+  "problem": "The CSAT flow deletes all csat events for the order then inserts the current tap — two separate writes with no transaction on the PUBLIC token-authenticated endpoint. Two simultaneous taps for the same order can both delete then both insert (+1 double-count), or a crash between the two loses the prior rating with no replacement. The code comment reasons this is bounded to +1 and mitigated by UI button-disable, so impact is small, but it's a real non-atomic multi-write in the ledger with no DB-level backstop.",
+  "evidence": "tideover/app/api/csat/[token]/route.ts:43-61, tideover/lib/repositories/json/repositories.ts:219-230, tideover/lib/repositories/mongo/repositories.ts:262-269",
+  "proposal": "When CSAT volume matters, replace delete+insert with a single upsert keyed by (orderId, csat-kind) using a unique partial index on Mongo and an equivalent replace-in-place on JSON. Until then, add it to the known-issues list rather than treating the ledger as strictly correct under concurrency.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1
+ },
+ {
+  "area": "arch",
+  "title": "JSON driver hands out live store references while Mongo returns copies (latent parity landmine)",
+  "problem": "The JSON driver's list()/find methods return the actual in-memory store objects (merchants.list() returns store.merchants itself; findById returns the live reference). The Mongo driver always returns fresh projected copies. So any code that mutates a fetched entity in place (obj.tags.push, field assignment, (await list()).sort) would silently persist in demo but be a no-op in prod — or corrupt the demo store while prod is unaffected. No current non-test caller does this, so impact is latent, but it's a real divergence and a trap the moment someone writes natural mutate-in-place code.",
+  "evidence": "tideover/lib/repositories/json/repositories.ts:57-68,79-104, tideover/lib/repositories/mongo/repositories.ts:40,46-58",
+  "proposal": "Have the JSON driver return copies (structuredClone or shallow spread of each item, and a fresh array from list()) so both drivers are copy-on-read, making reference semantics identical before the landmine bites.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1
+ },
+ {
+  "area": "ops",
+  "title": "Dead/unreachable security check in the legacy ticket-ingest route",
+  "problem": "The route returns 410 for the entire endpoint whenever DEMO_MODE==='false'. A later check gates the mock channel on `channel==='mock' && DEMO_MODE==='false'` returning 403 — but that branch can never execute, because DEMO_MODE cannot be 'false' by the time execution reaches it (the earlier 410 already returned). A stale guard from an earlier hardening pass; no live bug today, but it signals the route's enforced security surface has drifted from what a reader would infer, the kind of thing that causes someone to trust a check that no longer runs.",
+  "evidence": "tideover/app/api/ticket-ingest/route.ts:55-60,74-76",
+  "proposal": "Delete the unreachable mock-channel check (redundant with the blanket 410 gate), or if the intent was ever to allow non-mock channels through in live mode, restructure the two conditions so the actual intended enforcement is legible.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1
+ },
+ {
+  "area": "data",
+  "title": "Customer ticketCount is a non-atomic read-modify-write counter that can drift under concurrent ingest",
+  "problem": "ingestTicket updates the customer with `ticketCount: customer.ticketCount + 1` — a read-then-write, not an atomic increment. Concurrent ingests for the same customer (multi-channel webhook bursts, or two tickets in the same request window) can race, the second write clobbering the first's increment (lost update). This counter is shown directly to the operator on the customers page, so it can visibly under-count relative to the customer's real history — low blast radius, but it's a display of fact the product promises never to let drift.",
+  "evidence": "tideover/lib/service.ts:479-482, tideover/app/app/customers/page.tsx:134",
+  "proposal": "Use a driver-level atomic increment (Mongo $inc) for this field, or drop the stored counter and derive it live from tickets.list({merchantId, customerId}).length the way ticketsLast7dFor already does, so it can never drift from the ticket store's own truth.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1
+ },
+ {
+  "area": "ops",
+  "title": "Health probe timeout (5s) is shorter than the Mongo driver's connect timeout (8s), risking false 'degraded' on cold starts",
+  "problem": "checkHealth races its DB probe against a 5000ms timeout, but the Mongo client's serverSelectionTimeoutMS is 8000ms specifically to tolerate slow connects on serverless cold starts. A cold-start connect landing between 5s and 8s reports 503 'degraded' to the external uptime monitor even though the app is fine — noisy false alerts train Dylan to distrust or ignore the one dead-man switch the whole ops story relies on.",
+  "evidence": "tideover/lib/health.ts:20-41, tideover/lib/repositories/mongo/client.ts:70-75",
+  "proposal": "Raise PROBE_TIMEOUT_MS above serverSelectionTimeoutMS (e.g. 9000ms) or share one constant between the two files so the health probe's patience is never shorter than the driver's own connect budget.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1
+ },
+ {
+  "area": "data",
+  "title": "CSV import row cap (IMPORT_ROW_CAP=2000) has no boundary test",
+  "problem": "lib/import.ts slices incoming rows to IMPORT_ROW_CAP=2000 and the API layer additionally validates z.array(Row).max(IMPORT_ROW_CAP). import.test.ts covers dedup, re-import, and unknown-merchant cases, but no test imports exactly 2000 or 2001 rows to confirm the slice/cap behaves as documented — plausible for a crowdfunding backer-list import, and the natural test home already exists.",
+  "evidence": "tideover/lib/import.ts:20,52, tideover/app/api/import/route.ts:9,23",
+  "proposal": "Add a case to import.test.ts: build IMPORT_ROW_CAP+1 mapped rows, call importBackerRows, assert exactly IMPORT_ROW_CAP orders/customers are created and the excess rows are silently dropped (not erroring), matching the documented cap semantics.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1
+ },
+ {
+  "area": "onboarding",
+  "title": "onboarding.ts and ingest-templates.ts have no dedicated test — only incidental coverage",
+  "problem": "lib/onboarding.ts (createMerchantFromIntake, which mints inboxToken/statusToken for a brand-new merchant) is called from import.test.ts only as scaffolding to build a fixture — nothing asserts onboarding's own behavior (default fields, token minting). lib/ingest-templates.ts's gorgias/zendesk template generation is checked only for URL/secret shape in webhook-ingest.test.ts, not through the actual /api/onboarding flow a new pilot merchant hits on day one.",
+  "evidence": "tideover/lib/onboarding.ts, tideover/lib/__tests__/import.test.ts:4, tideover/lib/__tests__/webhook-ingest.test.ts:90-109, tideover/lib/ingest-templates.ts",
+  "proposal": "Add a small onboarding.test.ts asserting createMerchantFromIntake produces a valid, resolvable inboxToken/statusToken pair and the documented default fields — the very first code path a real pilot merchant exercises.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1
+ }
+]

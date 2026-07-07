@@ -1,0 +1,114 @@
+[
+ {
+  "area": "onboarding",
+  "title": "Onboarding submit API is behind the session-auth gate that the onboarding page itself is documented to bypass",
+  "problem": "middleware.ts's own comment says /onboarding is a public, pre-auth page, but the matcher it defines protects /api/onboarding with the same session-cookie check as the logged-in cockpit. In real/pilot mode (DEMO_MODE=false, which is how a real pilot merchant runs per the repo's own env doctrine), a brand-new merchant loading the public /onboarding page has no session cookie, so the final POST to /api/onboarding returns 401 — and the wizard's blanket catch turns that into the generic 'Something went wrong generating your playbook. Please try again.' with no hint that login is required. The wizard has no login step anywhere in it.",
+  "evidence": "tideover/middleware.ts:6-8 (comment: /onboarding is public), middleware.ts:15 (DEMO_MODE!=='false' gate), middleware.ts:39 ('/api/onboarding' in protected matcher); app/onboarding/OnboardingWizard.tsx:181 (if (!res.ok) throw new Error('request failed')), :190-194 (generic catch/message)",
+  "proposal": "Remove /api/onboarding from middleware's protected matcher (it's a pre-auth signup endpoint, not an authenticated operator action), or explicitly design+build a pre-onboarding login/claim step and surface 401s distinctly in the wizard instead of the generic error.",
+  "severity": "P1",
+  "effort": "S",
+  "track": "onboarding",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified in middleware.ts:6-27,29-42 and app/onboarding/OnboardingWizard.tsx:180-190 and app/api/onboarding/route.ts:29-33. Middleware's own comment lists /onboarding as a public pre-auth page, but the matcher array explicitly includes \"/api/onboarding\" alongside authenticated operator routes (/app/*, /api/draft, etc.), and DEMO_MODE=false is documented repo-wide as exactly the real-pilot config (lib/auth.ts:17, DemoBadge.tsx, export/import/setup-status routes all key off it the same way). The route handler itself (app/api/onboarding/route.ts) does zero auth checking internally — it relies entirely on middleware, so this isn't compensated elsewhere. No login/cookie-setting step exists anywhere before or during the wizard. The wizard's submit handler does `if (!res.ok) throw new Error(\"request failed\")` then a blanket catch that always sets the same generic message regardless of status code (lines 180, 189-191) — no 401-specific branch. Net effect: any real pilot merchant filling out the public onboarding wizard gets a silent, unexplained failure on submit, day one. This is a first-contact signup flow, hits immediately (not an edge case), and is a one-line-matcher fix (or the proposed explicit-login-step alternative) — correctly scoped as P1/S."
+  }
+ },
+ {
+  "area": "onboarding",
+  "title": "Entire 'Support reality' step (worstStory) is collected and submitted but never read server-side",
+  "problem": "The wizard's step 3 field is framed as 'paste a real anxious or refund-threat message so we can pressure-test the tone.' It's typed through to the API (zod accepts it) and onto IntakeData, but createMerchantFromIntake never references intake.worstStory anywhere — it isn't stored on the merchant, doesn't influence any template, and isn't persisted anywhere for Dylan to review later. The step does nothing.",
+  "evidence": "app/onboarding/OnboardingWizard.tsx:570-579 (field + promise copy), app/api/onboarding/route.ts:27 (accepted), lib/onboarding.ts:24 (typed on IntakeData), lib/onboarding.ts:57-146 (createMerchantFromIntake body — no reference to intake.worstStory anywhere)",
+  "proposal": "Either store worstStory on the merchant record (e.g. for Dylan's manual pressure-test review) and/or actually run it through the reassurance engine's escalation path, or cut the step — as-is it's a false promise that erodes trust in a proof-only product.",
+  "severity": "P2",
+  "effort": "S",
+  "track": "onboarding",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: intake.worstStory is typed on IntakeData (lib/onboarding.ts:24), accepted by zod (route.ts:27), and shown back to the user in ReviewPanel (OnboardingWizard.tsx:724), but createMerchantFromIntake (lib/onboarding.ts:57-146) never reads it - not stored on Merchant, not passed to buildPlaybook or draftReassurance, not persisted anywhere. Grep confirms every reference is client-side state/copy/review-display or the API accept-and-drop; no server-side consumer exists. The wizard copy (\"so we can pressure-test the tone\") is a genuine unmet promise. But this is an optional field in onboarding, not a security hole, data-loss, or silently-wrong-output bug in the live reassurance/proof-only send path pilot customers actually see - it's a dead UX promise, not a this-week firefight. Downgrading P1 to P2: real defect, low urgency, cheap S-effort fix (store it for Dylan's manual review, or cut the step) fits normal backlog."
+  }
+ },
+ {
+  "area": "onboarding",
+  "title": "Voice and Tone fields are collected but never consumed anywhere in drafting",
+  "problem": "Step 0 asks for 'Your voice' (free text) and 'Tone' (chip multi-select) with copy claiming tone picks 'shape the reassurance copy.' A repo-wide grep shows merchant.brand.voice and merchant.brand.tone are written at creation and never read again — DeterministicDrafter → draftReassurance only reads merchant.brand.banned and merchant.brand.signoff; buildPlaybook's templates are fully static strings. Every merchant gets byte-identical wording regardless of voice/tone answers.",
+  "evidence": "app/onboarding/OnboardingWizard.tsx:497-506 (fields + 'these shape the reassurance copy' hint), lib/engines/reassurance.ts:92-100 (only .banned and .signoff consumed), lib/drafting/DeterministicDrafter.ts:1-26 (no brand reference), lib/onboarding.ts:36-55 (buildPlaybook — static strings, no voice/tone param)",
+  "proposal": "Either wire tone/voice into template selection (e.g. per-tone byStage variants, or feed into LlmDrafter when enabled) or drop the fields/copy claim until they do something — right now it's a UI promise the engine doesn't keep.",
+  "severity": "P2",
+  "effort": "M",
+  "track": "onboarding",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed by direct read, not just grep. reassurance.ts:92-100 only consumes merchant.brand.banned and .signoff; dayStageFor/mergeFields/stripBanned never reference .voice or .tone. LlmDrafter.ts:27 has a commented-out stub (`buildPresaleSystemPrompt(ctx.merchant); // voice + banned + band rule`) confirming the intended consumer was never built. Worse than the auditor's evidence shows: lib/setup.ts:128 bakes the same false claim into the onboarding checklist copy (\"Every reassurance draft is written in this voice\"), so it's not just wizard-hint copy overselling — it's a repeated product claim. No hidden guard/handler elsewhere consumes these fields; onboarding.ts:80-81 just writes them to merchant.brand and nothing downstream reads voice/tone. Severity P2 is correct: this is a copy-integrity/trust gap (drafts are safe and proof-compliant, just tonally generic/identical across merchants), not a security hole, data loss, or silent-wrong-result bug — proof-only doctrine (banned-word stripping, no-hard-date assertion) is untouched. Fix is low-risk: either drop the claims (2 copy edits, no engine risk) or wire tone into per-stage template variants (scoped addition to DeterministicDrafter/buildPlaybook, doesn't touch the repository seam or hot-file serialization beyond a normal single-owner edit)."
+  }
+ },
+ {
+  "area": "onboarding",
+  "title": "Helpdesk selection is stored once and never read again; post-signup setup screen ignores it",
+  "problem": "The 'Current tools' step asks which of 5 helpdesks (Gorgias/Tidio/Intercom/Email/None) the merchant uses. merchant.helpdesk is written at creation and then never read anywhere else in lib/ or app/ (repo-wide grep is empty outside the write and the wizard's own local state). The completion screen's ConnectPanel always renders Gorgias/Zendesk instructions plus an email-forward address regardless of what was selected — a merchant who picked Tidio or Intercom (both of which have dedicated adapters in channel-adapters/) gets no Tidio/Intercom-specific setup copy at all.",
+  "evidence": "app/onboarding/OnboardingWizard.tsx:48-54 (HELPDESK_OPTIONS), lib/onboarding.ts:87 (helpdesk: intake.helpdesk — sole write, confirmed no other reads via grep), app/api/onboarding/route.ts:43-46 (connect: {gorgias, zendesk} hardcoded regardless of helpdesk), lib/ingest-templates.ts (only gorgiasHttpIntegration/zendeskTrigger exist, no Tidio/Intercom generator)",
+  "proposal": "Branch the completion screen's setup instructions on the selected helpdesk (build Tidio/Intercom template generators to match their existing adapters), or collapse the question to just 'do you use a helpdesk with a rule engine?' if the specific choice truly doesn't matter yet.",
+  "severity": "P2",
+  "effort": "M",
+  "track": "onboarding",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed exactly as described. merchant.helpdesk is written once at lib/onboarding.ts:87 and never read elsewhere (grep-wide check clean). app/api/onboarding/route.ts:43-46 always returns connect:{gorgias, zendesk} regardless of the selected helpdesk, and ConnectPanel.tsx only offers a Gorgias/Zendesk toggle. lib/ingest-templates.ts instructions are vendor-literal (\"In Gorgias, open Settings → Integrations...\", \"In Zendesk, create a Webhook...\") — a merchant who picked Tidio or Intercom sees setup steps that reference the wrong product by name, with no Tidio/Intercom-specific copy despite lib/channel-adapters/TidioAdapter.ts and IntercomAdapter.ts already existing (documented field maps for conversation.id, visitor.email, etc.). Note: those adapters' listTickets/sendReply are themselves NotImplementedError stubs, so full native integration isn't ready either way — but normalizeInbound + verifyWebhook already work, meaning a Tidio/Intercom merchant could wire the generic webhook path today if given correct instructions, which they currently are not. Proposal (branch instructions per vendor, or collapse to a generic \"rule-engine helpdesk?\" question) is low-risk, doesn't touch proof-only doctrine, repository seam, or the hot-file list, and is easy to ship without breaking verify/test. Real pilot impact is confusing/misleading setup copy for non-Gorgias/Zendesk merchants during pilot week — not a security hole, data loss, or silently-wrong result — so P2 (as the auditor scored) is the right severity, not P1."
+  }
+ },
+ {
+  "area": "onboarding",
+  "title": "preorderApp and fulfillmentWindowDays.min are asked but never read anywhere downstream",
+  "problem": "Two fields the wizard treats as meaningful inputs are dead on arrival: 'Preorder / crowdfunding app' is stored on merchant.preorderApp with zero downstream reads (grep across lib/ and app/ only shows the write path and test fixtures); fulfillmentWindowDays.min (the paired field next to windowMax in the timeline editor) is likewise never read anywhere — only .max is consumed (by import.ts, engines/index.ts, service.ts).",
+  "evidence": "app/onboarding/OnboardingWizard.tsx:537-543 (preorderApp field), lib/types.ts:93 (preorderApp), lib/onboarding.ts:88 (sole write); app/onboarding/OnboardingWizard.tsx:389-396 (windowMin field), lib/import.ts:38 / lib/engines/index.ts:52 / lib/service.ts:638 (only .max referenced — grep for '.min' against fulfillmentWindowDays returns nothing)",
+  "proposal": "Wire preorderApp into a visible surface (setup checklist, cockpit header) or remove it; either use windowMin somewhere (e.g. an 'earliest ships' framing) or drop the field and just ask for windowMax.",
+  "severity": "P2",
+  "effort": "S",
+  "track": "onboarding",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified by direct grep: preorderApp is written at lib/onboarding.ts:88 (from intake) and lib/types.ts:93/app/api/onboarding/route.ts:23 define/accept it, but no file in lib/ or app/ (engines, service, import, cockpit UI) ever reads merchant.preorderApp — confirmed dead. fulfillmentWindowDays.min is written at lib/onboarding.ts:89 but only .max is read in lib/import.ts:38, lib/engines/index.ts:52, lib/service.ts:638, app/api/gift-catalog/[customerId]/route.ts:26 — .min never referenced anywhere. No hidden reader was missed. Fix is low-risk (either wire into a display surface or drop the field) and doesn't touch the proof-only doctrine, repository seam, or hot-file serialization list, so it's safe for a cheaper agent to execute without breaking verify/test. Not P1: no data loss, no security issue, no silently-wrong computation (windowMax alone still drives fulfillment correctly) — just wasted merchant input / minor trust gap. P2/S effort as scored is correct."
+  }
+ },
+ {
+  "area": "onboarding",
+  "title": "No idempotency/uniqueness guard on merchant creation — retry after a transient error can create duplicate-slug merchants",
+  "problem": "createMerchantFromIntake derives slug purely from brandName text and calls repos.merchants.create with no existence/uniqueness check first. The submit button only disables while a request is in flight (not permanently after an error) — a user who sees the generic error message (finding above) can click 'Generate my playbook' again and create a second merchant with an identical slug. The json driver's findBySlug does array .find() (first match only), so any code path that resolves a merchant by slug can silently pick the wrong one once a duplicate exists.",
+  "evidence": "lib/onboarding.ts:62 (slug derived from brandName, no uniqueness check), lib/onboarding.ts:104 (repos.merchants.create with no precheck), lib/repositories/json/repositories.ts:62 (findBySlug — .find() returns first match), app/onboarding/OnboardingWizard.tsx:152,192-194 (submitting resets to false in finally, button re-enables after error)",
+  "proposal": "Check findBySlug (or add a unique index in the Mongo driver) before create, and either reuse/update the existing merchant or append a disambiguating suffix; disable the submit button (not just spinner) once a successful-looking request is underway.",
+  "severity": "P2",
+  "effort": "S",
+  "track": "onboarding",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified in code: lib/onboarding.ts:62-104 derives slug from brandName and calls repos.merchants.create with zero existence/uniqueness precheck; OnboardingWizard.tsx submit() only sets submitting=false in the finally block, so the button re-enables after a caught error and a user can resubmit, creating a second merchant with the same slug. Confirmed in BOTH repository drivers, not just json: lib/repositories/mongo/client.ts:30-34 creates unique indexes on {id} and {inboxToken} but none on slug; lib/repositories/json/repositories.ts:61-63 findBySlug does .find() (first match). So duplicates are possible in prod (Mongo) too. One mitigating fact narrows severity: findBySlug currently has zero call sites outside its own definition in either driver, and no app route resolves merchants by slug (grep across app/ shows only export/onboarding routes touching .slug) - so the 'silently picks wrong merchant' consequence is real but presently dead code, not a live pilot-week failure mode yet. The underlying defect (no idempotency guard on merchant creation, retry can duplicate a merchant record) is still a genuine, easily-triggered gap for a solo founder's first pilot merchants. P2 is right: no security hole, no data loss of existing records, misrouting risk is latent until something calls findBySlug for real. Proposed fix (precheck via findBySlug or unique Mongo index on slug, plus disabling submit permanently on success) is feasible without touching the repository seam contract, proof-only doctrine, or the hot-file serialization list."
+  }
+ },
+ {
+  "area": "onboarding",
+  "title": "Validation is all-or-nothing: only brand name is checked; every numeric/ordering field accepts nonsense silently",
+  "problem": "The only client-side validation in the whole wizard is 'brand name non-empty' before advancing past step 0. Every other field — windowMin vs windowMax ordering, each stage's from<to ordering, non-overlapping/contiguous stage bands, banned-words formatting — has zero validation beyond zod's bare type/enum check server-side. A merchant can submit windowMin=120/windowMax=60, or a stage with from=50/to=10, and it's baked into every future customer-facing message with no error, no warning.",
+  "evidence": "app/onboarding/OnboardingWizard.tsx:126-133 (only check: step===0 && !brandValid), app/api/onboarding/route.ts:8-28 (Body schema — z.number()/z.string() with no .refine ordering checks)",
+  "proposal": "Add a zod .refine() (or wizard-level check) enforcing windowMin<=windowMax and each stage's from<to and stage-to-stage contiguity before allowing 'Generate my playbook.'",
+  "severity": "P2",
+  "effort": "S",
+  "track": "onboarding",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified exactly as cited. OnboardingWizard.tsx:126-133 confirms the only gate is brandValid at step 0; submit() (line 147) re-checks only brandValid too. route.ts:8-28 confirms the zod Body schema has bare z.number()/z.string()/z.enum() with zero .refine() ordering checks on windowMinDays/windowMaxDays or Stage.from/to. Traced further than the auditor: lib/onboarding.ts:63-90 passes stage from/to straight into StageDef.dayBand and windowMinDays/windowMaxDays straight into Merchant.fulfillmentWindowDays with no clamping/reordering/sanitization. reassurance.ts then consumes dayBand/fulfillmentWindowDays to compute eta_band/stage_blurb, which get interpolated directly into proof-only customer-facing messages. So bad ordering doesn't just sit as a nonsense DB record — it silently corrupts ETA math and stage narrative in every message sent to every customer, touching the reassurance-engine high-risk area (ADR-0006). Proposed fix (zod .refine()) is feasible: purely additive validation, doesn't touch the repository seam, either driver, or proof-only doctrine, and wouldn't break verify/test gate. Severity: auditor's P2 is right, not P1 — this requires the merchant to self-enter contradictory data on their own pilot onboarding (not an external actor, no auth bypass or data loss), so it misses the P1 bar of security hole/data loss/external-actor week-one hit. Still worth fixing before go-live given a rushed solo founder is quite likely to fat-finger min/max or drag stage bounds out of order."
+  }
+ }
+]
