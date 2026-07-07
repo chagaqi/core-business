@@ -293,6 +293,7 @@ export default async function InboxPage({
                 gift={view.intel.gift.gift}
                 reasoning={view.intel.gift.reasoning}
                 roi={view.intel.gift.roi}
+                availability={view.intel.availability}
                 alreadySent={view.ticket.tags.some((t) => t.startsWith("gift-sent:"))}
               />
             </div>

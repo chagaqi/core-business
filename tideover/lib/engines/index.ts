@@ -9,7 +9,12 @@ import {
   type RiskProfile,
   type RiskResult,
 } from "@/lib/engines/refund-risk";
-import { recommendGift, type GiftResult } from "@/lib/engines/gift";
+import {
+  giftAvailability,
+  recommendGift,
+  type GiftAvailabilityEntry,
+  type GiftResult,
+} from "@/lib/engines/gift";
 
 export * from "@/lib/engines/reassurance";
 export * from "@/lib/engines/refund-risk";
@@ -26,6 +31,14 @@ export interface TicketIntelligence {
   risk: RiskResult;
   reassurance: ReassuranceResult;
   gift: GiftResult;
+  /**
+   * UX-86: per-gift availability across the WHOLE catalog (band-only unlock +
+   * escalation), so the cockpit "Gifts available" panel can show the ladder — the
+   * best-unlocked recommendation (`gift`) plus every other gift, unlocked or
+   * locked-with-reason. Additive to the engine output: `risk`/`reassurance`/`gift`
+   * are unchanged, so the goldens + invariant sweep stay byte-stable.
+   */
+  availability: GiftAvailabilityEntry[];
 }
 
 export interface IntelInput {
@@ -67,12 +80,25 @@ export function computeTicketIntelligence(input: IntelInput): TicketIntelligence
     now,
   });
 
+  const escalated = isEscalatedSentiment(ticket.sentiment);
   const gift = recommendGift({
     riskScore: risk.riskScore,
-    escalated: isEscalatedSentiment(ticket.sentiment),
+    escalated,
     catalog,
     daysInWait: timeline.daysInWait,
   });
 
-  return { risk, reassurance, gift };
+  // Full-catalog availability for the ticket gift panel — same band-only unlock
+  // model the /api/gift-send server re-derives, so what the panel offers as
+  // unlocked is exactly what the server will authorize.
+  const availability = giftAvailability({
+    catalog,
+    riskScore: risk.riskScore,
+    escalated,
+    ltvCents: customer.ltvCents,
+    daysInWait: timeline.daysInWait,
+    orderValueCents: order.orderValueCents,
+  });
+
+  return { risk, reassurance, gift, availability };
 }

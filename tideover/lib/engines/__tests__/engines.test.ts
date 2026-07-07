@@ -3,10 +3,11 @@ import { test } from "node:test";
 import { dayStageFor, draftReassurance } from "@/lib/engines/reassurance";
 import { scoreRefundRisk, DEFAULT_PROFILE } from "@/lib/engines/refund-risk";
 import { recommendGift } from "@/lib/engines/gift";
+import { computeTicketIntelligence } from "@/lib/engines";
 import { scoreSignal } from "@/lib/engines/social-signal";
 import { containsHardDate } from "@/lib/proof";
 import { formatBand } from "@/lib/time";
-import type { Customer, Gift, Merchant, Order, SocialSignal } from "@/lib/types";
+import type { Customer, Gift, Merchant, Order, SocialSignal, Ticket } from "@/lib/types";
 
 const STAGES = [
   { key: "sourcing" as const, label: "Sourcing", dayBand: { from: 0, to: 12 }, blurb: "sourcing" },
@@ -108,6 +109,48 @@ test("gift unlock: risk band picks the best unlocked tier; LTV no longer gates",
   // standard band (score < 50) unlocks only base — this catalog has no base gift, so nothing is offered.
   const standard = recommendGift({ riskScore: 10, escalated: false, catalog, daysInWait: 0 });
   assert.equal(standard.gift, null);
+});
+
+test("computeTicketIntelligence threads full-catalog gift availability (UX-86)", () => {
+  const catalog: Gift[] = [
+    { id: "gft_base", merchantId: "mch_t", name: "Early access", kind: "early-access", tier: "base", costCents: 0, perceivedValueCents: 2000, eligibility: { minLtvCents: 0, minWaitDays: 0, minRiskScore: 0 } },
+    { id: "gft_mid", merchantId: "mch_t", name: "Priority dispatch", kind: "priority-dispatch", tier: "mid", costCents: 1200, perceivedValueCents: 6000, eligibility: { minLtvCents: 0, minWaitDays: 0, minRiskScore: 0 } },
+    { id: "gft_full", merchantId: "mch_t", name: "Next-order credit", kind: "next-order-credit", tier: "full", costCents: 2500, perceivedValueCents: 4000, eligibility: { minLtvCents: 0, minWaitDays: 0, minRiskScore: 0 } },
+  ];
+  const merchantWithCatalog: Merchant = { ...merchant, giftCatalogIds: catalog.map((g) => g.id) };
+
+  // Escalated (chargeback-threat) → every tier unlocks; availability covers the
+  // WHOLE catalog in catalog order, each entry flagged unlocked.
+  const hot = computeTicketIntelligence({
+    ticket: { sentiment: "chargeback-threat" } as Ticket,
+    order: orderDaysAgo(80),
+    customer,
+    merchant: merchantWithCatalog,
+    catalog,
+    ticketsLast7d: 1,
+    now: NOW,
+  });
+  assert.equal(hot.availability.length, catalog.length);
+  assert.deepEqual(hot.availability.map((a) => a.gift.id), catalog.map((g) => g.id));
+  assert.ok(hot.availability.every((a) => a.unlocked));
+
+  // Calm + early wait → only the base tier unlocks; mid/full stay locked but are
+  // STILL listed (the panel shows the ladder), each carrying an unlock reason.
+  const calm = computeTicketIntelligence({
+    ticket: { sentiment: "calm" } as Ticket,
+    order: orderDaysAgo(2, 110, "sourcing"),
+    customer,
+    merchant: merchantWithCatalog,
+    catalog,
+    ticketsLast7d: 0,
+    now: NOW,
+  });
+  assert.equal(calm.availability.length, catalog.length);
+  const byTier = new Map(calm.availability.map((a) => [a.gift.tier, a]));
+  assert.equal(byTier.get("base")?.unlocked, true);
+  assert.equal(byTier.get("mid")?.unlocked, false);
+  assert.equal(byTier.get("full")?.unlocked, false);
+  assert.match(byTier.get("mid")!.unlockReason, /watch risk/i);
 });
 
 test("social-signal flags negative brand mention, ignores noise", () => {
