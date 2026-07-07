@@ -205,6 +205,15 @@ const gifts: GiftRepository = {
   async findById(id) {
     return findOneWhere<Gift>("gifts", { id });
   },
+  async createMany(gs: Gift[]) {
+    // Empty input is a no-op — insertMany rejects an empty array.
+    if (gs.length === 0) return gs;
+    const c = await col<Gift>("gifts");
+    // Insert copies: insertMany mutates each argument by attaching _id, so the
+    // caller's gift objects (and their giftCatalogIds link) stay clean.
+    await c.insertMany(gs.map((g) => ({ ...g })) as Parameters<typeof c.insertMany>[0]);
+    return gs;
+  },
 };
 
 const social: SocialSignalRepository = {

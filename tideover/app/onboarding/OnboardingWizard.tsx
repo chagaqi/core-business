@@ -8,6 +8,14 @@ import { Stepper } from "@/components/ui/Stepper";
 import { Logo } from "@/components/ui/Logo";
 import { ConnectPanel } from "@/app/onboarding/ConnectPanel";
 import { DataSourcePicker } from "@/components/product/DataSourcePicker";
+import {
+  GiftCatalogEditor,
+  SUGGESTED_GIFTS,
+  giftsValid,
+  newGiftRow,
+  GIFT_TIER_OPTIONS,
+  type GiftRow,
+} from "@/app/onboarding/GiftCatalogEditor";
 import type { HelpdeskSetup } from "@/lib/ingest-templates";
 
 /**
@@ -62,8 +70,9 @@ const DEFAULT_STAGES: StageRow[] = [
   { key: "dispatch", label: "Pick, pack & dispatch", from: 104, to: 118, blurb: "your order is being packed for dispatch" },
 ];
 
-const FULL_STEPS = ["Brand & voice", "Current tools", "Real timeline", "Support reality", "Review & generate"];
+const FULL_STEPS = ["Brand & voice", "Current tools", "Real timeline", "Support reality", "Goodwill gifts", "Review & generate"];
 const FAST_STEPS = ["Essentials", "Timeline", "Review & generate"];
+const GIFT_STEP_LABEL = "Goodwill gifts";
 
 const PREVIEW_LABEL: Record<string, string> = {
   "day-7": "Day 7 — calm confirmation",
@@ -97,6 +106,9 @@ export function OnboardingWizard() {
   // support reality
   const [worstStory, setWorstStory] = useState("");
 
+  // goodwill gifts — prefilled so the merchant edits, never authors from scratch
+  const [gifts, setGifts] = useState<GiftRow[]>(SUGGESTED_GIFTS);
+
   // submit state
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,11 +134,30 @@ export function OnboardingWizard() {
     setStages((prev) => prev.map((s, idx) => (idx === i ? { ...s, ...patch } : s)));
   }
 
+  function updateGift(i: number, patch: Partial<GiftRow>) {
+    setGifts((prev) => prev.map((g, idx) => (idx === i ? { ...g, ...patch } : g)));
+  }
+
+  function removeGift(i: number) {
+    setError(null);
+    setGifts((prev) => prev.filter((_, idx) => idx !== i));
+  }
+
+  function addGift() {
+    setError(null);
+    setGifts((prev) => [...prev, newGiftRow()]);
+  }
+
   function next() {
     setError(null);
     // brandName lives on the first step in both modes
     if (step === 0 && !brandValid) {
       setError("Please add your brand name to continue.");
+      return;
+    }
+    // gift gate: can't leave the Goodwill gifts step without a valid catalog
+    if (steps[step] === GIFT_STEP_LABEL && !giftsValid(gifts)) {
+      setError("Add at least 3 goodwill gifts, including one Base gift, to continue.");
       return;
     }
     setStep((s) => Math.min(s + 1, lastStep));
@@ -147,6 +178,12 @@ export function OnboardingWizard() {
     if (!brandValid) {
       setError("Please add your brand name before generating.");
       setStep(0);
+      return;
+    }
+    if (!giftsValid(gifts)) {
+      setError("Add at least 3 goodwill gifts, including one Base gift, before generating.");
+      const giftStep = steps.indexOf(GIFT_STEP_LABEL);
+      if (giftStep >= 0) setStep(giftStep);
       return;
     }
     setSubmitting(true);
@@ -176,6 +213,13 @@ export function OnboardingWizard() {
             blurb: s.blurb,
           })),
           worstStory: worstStory.trim() || undefined,
+          gifts: gifts.map((g) => ({
+            name: g.name.trim(),
+            kind: g.kind,
+            tier: g.tier,
+            costCents: Math.max(0, Math.round(g.costCents)),
+            perceivedValueCents: Math.max(0, Math.round(g.perceivedValueCents)),
+          })),
         }),
       });
       if (!res.ok) throw new Error("request failed");
@@ -292,6 +336,7 @@ export function OnboardingWizard() {
             setWindowMax={setWindowMax}
             stages={stages}
             updateStage={updateStage}
+            gifts={gifts}
           />
         ) : (
           <FullSteps
@@ -318,6 +363,10 @@ export function OnboardingWizard() {
             updateStage={updateStage}
             worstStory={worstStory}
             setWorstStory={setWorstStory}
+            gifts={gifts}
+            updateGift={updateGift}
+            removeGift={removeGift}
+            addGift={addGift}
           />
         )}
 
@@ -481,6 +530,10 @@ function FullSteps(props: {
   updateStage: (i: number, patch: Partial<StageRow>) => void;
   worstStory: string;
   setWorstStory: (v: string) => void;
+  gifts: GiftRow[];
+  updateGift: (i: number, patch: Partial<GiftRow>) => void;
+  removeGift: (i: number) => void;
+  addGift: () => void;
 }) {
   const { step } = props;
 
@@ -581,6 +634,17 @@ function FullSteps(props: {
     );
   }
 
+  if (step === 4) {
+    return (
+      <GiftCatalogEditor
+        gifts={props.gifts}
+        updateGift={props.updateGift}
+        removeGift={props.removeGift}
+        addGift={props.addGift}
+      />
+    );
+  }
+
   // review
   return (
     <ReviewPanel
@@ -595,6 +659,7 @@ function FullSteps(props: {
       windowMax={props.windowMax}
       stages={props.stages}
       worstStory={props.worstStory}
+      gifts={props.gifts}
     />
   );
 }
@@ -612,6 +677,7 @@ function FastSteps(props: {
   setWindowMax: (n: number) => void;
   stages: StageRow[];
   updateStage: (i: number, patch: Partial<StageRow>) => void;
+  gifts: GiftRow[];
 }) {
   const { step } = props;
 
@@ -619,8 +685,8 @@ function FastSteps(props: {
     return (
       <div className="flex flex-col gap-5">
         <p className="text-[13.5px] text-ink-mute">
-          The fast path: just the essentials. You can fine-tune voice and groups later from your
-          cockpit.
+          The fast path: just the essentials. You can fine-tune voice, gifts, and groups later from
+          your cockpit.
         </p>
         <Field label="Brand name">
           <TextInput
@@ -668,6 +734,7 @@ function FastSteps(props: {
       windowMax={props.windowMax}
       stages={props.stages}
       worstStory=""
+      gifts={props.gifts}
       fast
     />
   );
@@ -695,9 +762,12 @@ function ReviewPanel(props: {
   windowMax: number;
   stages: StageRow[];
   worstStory: string;
+  gifts: GiftRow[];
   fast?: boolean;
 }) {
   const helpdeskLabel = HELPDESK_OPTIONS.find((o) => o.value === props.helpdesk)?.label ?? props.helpdesk;
+  const tierLabel = (t: GiftRow["tier"]) => GIFT_TIER_OPTIONS.find((o) => o.value === t)?.label ?? t;
+  const giftsSummary = props.gifts.map((g) => `${g.name} (${tierLabel(g.tier)})`).join(" · ");
   return (
     <div className="flex flex-col gap-5">
       <p className="text-[14px] leading-relaxed text-slate">
@@ -721,6 +791,7 @@ function ReviewPanel(props: {
           label="Stages"
           value={props.stages.map((s) => `${s.label} (${s.from}–${s.to})`).join(" · ")}
         />
+        <ReviewRow label={`Goodwill gifts (${props.gifts.length})`} value={giftsSummary} />
         {!props.fast && props.worstStory ? <ReviewRow label="Toughest message" value={props.worstStory} /> : null}
       </div>
     </div>

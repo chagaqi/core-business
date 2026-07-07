@@ -1,7 +1,17 @@
 import { newId, newInboxToken, newStatusToken } from "@/lib/ids";
 import { getRepositories } from "@/lib/repositories";
 import { draftReassurance } from "@/lib/engines/reassurance";
-import type { Customer, DayStageKey, Merchant, Order, PlaybookTemplates, StageDef } from "@/lib/types";
+import type {
+  Customer,
+  DayStageKey,
+  Gift,
+  GiftKind,
+  GiftTier,
+  Merchant,
+  Order,
+  PlaybookTemplates,
+  StageDef,
+} from "@/lib/types";
 
 /**
  * Turns onboarding-wizard answers into a live Merchant record + a seeded
@@ -9,6 +19,19 @@ import type { Customer, DayStageKey, Merchant, Order, PlaybookTemplates, StageDe
  * the reassurance language before a single reply goes out. This is the
  * "near-frictionless onboarding" payoff: answers in → working playbook out.
  */
+
+/**
+ * A merchant-authored goodwill gift, straight from the onboarding wizard. The
+ * merchant only picks a TIER (base | mid | full) — the UX-86 lever; the raw
+ * risk/wait/LTV eligibility numbers are derived on write, never surfaced.
+ */
+export interface GiftInput {
+  name: string;
+  kind: GiftKind;
+  tier: GiftTier;
+  costCents: number;
+  perceivedValueCents: number;
+}
 
 export interface IntakeData {
   brandName: string;
@@ -22,7 +45,33 @@ export interface IntakeData {
   windowMaxDays: number;
   stages: Array<{ key: StageDef["key"]; label: string; from: number; to: number; blurb: string }>;
   worstStory?: string;
+  /**
+   * The merchant's goodwill gift catalog. Optional + tolerant: absent/empty
+   * falls back to DEFAULT_GIFTS so legacy callers (and the CSV-import tests)
+   * keep working — a real wizard submit always carries an edited catalog.
+   */
+  gifts?: GiftInput[];
 }
+
+/**
+ * tier → minRiskScore, the retained eligibility field the ticket gift panel
+ * still reads (the ENGINE gates on tier-vs-band now, not this). base = always
+ * available, mid = watch-risk & up, full = high-risk / escalated.
+ */
+const TIER_MIN_RISK: Record<GiftTier, number> = { base: 0, mid: 50, full: 75 };
+
+/**
+ * The five suggested goodwill gifts a new merchant starts from (mirrors the demo
+ * seed catalog: 2 base, 2 mid, 1 full — so the >=3-gifts / >=1-base gate is met
+ * on arrival). Used as the fallback when intake carries no gift catalog.
+ */
+const DEFAULT_GIFTS: GiftInput[] = [
+  { name: "Early access to the next drop", kind: "early-access", tier: "base", costCents: 0, perceivedValueCents: 4000 },
+  { name: "Handwritten founder note", kind: "founder-note", tier: "mid", costCents: 500, perceivedValueCents: 3000 },
+  { name: "Priority dispatch (first out the door)", kind: "priority-dispatch", tier: "mid", costCents: 1200, perceivedValueCents: 6000 },
+  { name: "Digital perk pack (wallpapers + guide)", kind: "digital-perk", tier: "base", costCents: 0, perceivedValueCents: 2000 },
+  { name: "$25 next-order credit", kind: "next-order-credit", tier: "full", costCents: 2500, perceivedValueCents: 2500 },
+];
 
 const DEFAULT_STAGES: IntakeData["stages"] = [
   { key: "sourcing", label: "Sourcing", from: 0, to: 12, blurb: "components are being sourced" },
@@ -90,6 +139,7 @@ export async function createMerchantFromIntake(intake: IntakeData): Promise<{
     stages,
     playbook: buildPlaybook(intake.brandName, intake.signoff || `— ${intake.brandName}`),
     ltvTiers: { standard: 0, high: 50000, vip: 200000 },
+    // populated below from the intake gift catalog (UX-86) — no longer empty.
     giftCatalogIds: [],
     slaWindows: { amStart: "9:00", pmStart: "15:00", tz: "ET" },
     baseline: {
@@ -101,7 +151,32 @@ export async function createMerchantFromIntake(intake: IntakeData): Promise<{
     },
     createdAt: new Date().toISOString(),
   };
+
+  // Build the merchant's goodwill gift catalog (UX-86). A real merchant used to
+  // ship with giftCatalogIds:[] and no gifts; now the wizard's edited catalog
+  // (or the suggested default) becomes real Gift records. Tier is the merchant
+  // lever; the retained eligibility numbers are derived here from tier.
+  const giftInputs = intake.gifts && intake.gifts.length > 0 ? intake.gifts : DEFAULT_GIFTS;
+  const gifts: Gift[] = giftInputs.map((g) => ({
+    id: newId("gft"),
+    merchantId: merchant.id,
+    name: g.name,
+    kind: g.kind,
+    tier: g.tier,
+    costCents: g.costCents,
+    perceivedValueCents: g.perceivedValueCents,
+    eligibility: {
+      minLtvCents: 0,
+      minWaitDays: 0,
+      minRiskScore: TIER_MIN_RISK[g.tier],
+    },
+  }));
+  // Link the merchant to its catalog before persisting so the stored record
+  // (not just the returned object) carries the ids.
+  merchant.giftCatalogIds = gifts.map((g) => g.id);
+
   await repos.merchants.create(merchant);
+  await repos.gifts.createMany(gifts);
 
   // generate preview scripts against sample orders at each day-stage
   const sampleCustomer: Customer = {

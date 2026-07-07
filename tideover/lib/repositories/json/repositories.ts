@@ -172,6 +172,12 @@ const gifts: GiftRepository = {
   async findById(id) {
     return store.gifts.find((g: Gift) => g.id === id) ?? null;
   },
+  async createMany(gs: Gift[]) {
+    // Push copies onto the in-memory gifts store — the same path other
+    // collections persist through (store.gifts survives for the process life).
+    for (const g of gs) store.gifts.push({ ...g });
+    return gs;
+  },
 };
 
 const social: SocialSignalRepository = {

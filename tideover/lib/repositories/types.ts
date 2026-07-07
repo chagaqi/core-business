@@ -95,6 +95,14 @@ export interface TicketRepository {
 export interface GiftRepository {
   listByMerchant(merchantId: string): Promise<Gift[]>;
   findById(id: string): Promise<Gift | null>;
+  /**
+   * Bulk-insert a merchant's goodwill gift catalog in one call (UX-86
+   * onboarding). Each gift's `id` is a unique prefixed nanoid minted by the
+   * caller. Returns the inserted gifts in the same order; an empty input is a
+   * no-op that returns `[]`. Both drivers insert copies so the caller's objects
+   * are never mutated.
+   */
+  createMany(gifts: Gift[]): Promise<Gift[]>;
 }
 
 export interface SocialSignalRepository {
