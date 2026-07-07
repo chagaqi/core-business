@@ -214,7 +214,7 @@ export const ApprovalBar = forwardRef<ApprovalBarHandle, {
         </p>
       ) : null}
       {escalated ? (
-        <p className="rounded-lg border border-risk-amber/30 bg-[rgba(217,118,47,0.08)] px-3 py-2 text-[12px] text-terracotta-600">
+        <p className="rounded-lg border border-risk-amber/30 bg-[rgba(138,102,18,0.08)] px-3 py-2 text-[12px] text-amber-status">
           Flagged for manager review this window.
         </p>
       ) : null}

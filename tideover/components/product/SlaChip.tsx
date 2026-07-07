@@ -12,7 +12,7 @@ import type { SlaChipView, SlaTone } from "@/lib/sla";
 
 const TONE_CLASS: Record<SlaTone, string> = {
   ok: "border-border bg-sand text-ink-mute",
-  amber: "border-terracotta-600/25 bg-[rgba(217,118,47,0.1)] text-terracotta-600",
+  amber: "border-[rgba(138,102,18,0.3)] bg-[rgba(138,102,18,0.1)] text-amber-status",
   red: "border-risk-red/25 bg-[rgba(192,70,59,0.1)] text-risk-red",
   met: "border-risk-green/25 bg-[rgba(62,142,110,0.1)] text-risk-green",
   missed: "border-risk-red/25 bg-[rgba(192,70,59,0.1)] text-risk-red",

@@ -20,14 +20,19 @@
   --terracotta-300: #e0833d;
   --tan: #e9b486;
 
+  /* caution / watch — a warm gold, deliberately distinct from terracotta (which
+     means clickable action, per design rule D1). The suggested #C99A2E failed
+     WCAG AA on sand (2.43:1), so this is darkened to clear 4.5:1 as text. */
+  --amber-status: #8a6612;
+
   --ink: #11252a;
   --slate: #374a4f;
   --ink-inverse: #f4f9f9;
-  --ink-mute: #6a7b80;
+  --ink-mute: #5a6b70;
 
   --border: #ebe2d0;
   --risk-red: #c0463b;
-  --risk-amber: #d9762f;
+  --risk-amber: var(--amber-status);
   --risk-green: #3e8e6e;
 
   --maxw: 1160px;
@@ -156,6 +161,13 @@
     transform: translateY(-2px);
     box-shadow: 0 16px 30px -14px rgba(0, 0, 0, 0.35);
   }
+  /* disabled affordance (UX-25) — a blocked/busy button must not read as active */
+  .btn:disabled,
+  .btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 
   .link-quiet {
     color: var(--teal);
@@ -165,6 +177,11 @@
   }
   .link-quiet:hover {
     border-bottom-color: var(--teal);
+  }
+  .link-quiet:disabled,
+  .link-quiet[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   /* section rhythm */
@@ -201,9 +218,9 @@
     border-color: rgba(192, 70, 59, 0.25);
   }
   .pill-amber {
-    color: var(--terracotta-600);
-    background: rgba(217, 118, 47, 0.1);
-    border-color: rgba(217, 118, 47, 0.25);
+    color: var(--amber-status);
+    background: rgba(138, 102, 18, 0.1);
+    border-color: rgba(138, 102, 18, 0.3);
   }
   .pill-green {
     color: var(--risk-green);

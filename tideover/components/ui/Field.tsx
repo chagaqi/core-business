@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import type { ReactNode } from "react";
 
 const baseInput =
-  "w-full rounded-lg border border-border bg-paper px-3.5 py-2.5 text-[15px] text-ink outline-none transition focus:border-teal";
+  "w-full rounded-lg border border-border bg-paper px-3.5 py-2.5 text-[16px] text-ink transition focus:border-teal";
 
 export function Field({
   label,

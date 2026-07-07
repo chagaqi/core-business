@@ -2,6 +2,7 @@ import { getRepositories } from "@/lib/repositories";
 import { timeAgo } from "@/lib/time";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { UpdateComposer, type ComposerUpdate } from "@/components/product/UpdateComposer";
+import { NoMerchantState } from "@/components/product/NoMerchantState";
 import type { Merchant, MerchantUpdate } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +29,7 @@ export default async function UpdatesPage({
   const repos = getRepositories();
   const merchants = await repos.merchants.list();
   if (merchants.length === 0) {
-    return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
+    return <NoMerchantState />;
   }
   const merchantId =
     searchParams.merchant && merchants.some((m) => m.id === searchParams.merchant)

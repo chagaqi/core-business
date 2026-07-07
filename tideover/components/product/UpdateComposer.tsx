@@ -185,7 +185,7 @@ export function UpdateComposer({
                     readOnly
                     value={u.ksDraft}
                     onFocus={(e) => e.currentTarget.select()}
-                    className="min-h-[140px] w-full resize-y rounded-md border border-border bg-paper p-3 font-mono text-[12.5px] leading-relaxed text-ink outline-none"
+                    className="min-h-[140px] w-full resize-y rounded-md border border-border bg-paper p-3 font-mono text-[12.5px] leading-relaxed text-ink"
                   />
                 </div>
               ) : null}

@@ -32,12 +32,15 @@ const config: Config = {
         ink: "#11252A", // headlines / body (near-black cool)
         slate: "#374A4F", // secondary copy
         "ink-inverse": "#F4F9F9", // text on dark
-        "ink-mute": "#6A7B80", // muted labels
+        "ink-mute": "#5A6B70", // muted labels (darkened for WCAG AA on sand+paper)
+
+        // caution / watch — warm gold, deliberately NOT terracotta (D1: terracotta = action)
+        "amber-status": "#8A6612",
 
         // lines / state
         border: "#EBE2D0", // warm card borders/dividers
         "risk-red": "#C0463B",
-        "risk-amber": "#D9762F",
+        "risk-amber": "#8A6612", // = amber-status; caution ≠ terracotta action
         "risk-green": "#3E8E6E",
       },
       fontFamily: {

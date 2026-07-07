@@ -110,8 +110,8 @@ export function DraftRail({
       </div>
 
       {managerNote ? (
-        <div className="rounded-lg border border-risk-amber/30 bg-[rgba(217,118,47,0.08)] px-3 py-2.5">
-          <p className="text-[12px] font-semibold uppercase tracking-wider text-terracotta-600">
+        <div className="rounded-lg border border-risk-amber/30 bg-[rgba(138,102,18,0.08)] px-3 py-2.5">
+          <p className="text-[12px] font-semibold uppercase tracking-wider text-amber-status">
             Manager note
           </p>
           <p className="mt-0.5 text-[13px] text-slate">{managerNote}</p>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getRepositories } from "@/lib/repositories";
 import { formatBaseline } from "@/lib/baseline";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
+import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { PrintButton } from "./PrintButton";
 
 /**
@@ -36,7 +37,7 @@ export default async function BaselinePage({
   const repos = getRepositories();
   const merchants = await repos.merchants.list();
   if (merchants.length === 0) {
-    return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
+    return <NoMerchantState />;
   }
   const merchantId =
     searchParams.merchant && merchants.some((m) => m.id === searchParams.merchant)

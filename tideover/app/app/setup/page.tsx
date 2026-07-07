@@ -3,6 +3,7 @@ import { clsx } from "clsx";
 import { getSetupChecklist } from "@/lib/service";
 import { getRepositories } from "@/lib/repositories";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
+import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { Button } from "@/components/ui/Button";
 import { integrationHealth, type SetupItemKey } from "@/lib/setup";
 
@@ -39,7 +40,7 @@ export default async function SetupPage({
   const repos = getRepositories();
   const merchants = await repos.merchants.list();
   if (merchants.length === 0) {
-    return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
+    return <NoMerchantState />;
   }
   const merchantId =
     searchParams.merchant && merchants.some((m) => m.id === searchParams.merchant)
@@ -49,7 +50,7 @@ export default async function SetupPage({
 
   const checklist = await getSetupChecklist(merchantId);
   if (!checklist) {
-    return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
+    return <NoMerchantState />;
   }
   const { items, completed, total, allDone } = checklist;
 

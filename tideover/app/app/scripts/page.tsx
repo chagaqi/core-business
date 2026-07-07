@@ -1,6 +1,7 @@
 import { computeScriptPerformance, SCRIPT_PERF_MIN_N } from "@/lib/service";
 import { getRepositories } from "@/lib/repositories";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
+import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { Tag } from "@/components/ui/Badge";
 import type { DayStageKey, ProductionStageKey } from "@/lib/types";
 
@@ -90,7 +91,7 @@ export default async function ScriptsPage({
   const repos = getRepositories();
   const merchants = await repos.merchants.list();
   if (merchants.length === 0) {
-    return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
+    return <NoMerchantState />;
   }
   const merchantId =
     searchParams.merchant && merchants.some((m) => m.id === searchParams.merchant)
