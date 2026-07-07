@@ -19,6 +19,10 @@ interface Counts {
   customersCreated: number;
   ordersCreated: number;
   skipped: number;
+  /** rows with no parseable pledge/order date — defaulted to import time. */
+  datelessRows?: number;
+  /** rows with no parseable pledge amount — defaulted to the $50 floor. */
+  unparseableMoneyRows?: number;
 }
 
 const FORMAT_LABEL: Record<ImportFormat, string> = {
@@ -97,6 +101,11 @@ export function ImportPanel({ merchantId }: ImportPanelProps) {
         Your file is parsed <strong>in your browser</strong>. Only the mapped fields in the preview
         below are sent to Tideover &mdash; the raw CSV never leaves your machine.
       </p>
+      <p className="mb-4 rounded-xl border border-teal-300 bg-accent-card/60 p-3 text-[12.5px] leading-relaxed text-ink">
+        Works with Kickstarter backer reports + BackerKit exports &mdash; needs at least: name,
+        email, pledge amount, and a pledge/order <strong>date</strong> column so we can track each
+        backer&rsquo;s real wait.
+      </p>
 
       <input
         ref={inputRef}
@@ -113,7 +122,12 @@ export function ImportPanel({ merchantId }: ImportPanelProps) {
         {fileName ? <span className="text-[13px] text-ink-mute">{fileName}</span> : null}
       </div>
 
-      {format ? (
+      {format === "unknown" ? (
+        <p className="mt-4 rounded-lg border border-[rgba(138,102,18,0.3)] bg-[rgba(138,102,18,0.08)] px-3 py-2 text-[13px] text-amber-status">
+          {FORMAT_LABEL.unknown} &middot; {mapped.length} row{mapped.length === 1 ? "" : "s"} with an
+          email. Double-check the preview below before importing.
+        </p>
+      ) : format ? (
         <p className="mt-4 text-[13px] text-slate">
           Detected: <strong className="text-ink">{FORMAT_LABEL[format]}</strong> &middot;{" "}
           {mapped.length} row{mapped.length === 1 ? "" : "s"} with an email
@@ -128,7 +142,7 @@ export function ImportPanel({ merchantId }: ImportPanelProps) {
                 <th className="px-3 py-2 font-semibold">First name</th>
                 <th className="px-3 py-2 font-semibold">Email</th>
                 <th className="px-3 py-2 font-semibold">Group</th>
-                <th className="px-3 py-2 font-semibold">Value</th>
+                <th className="px-3 py-2 font-semibold">Pledge value</th>
                 <th className="px-3 py-2 font-semibold">Disclosed ETA</th>
               </tr>
             </thead>
@@ -155,11 +169,25 @@ export function ImportPanel({ merchantId }: ImportPanelProps) {
       {error ? <p className="mt-4 text-[13.5px] font-medium text-terracotta-600">{error}</p> : null}
 
       {counts ? (
-        <p className="mt-5 rounded-xl border border-teal-300 bg-accent-card/60 p-3 text-[14px] font-medium text-ink">
-          {counts.customersCreated} customer{counts.customersCreated === 1 ? "" : "s"},{" "}
-          {counts.ordersCreated} order{counts.ordersCreated === 1 ? "" : "s"} created
-          {counts.skipped ? ` · ${counts.skipped} row${counts.skipped === 1 ? "" : "s"} skipped (no email)` : ""}.
-        </p>
+        <div className="mt-5 flex flex-col gap-2">
+          <p className="rounded-xl border border-teal-300 bg-accent-card/60 p-3 text-[14px] font-medium text-ink">
+            {counts.customersCreated} customer{counts.customersCreated === 1 ? "" : "s"},{" "}
+            {counts.ordersCreated} order{counts.ordersCreated === 1 ? "" : "s"} imported
+            {counts.skipped ? ` · ${counts.skipped} row${counts.skipped === 1 ? "" : "s"} skipped (no email)` : ""}.
+          </p>
+          {counts.datelessRows ? (
+            <p className="rounded-xl border border-[rgba(138,102,18,0.3)] bg-[rgba(138,102,18,0.08)] p-3 text-[13px] text-amber-status">
+              {counts.datelessRows} row{counts.datelessRows === 1 ? "" : "s"} had no readable date
+              &mdash; those backers default to today; check your export has a pledge-date column.
+            </p>
+          ) : null}
+          {counts.unparseableMoneyRows ? (
+            <p className="rounded-xl border border-[rgba(138,102,18,0.3)] bg-[rgba(138,102,18,0.08)] p-3 text-[13px] text-amber-status">
+              {counts.unparseableMoneyRows} row{counts.unparseableMoneyRows === 1 ? "" : "s"} had no
+              readable pledge amount.
+            </p>
+          ) : null}
+        </div>
       ) : (
         <div className="mt-5">
           <Button onClick={runImport} disabled={importing || mapped.length === 0}>

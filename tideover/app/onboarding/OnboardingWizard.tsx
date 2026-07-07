@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/Button";
 import { Field, TextInput, TextArea, Select } from "@/components/ui/Field";
 import { Stepper } from "@/components/ui/Stepper";
 import { Logo } from "@/components/ui/Logo";
-import { ImportPanel } from "@/app/onboarding/ImportPanel";
 import { ConnectPanel } from "@/app/onboarding/ConnectPanel";
+import { DataSourcePicker } from "@/components/product/DataSourcePicker";
 import type { HelpdeskSetup } from "@/lib/ingest-templates";
 
 /**
@@ -237,7 +237,7 @@ export function OnboardingWizard() {
           <ConnectPanel gorgias={result.connect.gorgias} zendesk={result.connect.zendesk} />
         ) : null}
 
-        <ImportPanel merchantId={result.merchantId} />
+        <DataSourcePicker merchantId={result.merchantId} />
 
         <div className="mt-9 flex flex-wrap items-center gap-4">
           <Button href={`/app?merchant=${result.merchantId}`}>See your cockpit</Button>
