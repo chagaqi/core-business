@@ -4,6 +4,7 @@ import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { Tag } from "@/components/ui/Badge";
 import type { DayStageKey, ProductionStageKey } from "@/lib/types";
+import type { Metadata } from "next";
 
 /**
  * Script Performance (ADR-0007, task E3) — the "measured, not invented" surface.
@@ -23,6 +24,7 @@ import type { DayStageKey, ProductionStageKey } from "@/lib/types";
  */
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Scripts — Tideover" };
 
 const DAY_STAGE_ORDER: Record<DayStageKey, number> = {
   "day-7": 0,
@@ -158,11 +160,36 @@ export default async function ScriptsPage({
               <tr className="border-b border-border text-[11px] uppercase tracking-wider text-ink-mute">
                 <th className="px-5 py-2.5 font-semibold">Slot &amp; script</th>
                 <th className="px-5 py-2.5 text-right font-semibold">Sends</th>
-                <th className="px-5 py-2.5 font-semibold">Edit rate</th>
-                <th className="px-5 py-2.5 font-semibold">Customer reply (calm)</th>
-                <th className="px-5 py-2.5 font-semibold">Reopen rate</th>
-                <th className="px-5 py-2.5 font-semibold">CSAT</th>
-                <th className="px-5 py-2.5 font-semibold">Quiet resolution</th>
+                <th
+                  className="px-5 py-2.5 font-semibold"
+                  title="How much operators changed the draft before sending"
+                >
+                  Edit rate
+                </th>
+                <th
+                  className="px-5 py-2.5 font-semibold"
+                  title="The share of inbound replies that came back calm"
+                >
+                  Customer reply (calm)
+                </th>
+                <th
+                  className="px-5 py-2.5 font-semibold"
+                  title="Replies followed by the customer coming back"
+                >
+                  Reopen rate
+                </th>
+                <th
+                  className="px-5 py-2.5 font-semibold"
+                  title="The customer's own thumbs-up on the status page"
+                >
+                  CSAT
+                </th>
+                <th
+                  className="px-5 py-2.5 font-semibold"
+                  title="Sends that got no reply and no reopen for seven days — the wait settled"
+                >
+                  Quiet resolution
+                </th>
               </tr>
             </thead>
             <tbody>

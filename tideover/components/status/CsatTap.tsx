@@ -37,7 +37,7 @@ export function CsatTap({ token, accent }: { token: string; accent?: string }) {
   if (state === "done") {
     return (
       <div
-        className="flex items-center gap-2.5 rounded-2xl border border-border bg-paper px-5 py-4"
+        className="flex flex-wrap items-center gap-2.5 rounded-2xl border border-border bg-paper px-5 py-4"
         role="status"
       >
         <span aria-hidden className="text-[17px]">
@@ -49,6 +49,18 @@ export function CsatTap({ token, accent }: { token: string; accent?: string }) {
             ? "We hear you — a real person reads these and we'll keep making the wait clearer."
             : "Glad this helped. We'll keep this page current as your order moves."}
         </p>
+        {/* UX-40: a mis-tap had no way back — this is the re-tap the docstring
+            already promised. */}
+        <button
+          type="button"
+          onClick={() => {
+            setState("idle");
+            setPicked(null);
+          }}
+          className="text-[12.5px] font-semibold text-ink-mute underline decoration-border underline-offset-2"
+        >
+          Change your answer
+        </button>
       </div>
     );
   }

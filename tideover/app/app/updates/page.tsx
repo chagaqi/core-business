@@ -4,8 +4,10 @@ import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { UpdateComposer, type ComposerUpdate } from "@/components/product/UpdateComposer";
 import { NoMerchantState } from "@/components/product/NoMerchantState";
 import type { Merchant, MerchantUpdate } from "@/lib/types";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Updates — Tideover" };
 
 /**
  * Workshop update composer (ADR-0009, task U2). One post fans out to every

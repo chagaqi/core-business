@@ -6,6 +6,7 @@ import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { Button } from "@/components/ui/Button";
 import { integrationHealth, type SetupItemKey } from "@/lib/setup";
+import type { Metadata } from "next";
 
 /**
  * Setup checklist (task U4) — "you're N of 5 set up".
@@ -22,6 +23,7 @@ import { integrationHealth, type SetupItemKey } from "@/lib/setup";
  */
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Setup — Tideover" };
 
 /** Page-level CTA label for the "do this next" step (presentation only). */
 const CTA_LABEL: Record<SetupItemKey, string> = {

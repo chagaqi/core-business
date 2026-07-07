@@ -7,6 +7,7 @@ import { OrderTimeline } from "@/components/status/OrderTimeline";
 import { WorkshopFeed } from "@/components/status/WorkshopFeed";
 import { AskBox } from "@/components/status/AskBox";
 import { WidgetFrame } from "@/components/status/WidgetFrame";
+import { ContactLink } from "./ContactLink";
 
 // Generic, non-indexed — this lives inside a merchant's <iframe>.
 export const metadata: Metadata = {
@@ -32,6 +33,7 @@ export default async function WidgetPage({ params }: { params: { token: string }
             <p className="mt-1 text-[13px] leading-relaxed text-ink-mute">
               Check the link in your confirmation email, or reach out to the store.
             </p>
+            <ContactLink />
           </div>
         </div>
       </WidgetFrame>

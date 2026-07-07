@@ -4,8 +4,10 @@ import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { Tag } from "@/components/ui/Badge";
 import { clsx } from "clsx";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Social — Tideover" };
 
 const PLATFORM_LABEL: Record<string, string> = {
   twitter: "Twitter",

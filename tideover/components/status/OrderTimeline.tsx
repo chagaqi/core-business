@@ -51,9 +51,16 @@ export function OrderTimeline({
                 >
                   {stage.label}
                 </span>
-                <span className="text-[12px] font-medium text-ink-mute">
-                  days {stage.dayBand.from}&ndash;{stage.dayBand.to}
-                </span>
+                {/* UX-39: WaitProgress is the single canonical "day N of ~lo-hi"
+                    number for the order. A static per-stage day band on every
+                    row here could visibly disagree with it, so only the active
+                    stage — which is the one being compared against — keeps a
+                    day band; done/upcoming rows stay qualitative only. */}
+                {isActive ? (
+                  <span className="text-[12px] font-medium text-ink-mute">
+                    days {stage.dayBand.from}&ndash;{stage.dayBand.to}
+                  </span>
+                ) : null}
                 {isActive ? (
                   <span
                     className="inline-flex items-center rounded-full bg-terracotta/10 px-2 py-0.5 text-[11px] font-semibold text-terracotta-600"

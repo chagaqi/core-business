@@ -45,10 +45,21 @@ export function AskBox({ token, accent, compact = false }: { token: string; acce
           <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6" />
           <path d="M8 12.5l2.5 2.5L16 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        <p className="m-0 text-[14.5px] leading-relaxed text-slate">
-          <strong className="text-ink">Got it — someone will follow up.</strong> You&rsquo;re not being
-          ignored. We read every message and a real person will reply.
-        </p>
+        <div>
+          <p className="m-0 text-[14.5px] leading-relaxed text-slate">
+            <strong className="text-ink">Got it — someone will follow up.</strong> You&rsquo;re not being
+            ignored. We read every message and a real person will reply.
+          </p>
+          {/* UX-72: the form used to be replaced permanently after sending — a
+              second question meant no way back short of reloading. */}
+          <button
+            type="button"
+            onClick={() => setState("idle")}
+            className="mt-2 text-[13px] font-semibold text-ink-mute underline decoration-border underline-offset-2"
+          >
+            Ask another question
+          </button>
+        </div>
       </div>
     );
   }

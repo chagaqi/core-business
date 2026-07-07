@@ -4,8 +4,10 @@ import { isEscalatedSentiment, recommendGift } from "@/lib/engines";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { Tag } from "@/components/ui/Badge";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Gifts — Tideover" };
 
 const KIND_LABEL: Record<string, string> = {
   "early-access": "Early access",
@@ -65,7 +67,8 @@ export default async function GiftsPage({
             Goodwill catalog
           </h1>
           <p className="text-[13px] text-ink-mute">
-            One-click goodwill, unlocked by refund-risk band. Lifetime value sets
+            One-click goodwill, unlocked by refund-risk band.{" "}
+            <span title="Pledge value — total this backer has spent">Pledge value</span> sets
             priority, not access.
           </p>
         </div>

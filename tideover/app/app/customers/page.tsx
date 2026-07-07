@@ -5,8 +5,10 @@ import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { RiskBadge } from "@/components/ui/Badge";
 import type { RiskColor, Sentiment } from "@/lib/types";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Customers — Tideover" };
 
 const SENTIMENT_LABEL: Record<Sentiment, string> = {
   calm: "Calm",
@@ -96,13 +98,23 @@ export default async function CustomersPage({
         </div>
       </header>
 
+      {customers.length === 0 ? (
+        <div className="proof-placeholder">
+          No customers yet — import your backer list to populate this page.
+        </div>
+      ) : (
       <section className="panel overflow-hidden">
         <table className="w-full text-left text-[14px]">
           <thead>
             <tr className="border-b border-border text-[11px] uppercase tracking-wider text-ink-mute">
               <th className="px-5 py-2.5 font-semibold">Customer</th>
               <th className="px-5 py-2.5 font-semibold">Email</th>
-              <th className="px-5 py-2.5 text-right font-semibold">LTV</th>
+              <th
+                className="px-5 py-2.5 text-right font-semibold"
+                title="Pledge value — total this backer has spent"
+              >
+                Pledge value
+              </th>
               <th className="px-5 py-2.5 text-right font-semibold">Tickets</th>
               <th className="px-5 py-2.5 font-semibold">Last sentiment</th>
               <th className="px-5 py-2.5 text-right font-semibold">Risk</th>
@@ -165,6 +177,7 @@ export default async function CustomersPage({
           </tbody>
         </table>
       </section>
+      )}
     </div>
   );
 }

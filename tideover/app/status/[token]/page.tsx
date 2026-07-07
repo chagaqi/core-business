@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { getPublicStatus, viewMetaFromHeaders } from "@/lib/status";
-import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/ui/Logo";
 import { StatusView } from "./StatusView";
 
@@ -23,13 +22,10 @@ export default async function StatusPage({ params }: { params: { token: string }
             <Logo href="/" />
           </div>
           <h1 className="mb-3 text-[26px]">This order link isn&rsquo;t valid</h1>
-          <p className="mb-6 text-[15px] leading-relaxed text-slate">
+          <p className="mb-0 text-[15px] leading-relaxed text-slate">
             The link you followed may be incomplete or expired. Check the link in your confirmation
             email, or reach out to the store and they&rsquo;ll point you to the right place.
           </p>
-          <Button href="/" variant="ghost">
-            Go to Tideover
-          </Button>
         </div>
       </div>
     );
