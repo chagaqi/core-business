@@ -1,7 +1,7 @@
 # Tideover App — UX/UI Audit & Improvement Plan
 
 **Date:** 2026-07-06 · **Owner:** Dylan (approved direction) · **Author:** Fable (senior UX pass over a 101-agent audit)
-**Status:** READY FOR EXECUTION — this doc is the work order. An implementing agent should be able to execute it top-to-bottom without re-deriving any design thinking.
+**Status:** APPROVED by Dylan 2026-07-06 — but **implementation HOLDS until all audits are complete** (this UX audit + the engineering/infra audit + the onboarding redesign audit + the pilot-readiness audit). Once the audit set is in, execute everything together. This doc is the work order; an implementing agent should be able to execute it top-to-bottom without re-deriving any design thinking.
 
 ## Provenance (why you can trust this list)
 
@@ -121,6 +121,19 @@ These are the product-level calls. Individual tasks below implement them.
 - **Problem:** The rep clicks Escalate on a chargeback threat, sees "Flagged for manager review," moves on trusting a human will catch it — but the flag is local React state (`ApprovalBar.tsx:45`, `:233-239`) that vanishes on advance/refresh. No API route or persisted field exists. The safety valve the whole junior-rep pitch depends on is copy theater.
 - **Change:** Persist it. POST `/api/escalate` writes an `escalated-by:<operator>` tag + timestamp on the ticket (reuse the gift-sent tag pattern; repository seam, both drivers). Surface flagged tickets: a "Flagged" pill in the queue row and a count on the dashboard status strip (UX-09). Include a structured handoff note in the flag payload: the current draft + a short "why" the rep types (one optional text field) — per the Front escalation-handoff pattern (R11). Testable-core rule: logic in `lib/`, route stays thin. Add a unit test.
 - **Done when:** an escalation survives refresh/navigation, is visible in queue + dashboard, and records who/when/why; the button copy matches reality.
+
+---
+
+# WAVE 1.5 — Founder-requested feature (Dylan, 2026-07-06)
+
+### UX-86 · [FOUNDER] "Gifts available" panel in the ticket view + required gift setup in onboarding, unlocked by risk score
+- **Severity/effort:** P1 (founder-requested) / L · **Files:** onboarding wizard (`app/onboarding/OnboardingWizard.tsx` — new step), `components/product/GiftSuggestion.tsx` (extend into a panel), gift engine config (`lib/engines/` gift + merchant schema), `app/app/inbox/page.tsx` [HOT]
+- **Feature spec (Dylan's ask, expanded):**
+  - **(a) Onboarding:** a required step where the merchant configures **at least 3 goodwill gifts** (suggested starting catalog: early access, founder note, priority dispatch, digital perk, next-order credit — the seed's gift catalog is the model), each with cost, perceived value, and an eligibility tier. Onboarding cannot complete with fewer than 3.
+  - **(b) Ticket view:** a **"Gifts available"** panel in the ticket detail showing which gifts are unlocked *for this customer*, driven by risk band (+ LTV/escalation): standard/green → base gift(s); amber → adds mid-tier; red/escalated → full catalog including the highest-value saves. Locked gifts render visibly locked with the unlock condition ("Unlocks at high risk") so reps learn the ladder without a manual.
+  - **(c)** One-click send keeps UX-05's confirm + authorization line.
+- **Flags:** engine-adjacent — gift eligibility becomes merchant-configurable. Needs a short ADR; if the merchant schema gains a gift-catalog field, migrate `gen-seed.mjs` + `seed-check.mjs` in the same commit. Coordinate with UX-05 and UX-19. **The onboarding-redesign audit (running 2026-07-06) delivers the deepened implementable spec for this — build from that spec.**
+- **Done when:** onboarding blocks completion with <3 gifts; ticket detail shows available vs locked gifts by risk band; confirm flow intact; gate green.
 
 ---
 
