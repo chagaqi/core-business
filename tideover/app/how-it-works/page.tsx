@@ -4,6 +4,8 @@ import { HowItWorks } from "@/components/marketing/HowItWorks";
 import { Operator } from "@/components/marketing/Operator";
 import { FinalCTA } from "@/components/marketing/FinalCTA";
 import { Footer } from "@/components/marketing/Footer";
+import { PaperStrata } from "@/components/marketing/paper/PaperStrata";
+import { PaperEdge } from "@/components/marketing/paper/PaperEdge";
 
 /**
  * /how-it-works — the deep-dive on the presale-specialist layer. Standalone
@@ -23,8 +25,9 @@ export default function HowItWorksPage() {
     <>
       <Nav />
       <main>
-        <section className="section">
-          <div className="wrap max-w-[820px]">
+        <section className="section relative overflow-hidden">
+          <PaperStrata />
+          <div className="wrap relative z-10 max-w-[820px]">
             <span className="kicker mb-3.5">How it works</span>
             <h1 className="mb-5 text-balance">The presale-specialist layer, in full.</h1>
             <p className="m-0 max-w-[680px] text-[17px] leading-relaxed text-slate">
@@ -35,6 +38,7 @@ export default function HowItWorksPage() {
         </section>
         <HowItWorks />
         <Operator />
+        <PaperEdge variant="wave" color="teal" />
         <FinalCTA />
       </main>
       <Footer />

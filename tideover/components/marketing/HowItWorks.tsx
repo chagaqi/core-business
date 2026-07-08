@@ -1,5 +1,6 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
+import { CornerFold } from "@/components/marketing/paper/CornerFold";
 
 /**
  * "How it works" — the presale-specialist layer. Four feature cards, then a
@@ -88,6 +89,60 @@ function Arrow() {
   );
 }
 
+/**
+ * The numbered pipeline (S6): five paper stepping-stones across the tide.
+ * Steps 1–4 are calm paper stones; step 5 — routing to a person for approval —
+ * is the emphasized terminal beacon (teal, with the tide glyph and a terracotta
+ * corner-fold), because the visible human-approval step is the proof-only,
+ * human-in-the-loop moat. Rendered on both the Home overview and /how-it-works.
+ */
+const PIPELINE_STEPS: readonly { n: number; label: React.ReactNode; note?: string }[] = [
+  { n: 1, label: "Detect a presale WISMO ticket" },
+  { n: 2, label: <>Pull the order&rsquo;s real production stage</> },
+  { n: 3, label: "Score refund risk", note: "factors shown" },
+  { n: 4, label: "Draft an on-brand reply in a confidence band" },
+];
+
+function Pipeline() {
+  return (
+    <Reveal index={4}>
+      <div className="mb-11 mt-12">
+        <span className="kicker mb-5">The pipeline</span>
+        <ol className="m-0 grid list-none grid-cols-1 gap-3.5 p-0 sm:grid-cols-2 lg:grid-cols-5">
+          {PIPELINE_STEPS.map((s) => (
+            <li
+              key={s.n}
+              className="flex h-full flex-col gap-2.5 rounded-[16px] border border-border bg-paper p-5 shadow-card"
+            >
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent-card font-serif text-[15px] font-bold text-teal">
+                {s.n}
+              </span>
+              <p className="m-0 text-[14px] font-semibold leading-snug text-ink">{s.label}</p>
+              {s.note && <span className="text-[12.5px] italic text-ink-mute">the {s.note}</span>}
+            </li>
+          ))}
+
+          {/* Step 5 — the emphasized terminal beacon (human approval). */}
+          <li className="relative flex h-full flex-col gap-2 overflow-hidden rounded-[16px] bg-teal p-5 text-ink-inverse shadow-lift sm:col-span-2 lg:col-span-1">
+            <CornerFold corner="tr" />
+            <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden className="mb-0.5">
+              <path d="M2 23 Q9 17 16 23 T30 23" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" />
+              <path d="M5 17 Q11 12 16 17 T27 17" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" opacity="0.66" />
+              <path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" opacity="0.4" />
+            </svg>
+            <span className="text-[12px] font-bold uppercase tracking-[0.06em] text-ink-inverse opacity-85">
+              5 &middot; Route to a person for approval
+            </span>
+            <h3 className="m-0 font-serif text-[16.5px] font-semibold leading-snug text-ink-inverse">
+              Every reply to a worried buyer waits for your yes.
+            </h3>
+          </li>
+        </ol>
+      </div>
+    </Reveal>
+  );
+}
+
 export function HowItWorks({ condensed = false }: { condensed?: boolean } = {}) {
   return (
     <section id="how" className="section section-sand2 scroll-mt-20">
@@ -116,9 +171,11 @@ export function HowItWorks({ condensed = false }: { condensed?: boolean } = {}) 
           ))}
         </div>
 
+        <Pipeline />
+
         {condensed && (
-          <Reveal index={4}>
-            <div className="mt-8">
+          <Reveal index={5}>
+            <div>
               <Button href="/how-it-works" variant="quiet">
                 See how it works &rarr;
               </Button>

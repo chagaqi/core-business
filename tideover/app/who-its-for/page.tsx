@@ -3,6 +3,8 @@ import { Nav } from "@/components/marketing/Nav";
 import { HonestFit } from "@/components/marketing/HonestFit";
 import { FinalCTA } from "@/components/marketing/FinalCTA";
 import { Footer } from "@/components/marketing/Footer";
+import { PaperStrata } from "@/components/marketing/paper/PaperStrata";
+import { PaperEdge } from "@/components/marketing/paper/PaperEdge";
 
 /**
  * /who-its-for — the disqualification page. Standalone: Nav + a short page
@@ -21,8 +23,9 @@ export default function WhoItsForPage() {
     <>
       <Nav />
       <main>
-        <section className="section">
-          <div className="wrap max-w-[820px]">
+        <section className="section relative overflow-hidden">
+          <PaperStrata />
+          <div className="wrap relative z-10 max-w-[820px]">
             <span className="kicker mb-3.5">Who it&rsquo;s for</span>
             <h1 className="mb-5 text-balance">Is it a fit? We&rsquo;d rather tell you now.</h1>
             <p className="m-0 max-w-[680px] text-[17px] leading-relaxed text-slate">
@@ -32,6 +35,7 @@ export default function WhoItsForPage() {
           </div>
         </section>
         <HonestFit />
+        <PaperEdge variant="wave" color="teal" />
         <FinalCTA />
       </main>
       <Footer />

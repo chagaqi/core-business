@@ -1,5 +1,6 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
+import { CornerFold } from "@/components/marketing/paper/CornerFold";
 
 /**
  * Fit section — two cards drawn from the sales-page who-it's-for / not-for
@@ -47,7 +48,8 @@ export function HonestFit({ condensed = false }: { condensed?: boolean } = {}) {
         {!condensed && (
         <div className="grid grid-cols-1 gap-[22px] md:grid-cols-2">
           <Reveal index={1}>
-            <div className="h-full rounded-[20px] border border-[#D6E5E0] bg-paper p-[30px] shadow-card">
+            <div className="relative h-full overflow-hidden rounded-[20px] border border-[#D6E5E0] bg-paper p-[30px] shadow-card">
+              <CornerFold corner="tr" />
               <h3 className="mb-5 font-serif text-[21px] font-semibold text-teal">A strong fit if&hellip;</h3>
               <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
                 {FIT.map((item) => (

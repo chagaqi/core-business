@@ -1,6 +1,7 @@
 "use client";
 
 import { Reveal } from "@/components/ui/Reveal";
+import { PaperEdge } from "@/components/marketing/paper/PaperEdge";
 
 /**
  * FAQ accordion using native <details>/<summary> (no JS state needed beyond the
@@ -80,7 +81,14 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
 
 export function FAQ() {
   return (
-    <section id="faq" className="section scroll-mt-20">
+    <section id="faq" className="section scroll-mt-20 relative">
+      {/* Thin torn-paper top edge (S10): FAQ's sand paper tearing up into the dark Pilot above. */}
+      <PaperEdge
+        variant="torn"
+        color="sand"
+        height={38}
+        className="pointer-events-none absolute inset-x-0 top-0 -translate-y-full"
+      />
       <div className="wrap max-w-[860px]">
         <Reveal index={0}>
           <div className="mb-9">
