@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getRepositories } from "@/lib/repositories";
 import { containsHardDate } from "@/lib/proof";
+import { withApiErrorHandling } from "@/lib/api-handler";
 
 /**
  * POST /api/updates — post one merchant "workshop update" (ADR-0009, task U2).
@@ -27,7 +28,7 @@ const Body = z.object({
     .optional(),
 });
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json(
@@ -61,3 +62,5 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ status: "posted", update });
 }
+
+export const POST = withApiErrorHandling("/api/updates", handlePOST);

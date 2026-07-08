@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authorizeGiftSend } from "@/lib/gift-send";
+import { withApiErrorHandling } from "@/lib/api-handler";
 
 /**
  * POST /api/gift-send — one-click gift dispatch. Logs the gift against the
@@ -11,7 +12,7 @@ import { authorizeGiftSend } from "@/lib/gift-send";
  */
 const Body = z.object({ ticketId: z.string(), giftId: z.string() });
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "invalid body" }, { status: 400 });
 
@@ -21,3 +22,5 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ status: "sent", gift: result.gift, ticketId: result.ticketId });
 }
+
+export const POST = withApiErrorHandling("/api/gift-send", handlePOST);

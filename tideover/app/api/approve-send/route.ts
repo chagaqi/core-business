@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { approveSend } from "@/lib/service";
 import { assertNoHardDate } from "@/lib/proof";
+import { withApiErrorHandling } from "@/lib/api-handler";
 
 /**
  * POST /api/approve-send — human approval gate. The (possibly edited) reply is
@@ -14,7 +15,7 @@ const Body = z.object({
   channel: z.enum(["mock", "gorgias", "tidio", "intercom", "email"]).optional(),
 });
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid body" }, { status: 400 });
@@ -53,3 +54,5 @@ export async function POST(req: Request) {
     canPromote: result.canPromote,
   });
 }
+
+export const POST = withApiErrorHandling("/api/approve-send", handlePOST);

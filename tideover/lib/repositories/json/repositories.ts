@@ -43,6 +43,47 @@ function byCreatedAtDesc(a: MerchantUpdate, b: MerchantUpdate): number {
 }
 
 /**
+ * Cross-driver list order (EN-11/16). Identical to the Mongo driver's findWhere
+ * sort ({ createdAt: 1, id: 1 }): createdAt ascending, id ascending as the
+ * tiebreak. Collections without a createdAt (customers, gifts, social) fall
+ * straight through to id order — exactly what Mongo yields when the sort field
+ * is absent (a missing field sorts as null, so every doc ties on it and id
+ * breaks the tie). Without this the JSON driver returned raw insertion order,
+ * so demo (JSON) and prod (Mongo) could list the SAME data in DIFFERENT orders.
+ */
+function byCreatedAtThenId<T extends { id: string }>(a: T, b: T): number {
+  const ac = (a as { createdAt?: string }).createdAt;
+  const bc = (b as { createdAt?: string }).createdAt;
+  if (ac !== bc) {
+    // A missing createdAt mirrors Mongo's "null sorts first". Only relevant if a
+    // collection ever mixed shapes; today each collection is uniform.
+    if (ac === undefined) return -1;
+    if (bc === undefined) return 1;
+    return ac < bc ? -1 : 1;
+  }
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+}
+
+/**
+ * Sorted COPY of a list in the cross-driver deterministic order. A copy (not an
+ * in-place sort) so the backing store array's insertion order is never mutated;
+ * callers can't rely on array identity anyway — the Mongo driver returns fresh
+ * arrays from toArray() too.
+ */
+function ordered<T extends { id: string }>(list: T[]): T[] {
+  return [...list].sort(byCreatedAtThenId);
+}
+
+/**
+ * Mirror Mongo's duplicate-key failure (code 11000) so lib/service.ts's
+ * isDuplicateKeyError classifies a JSON-driver uniqueness violation identically.
+ * Keeps the customer-dedup backstop (EN-24) behaviorally driver-agnostic.
+ */
+function duplicateKeyError(message: string): Error {
+  return Object.assign(new Error(message), { code: 11000 });
+}
+
+/**
  * JSON-backed repository implementations over the in-memory store. Async by
  * design so the MongoDB driver is a drop-in behind the identical interface.
  */
@@ -65,7 +106,7 @@ const merchants: MerchantRepository = {
     return store.merchants.find((m) => m.inboxToken === token) ?? null;
   },
   async list() {
-    return store.merchants;
+    return ordered(store.merchants);
   },
   async create(m: Merchant) {
     store.merchants.push(m);
@@ -89,10 +130,10 @@ const orders: OrderRepository = {
     );
   },
   async listByMerchant(merchantId) {
-    return store.orders.filter((o) => o.merchantId === merchantId);
+    return ordered(store.orders.filter((o) => o.merchantId === merchantId));
   },
   async listByCustomer(customerId) {
-    return store.orders.filter((o) => o.customerId === customerId);
+    return ordered(store.orders.filter((o) => o.customerId === customerId));
   },
   async create(o) {
     store.orders.push(o);
@@ -115,9 +156,23 @@ const customers: CustomerRepository = {
     );
   },
   async listByMerchant(merchantId) {
-    return store.customers.filter((c) => c.merchantId === merchantId);
+    return ordered(store.customers.filter((c) => c.merchantId === merchantId));
   },
   async create(c) {
+    // Uniqueness backstop for the check-then-act email dedup (EN-24): enforce the
+    // same (merchantId, case-insensitive email) constraint the Mongo unique index
+    // enforces, and fail the same way (code 11000) so a caller's duplicate-key
+    // handling is driver-agnostic. findByEmail already lower-cases both sides, so
+    // a create that races past it (or a caller that skipped the check) is refused
+    // here instead of silently duplicating a backer. All current callers
+    // (import.ts, ingestTicket) dedupe before create, so this never fires on the
+    // single-process JSON store in practice — it's the parity/safety net.
+    const existing = store.customers.find(
+      (x) => x.merchantId === c.merchantId && x.email.toLowerCase() === c.email.toLowerCase(),
+    );
+    if (existing) {
+      throw duplicateKeyError(`duplicate customer email for merchant ${c.merchantId}: ${c.email}`);
+    }
     store.customers.push(c);
     return c;
   },
@@ -138,12 +193,14 @@ const tickets: TicketRepository = {
     );
   },
   async list(filter: TicketFilter) {
-    return store.tickets.filter(
-      (t) =>
-        (!filter.merchantId || t.merchantId === filter.merchantId) &&
-        (!filter.status || t.status === filter.status) &&
-        (!filter.customerId || t.customerId === filter.customerId) &&
-        (!filter.orderId || t.orderId === filter.orderId),
+    return ordered(
+      store.tickets.filter(
+        (t) =>
+          (!filter.merchantId || t.merchantId === filter.merchantId) &&
+          (!filter.status || t.status === filter.status) &&
+          (!filter.customerId || t.customerId === filter.customerId) &&
+          (!filter.orderId || t.orderId === filter.orderId),
+      ),
     );
   },
   async create(t: Ticket) {
@@ -167,7 +224,7 @@ const tickets: TicketRepository = {
 
 const gifts: GiftRepository = {
   async listByMerchant(merchantId) {
-    return store.gifts.filter((g: Gift) => g.merchantId === merchantId);
+    return ordered(store.gifts.filter((g: Gift) => g.merchantId === merchantId));
   },
   async findById(id) {
     return store.gifts.find((g: Gift) => g.id === id) ?? null;
@@ -182,7 +239,7 @@ const gifts: GiftRepository = {
 
 const social: SocialSignalRepository = {
   async listByMerchant(merchantId) {
-    return store.social.filter((s: SocialSignal) => s.merchantId === merchantId);
+    return ordered(store.social.filter((s: SocialSignal) => s.merchantId === merchantId));
   },
 };
 
@@ -199,7 +256,7 @@ const statusViews: StatusViewRepository = {
 
 const scriptVariants: ScriptVariantRepository = {
   async listByMerchant(merchantId) {
-    return store.scriptVariants.filter((v) => v.merchantId === merchantId);
+    return ordered(store.scriptVariants.filter((v) => v.merchantId === merchantId));
   },
   async findByKey(merchantId, stageKey, productionStage) {
     return (

@@ -268,6 +268,11 @@ async function recordReplySent(
   ticket: Ticket,
   sentText: string,
 ): Promise<{ variantId: string; editedRatio: number } | null> {
+  // Phase 1 — resolve attribution. This is genuinely best-effort: if we can't
+  // identify the variant/draft that produced the reply, the send is simply
+  // un-attributable and we skip (return null). A missing attribution is not a lost
+  // proof metric, so a failure resolving it stays swallowed (returns null).
+  let attribution: { variantId: string; stageKey: OutcomeEvent["stageKey"]; ratio: number };
   try {
     const view = await getTicketView(ticket.id);
     const reassurance = view?.intel.reassurance;
@@ -284,30 +289,57 @@ async function recordReplySent(
     const stageKey = (await repos.scriptVariants.getById(variantId))?.stageKey ?? reassurance?.stageKey;
     if (!stageKey) return null;
 
-    const ratio = editedRatio(draftedText, sentText);
-    await repos.outcomeEvents.record({
-      merchantId: ticket.merchantId,
-      ticketId: ticket.id,
-      orderId: ticket.orderId,
-      customerId: ticket.customerId,
-      variantId,
-      stageKey,
-      sentimentAtSend: ticket.sentiment,
-      kind: "reply_sent",
-      observedAt: new Date().toISOString(),
-      meta: { editedRatio: ratio },
-    });
-    return { variantId, editedRatio: ratio };
+    attribution = { variantId, stageKey, ratio: editedRatio(draftedText, sentText) };
   } catch (err) {
     console.log(
       JSON.stringify({
-        event: "outcome-event.record-failed",
+        event: "outcome-event.attribution-failed",
         ticketId: ticket.id,
         error: err instanceof Error ? err.message : String(err),
       }),
     );
     return null;
   }
+
+  // Phase 2 — the reply_sent write. This IS the core proof metric (deflection /
+  // edit rate). EN-13: never SILENTLY discard a failure here — the old code caught
+  // it, logged, and returned null, indistinguishable from an un-attributable skip,
+  // so every dashboard silently undercounted. Retry once; if it still fails, THROW
+  // so approveSend surfaces a "send completed but ledger unrecorded" warning. The
+  // send itself already succeeded and is atomically claimed — this path never
+  // un-sends or blocks it.
+  let lastErr: unknown;
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    try {
+      await repos.outcomeEvents.record({
+        merchantId: ticket.merchantId,
+        ticketId: ticket.id,
+        orderId: ticket.orderId,
+        customerId: ticket.customerId,
+        variantId: attribution.variantId,
+        stageKey: attribution.stageKey,
+        sentimentAtSend: ticket.sentiment,
+        kind: "reply_sent",
+        observedAt: new Date().toISOString(),
+        meta: { editedRatio: attribution.ratio },
+      });
+      return { variantId: attribution.variantId, editedRatio: attribution.ratio };
+    } catch (err) {
+      lastErr = err;
+      console.log(
+        JSON.stringify({
+          event: "outcome-event.record-failed",
+          ticketId: ticket.id,
+          attempt,
+          willRetry: attempt < 2,
+          error: err instanceof Error ? err.message : String(err),
+        }),
+      );
+    }
+  }
+  // Both attempts failed — surface it instead of returning a clean null the caller
+  // can't tell apart from a legitimate skip.
+  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
 }
 
 /** Reply-attribution window (ADR-0012): an inbound this long after a reply_sent
@@ -325,18 +357,39 @@ const REPLY_ATTRIBUTION_WINDOW_MS = 7 * 86400000;
  * failure is logged and swallowed, never blocking ingest (mirrors recordReplySent).
  */
 async function recordReplyAttribution(repos: Repositories, ticket: Ticket): Promise<void> {
+  // EN-36 — bound the ACK-path ledger scan. Attribution is per-ORDER: a
+  // customer_replied / reopened is only ever attributed to a reply_sent on the
+  // SAME order. An order-less (unmatched) inbound has nothing to attribute, so
+  // skip the whole outcome-ledger read for it — otherwise every unmatched inbound
+  // would scan the merchant's entire event ledger for a match that can't exist.
+  // (A matched inbound still reads the ledger; a true per-inbound DB bound there
+  // needs an order-scoped/indexed query on the repo, owned by the repository seam.)
+  if (!ticket.orderId) return;
   try {
     const events = await repos.outcomeEvents.listByMerchant(ticket.merchantId);
     const inboundMs = new Date(ticket.createdAt).getTime();
-    // Most recent reply_sent for THIS order whose age at the inbound is within
-    // the window (and not in the future — an inbound can't answer a later reply).
-    const reply = events
-      .filter((e) => e.kind === "reply_sent" && e.orderId === ticket.orderId)
-      .filter((e) => {
-        const gap = inboundMs - new Date(e.observedAt).getTime();
-        return gap >= 0 && gap <= REPLY_ATTRIBUTION_WINDOW_MS;
-      })
-      .sort((a, b) => new Date(b.observedAt).getTime() - new Date(a.observedAt).getTime())[0];
+    // Single pass over the ledger (rows arrive observedAt-ascending on both
+    // drivers): find the most recent in-window reply_sent for THIS order, and note
+    // which variants were already reopened on it — one scan instead of the prior
+    // three filter/sort/some passes over the full collection. The reply selection
+    // is identical: newest observedAt, with the smallest id winning a tie (strict
+    // `>` keeps the first-seen, i.e. lowest-id, row among equal timestamps).
+    let reply: OutcomeEvent | null = null;
+    const reopenedVariantsForOrder = new Set<string>();
+    for (const e of events) {
+      if (e.orderId !== ticket.orderId) continue;
+      if (e.kind === "reopened") {
+        reopenedVariantsForOrder.add(e.variantId);
+        continue;
+      }
+      if (e.kind !== "reply_sent") continue;
+      const gap = inboundMs - new Date(e.observedAt).getTime();
+      // In-window (and not in the future — an inbound can't answer a later reply).
+      if (gap < 0 || gap > REPLY_ATTRIBUTION_WINDOW_MS) continue;
+      if (reply === null || new Date(e.observedAt).getTime() > new Date(reply.observedAt).getTime()) {
+        reply = e;
+      }
+    }
     if (!reply) return; // no reply to attribute a response to — nothing to record.
 
     // Attribution mirrors the reply's identity (same variant/stage), stamped onto
@@ -361,10 +414,9 @@ async function recordReplyAttribution(repos: Repositories, ticket: Ticket): Prom
     // the customer back again — a measured signal the reply didn't fully settle it.
     // Count it AT MOST ONCE per reply: a customer who writes back three times to one
     // resolved thread reopened it once, not three times. Without this, reopens could
-    // exceed sends and the panel's reopen rate would read over 100%.
-    const alreadyReopened = events.some(
-      (e) => e.kind === "reopened" && e.orderId === ticket.orderId && e.variantId === reply.variantId,
-    );
+    // exceed sends and the panel's reopen rate would read over 100%. (Equivalent to
+    // the prior `events.some(...)`, now read from the single-pass set above.)
+    const alreadyReopened = reopenedVariantsForOrder.has(reply.variantId);
     const priorTicket = await repos.tickets.findById(reply.ticketId);
     if (
       !alreadyReopened &&
@@ -643,8 +695,25 @@ export async function approveSend(
   // Outcome ledger (ADR-0007): the WINNER stamps exactly one reply_sent event
   // attributed to the draft's variant, meta.editedRatio measuring the operator's
   // edit (against the base text, link excluded). Awaited so a same-request read
-  // observes it, non-blocking on failure (see helper).
-  const attribution = await recordReplySent(repos, ticket, baseText);
+  // observes it.
+  let attribution: { variantId: string; editedRatio: number } | null = null;
+  try {
+    attribution = await recordReplySent(repos, ticket, baseText);
+  } catch (err) {
+    // EN-13: the send is delivered and atomically claimed (status=sent) — we do
+    // NOT undo it. But the reply_sent write failed even after a retry, so this send
+    // will undercount in the proof metrics. Surface it loudly rather than returning
+    // a clean success as though it were recorded. `attribution` stays null, so we
+    // never fabricate an editedRatio / promotion offer for an unrecorded send.
+    console.error(
+      JSON.stringify({
+        event: "approve-send.ledger-unrecorded",
+        ticketId,
+        merchantId: ticket.merchantId,
+        error: err instanceof Error ? err.message : String(err),
+      }),
+    );
+  }
 
   return {
     ticket: updated,
@@ -755,15 +824,46 @@ export async function getQueue(merchantId: string, now: Date = new Date()): Prom
   const merchant = await repos.merchants.findById(merchantId);
   if (!merchant) return [];
   const tickets = await repos.tickets.list({ merchantId });
+
+  // EN-08 — batch the per-ticket joins instead of 1+3N serial round-trips. The old
+  // loop did, per ticket, an orders.findById + a customers.findById + a
+  // ticketsLast7dFor (its own tickets.list) — 3N sequential reads over ALL of the
+  // merchant's historical tickets, and this is reused by ~4 daily pages. Fetch the
+  // merchant's orders + customers ONCE and index by id, and fold each customer's
+  // 7-day ticket count out of the ticket list already in hand. A ticket's order and
+  // customer always belong to THIS merchant (ingest scopes both, and refuses a
+  // cross-merchant order), so the by-merchant lists are the exact universe the
+  // per-row findById resolved against — the produced rows and their final sort are
+  // byte-for-byte unchanged. (Resolved/sent rows are intentionally KEPT: the inbox
+  // deep-link, the dashboard risk curve, and the customers page all read the full
+  // queue; dropping them is a behavior change owned by those surfaces, not here.)
+  const [orders, customers] = await Promise.all([
+    repos.orders.listByMerchant(merchantId),
+    repos.customers.listByMerchant(merchantId),
+  ]);
+  const ordersById = new Map(orders.map((o) => [o.id, o]));
+  const customersById = new Map(customers.map((c) => [c.id, c]));
+
+  // ticketsLast7d per customer, folded from `tickets` in a single pass — the same
+  // predicate ticketsLast7dFor applies (this merchant's tickets for the customer,
+  // created within the last 7 days), without a round-trip per row.
+  const cutoff = Date.now() - 7 * 86400000;
+  const last7dByCustomer = new Map<string, number>();
+  for (const t of tickets) {
+    if (new Date(t.createdAt).getTime() >= cutoff) {
+      last7dByCustomer.set(t.customerId, (last7dByCustomer.get(t.customerId) ?? 0) + 1);
+    }
+  }
+
   const rows: QueueRow[] = [];
   for (const ticket of tickets) {
-    const [order, customer] = await Promise.all([
-      repos.orders.findById(ticket.orderId),
-      repos.customers.findById(ticket.customerId),
-    ]);
+    // An order-less (unmatched) ticket resolves to no order and is skipped — the
+    // exact drop the original findById("") → null produced, now with no round-trip.
+    const order = ordersById.get(ticket.orderId);
+    const customer = customersById.get(ticket.customerId);
     if (!order || !customer) continue;
     const timeline = computeTimeline(order, merchant, now);
-    const ticketsLast7d = await ticketsLast7dFor(merchantId, customer.id);
+    const ticketsLast7d = last7dByCustomer.get(customer.id) ?? 0;
     const risk = scoreRefundRisk({
       order,
       customer,

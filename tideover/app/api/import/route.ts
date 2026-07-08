@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { importBackerRows, IMPORT_ROW_CAP } from "@/lib/import";
+import { withApiErrorHandling } from "@/lib/api-handler";
 
 /**
  * POST /api/import (ADR-0010, task W3) — operator-side backer-list import.
@@ -24,7 +25,7 @@ const Body = z.object({
   rows: z.array(Row).max(IMPORT_ROW_CAP),
 });
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid body", issues: parsed.error.issues }, { status: 400 });
@@ -39,3 +40,5 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export const POST = withApiErrorHandling("/api/import", handlePOST);

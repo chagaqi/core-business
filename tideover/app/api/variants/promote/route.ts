@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { promoteVariant } from "@/lib/service";
+import { withApiErrorHandling } from "@/lib/api-handler";
 
 /**
  * POST /api/variants/promote — operator-promoted variants (ADR-0014, E4). After a
@@ -11,7 +12,7 @@ import { promoteVariant } from "@/lib/service";
  */
 const Body = z.object({ ticketId: z.string(), text: z.string() });
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid body" }, { status: 400 });
@@ -22,3 +23,5 @@ export async function POST(req: Request) {
   }
   return NextResponse.json({ status: "promoted", variantId: result.variant.id });
 }
+
+export const POST = withApiErrorHandling("/api/variants/promote", handlePOST);

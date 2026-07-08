@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { escalateTicket } from "@/lib/service";
 import { getDemoOperator } from "@/lib/auth";
+import { withApiErrorHandling } from "@/lib/api-handler";
 
 /**
  * POST /api/escalate — persist (or clear) an operator's follow-up self-flag on a
@@ -21,7 +22,7 @@ const Body = z.object({
   undo: z.boolean().optional(),
 });
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "invalid body" }, { status: 400 });
 
@@ -33,3 +34,5 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ escalated: result.escalated, ticketId: result.ticket.id });
 }
+
+export const POST = withApiErrorHandling("/api/escalate", handlePOST);

@@ -3,9 +3,10 @@ import { createMerchantFromIntake } from "@/lib/onboarding";
 import { OnboardingBodySchema } from "@/lib/onboarding-schema";
 import { inboxAddressFor } from "@/lib/inbound";
 import { gorgiasHttpIntegration, zendeskTrigger } from "@/lib/ingest-templates";
+import { withApiErrorHandling } from "@/lib/api-handler";
 
 /** POST /api/onboarding — turn wizard answers into a merchant + preview scripts. */
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const parsed = OnboardingBodySchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid body", issues: parsed.error.issues }, { status: 400 });
@@ -25,3 +26,5 @@ export async function POST(req: Request) {
     previews,
   });
 }
+
+export const POST = withApiErrorHandling("/api/onboarding", handlePOST);

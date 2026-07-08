@@ -47,28 +47,62 @@ async function ensureIndexes(db: Db): Promise<void> {
       const col = db.collection(name);
       // Domain `id` is the real key; Mongo's _id never leaves the driver.
       await col.createIndex({ id: 1 }, { unique: true });
+      // Every merchant-scoped list filters on merchantId first (EN-10: without
+      // this the mongo driver full-scanned on every ingest/import/list). Kept for
+      // customers too: reads (findWhere) run with the DEFAULT collation, which
+      // can't use the case-insensitive collated unique index below — so this
+      // plain index is what serves listByMerchant / findByEmail.
       if (name !== "merchants") await col.createIndex({ merchantId: 1 });
       // ADR-0008: inbound email routing resolves an address local-part →
       // merchant; the token is unique per merchant and looked up on every hit.
       if (name === "merchants") await col.createIndex({ inboxToken: 1 }, { unique: true });
-      if (name === "orders") await col.createIndex({ statusToken: 1 });
-      // Idempotency backstop: a truly-concurrent vendor redelivery can slip
-      // past the pre-lookup in ingestTicket, so bind dedupe to a DB constraint.
-      // sparse so tickets without an externalId aren't indexed on null.
+      // Customer email dedup (EN-24). The unique (merchantId, email) index is the
+      // backstop the check-then-act findByEmail-then-create path lacked, so a
+      // truly-concurrent create can't duplicate a backer. Case-insensitive
+      // collation (strength 2) mirrors findByEmail's toLowerCase compare, so
+      // "Ann@x.com" and "ann@x.com" collide exactly as the app treats them. The
+      // insert-time uniqueness check uses THIS index's collation regardless of
+      // query collation; reads keep using the plain {merchantId} index above.
+      if (name === "customers") {
+        await col.createIndex(
+          { merchantId: 1, email: 1 },
+          { unique: true, collation: { locale: "en", strength: 2 } },
+        );
+      }
+      if (name === "orders") {
+        await col.createIndex({ statusToken: 1 });
+        // listByCustomer is on the ingest + import hot paths (EN-10) and queries
+        // orders by customerId alone — the merchantId index can't serve it.
+        await col.createIndex({ customerId: 1 });
+        // CSV re-import dedup support (ADR-0010): importKey is present only on
+        // imported orders, so sparse. Non-unique — import.ts owns the dedup
+        // decision in-app; this only keeps the lookup off a full scan.
+        await col.createIndex({ importKey: 1 }, { sparse: true });
+      }
       if (name === "tickets") {
+        // Idempotency backstop: a truly-concurrent vendor redelivery can slip
+        // past the pre-lookup in ingestTicket, so bind dedupe to a DB constraint.
+        // sparse so tickets without an externalId aren't indexed on null.
         await col.createIndex(
           { merchantId: 1, channel: 1, externalId: 1 },
           { unique: true, sparse: true },
         );
+        // Queue reads filter a merchant's tickets, optionally by status (EN-10).
+        await col.createIndex({ merchantId: 1, status: 1 });
       }
       // Append-only view log (ADR-0005): non-unique — a customer may view a
       // status page many times; listByOrder reads by order in viewedAt order.
       if (name === "status_views") await col.createIndex({ orderId: 1, viewedAt: 1 });
       // Outcome ledger (ADR-0007). Variant id is the unique key (covered by the
       // generic {id:1} unique index above). Outcome events are append-only, so
-      // index the rollup access pattern non-uniquely.
+      // index each read access pattern non-uniquely (EN-10): merchant rollup,
+      // per-variant rollup (queried by variantId alone → needs its own prefix),
+      // and the per-order CSAT re-tap delete (deleteCsatForOrder filters
+      // orderId + kind). No read is keyed by ticketId, so none is indexed.
       if (name === "outcome_events") {
         await col.createIndex({ merchantId: 1, variantId: 1, kind: 1, observedAt: 1 });
+        await col.createIndex({ variantId: 1, observedAt: 1 });
+        await col.createIndex({ orderId: 1, kind: 1 });
       }
       // Workshop updates (ADR-0009): the feed reads a merchant's recent updates
       // newest-first, so index the (merchantId, createdAt) access pattern.
