@@ -457,3 +457,67 @@
     background: #f4f7f8;
   }
 }
+
+/* ============================================================
+   Marketing paper/tide layer (redesign — marketing surfaces only).
+   Utilities the new components/marketing/paper/* primitives depend on.
+   Kept out of @layer components so it never overrides product styles, and
+   fully governed by the global prefers-reduced-motion kill above (which uses
+   `animation: none !important`, so all drift below is static for those users).
+   Tokens already exist in :root (--sand, --sand-2, --accent-card, --tan,
+   --amber-status, --terracotta*); nothing new is added there.
+   ============================================================ */
+
+/* Paper-fiber grain: a tiny (180px) seamless feTurbulence tile, desaturated,
+   tiled by CSS at ~4.5% opacity. This is a repeating background-image, NOT a
+   full-viewport CSS filter — the noise is rasterized once, then cheaply tiled.
+   Usage: place `<div class="paper-grain" aria-hidden>` as the FIRST child of a
+   `position: relative` section; content in the section paints above it. */
+.paper-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+}
+
+/* PaperStrata drift — tiny, slow, offset ease-in-out loops (calm, not springy).
+   Amplitudes stay ≤14px; the strata paths overrun their viewBox so no edge
+   shows. Disabled wholesale under prefers-reduced-motion by the global rule. */
+@keyframes paper-strata-drift-a {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-14px, 0, 0);
+  }
+}
+@keyframes paper-strata-drift-b {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(10px, 0, 0);
+  }
+}
+@keyframes paper-strata-drift-c {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-8px, 0, 0);
+  }
+}
+.paper-strata-drift-1 {
+  animation: paper-strata-drift-a 26s ease-in-out infinite alternate;
+}
+.paper-strata-drift-2 {
+  animation: paper-strata-drift-b 32s ease-in-out infinite alternate;
+}
+.paper-strata-drift-3 {
+  animation: paper-strata-drift-c 38s ease-in-out infinite alternate;
+}

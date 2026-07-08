@@ -76,7 +76,7 @@ export function LongWait() {
           </div>
         </Reveal>
 
-        <ol className="mb-14 grid list-none grid-cols-1 gap-[18px] p-0 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mb-7 grid list-none grid-cols-1 gap-[18px] p-0 sm:grid-cols-2 lg:grid-cols-4">
           {STAGES.map((s, i) => (
             <Reveal key={s.day} index={i} as="li">
               <div className="h-full rounded-[18px] border border-border bg-paper p-[22px] shadow-card">
@@ -92,6 +92,34 @@ export function LongWait() {
             </Reveal>
           ))}
         </ol>
+
+        {/* Rising paper tide-line: the emotional arc drawn as a warming wave beneath
+            the stages — calm teal (day 7) rising to tan/amber dispute-risk (day 89).
+            Terracotta stays action-only, so it is deliberately absent here. Static
+            (decorative); reduced-motion needs no special handling. */}
+        <Reveal index={0}>
+          <div className="mb-14 mt-1 overflow-hidden rounded-[14px] border border-border" aria-hidden>
+            <svg viewBox="0 0 1160 64" preserveAspectRatio="none" className="block h-12 w-full md:h-16" role="presentation">
+              <defs>
+                <linearGradient id="tideWarm" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#0E5366" />
+                  <stop offset="34%" stopColor="#3C7E92" />
+                  <stop offset="72%" stopColor="#E1C07A" />
+                  <stop offset="100%" stopColor="#E9B486" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M0,42 C193,30 387,52 580,40 C773,28 967,42 1160,28 L1160,64 L0,64 Z"
+                fill="url(#tideWarm)"
+                opacity="0.38"
+              />
+              <path
+                d="M0,34 C193,20 387,44 580,30 C773,16 967,32 1160,16 L1160,64 L0,64 Z"
+                fill="url(#tideWarm)"
+              />
+            </svg>
+          </div>
+        </Reveal>
 
         <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
           {STAKES.map((s, i) => (

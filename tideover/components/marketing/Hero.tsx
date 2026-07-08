@@ -1,6 +1,8 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { CalButton } from "@/components/booking/CalButton";
+import { PaperStrata } from "@/components/marketing/paper/PaperStrata";
+import { ImageSlot } from "@/components/marketing/paper/ImageSlot";
 
 /**
  * Homepage hero. Headline + bolt-on/timeline-aware subhead, two CTAs, and a
@@ -28,14 +30,10 @@ const CHIPS = ["For 60–120 day presale waits", "Built for Kickstarter & Backer
 
 export function Hero() {
   return (
-    <header
-      className="relative overflow-hidden"
-      style={{
-        background:
-          "radial-gradient(120% 80% at 82% -10%, rgba(217,118,47,0.16), transparent 58%), radial-gradient(120% 95% at 8% 8%, rgba(14,83,102,0.15), transparent 56%), linear-gradient(180deg,#FBF8F2 0%,#F4EEDA 100%)",
-      }}
-    >
-      <div className="wrap flex flex-wrap items-center gap-10 py-16 md:gap-16 lg:py-24">
+    <header className="relative overflow-hidden bg-sand">
+      {/* Signature paper device: layered strata backdrop (sand → sand-2 → light teal). */}
+      <PaperStrata />
+      <div className="wrap relative z-10 flex flex-wrap items-center gap-10 py-16 md:gap-16 lg:py-24">
         {/* left */}
         <div className="min-w-[300px] flex-1 basis-[420px]">
           <Reveal index={0}>
@@ -52,23 +50,24 @@ export function Hero() {
           </Reveal>
 
           <Reveal index={1}>
-            <h1 className="mb-5 text-balance">Calm the wait. Keep the sale.</h1>
+            <h1 className="mb-5 text-balance">Keep them waiting, not walking.</h1>
           </Reveal>
 
           <Reveal index={2}>
-            <p className="mb-7 max-w-[560px] text-[clamp(17px,1.5vw,19px)] leading-relaxed text-slate">
-              Tideover bolts onto the Gorgias, Tidio, or Intercom you already run, knows each order&rsquo;s real
-              production timeline, and answers the long wait with calm, human, timeline-aware reassurance &mdash; so
-              &ldquo;where&rsquo;s my order?&rdquo; doesn&rsquo;t become a refund. A bolt-on presale layer, not a
-              rip-and-replace.
+            <p className="mb-4 max-w-[560px] text-[clamp(17px,1.5vw,19px)] leading-relaxed text-slate">
+              It reads each order&rsquo;s real production timeline and drafts the calm, no-false-promises reply
+              &mdash; in your voice, for your approval.
+            </p>
+            <p className="mb-7 max-w-[560px] text-[15.5px] leading-relaxed text-ink-mute">
+              A layer on the helpdesk you already run. Nothing to rip out.
             </p>
           </Reveal>
 
           <Reveal index={3}>
             <div className="mb-7 flex flex-wrap items-center gap-4">
               <CalButton large>Get a free 15-min teardown</CalButton>
-              <Button href="#how" variant="quiet">
-                See how it works &rarr;
+              <Button href="#demo" variant="quiet">
+                See a live draft &rarr;
               </Button>
             </div>
           </Reveal>
@@ -85,9 +84,14 @@ export function Hero() {
         </div>
 
         {/* right: reassurance reply card */}
-        <div className="min-w-[290px] flex-1 basis-[380px]">
+        <div className="relative min-w-[290px] flex-1 basis-[380px]">
+          {/* ONE hero object slot: the paper boat riding the wave. Ships an image
+              slot with a CSS/paper fallback; Dylan sources the papercraft art later. */}
+          <div className="pointer-events-none absolute inset-x-0 -top-10 z-0 hidden opacity-95 lg:block" aria-hidden>
+            <ImageSlot slotId="hero-boat" aspect="3/2" />
+          </div>
           <Reveal index={2}>
-            <div className="overflow-hidden rounded-3xl border border-border bg-paper shadow-lift">
+            <div className="relative z-10 overflow-hidden rounded-3xl border border-border bg-paper shadow-lift">
               <div className="flex items-center justify-between gap-3 border-b border-accent-card bg-[#F3F8F8] px-5 py-4">
                 <div className="flex items-center gap-2.5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-card text-[14px] font-bold text-teal">
