@@ -240,10 +240,14 @@ export function Sidebar({ operator, isDemo }: { operator: string; isDemo: boolea
             <ul className="mt-1.5 space-y-1 text-[12px] leading-relaxed text-ink-mute">
               <li>Every draft is human-approved before it sends.</li>
               <li>Tideover never sends a hard delivery date, only confidence bands.</li>
-              <li>Unsure? Use Escalate.</li>
+              <li>Unsure? Use Flag for follow-up.</li>
             </ul>
-            {/* TODO(dylan): confirm support address */}
-            <p className="mt-1.5 text-[11px] text-ink-mute">Still stuck? support@tideover.app</p>
+            <p className="mt-1.5 text-[11px] text-ink-mute">
+              Still stuck?{" "}
+              <a href="mailto:contact@tideover.app" className="text-terracotta-700 underline-offset-2 hover:underline">
+                contact@tideover.app
+              </a>
+            </p>
           </div>
         ) : null}
 
