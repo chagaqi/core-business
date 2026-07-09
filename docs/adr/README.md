@@ -18,6 +18,7 @@ Every non-trivial decision (a new dependency, an engine change, an integration, 
 |---|----------|
 | [0003](./ADR-0003-mongo-driver.md) | MongoDB via the official driver, behind the existing Repositories seam |
 | [0004](./ADR-0004-app-auth.md) | Operator auth: env-gated demo mode + shared-password HMAC-cookie session |
+| [0017](./ADR-0017-real-vs-demo-subdomain-split.md) | Real vs demo split by request host: app.tideover.app = auth + live store; everywhere else = open seeded demo |
 
 **Engine & proof**
 | # | Decision |
@@ -27,6 +28,9 @@ Every non-trivial decision (a new dependency, an engine change, an integration, 
 | [0007](./ADR-0007-outcome-ledger.md) | Outcome ledger Phase 0: script variants + append-only outcome events |
 | [0012](./ADR-0012-outcome-instrumentation.md) | Outcome instrumentation (E2): CSAT tap + reply/reopen attribution + richer panel |
 | [0014](./ADR-0014-reply-qa-and-promoted-variants.md) | Reply QA checklist (hard-date gate) + operator-promoted variants (E4) |
+| [0015](./ADR-0015-cohort-wismo-forecast.md) | Cohort WISMO forecast: per-wave inbound projection from the merchant's own history |
+| [0016](./ADR-0016-sla-timers.md) | SLA timers on the queue: first-response + resolution clocks, breach surfacing |
+| [0018](./ADR-0018-llm-drafting-layer.md) | LLM drafting layer: per-tenant context (no training, no per-user agents), Haiku-class stateless calls, deterministic floor + QA gate |
 
 **Integration ladder (the "easy integration" wedge)**
 | # | Decision |
