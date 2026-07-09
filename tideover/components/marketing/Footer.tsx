@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import { CalButton } from "@/components/booking/CalButton";
-import { FEATURE_COLUMNS, resolveHref } from "@/components/marketing/nav/nav-data";
+import { FEATURE_COLUMNS } from "@/components/marketing/nav/nav-data";
 
 /**
  * Site footer — dark-teal surface rebuilt into a sitemap-style link mesh (the
@@ -10,9 +10,10 @@ import { FEATURE_COLUMNS, resolveHref } from "@/components/marketing/nav/nav-dat
  * help center, and an affiliate program are documented as build-next, never
  * linked before they exist (one live link beats three "coming soon").
  *
- * Product links mirror the header mega-menu (single source of truth: nav-data +
- * resolveHref, so the DEMO_MODE fallback stays in sync). Proof-only: no ratings,
- * counts, badges, status pills, or "featured on" rows.
+ * Product links mirror the header mega-menu (single source of truth: nav-data).
+ * Like the header, they point at MARKETING surfaces only — never the /app
+ * cockpit (the live demo is reserved for a booked demo call). Proof-only: no
+ * ratings, counts, badges, status pills, or "featured on" rows.
  */
 
 // Mirror the mega-menu's product surfaces (short footer labels, shared hrefs).
@@ -24,7 +25,7 @@ const PRODUCT_LINKS: readonly { label: string; href: string }[] = [
   { label: "Goodwill gifts", key: "Goodwill gifts" },
   { label: "WISMO forecast", key: "WISMO cohort forecast" },
   { label: "Baseline report", key: "Day-0 baseline report" },
-].map((x) => ({ label: x.label, href: resolveHref(featBy.get(x.key)!) }));
+].map((x) => ({ label: x.label, href: featBy.get(x.key)!.href }));
 
 const RESOURCE_LINKS: readonly { label: string; href: string }[] = [
   { label: "Cold Loom", href: "/vsl/cold-loom" },
@@ -35,6 +36,7 @@ const RESOURCE_LINKS: readonly { label: string; href: string }[] = [
 
 const COMPANY_LINKS: readonly { label: string; href: string }[] = [
   { label: "How it works", href: "/how-it-works" },
+  { label: "Pricing", href: "/pricing" },
   { label: "Who it's for", href: "/who-its-for" },
   { label: "Founder story", href: "/#operator" },
   { label: "Case study (sample)", href: "/case-study" },
@@ -44,7 +46,7 @@ const COMPANY_LINKS: readonly { label: string; href: string }[] = [
 
 const HELP_LINKS: readonly { label: string; href: string }[] = [
   { label: "Email us", href: "mailto:contact@tideover.app" },
-  { label: "Book a call", href: "/book" },
+  { label: "Book a demo", href: "/book" },
   { label: "Security", href: "/security" },
   { label: "Procurement", href: "/procurement" },
 ];

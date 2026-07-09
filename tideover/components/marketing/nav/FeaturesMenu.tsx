@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { FEATURE_COLUMNS, resolveHref, type NavItem } from "./nav-data";
+import { FEATURE_COLUMNS, type NavItem } from "./nav-data";
 import { ICONS } from "./icons";
 
 /**
@@ -126,7 +126,7 @@ export function FeaturesMenu() {
 function MenuLink({ item, onNavigate }: { item: NavItem; onNavigate: () => void }) {
   return (
     <Link
-      href={resolveHref(item)}
+      href={item.href}
       onClick={onNavigate}
       className="group flex items-start gap-3 rounded-xl px-3 py-2.5 no-underline transition-colors hover:bg-[rgba(14,83,102,0.05)]"
     >

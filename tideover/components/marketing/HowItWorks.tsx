@@ -24,8 +24,10 @@ function FeatureIcon({ path }: { path: React.ReactNode }) {
   );
 }
 
-const FEATURES: readonly { title: string; body: string; icon: React.ReactNode }[] = [
+// `id` = stable anchor target for the Features mega-menu (e.g. /how-it-works#stack).
+const FEATURES: readonly { id: string; title: string; body: string; icon: React.ReactNode }[] = [
   {
+    id: "stack",
     title: "Plugs into your existing stack",
     body: "We bolt onto the Gorgias, Tidio, or Intercom you already run. No migration, no second inbox, no infra change.",
     icon: (
@@ -37,6 +39,7 @@ const FEATURES: readonly { title: string; body: string; icon: React.ReactNode }[
     ),
   },
   {
+    id: "timeline",
     title: "Knows each order's real timeline",
     body: "Tideover reads order data and your production schedule, so every reply is grounded in where that specific order actually is — tooling, production, QC, packing, dispatch.",
     icon: (
@@ -47,6 +50,7 @@ const FEATURES: readonly { title: string; body: string; icon: React.ReactNode }[
     ),
   },
   {
+    id: "replies",
     title: "Timeline-aware, day-stage replies",
     body: "A Day 7 nudge and a Day 89 worry need different words. Replies meet the buyer at the emotional stage they're in, in confidence bands — never an invented hard date.",
     icon: (
@@ -57,6 +61,7 @@ const FEATURES: readonly { title: string; body: string; icon: React.ReactNode }[
     ),
   },
   {
+    id: "approval",
     title: "Every novel reply is human-approved",
     body: "Nothing auto-fires a promise. New situations get a real person's eyes before they ever reach your customer.",
     icon: (
@@ -106,7 +111,7 @@ const PIPELINE_STEPS: readonly { n: number; label: React.ReactNode; note?: strin
 function Pipeline() {
   return (
     <Reveal index={4}>
-      <div className="mb-11 mt-12">
+      <div id="pipeline" className="mb-11 mt-12 scroll-mt-24">
         <span className="kicker mb-5">The pipeline</span>
         <ol className="m-0 grid list-none grid-cols-1 gap-3.5 p-0 sm:grid-cols-2 lg:grid-cols-5">
           {PIPELINE_STEPS.map((s) => (
@@ -162,7 +167,7 @@ export function HowItWorks({ condensed = false }: { condensed?: boolean } = {}) 
         <div className={condensed ? "grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4" : "mb-11 grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4"}>
           {FEATURES.map((f, i) => (
             <Reveal key={f.title} index={i}>
-              <div className="h-full rounded-[18px] border border-border bg-paper p-[26px] shadow-card">
+              <div id={f.id} className="h-full scroll-mt-24 rounded-[18px] border border-border bg-paper p-[26px] shadow-card">
                 <FeatureIcon path={f.icon} />
                 <h3 className="mb-2 font-serif text-[19px] font-semibold text-ink">{f.title}</h3>
                 <p className="m-0 text-[14.5px] leading-relaxed text-slate">{f.body}</p>

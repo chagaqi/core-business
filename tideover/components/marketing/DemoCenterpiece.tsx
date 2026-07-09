@@ -74,7 +74,9 @@ export function DemoCenterpiece() {
 
         <Reveal index={2}>
           <div className="mt-9 text-center">
-            <CalButton large>Draft a reply on your own scenario &rarr;</CalButton>
+            {/* The demo is the show-don't-tell proof; the action it drives is a
+                booked demo call (Dylan, 2026-07-09), not a self-serve draft. */}
+            <CalButton large>Book a demo &rarr;</CalButton>
           </div>
         </Reveal>
       </div>

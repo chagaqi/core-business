@@ -4,25 +4,25 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import { FeaturesMenu } from "@/components/marketing/nav/FeaturesMenu";
-import { FEATURE_COLUMNS, resolveHref } from "@/components/marketing/nav/nav-data";
+import { FEATURE_COLUMNS } from "@/components/marketing/nav/nav-data";
 
 /**
- * Sticky marketing header, shared across every marketing page. IA adopts the
- * studied model (structure only): Logo · Features (mega) · Live demo · How it
- * works · FAQ · Pricing ‖ Book a call · Log in · Get started. One filled element
- * only — the terracotta "Get started" pill (rule D1: terracotta = action). The
- * old filled "Book a pilot" is demoted to a plain "Book a call" text link.
+ * Sticky marketing header, shared across every marketing page. IA (structure):
+ * Logo · Features (mega) · Pricing · How it works · FAQ ‖ Book a demo · Log in ·
+ * Get started. One filled element only — the terracotta "Get started" pill
+ * (rule D1: terracotta = action); the booking CTA is a plain text link.
  *
- * Center text links are same-page anchors on Home (#demo, #faq, #pricing) or
- * absolute routes (/how-it-works) so they resolve from any page. Client
- * component for the mega-menu, the mobile accordion, and the scroll-aware lift.
+ * Dylan (2026-07-09): the live demo is reserved for a booked demo call, so the
+ * old "Live demo" slot now points at the real /pricing page and the booking CTA
+ * reads "Book a demo". Center links are the real /pricing + /how-it-works routes
+ * and the Home #faq anchor, so they resolve from any page. Client component for
+ * the mega-menu, the mobile accordion, and the scroll-aware lift.
  */
 
 const CENTER_LINKS: readonly { label: string; href: string }[] = [
-  { label: "Live demo", href: "/#demo" },
+  { label: "Pricing", href: "/pricing" },
   { label: "How it works", href: "/how-it-works" },
   { label: "FAQ", href: "/#faq" },
-  { label: "Pricing", href: "/#pricing" },
 ];
 
 const linkCls =
@@ -74,7 +74,7 @@ export function Nav() {
         <div className="ml-auto flex items-center gap-2">
           <div className="hidden items-center gap-2 md:flex">
             <Link href="/book" className={linkCls}>
-              Book a call
+              Book a demo
             </Link>
             <span className="h-5 w-px bg-border" aria-hidden />
             <Link href="/login" className={linkCls}>
@@ -147,7 +147,7 @@ export function Nav() {
                       {col.items.map((item) => (
                         <li key={item.label}>
                           <Link
-                            href={resolveHref(item)}
+                            href={item.href}
                             onClick={closeMobile}
                             className="flex flex-col rounded-lg px-2 py-1.5 no-underline transition-colors hover:bg-[rgba(14,83,102,0.05)]"
                           >
@@ -188,7 +188,7 @@ export function Nav() {
               onClick={closeMobile}
               className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-slate no-underline transition-colors hover:bg-[rgba(14,83,102,0.07)] hover:text-teal"
             >
-              Book a call
+              Book a demo
             </Link>
             <Link
               href="/login"

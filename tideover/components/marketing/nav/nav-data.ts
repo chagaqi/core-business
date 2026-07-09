@@ -1,10 +1,14 @@
 /**
  * Config for the Features mega-menu (three labeled columns) + the mobile
- * accordion. Every item points at a route/anchor that ships TODAY. The deep
- * `/app/*` targets render the public sample cockpit while the marketing deploy
- * runs DEMO_MODE=true; if a hardened prod ever flips it off those routes bounce
- * to /login, so each carries a marketing `fallback` and resolveHref() switches
- * to it when NEXT_PUBLIC_DEMO_MODE === "false".
+ * accordion, and the mirrored footer product column.
+ *
+ * MARKETING-ONLY linking (Dylan, 2026-07-09): Features must never route a
+ * visitor into the /app cockpit — the live demo is reserved for a booked demo
+ * call. Every item points at a public MARKETING surface that ships today: the
+ * relevant /how-it-works anchor, a real page (/security, /procurement,
+ * /onboarding, /vsl/*), and nothing under /app. Items without a natural
+ * on-page anchor fall to the /how-it-works top. (This replaces the former
+ * DEMO_MODE href/fallback split; there is no cockpit deep-link left to gate.)
  *
  * Icons live in ./icons.tsx (this file stays .ts / JSX-free); each item names one
  * by key. Density mirrors the studied 3-column pattern (4 / 5 / 5 = 14 items).
@@ -30,10 +34,8 @@ export interface NavItem {
   label: string;
   /** One-line, original descriptor (never lifted from any source). */
   desc: string;
-  /** Demo/primary target — resolves to the public sample cockpit in demo mode. */
+  /** Marketing destination — a public page/anchor. Never an /app cockpit route. */
   href: string;
-  /** Marketing surface to use when DEMO_MODE is off (prod-hardened). */
-  fallback?: string;
   icon: IconName;
   /** Renders a small status pill after the name. */
   badge?: "beta";
@@ -51,29 +53,25 @@ export const FEATURE_COLUMNS: readonly NavColumn[] = [
       {
         label: "Reassurance inbox",
         desc: "WISMO tickets triaged, with a calm draft already waiting on each",
-        href: "/app/inbox",
-        fallback: "/#demo",
+        href: "/how-it-works#replies",
         icon: "inbox",
       },
       {
         label: "Refund-risk scoring",
         desc: "See which waiting orders are about to churn",
-        href: "/app/customers",
-        fallback: "/how-it-works",
+        href: "/how-it-works#pipeline",
         icon: "gauge",
       },
       {
         label: "Customer status pages",
         desc: "A branded where's-my-order page that reads the timeline",
-        href: "/app/updates",
-        fallback: "/how-it-works",
+        href: "/how-it-works",
         icon: "statusPage",
       },
       {
         label: "Goodwill gifts",
         desc: "Risk-unlocked make-goods, only when they'll save the order",
-        href: "/app/gifts",
-        fallback: "/how-it-works",
+        href: "/how-it-works",
         icon: "gift",
       },
     ],
@@ -84,38 +82,31 @@ export const FEATURE_COLUMNS: readonly NavColumn[] = [
       {
         label: "WISMO cohort forecast",
         desc: "Predicts the where-is-it wave before it hits the inbox",
-        href: "/app/forecast",
-        fallback: "/how-it-works",
+        href: "/how-it-works",
         icon: "forecast",
       },
       {
         label: "Day-0 baseline report",
         desc: "Your starting numbers, captured before we touch a thing",
-        href: "/app/baseline",
-        fallback: "/how-it-works",
+        href: "/how-it-works",
         icon: "baseline",
       },
       {
         label: "Script performance",
         desc: "Which replies calm people, and which don't",
-        href: "/app/scripts",
-        fallback: "/how-it-works",
+        href: "/how-it-works#replies",
         icon: "script",
       },
       {
         label: "Dispute evidence pack",
-        // Points at the cockpit, not a specific order: seed order ids are
-        // generated, so no id is guaranteed stable to hardcode here.
         desc: "One-click proof file the moment a chargeback lands",
-        href: "/app",
-        fallback: "/how-it-works",
+        href: "/how-it-works",
         icon: "evidence",
       },
       {
         label: "Escalation flags",
         desc: "The few tickets a human must take, surfaced early",
-        href: "/app/inbox",
-        fallback: "/#demo",
+        href: "/how-it-works#approval",
         icon: "flag",
       },
     ],
@@ -132,8 +123,7 @@ export const FEATURE_COLUMNS: readonly NavColumn[] = [
       {
         label: "Webhook ingest",
         desc: "Live order events straight from your store",
-        href: "/app/setup",
-        fallback: "/how-it-works",
+        href: "/how-it-works#stack",
         icon: "webhook",
         badge: "beta",
       },
@@ -168,14 +158,3 @@ export const FEATURE_COLUMNS: readonly NavColumn[] = [
  * baseline -> verdict) using real numbers only. Until then: [CASE STUDY PLACEHOLDER].
  *   { label: "Case study", href: "/case-study" }
  */
-
-/**
- * NEXT_PUBLIC_DEMO_MODE is inlined at build time (identical on server + client,
- * so no hydration drift). Unset => demo (the marketing deploy default).
- */
-const DEMO_MODE = process.env.NEXT_PUBLIC_DEMO_MODE !== "false";
-
-/** Effective href for an item given the current build's demo flag. */
-export function resolveHref(item: NavItem): string {
-  return DEMO_MODE ? item.href : item.fallback ?? item.href;
-}
