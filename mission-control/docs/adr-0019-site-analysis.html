@@ -1,0 +1,67 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ADR-0019 — Site-analysis autofill — Tideover docs</title><style>body{margin:0;background:#fbf8f2;color:#11252a;font:16px/1.65 -apple-system,Segoe UI,Roboto,sans-serif}main{max-width:880px;margin:0 auto;padding:40px 24px 80px}h1,h2,h3{line-height:1.15;letter-spacing:-.01em}h1{font-size:30px}h2{margin-top:2em;border-bottom:1px solid #ebe2d0;padding-bottom:6px}a{color:#0e5366}code{background:#f4eee2;padding:1px 5px;border-radius:4px;font-size:13.5px}pre{background:#f4eee2;padding:14px;border-radius:10px;overflow-x:auto;font-size:13px}table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}th,td{border:1px solid #ebe2d0;padding:7px 10px;text-align:left;vertical-align:top}th{background:#f4eee2}blockquote{border-left:3px solid #d9762f;margin-left:0;padding-left:14px;color:#374a4f}.top{font-size:13px;margin-bottom:18px}.top a{text-decoration:none}</style></head><body><main><p class="top"><a href="../tideover-hq.html">&larr; Tideover HQ</a></p><div id="c"><pre style="white-space:pre-wrap"># ADR-0019 — Site-analysis autofill endpoint (deterministic, SSRF-guarded)
+
+**Date:** 2026-07-09 · **Status:** accepted · **Task:** OB1
+
+## Context
+
+Onboarding should feel intelligent: the merchant pastes their website or Kickstarter URL and the wizard prefills brand name, platform, estimated delivery, and goodwill-gift candidates derived from their own reward tiers ("autofill as much as possible", "gifts auto populated from their campaign"). No LLM key exists yet (ADR-0018 pends provider), so extraction must be deterministic. Fetching operator-supplied URLs server-side creates SSRF exposure that has to be engineered, not hand-waved.
+
+## Decision
+
+1. **`POST /api/analyze { url }`** (`app/api/analyze/route.ts`, zod-validated, `withApiErrorHandling`, in-memory 10/min per-IP limiter, `runtime="nodejs"`). Reads no datastore — safe in demo and real mode.
+2. **Extraction is pure and deterministic** (`lib/site-analyze.ts` → `extractFromHtml`): og/JSON-LD/title → brandName; theme-color → accent; host/markers → platform (kickstarter/indiegogo/shopify/generic); embedded KS project JSON → rewardTiers + estimatedDelivery; gift candidates quote extracted reward titles, bucketed base/mid/full by pledge amount. Nothing extractable → 3 generic candidates flagged `source:"fallback"` so the UI never presents invented site facts as site-derived.
+3. **SSRF guard** (`assertUrlAllowed`): http/https only, ports 80/443 only, literal-IP and DNS-resolved-IP checks against private/reserved v4+v6 ranges (incl. metadata, CGNAT, IPv4-mapped v6), manual redirects capped at 3 same-registrable-domain with the guard re-run each hop, 8s timeout, 2MB streaming cap, text/html required, no upstream HTML echoed to the client.
+4. **Auth posture:** added to the middleware matcher — operator-auth-gated on the real host, open on the demo/marketing host where public onboarding runs (that flow is the point), protected there by the guard + limiter.
+5. **Accepted residual — DNS rebinding.** We validate the resolved IP but `fetch()` re-resolves, so an attacker controlling authoritative DNS with TTL≈0 could theoretically steer the second resolution at a private IP. Accepted because: the guard re-runs per redirect, responses echo no fetched content, and the Vercel function sandbox exposes no privileged internal network. Closing it fully requires socket pinning (custom undici dispatcher). Documented inline at `assertUrlAllowed`.
+
+## Proof-only guardrails
+
+Gift-candidate labels are grounded in the merchant's own extracted reward titles or clearly flagged `fallback`; the endpoint invents no brand facts, dates, or claims. `estimatedDelivery` feeds the wizard as a *prefill the merchant confirms*, never a customer-facing promise.
+
+## Consequences
+
+Onboarding can autofill live during signup; the same extraction layer is reusable for the ADR-0018 tenant-profile assembly. The limiter is per-instance memory (resets on cold start) — acceptable at pilot traffic, revisit with real volume.
+
+## Alternatives rejected
+
+- **LLM-based extraction:** no key yet, and deterministic parsing is testable + free; an LLM pass can layer on top later without changing the endpoint contract.
+- **Client-side fetch:** CORS-blocked on arbitrary sites; a server fetch is the only reliable path.
+- **Socket pinning now:** needs a dependency or custom dispatcher for a residual with no reachable target in our runtime; disproportionate at this stage.
+
+## Kill-criteria
+
+Before this endpoint ever runs inside a network with reachable internal services (VPC peering, self-hosted deploy) or is granted credentials of any kind, socket pinning becomes mandatory — revisit then, deliberately.
+</pre></div><script type="text/plain" id="md"># ADR-0019 — Site-analysis autofill endpoint (deterministic, SSRF-guarded)
+
+**Date:** 2026-07-09 · **Status:** accepted · **Task:** OB1
+
+## Context
+
+Onboarding should feel intelligent: the merchant pastes their website or Kickstarter URL and the wizard prefills brand name, platform, estimated delivery, and goodwill-gift candidates derived from their own reward tiers ("autofill as much as possible", "gifts auto populated from their campaign"). No LLM key exists yet (ADR-0018 pends provider), so extraction must be deterministic. Fetching operator-supplied URLs server-side creates SSRF exposure that has to be engineered, not hand-waved.
+
+## Decision
+
+1. **`POST /api/analyze { url }`** (`app/api/analyze/route.ts`, zod-validated, `withApiErrorHandling`, in-memory 10/min per-IP limiter, `runtime="nodejs"`). Reads no datastore — safe in demo and real mode.
+2. **Extraction is pure and deterministic** (`lib/site-analyze.ts` → `extractFromHtml`): og/JSON-LD/title → brandName; theme-color → accent; host/markers → platform (kickstarter/indiegogo/shopify/generic); embedded KS project JSON → rewardTiers + estimatedDelivery; gift candidates quote extracted reward titles, bucketed base/mid/full by pledge amount. Nothing extractable → 3 generic candidates flagged `source:"fallback"` so the UI never presents invented site facts as site-derived.
+3. **SSRF guard** (`assertUrlAllowed`): http/https only, ports 80/443 only, literal-IP and DNS-resolved-IP checks against private/reserved v4+v6 ranges (incl. metadata, CGNAT, IPv4-mapped v6), manual redirects capped at 3 same-registrable-domain with the guard re-run each hop, 8s timeout, 2MB streaming cap, text/html required, no upstream HTML echoed to the client.
+4. **Auth posture:** added to the middleware matcher — operator-auth-gated on the real host, open on the demo/marketing host where public onboarding runs (that flow is the point), protected there by the guard + limiter.
+5. **Accepted residual — DNS rebinding.** We validate the resolved IP but `fetch()` re-resolves, so an attacker controlling authoritative DNS with TTL≈0 could theoretically steer the second resolution at a private IP. Accepted because: the guard re-runs per redirect, responses echo no fetched content, and the Vercel function sandbox exposes no privileged internal network. Closing it fully requires socket pinning (custom undici dispatcher). Documented inline at `assertUrlAllowed`.
+
+## Proof-only guardrails
+
+Gift-candidate labels are grounded in the merchant's own extracted reward titles or clearly flagged `fallback`; the endpoint invents no brand facts, dates, or claims. `estimatedDelivery` feeds the wizard as a *prefill the merchant confirms*, never a customer-facing promise.
+
+## Consequences
+
+Onboarding can autofill live during signup; the same extraction layer is reusable for the ADR-0018 tenant-profile assembly. The limiter is per-instance memory (resets on cold start) — acceptable at pilot traffic, revisit with real volume.
+
+## Alternatives rejected
+
+- **LLM-based extraction:** no key yet, and deterministic parsing is testable + free; an LLM pass can layer on top later without changing the endpoint contract.
+- **Client-side fetch:** CORS-blocked on arbitrary sites; a server fetch is the only reliable path.
+- **Socket pinning now:** needs a dependency or custom dispatcher for a residual with no reachable target in our runtime; disproportionate at this stage.
+
+## Kill-criteria
+
+Before this endpoint ever runs inside a network with reachable internal services (VPC peering, self-hosted deploy) or is granted credentials of any kind, socket pinning becomes mandatory — revisit then, deliberately.
+</script><script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script><script>try{if(window.marked){document.getElementById("c").innerHTML=marked.parse(document.getElementById("md").textContent)}}catch(e){}</script></main></body></html>
