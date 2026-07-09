@@ -150,9 +150,19 @@ export default async function InboxPage({
 
       {/* Responsive shell: below lg the three columns stack and the whole shell
           scrolls (so the Send rail is always reachable — it used to clip off a
-          fixed 3-col grid on narrow laptops/tablets); at lg+ it's the original
-          3-col grid with each column scrolling independently. */}
-      <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto lg:grid-cols-[300px_minmax(0,1fr)_360px] lg:overflow-hidden">
+          fixed 3-col grid on narrow laptops/tablets); at lg+ it's a 3-col grid
+          with each column scrolling independently.
+
+          Rebalanced (2026-07-09): the ACTIONABLE surface is the dominant column.
+          Left = priority queue (300px). CENTER = the work — the customer's
+          message you're answering, then the draft composer (DraftRail +
+          ApprovalBar), the reply guardrail (PreviouslyTold) and the gift offer —
+          on the wide 1fr track. RIGHT = a compact context sidebar (320px): who
+          the backer is, order stats, and why they're at risk. Info supports the
+          work; it no longer out-sizes it. DOM order (queue → work → context) is
+          also the mobile stack order: read the message, draft the reply, then
+          the reference stats below. */}
+      <div className="grid min-h-0 flex-1 grid-cols-1 overflow-y-auto lg:grid-cols-[300px_minmax(0,1fr)_320px] lg:overflow-hidden">
         {/* LEFT — priority queue */}
         <div className="border-b border-border bg-paper lg:min-h-0 lg:overflow-y-auto lg:border-b-0 lg:border-r">
           <div className="sticky top-0 z-10 border-b border-border bg-paper px-4 py-2.5">
@@ -176,7 +186,7 @@ export default async function InboxPage({
           <QueueList rows={items} selectedId={selectedId} merchantId={merchantId} />
         </div>
 
-        {/* CENTER — ticket detail */}
+        {/* CENTER — the work: the message being answered + the draft composer */}
         <div className="px-6 py-5 lg:min-h-0 lg:overflow-y-auto">
           {!view ? (
             queueCleared ? (
@@ -208,37 +218,9 @@ export default async function InboxPage({
               </div>
             )
           ) : (
-            <div className="flex flex-col gap-5">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h2 className="font-serif text-[24px] text-ink">
-                    {view.customer.firstName}
-                  </h2>
-                  <p className="text-[13px] text-ink-mute">{view.customer.email}</p>
-                </div>
-                <div className="flex flex-col items-end gap-1.5">
-                  <RiskBadge color={view.intel.risk.color as RiskColor}>
-                    Risk {view.intel.risk.riskScore} ·{" "}
-                    {view.intel.risk.band.replace("_", " ")}
-                  </RiskBadge>
-                  {selectedSla ? <SlaChip chip={selectedSla} /> : null}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <DetailStat label="Group" value={GROUP_LABEL[view.order.group] ?? view.order.group} />
-                <DetailStat label="Waiting" value={`${view.timeline.daysInWait} days`} />
-                <DetailStat
-                  label="Stage"
-                  value={STAGE_LABEL[view.order.productionStage] ?? view.order.productionStage}
-                />
-                <DetailStat
-                  label="Pledge value"
-                  value={dollars(view.customer.ltvCents)}
-                  info="Pledge value — total this backer has spent"
-                />
-              </div>
-
+            <div className="flex flex-col gap-4">
+              {/* The customer's message — what the operator is answering — leads
+                  the work column so the draft below has its context in view. */}
               <div className="panel p-4">
                 <div className="flex items-center justify-between gap-2">
                   <h3 className="text-[15px] font-semibold text-ink">{view.ticket.subject}</h3>
@@ -255,27 +237,6 @@ export default async function InboxPage({
                 </div>
               </div>
 
-              <div className="panel p-4">
-                <h3 className="mb-3 text-[15px] font-semibold text-ink">
-                  Why this is at risk
-                </h3>
-                <FactorBreakdown
-                  factors={view.intel.risk.factors}
-                  topDriver={view.intel.risk.topDriver}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* RIGHT — draft rail + gift */}
-        <div className="border-t border-border bg-sand px-4 py-5 lg:min-h-0 lg:overflow-y-auto lg:border-l lg:border-t-0">
-          {!view ? (
-            <div className="proof-placeholder">
-              {queueCleared ? "Nothing to draft — queue clear." : "No ticket selected."}
-            </div>
-          ) : (
-            <div className="flex flex-col gap-4">
               {/* UX-52: only after a send auto-advance (?focus=draft) do we pull
                   focus into the fresh draft, so ⌘↵ chains — plain j/k nav leaves
                   the queue keyboard in control. */}
@@ -310,6 +271,53 @@ export default async function InboxPage({
                 availability={view.intel.availability}
                 alreadySent={view.ticket.tags.some((t) => t.startsWith("gift-sent:"))}
               />
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT — compact context sidebar: who / stats / why-at-risk */}
+        <div className="border-t border-border bg-sand px-4 py-5 lg:min-h-0 lg:overflow-y-auto lg:border-l lg:border-t-0">
+          {!view ? null : (
+            <div className="flex flex-col gap-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h2 className="truncate font-serif text-[20px] text-ink">
+                    {view.customer.firstName}
+                  </h2>
+                  <p className="truncate text-[12px] text-ink-mute">{view.customer.email}</p>
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-1.5">
+                  <RiskBadge color={view.intel.risk.color as RiskColor}>
+                    Risk {view.intel.risk.riskScore} ·{" "}
+                    {view.intel.risk.band.replace("_", " ")}
+                  </RiskBadge>
+                  {selectedSla ? <SlaChip chip={selectedSla} /> : null}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2">
+                <DetailStat label="Group" value={GROUP_LABEL[view.order.group] ?? view.order.group} />
+                <DetailStat label="Waiting" value={`${view.timeline.daysInWait} days`} />
+                <DetailStat
+                  label="Stage"
+                  value={STAGE_LABEL[view.order.productionStage] ?? view.order.productionStage}
+                />
+                <DetailStat
+                  label="Pledge value"
+                  value={dollars(view.customer.ltvCents)}
+                  info="Pledge value — total this backer has spent"
+                />
+              </div>
+
+              <div className="panel p-4">
+                <h3 className="mb-3 text-[15px] font-semibold text-ink">
+                  Why this is at risk
+                </h3>
+                <FactorBreakdown
+                  factors={view.intel.risk.factors}
+                  topDriver={view.intel.risk.topDriver}
+                />
+              </div>
             </div>
           )}
         </div>
