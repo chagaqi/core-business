@@ -37,6 +37,7 @@ const COMPANY_LINKS: readonly { label: string; href: string }[] = [
   { label: "How it works", href: "/how-it-works" },
   { label: "Who it's for", href: "/who-its-for" },
   { label: "Founder story", href: "/#operator" },
+  { label: "Case study (sample)", href: "/case-study" },
   { label: "Security", href: "/security" },
   { label: "Procurement", href: "/procurement" },
 ];
@@ -134,10 +135,12 @@ export function Footer() {
             and no public uptime page; /status/[token] is customer order status.)
           */}
           {/*
-            RESERVED — Case study column/link: lights up only when a real pilot
-            cohort produces numbers (real deltas vs. the day-0 baseline). Until
-            then it stays [CASE STUDY PLACEHOLDER]; the Founder story link above is
-            our real first-party narrative in the meantime.
+            Case study: the "(sample)" link above points at /case-study — the
+            honest TEMPLATE (every metric/quote/outcome a dashed placeholder slot,
+            [CASE STUDY PLACEHOLDER] until real). It fills with real deltas vs. the
+            day-0 baseline the day the first pilot cohort closes; the label keeps
+            "(sample)" until then. Stays out of the top nav per the header/IA
+            decision. Founder story above is our real first-party narrative today.
           */}
           <FooterCol heading="Help" links={HELP_LINKS} />
           <FooterCol heading="Legal" links={LEGAL_LINKS} />

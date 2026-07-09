@@ -537,3 +537,52 @@
 .paper-strata-drift-3 {
   animation: paper-strata-drift-c 38s ease-in-out infinite alternate;
 }
+
+/* ============================================================
+   Bold-pass marketing utilities (hero above-the-fold — HEADER-IA-SPEC §2).
+   Additive and opt-in by class, so the product app and every other marketing
+   page keep their current type/CTA treatment; nothing global is retuned here.
+   ============================================================ */
+
+/* Display type — the hero headline scale jump. Fraunces at the weight it shines
+   (600), tight leading + negative tracking for the "funded company" read. Scoped
+   to the .display class (applied only on the hero H1), so the global h1 clamp and
+   every other page's headings are untouched. Unlayered → always beats @layer base
+   h1 without a global override. */
+.display {
+  font-family: var(--font-fraunces), "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: clamp(44px, 8vw, 88px);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+/* Fully-round marketing CTA pill + a trailing-arrow nudge on hover. Product-app
+   buttons keep their 10px radius; this only applies where .btn-pill is added.
+   Unlayered, so it overrides the @layer components .btn radius. */
+.btn-pill {
+  border-radius: 999px;
+}
+.btn-pill .cta-arrow {
+  display: inline-block;
+  transition: transform 0.16s ease;
+}
+.btn-pill:hover .cta-arrow {
+  transform: translateX(3px);
+}
+
+/* Hero backdrop push — a soft top wash (warm + a faint teal shoreline glow) that
+   deepens the top of the fold so the PaperStrata tide below reads with more
+   contrast: crafted, not flat. Sits above the strata (-z-10) and below content
+   (z-10). Kept low-opacity so the enlarged headline stays fully legible. Pair it
+   with the existing .paper-grain overlay for fiber texture. */
+.hero-wash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(130% 72% at 50% -18%, rgba(14, 83, 102, 0.08), rgba(14, 83, 102, 0) 56%),
+    linear-gradient(180deg, rgba(228, 238, 240, 0.55), rgba(251, 248, 242, 0) 40%);
+}
