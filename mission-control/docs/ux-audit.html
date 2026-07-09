@@ -1,0 +1,571 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UX audit work order (85 findings) — Tideover docs</title><style>body{margin:0;background:#fbf8f2;color:#11252a;font:16px/1.65 -apple-system,Segoe UI,Roboto,sans-serif}main{max-width:880px;margin:0 auto;padding:40px 24px 80px}h1,h2,h3{line-height:1.15;letter-spacing:-.01em}h1{font-size:30px}h2{margin-top:2em;border-bottom:1px solid #ebe2d0;padding-bottom:6px}a{color:#0e5366}code{background:#f4eee2;padding:1px 5px;border-radius:4px;font-size:13.5px}pre{background:#f4eee2;padding:14px;border-radius:10px;overflow-x:auto;font-size:13px}table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}th,td{border:1px solid #ebe2d0;padding:7px 10px;text-align:left;vertical-align:top}th{background:#f4eee2}blockquote{border-left:3px solid #d9762f;margin-left:0;padding-left:14px;color:#374a4f}.top{font-size:13px;margin-bottom:18px}.top a{text-decoration:none}</style></head><body><main><p class="top"><a href="../tideover-hq.html">&larr; Tideover HQ</a></p><div id="c"><pre style="white-space:pre-wrap"># Tideover App — UX/UI Audit &amp; Improvement Plan
+
+**Date:** 2026-07-06 · **Owner:** Dylan (approved direction) · **Author:** Fable (senior UX pass over a 101-agent audit)
+**Status:** APPROVED by Dylan 2026-07-06 — but **implementation HOLDS until all audits are complete** (this UX audit + the engineering/infra audit + the onboarding redesign audit + the pilot-readiness audit). Once the audit set is in, execute everything together. This doc is the work order; an implementing agent should be able to execute it top-to-bottom without re-deriving any design thinking.
+
+## Provenance (why you can trust this list)
+
+Produced by a multi-agent deep audit: 9 dimension audits (first-run, inbox loop, dashboard, status page, design system, navigation, microcopy, accessibility, trust cues) + 2 method-acted persona walkthroughs + 2 comparable-SaaS research sweeps (Gorgias, Front, Zendesk, Intercom, Plain, Linear, Superhuman, Stripe, Vercel, Notion, Loom). 114 raw findings → 86 after dedup → **every one adversarially re-verified against the code** → 85 confirmed, 1 refuted. Every task below carries real `file:line` evidence that a verifier independently re-opened.
+
+Companion data (same directory):
+- `ux-audit-findings-2026-07-06.json` — all 85 findings with full problem text, evidence, and verifier notes. Task ids below (UX-01…UX-85) are the array order in that file.
+- `ux-audit-research-2026-07-06.json` — the 23 comparable-SaaS patterns.
+
+## The bar every change is judged against
+
+Two adoption personas. Every task exists because it failed one of them:
+
+- **Persona A — the day-one junior rep.** The pitch: a founder can delegate escalation-grade presale issues (chargeback threats, hostile refunds, VIP anxiety) DOWN to a tier-1 rep with confidence, because Tideover encodes the senior playbook. So the rep must always know: *what do I do first, is this draft safe to send, what happens if I click this, where do I go when confused.* Fear of breaking things is the #1 adoption killer.
+- **Persona B — the solo founder at 11pm, 15 minutes a day.** Needs: glanceable "am I okay?", the next action one click away, zero ceremony, zero seconds wasted.
+
+North star: **stupid simple**. If a screen needs explaining, it's a defect.
+
+---
+
+## Design direction — LOCKED (apply consistently, don't re-litigate per task)
+
+These are the product-level calls. Individual tasks below implement them.
+
+- **D1 · One action color.** Terracotta (`--terracotta`) means exactly one thing: *clickable primary action*. It currently also serves as the caution color (`--risk-amber` is byte-identical, `globals.css:18` vs `:30`) and as decorative tag fill. Create a distinct caution token `--amber-status` (a warm yellow-gold, clearly not terracotta's hue — e.g. around `#C99A2E`, verify contrast) and repoint `.pill-amber`, SlaChip's amber tone, and every RiskColor `amber` use to it. Terracotta appears **only** on things you can click.
+- **D2 · Fixed status vocabulary (Vercel-style).** Green = good/safe (and *only* when something is actually good — never as a default), amber-status = watch, risk-red = act now. Color never carries meaning alone: every colored state pill also has a text label or title. Reserve animation/pulse for genuinely in-flight states.
+- **D3 · Pill shape = live state signal, nothing else.** Pills/badges are reserved for the ≤3 things a rep must react to (risk, SLA, escalated/overdue). Static descriptors ("Draft only · human-approved", "Normal priority") demote to plain caption text.
+- **D4 · Land on the work.** The operator's home is the Inbox, not the finance dashboard. The dashboard's first element is the day's action, not analytics. The word "cockpit" is internal jargon — the UI says **Inbox**.
+- **D5 · Plain words, glossed jargon.** WISMO, LTV, deflection, SLA, de-escalate, confidence band: every occurrence gets either plain language or an in-place gloss (`title=` at minimum). New microcopy follows the anti-slop standard (`gtm-assets/copy-standard.md`): tight, concrete, no filler, never the word "honest".
+- **D6 · Accessibility floors.** `--ink-mute` darkened to clear WCAG AA 4.5:1 on both `--sand` and `--paper`; focus outlines never suppressed; disabled ≠ enabled visually; color-meaning always paired with text; icon-only controls get aria-labels.
+- **Keep** the warm sand/teal brand feel, the Fraunces/Inter pairing, and the calm tone. This is a hierarchy-and-guidance overhaul, not a rebrand.
+
+---
+
+## Execution rules (read before the first edit)
+
+1. **The gate.** Every change: `cd tideover &amp;&amp; npm run verify &amp;&amp; npm test` green before commit. No exceptions. UI-only changes still run the full gate (proof-lint scans copy).
+2. **Hot-file lane — SERIALIZED.** Any task touching `app/app/inbox/page.tsx`, `components/product/DraftRail.tsx`, `components/product/ApprovalBar.tsx`, `app/app/page.tsx`, or `lib/engines/reassurance.ts` is tagged **[HOT]** below. Only ONE [HOT] task in flight at a time, gate green between each. Non-HOT tasks may proceed in parallel with one HOT task.
+3. **Proof-only doctrine.** No fabricated metrics/testimonials/results in any new copy. Confidence bands, never hard dates. Demo surfaces keep the SAMPLE DATA watermark. `proof-lint` enforces; don't fight it.
+4. **Marketing files are Dylan's right now.** He is actively revising `components/marketing/*` and `gtm-assets/v2/v2-sales-page.md`. Do not touch them — single exception: UX-45 (a 2-line "Sign in" nav link, structural not copy). Do UX-45 as an isolated tiny diff, last.
+5. **Pricing is held.** Nothing in this plan changes a price or builds /pricing.
+6. **Send/approve flow + keyboard shortcuts must keep working.** After any [HOT] task: manually drive j/k → Enter → edit → Ctrl/⌘+Enter on the dev server before committing (`npm run dev`, `/app/inbox`).
+7. **Engine untouched.** `lib/engines/*` logic is out of scope (UX-65 only *reads* already-computed fields). If a task seems to need engine changes, stop and surface.
+8. **Goldens.** None of these tasks should change engine output. If `npm run verify` reports golden drift, you broke something — investigate, don't regenerate.
+9. **Board.** On completing each wave, update `mission-control/tideover-hq.html` task `UX1` note + LOG (render-verify the `&lt;script>` block before committing, per repo practice).
+10. **Commits.** One commit per task (or per coherent batch of ≤3 small same-surface tasks), message referencing the UX-id.
+
+---
+
+## Lane plan
+
+- **Wave 1 (P1 + one promoted P2):** UX-01 … UX-10. Bugs and blockers that make the core promise false. Mostly [HOT] — serialize.
+- **Wave 2 (P2):** quick global/system wins first (UX-18, 23, 24, 25, 33 — parallel-safe), then flow work grouped by surface.
+- **Wave 3 (P3):** polish sweep, batchable.
+- **QOL builds:** listed separately at the end with build/park calls already made.
+
+---
+
+# WAVE 1 — do these first (full spec)
+
+### UX-01 · [HOT] Regenerate never updates the visible draft — rep can re-send stale text believing it's new
+- **Severity/effort:** P1 / S · **Sources:** 4 independent auditors · **Files:** `components/product/DraftRail.tsx`, `components/product/ApprovalBar.tsx`, `app/app/inbox/page.tsx`, (read) `app/api/draft/route.ts`
+- **Problem:** Clicking Regenerate flashes "Regenerating…" then shows the OLD draft. The textarea seeds once from `useState` (`DraftRail.tsx:56`) and DraftRail is keyed only on `ticket.id` (`inbox/page.tsx:255`), so `regenerate()` (`ApprovalBar.tsx:85-96`) posts, gets a fresh draft back, discards it, and `router.refresh()` re-renders a component whose local state never re-syncs.
+- **Change:** Thread the regenerate result into the editor. Either (a) add an `onRegenerated(newText)` callback wired from ApprovalBar → parent → DraftRail that calls `setText(data.draft.text)` and resets mode to standard, or (b) include a regen nonce in DraftRail's `key` so it remounts with the new seed. Guard: if the rep has unsaved edits (text ≠ seed), ask before clobbering. Show a brief "New draft ready" cue (reuse the pill/caption pattern).
+- **Done when:** clicking Regenerate visibly replaces the textarea content with the newly returned draft; unsaved manual edits prompt before being replaced; j/k → Enter → ⌘Enter flow still works.
+
+### UX-02 · Escalated/hostile queue flag is an invisible 6px dot
+- **Severity/effort:** P1 / S · **Sources:** 2 · **Files:** `components/product/QueueList.tsx`
+- **Problem:** The most important triage signal — hostile / chargeback-threat — renders as a bare unlabeled 6px dot (`QueueList.tsx:72-77`), independent of the risk pill, so a rep scanning by color walks right past a chargeback threat that shows a calm green/amber risk score.
+- **Change:** Replace the dot with a small visible text pill (`pill pill-red`, label "Escalated") rendered beside the risk badge on the row. Keep aria-label.
+- **Done when:** an escalated ticket is identifiable in the queue list at a glance, by label not just color (D2).
+
+### UX-03 · [HOT] No confirmation a send worked before the view jumps to the next ticket
+- **Severity/effort:** P1 / S · **Sources:** 2 · **Files:** `components/product/ApprovalBar.tsx`
+- **Problem:** On success the UI instantly `router.replace()`s to a different customer (`ApprovalBar.tsx:108-131`) — no "Reply sent", no aria-live. A day-one rep who just replied to a hostile customer can't tell it worked; may re-click or ask a human. (The "Reply sent." card at `:152-163` only renders for already-sent tickets.)
+- **Change:** Before `advance()`, render the existing "Reply sent." confirmation briefly (~500ms or until next keypress), wrapped in `role="status" aria-live="polite"`. Add "Sent by {approvedBy}" to the post-send card while in the file (pairs with UX-49).
+- **Done when:** every successful send produces a perceivable confirmation (sighted + screen reader) before auto-advance; the send loop still feels fast.
+
+### UX-04 · Sidebar "Demo data" label is hardcoded — real merchants see live data labeled demo
+- **Severity/effort:** P1 / S · **Sources:** 1 · **Files:** `components/product/Sidebar.tsx`, `app/app/layout.tsx`
+- **Problem:** `Sidebar.tsx:116-118` always renders literal "Demo data" under the operator name. A real pilot (DEMO_MODE=false) sees live customer data falsely labeled demo on every screen — contradicts the proof-only promise. (Contrast the correctly gated `{isDemoMode() &amp;&amp; &lt;DemoBadge/>}` at `app/app/layout.tsx:23`.)
+- **Change:** Pass `isDemo={isDemoMode()}` from AppLayout into Sidebar; wrap the label in `{isDemo &amp;&amp; …}`.
+- **Done when:** the label appears in demo mode only.
+
+### UX-05 · One-click "Send gift" spends company money with no confirmation
+- **Severity/effort:** P1 / S · **Sources:** 1 · **Files:** `components/product/GiftSuggestion.tsx`
+- **Problem:** The Send gift button (`GiftSuggestion.tsx:101`) logs an irreversible comp on the first click (`:51-72`) with dollar figures attached and no confirm, no authorization cue. Persona A either freezes ("am I allowed to spend money?") or mis-spends.
+- **Change:** Two-step inline confirm ("Send this gift? **Confirm** / Cancel") plus one caption line: the value comes from the merchant's goodwill budget and the rep is authorized. No modal.
+- **Done when:** a gift cannot be sent with a single click; the authorization line renders; copy passes anti-slop.
+
+### UX-06 · [HOT] Confidence chip is hardcoded green even on overdue/escalated tickets
+- **Severity/effort:** P1 / S · **Sources:** 1 · **Files:** `components/product/DraftRail.tsx`
+- **Problem:** `DraftRail.tsx:97` renders the confidence-band chip as `pill pill-green` unconditionally — directly beside a red "Overdue" pill on the same ticket (`:104-106`). Green = safe everywhere else; this is a conflicting signal exactly where persona A asks "is this safe?"
+- **Change:** Make the confidence-band chip a neutral informational chip (border-border, bg-sand, text-ink-mute — match SlaChip's "ok" tone). Per D2, green appears only when nothing is wrong.
+- **Done when:** no green renders on a ticket that is overdue or escalated.
+
+### UX-07 · [HOT] Operator lands on a finance dashboard, not the queue; the only path is a jargon link
+- **Severity/effort:** P1 / M · **Sources:** 1 · **Files:** `app/login/page.tsx`, `app/app/page.tsx`
+- **Problem:** Login's `next` defaults to `/app` (`login/page.tsx:16`) — a wall of finance metrics titled "Refund-risk dashboard" with no ticket to answer; the only route to work is a small "Open cockpit" text link (`page.tsx:228`), and "cockpit" means nothing to a day-one rep.
+- **Change:** (a) Default post-login destination → `/app/inbox`. (b) On the dashboard, add a full-width primary action as the FIRST element under the header: "Answer your queue ({N} waiting) →" when N>0, calm "All caught up" when 0 (this is also UX-17's banner — build once). (c) Replace every rep-facing "cockpit" with "Inbox" (grep `app/`, `components/product/` for the word).
+- **Done when:** a fresh login lands in the Inbox; the dashboard's first element is the queue CTA; "cockpit" no longer appears in rep-facing UI.
+
+### UX-08 · [HOT] Dashboard at-risk count + table never clear as you work
+- **Severity/effort:** P1 / M · **Sources:** 1 · **Files:** `lib/service.ts`, `app/app/page.tsx`
+- **Problem:** `getDashboard`'s `atRisk` filter (`service.ts:734`) never excludes sent tickets, unlike the inbox's `openQueue` (`inbox/page.tsx:68`). After clearing the queue, the dashboard still shouts "5 flagged at-risk" with rows linking into handled tickets — the operator can't trust the number and re-opens finished work.
+- **Change:** Exclude `status === "sent"` from the at-risk work-count and table so the dashboard drops toward 0 as the queue clears (or render a "Replied" chip on sent rows and count only open — pick the first; it matches the inbox's definition of work).
+- **Done when:** clearing the inbox brings the dashboard's flagged count to 0 without a reseed; no test/golden drift (this is presentation-layer counting, but re-run the full gate).
+
+### UX-09 · [HOT] No live "is anything on fire" signal on the dashboard
+- **Severity/effort:** P1 / M · **Sources:** 1 · **Files:** `app/app/page.tsx`, (reuse) `lib/sla.ts`
+- **Problem:** The screen meant to answer "am I okay right now?" shows only a lagging "SLA attainment 96%" (`page.tsx:100-109`). Live per-ticket breach state already exists (`ticketSlaState`, used at `inbox/page.tsx:82`) but is never aggregated here — "3 replies are overdue" is unknowable at a glance.
+- **Change:** Compact status strip under the H1: "{N} waiting · {X} overdue · {Y} due soon", each figure linking to the inbox. Derive by running `ticketSlaState` over open tickets — counts of real state only, no fabricated metric. Color per D2 (red only when overdue > 0).
+- **Done when:** dashboard shows live overdue/due-soon counts that match what the inbox SlaChips show, one click from the fix.
+
+### UX-10 · [HOT] "Escalate" is cosmetic — nothing persists, no one is notified *(promoted from P2 by Fable: 6 independent reports; the delegate-with-confidence pitch depends on this being real)*
+- **Severity/effort:** P1 / M · **Sources:** 6 · **Files:** `components/product/ApprovalBar.tsx`, new `app/api/escalate/route.ts` (+ thin lib), `app/app/inbox/page.tsx`, `app/app/page.tsx`
+- **Problem:** The rep clicks Escalate on a chargeback threat, sees "Flagged for manager review," moves on trusting a human will catch it — but the flag is local React state (`ApprovalBar.tsx:45`, `:233-239`) that vanishes on advance/refresh. No API route or persisted field exists. The safety valve the whole junior-rep pitch depends on is copy theater.
+- **Change:** Persist it. POST `/api/escalate` writes an `escalated-by:&lt;operator>` tag + timestamp on the ticket (reuse the gift-sent tag pattern; repository seam, both drivers). Surface flagged tickets: a "Flagged" pill in the queue row and a count on the dashboard status strip (UX-09). Include a structured handoff note in the flag payload: the current draft + a short "why" the rep types (one optional text field) — per the Front escalation-handoff pattern (R11). Testable-core rule: logic in `lib/`, route stays thin. Add a unit test.
+- **Done when:** an escalation survives refresh/navigation, is visible in queue + dashboard, and records who/when/why; the button copy matches reality.
+
+---
+
+# WAVE 1.5 — Founder-requested feature (Dylan, 2026-07-06)
+
+### UX-86 · [FOUNDER] "Gifts available" panel in the ticket view + required gift setup in onboarding, unlocked by risk score
+- **Severity/effort:** P1 (founder-requested) / L · **Files:** onboarding wizard (`app/onboarding/OnboardingWizard.tsx` — new step), `components/product/GiftSuggestion.tsx` (extend into a panel), gift engine config (`lib/engines/` gift + merchant schema), `app/app/inbox/page.tsx` [HOT]
+- **Feature spec (Dylan's ask, expanded):**
+  - **(a) Onboarding:** a required step where the merchant configures **at least 3 goodwill gifts** (suggested starting catalog: early access, founder note, priority dispatch, digital perk, next-order credit — the seed's gift catalog is the model), each with cost, perceived value, and an eligibility tier. Onboarding cannot complete with fewer than 3.
+  - **(b) Ticket view:** a **"Gifts available"** panel in the ticket detail showing which gifts are unlocked *for this customer*, driven by risk band (+ LTV/escalation): standard/green → base gift(s); amber → adds mid-tier; red/escalated → full catalog including the highest-value saves. Locked gifts render visibly locked with the unlock condition ("Unlocks at high risk") so reps learn the ladder without a manual.
+  - **(c)** One-click send keeps UX-05's confirm + authorization line.
+- **Flags:** engine-adjacent — gift eligibility becomes merchant-configurable. Needs a short ADR; if the merchant schema gains a gift-catalog field, migrate `gen-seed.mjs` + `seed-check.mjs` in the same commit. Coordinate with UX-05 and UX-19. **The onboarding-redesign audit (running 2026-07-06) delivers the deepened implementable spec for this — build from that spec.**
+- **Done when:** onboarding blocks completion with &lt;3 gifts; ticket detail shows available vs locked gifts by risk band; confirm flow intact; gate green.
+
+---
+
+# WAVE 2 — P2 (compact spec; full problem text in the JSON by UX-id)
+
+**Global/system tokens — do these five first, they're parallel-safe and cascade everywhere:**
+
+- **UX-18** · `--ink-mute` (#6A7B80) fails WCAG AA on sand and paper yet carries most secondary + QA copy (`globals.css:26`, `tailwind.config.ts:35`). → Darken to ~`#5A6B70` or darker (verify 4.5:1 on both `--sand` and `--paper`), update both places. (D6)
+- **UX-23** · Terracotta triple-duty (CTA + caution + decoration; `globals.css:18` = `:30`). → Implement D1: new `--amber-status`, repoint `--risk-amber`/`.pill-amber`/SlaChip amber/social "Add-on" tag; terracotta = clickable only.
+- **UX-24** · `Field.tsx:6-7` `outline-none` suppresses the global 3px focus outline on every input incl. the draft textarea (also `UpdateComposer.tsx:188`). → Remove `outline-none`; keep `focus:border-teal` as secondary.
+- **UX-25** · Disabled buttons pixel-identical to enabled (`globals.css:110-158` has no `:disabled`). → Add `.btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; }` (+ `.link-quiet:disabled`).
+- **UX-33** · Dev string "No merchants seeded." shown verbatim to operators in 11 files. → Extract `&lt;NoMerchantState/>` with operator copy ("We couldn't load your account. Refresh, or contact support…") + refresh Button; swap all 11 call sites.
+
+**Inbox flow (all [HOT] — serialize):**
+
+- **UX-15** · Mode tabs (Standard/Brief/De-escalate) silently overwrite in-progress edits (`DraftRail.tsx:82-85`). → Dirty-check in `selectMode`; inline confirm before discarding a diverged draft.
+- **UX-16** · Send friction is identical for calm WISMO vs chargeback threat (ApprovalBar never receives priority). → Pass priority; when escalated, first press becomes an explicit confirm state ("Confirm send to {firstName} — chargeback risk") + one line "sends immediately, no recall". Normal tickets stay ceremony-free.
+- **UX-47** · Blocked-send never shows WHERE the hard date is (`qa.ts:101-113` boolean only). → Return the matched substring, thread as `match?: string`, render quoted in QaRow ("Found: 'by March 15th' — remove it to send").
+- **UX-50** · Unsent edits silently discarded on any navigation (QueueList/MerchantSwitcher/QueueKeyboard all navigate unguarded). → Compute `dirty` in DraftRail, lift it; first step: persistent inline banner when dirty ("Unsaved edit — send it or it's lost when you switch").
+- **UX-52** · ⌘↵ silently dead after every auto-advance (new textarea never refocused). → Auto-focus the new draft textarea after advance (mount effect or `focusDraftEditor`), so the send loop chains.
+- **UX-34** · Queue sorted by `priorityRank` but rows show `riskScore`; order unexplained (`service.ts:654-658`). → Caption under "Priority queue": "Sorted by refund risk, oldest wait first"; align the visible number with the sort key.
+- **UX-41** · Up to 7 pill shapes stack on one escalated ticket. → Implement D3: demote "Escalated/Normal priority" + "Draft only · human-approved" to caption text; pills = RiskBadge, SlaChip, Overdue only.
+- **UX-42** · Escalate renders as a bare quiet link between two real buttons (`Button.tsx:10-17` quiet variant drops `.btn` entirely). → Give it a ghost-button treatment with risk-red border so it reads as a real, deliberately-different action.
+- **UX-48** · QA checklist passes are silent for screen readers (`DraftRail.tsx:209-231`, mark is aria-hidden). → Add `sr-only` status text per row ("Passed" / "Blocked, needs fix" / "Guidance").
+- **UX-49** · Evidence pack unreachable from the ticket (only link is on Customers). → "View evidence pack" ghost button in ticket detail; "Sent by {approvedBy}" on the post-send card (pairs with UX-03).
+- **UX-28** · "Queue clear 🎉" congratulates a merchant who never imported anything (`inbox/page.tsx:118`). → Thread has-any-orders (reuse setup checklist signal); first-run empty state teaches the next step ("Import your backer list" + Button) instead of false praise. (R14: empty states teach.)
+- **UX-20** *(QOL)* · "Previously told" clamps the prior reply at 6 lines with no expand (`PreviouslyTold.tsx:50`) — can hide the exact promise consistency depends on. → "Show full reply" toggle.
+- **UX-19** *(QOL)* · Bare risk number ("72") with zero explanation anywhere in the queue (`QueueList.tsx:82`; `Badge.tsx:6-24` has no title). → Add `title` to RiskBadge; pass "Refund-risk score, 0-100. Red = act now, amber = watch, green = standard." at all three bare-score call sites.
+
+**Dashboard ([HOT] via app/app/page.tsx — serialize with the above):**
+
+- **UX-11** · Undefined jargon tiles (WISMO/Deflection/Saves/SLA); MetricTile has no gloss slot (4 sources). → Add `info?: string` prop rendering `title=` on the label; populate all jargon tiles; spell WISMO out on first use (dashboard, Sidebar hint, Forecast).
+- **UX-17** · Analytics-first layout buries the daily action (built with UX-07's banner). → Action banner first; At-risk queue + CTA directly under the header; GMV panel and risk curve demoted below.
+- **UX-21** · At-risk count is gray mid-sentence text (`page.tsx:81-84`). → Own emphasized element: red pill "{N} at-risk" linking to the inbox when >0, quiet "All clear" when 0.
+- **UX-22** · Tile literally renders "n=7"/"n=0" as its headline (`page.tsx:103`). → Plain language: "{answered} answered" / "No data yet"; keep the n≥10 gate mechanics in the sublabel.
+- **UX-43** · "Still collecting" placeholder styled identically to a real 30px metric. → Render ungated values in `text-ink-mute` non-serif so in-progress reads different at a glance.
+- **UX-35** · Deflection tile prints hard "100%" from n=1 while its SLA neighbor gates at n=10 (`service.ts:715-716`). → Apply the same `ATTAINMENT_MIN_N` floor + "collecting" treatment.
+- **UX-29** · New-merchant dashboard is a wall of zeros with no path to setup. → If `ordersInWindow===0`, banner: "You haven't imported any orders yet — finish setup to see live numbers" + Button to `/app/setup`. (R13: checklist lives in-product until done.)
+- **UX-36** · "Money at risk" dollars are a dead end. → Wrap the stat blocks in Links to the inbox (or anchor-scroll to the At-risk table).
+- **UX-46** · Always-on ~90-word Visa-mechanics paragraph fights the 15-minute glance (`page.tsx:198-210`). → Native `&lt;details>&lt;summary>How this is calculated&lt;/summary>` — no new JS.
+
+**Shell / navigation (parallel-safe):**
+
+- **UX-12** · No error boundary or 404 anywhere under `app/` (3 sources). → Add `app/app/error.tsx` + `app/app/not-found.tsx` inside AppLayout chrome (calm copy + Button to /app), plus root `app/error.tsx` + `app/not-found.tsx`.
+- **UX-13** · Zero loading feedback in /app; merchant switch + queue nav freeze (3 sources). → `app/app/inbox/loading.tsx` (3-column skeleton), `app/app/loading.tsx` (tile-grid skeleton); wrap MerchantSwitcher push in `useTransition`, dim the Select while pending.
+- **UX-14** · No help affordance anywhere in the operator app (2 sources). → Persistent "Need help?" in the Sidebar footer → mailto support + a short static "what's safe to send" panel. (R20 ladder: inline → popover → doc.)
+- **UX-44** · Operator footer row looks like an account menu but is a dead div; `/api/logout` has zero UI callers (`Sidebar.tsx:106-119`). → Make it a real control: sign-out button calling `/api/logout` then `router.push('/login')`.
+- **UX-51** · "N/5" Setup badge pulls reps into founder-only tasks. → Reframe the setup page for reps ("Your account owner still needs to finish setup — you can answer tickets now") or role-scope the badge.
+
+**Onboarding (parallel-safe):**
+
+- **UX-30** · Wizard loses ALL answers on refresh/back (pure useState, `OnboardingWizard.tsx:78-109`). → Serialize to sessionStorage on change, hydrate on mount, clear on submit.
+- **UX-31** · CSV import: no format guidance upfront; "unrecognized headers" styled like success (`ImportPanel.tsx:24-28`, `:116-121`). → Expected-columns hint above the picker; unknown-format line gets the terracotta warning treatment.
+- **UX-32** · Timeline editor accepts windowMin>windowMax and stage from>to silently (`OnboardingWizard.tsx:371-457`). → Inline validation + disable Continue/Generate until sane.
+
+**Customer surfaces (status/widget — parallel-safe):**
+
+- **UX-26** · Backer sees the raw internal id "ord_4f8a2k9dq0pl" as their order reference (`StatusView.tsx:59`, `status.ts:108`). → Surface the merchant's own order number if captured on ingest; otherwise drop the Tag. Never show internal ids to customers.
+- **UX-27** · Widget invalid-token state has nothing clickable (`widget/[token]/page.tsx:26-39`). → Add a merchant-configurable "Contact us" link (match AskBox's escape-hatch pattern).
+- **UX-37** · Avatar initial + done-dots hardcode near-white glyphs over the raw merchant accent — illegible on pastel brands (`StatusView.tsx:41-47`, `StageDot.tsx:18-29`). → Pick glyph color via `relativeLuminance(accent)` (already in `lib/color.ts`), like the rest of the page.
+- **UX-38** · Blank white page while the order resolves (no loading.tsx on status/widget). → Skeleton `loading.tsx` for both routes (sand background, dimmed panel outlines).
+- **UX-39** · WaitProgress's computed day-window can contradict OrderTimeline's static day-bands on the same screen. → Make WaitProgress the single canonical number: drop numeric day-band chips from non-active timeline rows (keep qualitative done/active/upcoming), or derive them from the same lo/hi math.
+- **UX-40** · CsatTap can't be corrected after a mis-tap (docstring promises re-tap; buttons unmount, `CsatTap.tsx:37-54`). → "Change your answer" link in the thank-you state resetting to idle.
+
+**Marketing touchpoint (LAST, isolated diff — see execution rule 4):**
+
+- **UX-45** · No "Sign in" anywhere on the public site (`Nav.tsx:19-25`). → Add a small "Sign in" text link to `/login` left of the Book-a-pilot CTA, in both desktop row and mobile panel. Two lines; touch nothing else in the file.
+
+---
+
+# WAVE 3 — P3 polish (one pass, batch by file; evidence + full text in the JSON)
+
+**Inbox / keyboard:**
+- **UX-53** · Hint shows only "⌘↵" — Windows reps never learn Ctrl+Enter works (`inbox/page.tsx:145` vs `DraftRail.tsx:163`). → "Ctrl/⌘+Enter to send".
+- **UX-54** · Shortcuts documented in one 11px caption that vanishes when the queue is empty. → Keycap-styled `&lt;kbd>` chips + a persistent "Shortcuts" item in the Sidebar footer (see QOL-2 overlay).
+- **UX-56** · "Save as tracked variant" prompt: jargon, blocks the flow, decline path unexplained (`ApprovalBar.tsx:182-198`). → Lead with "Reply sent ✓"; rename destination plainly ("save this wording to Script Performance?"); state that skipping still sends.
+- **UX-62** · FactorBreakdown names a "top driver" no bar visually matches. → Bold + accent the matching row.
+- **UX-64** · Bare "LTV" acronym (inbox/customers/gifts). → Spell "Lifetime value" on first use; `title=` on the table header.
+- **UX-65** · Engine's stageKey/variantKey computed but never shown (`reassurance.ts:31-45` → DraftRail). → Caption under the draft header: "Sourced from: Day-30 playbook · production-stage override." (Read-only engine access.)
+- **UX-76** · DraftRail hand-copies Tag's markup with a divergent text color. → Use `&lt;Tag>` (or fold into UX-41's demotion).
+- **UX-83** · The "never a hard date" guarantee only appears AFTER tripping the gate. → One persistent line in the QaChecklist footer: "Tideover never lets a hard delivery date go out — only confidence bands."
+- **UX-84** · "De-escalate" tab jargon + fear of clicking. → Rename "Calmer tone"; caption: "Switches the wording below — nothing sends until you click Approve &amp; send."
+
+**Dashboard:**
+- **UX-59** · Risk-curve bars aren't clickable into their tickets. → Thread ticketId through `riskCurve` points; wrap bars in Links.
+- **UX-61** · "Estimate, not a guarantee" is the dimmest text on the money card. → 13px semibold "Estimate, not a bill" directly under the dollar figure.
+- **UX-68** · "Estimate · Visa 13.1 orientation" badge leads with jargon. → Badge says "Estimate, not a guarantee"; Visa 13.1 lives only in the footer paragraph.
+- **UX-69** · Six equal-weight tiles, nothing reads first. → Promote one headline tile (span 2, larger value, accent border); risk-relevant tiles lead.
+- **UX-70** · Half the tiles have trend deltas, half unexplained bare numbers. → Wire deltas where a baseline exists; else sublabel "no baseline tracked".
+- **UX-71** *(QOL)* · Truncated subjects unreadable without opening (`page.tsx:262-264`). → `title={subject}`.
+- **UX-82** · Risk-curve detail is hover-only, keyboard-unreachable. → Focusable bars (`tabIndex` + focus handlers mirroring hover).
+
+**Shell:**
+- **UX-55** · Baseline + Evidence orphaned from nav, no way back. → Sidebar "Baseline" entry (preserve `?merchant=`); "‹ Back to Customers" in both print toolbars.
+- **UX-60** · Nine nav items, identical weight. → Group with kickers: Daily (Dashboard, Inbox) / Insights (Customers, Forecast, Scripts, Social, Gifts) / Account (Setup, Updates).
+- **UX-63** · 8 of 11 pages share one marketing tab title. → Per-page `metadata` titles ("Inbox — Tideover", …).
+- **UX-77** · No favicon anywhere. → `app/icon.tsx` from the Logo wave-mark.
+- **UX-78** · Merchant switch drops other query params (Forecast horizon resets). → Preserve searchParams, set only `merchant`.
+- **UX-79** · Fixed 240px sidebar + ~960px inbox grid: unusable on half-monitor/tablet. → Collapse pattern below `lg` (reuse the marketing hamburger approach).
+
+**Status/customer:**
+- **UX-58** · Invalid-token page's only CTA goes to Tideover's marketing site. → Drop the button (prose already says contact the store).
+- **UX-72** *(QOL)* · AskBox is one-shot — no follow-up question without a reload (`AskBox.tsx:38-53`). → "Ask another question" link resets to idle.
+- **UX-73** · 15px inputs trigger iOS auto-zoom (`Field.tsx:7`). → 16px base input font.
+- **UX-74** · Fixed demo pill can cover live controls on mobile. → Bottom padding on the scroll container when `isDemo`.
+- **UX-75** · Footer "Tideover" link navigates the backer away in-tab (widget version already uses `_blank`). → Match the widget.
+
+**Other:**
+- **UX-57** · Tooltips exist but have zero visible affordance and don't fire on touch. → Shared `.has-hint` (dotted underline + `cursor-help`) wherever a `title` carries real content; FactorBreakdown hints become visible captions.
+- **UX-66** · Customers page renders a bare empty table. → `.proof-placeholder` empty state matching gifts/updates.
+- **UX-67** *(QOL)* · Onboarding has no "Already set up? Sign in". → Small link near the wizard header.
+- **UX-80** · Scripts table jargon headers defined only in a paragraph below. → `title=` per `&lt;th>`, lifted from the existing sentences.
+- **UX-81** · "KS backer" vs "Kickstarter backer" for the same value on different screens. → Spell it out in the three GROUP_LABEL maps (or `title=` if width-constrained in the queue).
+
+---
+
+# QOL FEATURES — new small builds (Fable's build/park calls)
+
+**BUILD NOW (with the waves):**
+1. **Undo-send window** *(M, [HOT] ApprovalBar + send path)* — after Approve &amp; send, hold the reply ~8s with a visible "Sending… Undo" bar before it posts (R6: Gmail/Zendesk reply-delay). Catches the most common approval mistake with zero added clicks. Escalated sends (UX-16) keep their confirm step *plus* this. Implementation: client-side timer before the POST; Undo cancels cleanly; auto-advance still fires immediately so the loop stays fast (undo restores the ticket).
+2. **"?" shortcut overlay + kbd chips** *(S)* — pressing `?` anywhere in /app opens a read-only shortcut sheet (j/k, Enter, Ctrl/⌘+Enter, Esc); pairs with UX-54's keycap chips (R15: Linear). Read-only overlay — safe outside the hot write paths.
+3. **First-send micro-celebration** *(S, rides UX-03)* — the FIRST approve-and-send ever shows a one-time line tied to the differentiator: "Sent — confidence band attached, no unverified claims." One-time flag; never decoration after that (R19: Loom/Slack).
+4. **Confidence-band "?" popover** *(S)* — small popover off the confidence chip explaining how the band is computed and what feeds it; ADR-0006 methodology link as the footer line only (R20).
+
+**PARK (needs Dylan or post-first-cohort data — do NOT build):**
+- **Queue-level ⌘↵ / batch-clear for green tickets** (UX-85) — real leverage for persona B, but it changes the one-ticket-one-human-approval ceremony; Dylan signs off first.
+- **Practice queue / seeded training tickets** (R9/R16 Superhuman) — strong onboarding play, needs seed + role work; post-pilot.
+- **Per-intent earned autonomy** (R1) — requires months of approval-rate data; post-first-cohort.
+- **Cmd-K palette** (R12/R23) — power-user surface; premature at current app size.
+- **Coaching digest of repeated draft edits** (R10) — needs edit-pattern volume that doesn't exist yet.
+- **"Assign to me" multi-rep claiming** (R5) — single-operator product today; revisit at first multi-seat merchant.
+
+---
+
+# Appendix A — comparable-SaaS patterns informing this plan
+
+Full detail in `ux-audit-research-2026-07-06.json` (23 patterns). The ones already absorbed above: propose-then-approve default (R1 — Tideover's existing model, validated), draft-in-composer (R2 — existing model, validated), SLA color on queue rows (R4 → UX-02/09, D2), undo-send (R6 → QOL-1), fixed context rail (R7/R8 — existing model, validated), structured escalation handoff (R11 → UX-10), setup checklist in-product (R13 → UX-29), teaching empty states (R14 → UX-28/66), "?" overlay (R15 → QOL-2), status-color vocabulary (R18 → D2), micro-celebration (R19 → QOL-3), help ladder (R20 → UX-14/QOL-4), source citations under drafts (R3 → partially UX-65; full source-pills version is post-pilot), progressive disclosure (R17 — respected throughout), drip onboarding (R22 — parked with the practice queue).
+
+# Appendix B — refuted finding (don't re-report)
+
+- "Draft-version toggle buttons under minimum pointer target size" — REFUTED. Computed cascade (body 1.6 line-height inherited by buttons + py-1) yields ~27px rendered height, clearing WCAG 2.5.8's 24px minimum. See the verifier note in the JSON.
+
+# Verification checklist for the executing agent (per wave)
+
+1. `cd tideover &amp;&amp; npm run verify &amp;&amp; npm test` — green.
+2. `npm run dev` → drive: login → land in Inbox (UX-07) → j/k → Enter → edit → Ctrl+Enter send → confirmation (UX-03) → auto-advance → Ctrl+Enter again works (UX-52) → Escalate persists across refresh (UX-10) → dashboard counts drop (UX-08).
+3. Status page on a seeded token: loads with skeleton, no internal id, accent-safe glyphs, CSAT correctable.
+4. Keyboard-only pass: tab through inbox + dashboard; focus always visible (UX-24); no hover-only dead ends on the paths above.
+5. Update board task UX1 + LOG; commit; then next wave.
+</pre></div><script id="md" type="text/plain"># Tideover App — UX/UI Audit & Improvement Plan
+
+**Date:** 2026-07-06 · **Owner:** Dylan (approved direction) · **Author:** Fable (senior UX pass over a 101-agent audit)
+**Status:** APPROVED by Dylan 2026-07-06 — but **implementation HOLDS until all audits are complete** (this UX audit + the engineering/infra audit + the onboarding redesign audit + the pilot-readiness audit). Once the audit set is in, execute everything together. This doc is the work order; an implementing agent should be able to execute it top-to-bottom without re-deriving any design thinking.
+
+## Provenance (why you can trust this list)
+
+Produced by a multi-agent deep audit: 9 dimension audits (first-run, inbox loop, dashboard, status page, design system, navigation, microcopy, accessibility, trust cues) + 2 method-acted persona walkthroughs + 2 comparable-SaaS research sweeps (Gorgias, Front, Zendesk, Intercom, Plain, Linear, Superhuman, Stripe, Vercel, Notion, Loom). 114 raw findings → 86 after dedup → **every one adversarially re-verified against the code** → 85 confirmed, 1 refuted. Every task below carries real `file:line` evidence that a verifier independently re-opened.
+
+Companion data (same directory):
+- `ux-audit-findings-2026-07-06.json` — all 85 findings with full problem text, evidence, and verifier notes. Task ids below (UX-01…UX-85) are the array order in that file.
+- `ux-audit-research-2026-07-06.json` — the 23 comparable-SaaS patterns.
+
+## The bar every change is judged against
+
+Two adoption personas. Every task exists because it failed one of them:
+
+- **Persona A — the day-one junior rep.** The pitch: a founder can delegate escalation-grade presale issues (chargeback threats, hostile refunds, VIP anxiety) DOWN to a tier-1 rep with confidence, because Tideover encodes the senior playbook. So the rep must always know: *what do I do first, is this draft safe to send, what happens if I click this, where do I go when confused.* Fear of breaking things is the #1 adoption killer.
+- **Persona B — the solo founder at 11pm, 15 minutes a day.** Needs: glanceable "am I okay?", the next action one click away, zero ceremony, zero seconds wasted.
+
+North star: **stupid simple**. If a screen needs explaining, it's a defect.
+
+---
+
+## Design direction — LOCKED (apply consistently, don't re-litigate per task)
+
+These are the product-level calls. Individual tasks below implement them.
+
+- **D1 · One action color.** Terracotta (`--terracotta`) means exactly one thing: *clickable primary action*. It currently also serves as the caution color (`--risk-amber` is byte-identical, `globals.css:18` vs `:30`) and as decorative tag fill. Create a distinct caution token `--amber-status` (a warm yellow-gold, clearly not terracotta's hue — e.g. around `#C99A2E`, verify contrast) and repoint `.pill-amber`, SlaChip's amber tone, and every RiskColor `amber` use to it. Terracotta appears **only** on things you can click.
+- **D2 · Fixed status vocabulary (Vercel-style).** Green = good/safe (and *only* when something is actually good — never as a default), amber-status = watch, risk-red = act now. Color never carries meaning alone: every colored state pill also has a text label or title. Reserve animation/pulse for genuinely in-flight states.
+- **D3 · Pill shape = live state signal, nothing else.** Pills/badges are reserved for the ≤3 things a rep must react to (risk, SLA, escalated/overdue). Static descriptors ("Draft only · human-approved", "Normal priority") demote to plain caption text.
+- **D4 · Land on the work.** The operator's home is the Inbox, not the finance dashboard. The dashboard's first element is the day's action, not analytics. The word "cockpit" is internal jargon — the UI says **Inbox**.
+- **D5 · Plain words, glossed jargon.** WISMO, LTV, deflection, SLA, de-escalate, confidence band: every occurrence gets either plain language or an in-place gloss (`title=` at minimum). New microcopy follows the anti-slop standard (`gtm-assets/copy-standard.md`): tight, concrete, no filler, never the word "honest".
+- **D6 · Accessibility floors.** `--ink-mute` darkened to clear WCAG AA 4.5:1 on both `--sand` and `--paper`; focus outlines never suppressed; disabled ≠ enabled visually; color-meaning always paired with text; icon-only controls get aria-labels.
+- **Keep** the warm sand/teal brand feel, the Fraunces/Inter pairing, and the calm tone. This is a hierarchy-and-guidance overhaul, not a rebrand.
+
+---
+
+## Execution rules (read before the first edit)
+
+1. **The gate.** Every change: `cd tideover && npm run verify && npm test` green before commit. No exceptions. UI-only changes still run the full gate (proof-lint scans copy).
+2. **Hot-file lane — SERIALIZED.** Any task touching `app/app/inbox/page.tsx`, `components/product/DraftRail.tsx`, `components/product/ApprovalBar.tsx`, `app/app/page.tsx`, or `lib/engines/reassurance.ts` is tagged **[HOT]** below. Only ONE [HOT] task in flight at a time, gate green between each. Non-HOT tasks may proceed in parallel with one HOT task.
+3. **Proof-only doctrine.** No fabricated metrics/testimonials/results in any new copy. Confidence bands, never hard dates. Demo surfaces keep the SAMPLE DATA watermark. `proof-lint` enforces; don't fight it.
+4. **Marketing files are Dylan's right now.** He is actively revising `components/marketing/*` and `gtm-assets/v2/v2-sales-page.md`. Do not touch them — single exception: UX-45 (a 2-line "Sign in" nav link, structural not copy). Do UX-45 as an isolated tiny diff, last.
+5. **Pricing is held.** Nothing in this plan changes a price or builds /pricing.
+6. **Send/approve flow + keyboard shortcuts must keep working.** After any [HOT] task: manually drive j/k → Enter → edit → Ctrl/⌘+Enter on the dev server before committing (`npm run dev`, `/app/inbox`).
+7. **Engine untouched.** `lib/engines/*` logic is out of scope (UX-65 only *reads* already-computed fields). If a task seems to need engine changes, stop and surface.
+8. **Goldens.** None of these tasks should change engine output. If `npm run verify` reports golden drift, you broke something — investigate, don't regenerate.
+9. **Board.** On completing each wave, update `mission-control/tideover-hq.html` task `UX1` note + LOG (render-verify the `<script>` block before committing, per repo practice).
+10. **Commits.** One commit per task (or per coherent batch of ≤3 small same-surface tasks), message referencing the UX-id.
+
+---
+
+## Lane plan
+
+- **Wave 1 (P1 + one promoted P2):** UX-01 … UX-10. Bugs and blockers that make the core promise false. Mostly [HOT] — serialize.
+- **Wave 2 (P2):** quick global/system wins first (UX-18, 23, 24, 25, 33 — parallel-safe), then flow work grouped by surface.
+- **Wave 3 (P3):** polish sweep, batchable.
+- **QOL builds:** listed separately at the end with build/park calls already made.
+
+---
+
+# WAVE 1 — do these first (full spec)
+
+### UX-01 · [HOT] Regenerate never updates the visible draft — rep can re-send stale text believing it's new
+- **Severity/effort:** P1 / S · **Sources:** 4 independent auditors · **Files:** `components/product/DraftRail.tsx`, `components/product/ApprovalBar.tsx`, `app/app/inbox/page.tsx`, (read) `app/api/draft/route.ts`
+- **Problem:** Clicking Regenerate flashes "Regenerating…" then shows the OLD draft. The textarea seeds once from `useState` (`DraftRail.tsx:56`) and DraftRail is keyed only on `ticket.id` (`inbox/page.tsx:255`), so `regenerate()` (`ApprovalBar.tsx:85-96`) posts, gets a fresh draft back, discards it, and `router.refresh()` re-renders a component whose local state never re-syncs.
+- **Change:** Thread the regenerate result into the editor. Either (a) add an `onRegenerated(newText)` callback wired from ApprovalBar → parent → DraftRail that calls `setText(data.draft.text)` and resets mode to standard, or (b) include a regen nonce in DraftRail's `key` so it remounts with the new seed. Guard: if the rep has unsaved edits (text ≠ seed), ask before clobbering. Show a brief "New draft ready" cue (reuse the pill/caption pattern).
+- **Done when:** clicking Regenerate visibly replaces the textarea content with the newly returned draft; unsaved manual edits prompt before being replaced; j/k → Enter → ⌘Enter flow still works.
+
+### UX-02 · Escalated/hostile queue flag is an invisible 6px dot
+- **Severity/effort:** P1 / S · **Sources:** 2 · **Files:** `components/product/QueueList.tsx`
+- **Problem:** The most important triage signal — hostile / chargeback-threat — renders as a bare unlabeled 6px dot (`QueueList.tsx:72-77`), independent of the risk pill, so a rep scanning by color walks right past a chargeback threat that shows a calm green/amber risk score.
+- **Change:** Replace the dot with a small visible text pill (`pill pill-red`, label "Escalated") rendered beside the risk badge on the row. Keep aria-label.
+- **Done when:** an escalated ticket is identifiable in the queue list at a glance, by label not just color (D2).
+
+### UX-03 · [HOT] No confirmation a send worked before the view jumps to the next ticket
+- **Severity/effort:** P1 / S · **Sources:** 2 · **Files:** `components/product/ApprovalBar.tsx`
+- **Problem:** On success the UI instantly `router.replace()`s to a different customer (`ApprovalBar.tsx:108-131`) — no "Reply sent", no aria-live. A day-one rep who just replied to a hostile customer can't tell it worked; may re-click or ask a human. (The "Reply sent." card at `:152-163` only renders for already-sent tickets.)
+- **Change:** Before `advance()`, render the existing "Reply sent." confirmation briefly (~500ms or until next keypress), wrapped in `role="status" aria-live="polite"`. Add "Sent by {approvedBy}" to the post-send card while in the file (pairs with UX-49).
+- **Done when:** every successful send produces a perceivable confirmation (sighted + screen reader) before auto-advance; the send loop still feels fast.
+
+### UX-04 · Sidebar "Demo data" label is hardcoded — real merchants see live data labeled demo
+- **Severity/effort:** P1 / S · **Sources:** 1 · **Files:** `components/product/Sidebar.tsx`, `app/app/layout.tsx`
+- **Problem:** `Sidebar.tsx:116-118` always renders literal "Demo data" under the operator name. A real pilot (DEMO_MODE=false) sees live customer data falsely labeled demo on every screen — contradicts the proof-only promise. (Contrast the correctly gated `{isDemoMode() && <DemoBadge/>}` at `app/app/layout.tsx:23`.)
+- **Change:** Pass `isDemo={isDemoMode()}` from AppLayout into Sidebar; wrap the label in `{isDemo && …}`.
+- **Done when:** the label appears in demo mode only.
+
+### UX-05 · One-click "Send gift" spends company money with no confirmation
+- **Severity/effort:** P1 / S · **Sources:** 1 · **Files:** `components/product/GiftSuggestion.tsx`
+- **Problem:** The Send gift button (`GiftSuggestion.tsx:101`) logs an irreversible comp on the first click (`:51-72`) with dollar figures attached and no confirm, no authorization cue. Persona A either freezes ("am I allowed to spend money?") or mis-spends.
+- **Change:** Two-step inline confirm ("Send this gift? **Confirm** / Cancel") plus one caption line: the value comes from the merchant's goodwill budget and the rep is authorized. No modal.
+- **Done when:** a gift cannot be sent with a single click; the authorization line renders; copy passes anti-slop.
+
+### UX-06 · [HOT] Confidence chip is hardcoded green even on overdue/escalated tickets
+- **Severity/effort:** P1 / S · **Sources:** 1 · **Files:** `components/product/DraftRail.tsx`
+- **Problem:** `DraftRail.tsx:97` renders the confidence-band chip as `pill pill-green` unconditionally — directly beside a red "Overdue" pill on the same ticket (`:104-106`). Green = safe everywhere else; this is a conflicting signal exactly where persona A asks "is this safe?"
+- **Change:** Make the confidence-band chip a neutral informational chip (border-border, bg-sand, text-ink-mute — match SlaChip's "ok" tone). Per D2, green appears only when nothing is wrong.
+- **Done when:** no green renders on a ticket that is overdue or escalated.
+
+### UX-07 · [HOT] Operator lands on a finance dashboard, not the queue; the only path is a jargon link
+- **Severity/effort:** P1 / M · **Sources:** 1 · **Files:** `app/login/page.tsx`, `app/app/page.tsx`
+- **Problem:** Login's `next` defaults to `/app` (`login/page.tsx:16`) — a wall of finance metrics titled "Refund-risk dashboard" with no ticket to answer; the only route to work is a small "Open cockpit" text link (`page.tsx:228`), and "cockpit" means nothing to a day-one rep.
+- **Change:** (a) Default post-login destination → `/app/inbox`. (b) On the dashboard, add a full-width primary action as the FIRST element under the header: "Answer your queue ({N} waiting) →" when N>0, calm "All caught up" when 0 (this is also UX-17's banner — build once). (c) Replace every rep-facing "cockpit" with "Inbox" (grep `app/`, `components/product/` for the word).
+- **Done when:** a fresh login lands in the Inbox; the dashboard's first element is the queue CTA; "cockpit" no longer appears in rep-facing UI.
+
+### UX-08 · [HOT] Dashboard at-risk count + table never clear as you work
+- **Severity/effort:** P1 / M · **Sources:** 1 · **Files:** `lib/service.ts`, `app/app/page.tsx`
+- **Problem:** `getDashboard`'s `atRisk` filter (`service.ts:734`) never excludes sent tickets, unlike the inbox's `openQueue` (`inbox/page.tsx:68`). After clearing the queue, the dashboard still shouts "5 flagged at-risk" with rows linking into handled tickets — the operator can't trust the number and re-opens finished work.
+- **Change:** Exclude `status === "sent"` from the at-risk work-count and table so the dashboard drops toward 0 as the queue clears (or render a "Replied" chip on sent rows and count only open — pick the first; it matches the inbox's definition of work).
+- **Done when:** clearing the inbox brings the dashboard's flagged count to 0 without a reseed; no test/golden drift (this is presentation-layer counting, but re-run the full gate).
+
+### UX-09 · [HOT] No live "is anything on fire" signal on the dashboard
+- **Severity/effort:** P1 / M · **Sources:** 1 · **Files:** `app/app/page.tsx`, (reuse) `lib/sla.ts`
+- **Problem:** The screen meant to answer "am I okay right now?" shows only a lagging "SLA attainment 96%" (`page.tsx:100-109`). Live per-ticket breach state already exists (`ticketSlaState`, used at `inbox/page.tsx:82`) but is never aggregated here — "3 replies are overdue" is unknowable at a glance.
+- **Change:** Compact status strip under the H1: "{N} waiting · {X} overdue · {Y} due soon", each figure linking to the inbox. Derive by running `ticketSlaState` over open tickets — counts of real state only, no fabricated metric. Color per D2 (red only when overdue > 0).
+- **Done when:** dashboard shows live overdue/due-soon counts that match what the inbox SlaChips show, one click from the fix.
+
+### UX-10 · [HOT] "Escalate" is cosmetic — nothing persists, no one is notified *(promoted from P2 by Fable: 6 independent reports; the delegate-with-confidence pitch depends on this being real)*
+- **Severity/effort:** P1 / M · **Sources:** 6 · **Files:** `components/product/ApprovalBar.tsx`, new `app/api/escalate/route.ts` (+ thin lib), `app/app/inbox/page.tsx`, `app/app/page.tsx`
+- **Problem:** The rep clicks Escalate on a chargeback threat, sees "Flagged for manager review," moves on trusting a human will catch it — but the flag is local React state (`ApprovalBar.tsx:45`, `:233-239`) that vanishes on advance/refresh. No API route or persisted field exists. The safety valve the whole junior-rep pitch depends on is copy theater.
+- **Change:** Persist it. POST `/api/escalate` writes an `escalated-by:<operator>` tag + timestamp on the ticket (reuse the gift-sent tag pattern; repository seam, both drivers). Surface flagged tickets: a "Flagged" pill in the queue row and a count on the dashboard status strip (UX-09). Include a structured handoff note in the flag payload: the current draft + a short "why" the rep types (one optional text field) — per the Front escalation-handoff pattern (R11). Testable-core rule: logic in `lib/`, route stays thin. Add a unit test.
+- **Done when:** an escalation survives refresh/navigation, is visible in queue + dashboard, and records who/when/why; the button copy matches reality.
+
+---
+
+# WAVE 1.5 — Founder-requested feature (Dylan, 2026-07-06)
+
+### UX-86 · [FOUNDER] "Gifts available" panel in the ticket view + required gift setup in onboarding, unlocked by risk score
+- **Severity/effort:** P1 (founder-requested) / L · **Files:** onboarding wizard (`app/onboarding/OnboardingWizard.tsx` — new step), `components/product/GiftSuggestion.tsx` (extend into a panel), gift engine config (`lib/engines/` gift + merchant schema), `app/app/inbox/page.tsx` [HOT]
+- **Feature spec (Dylan's ask, expanded):**
+  - **(a) Onboarding:** a required step where the merchant configures **at least 3 goodwill gifts** (suggested starting catalog: early access, founder note, priority dispatch, digital perk, next-order credit — the seed's gift catalog is the model), each with cost, perceived value, and an eligibility tier. Onboarding cannot complete with fewer than 3.
+  - **(b) Ticket view:** a **"Gifts available"** panel in the ticket detail showing which gifts are unlocked *for this customer*, driven by risk band (+ LTV/escalation): standard/green → base gift(s); amber → adds mid-tier; red/escalated → full catalog including the highest-value saves. Locked gifts render visibly locked with the unlock condition ("Unlocks at high risk") so reps learn the ladder without a manual.
+  - **(c)** One-click send keeps UX-05's confirm + authorization line.
+- **Flags:** engine-adjacent — gift eligibility becomes merchant-configurable. Needs a short ADR; if the merchant schema gains a gift-catalog field, migrate `gen-seed.mjs` + `seed-check.mjs` in the same commit. Coordinate with UX-05 and UX-19. **The onboarding-redesign audit (running 2026-07-06) delivers the deepened implementable spec for this — build from that spec.**
+- **Done when:** onboarding blocks completion with <3 gifts; ticket detail shows available vs locked gifts by risk band; confirm flow intact; gate green.
+
+---
+
+# WAVE 2 — P2 (compact spec; full problem text in the JSON by UX-id)
+
+**Global/system tokens — do these five first, they're parallel-safe and cascade everywhere:**
+
+- **UX-18** · `--ink-mute` (#6A7B80) fails WCAG AA on sand and paper yet carries most secondary + QA copy (`globals.css:26`, `tailwind.config.ts:35`). → Darken to ~`#5A6B70` or darker (verify 4.5:1 on both `--sand` and `--paper`), update both places. (D6)
+- **UX-23** · Terracotta triple-duty (CTA + caution + decoration; `globals.css:18` = `:30`). → Implement D1: new `--amber-status`, repoint `--risk-amber`/`.pill-amber`/SlaChip amber/social "Add-on" tag; terracotta = clickable only.
+- **UX-24** · `Field.tsx:6-7` `outline-none` suppresses the global 3px focus outline on every input incl. the draft textarea (also `UpdateComposer.tsx:188`). → Remove `outline-none`; keep `focus:border-teal` as secondary.
+- **UX-25** · Disabled buttons pixel-identical to enabled (`globals.css:110-158` has no `:disabled`). → Add `.btn:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; }` (+ `.link-quiet:disabled`).
+- **UX-33** · Dev string "No merchants seeded." shown verbatim to operators in 11 files. → Extract `<NoMerchantState/>` with operator copy ("We couldn't load your account. Refresh, or contact support…") + refresh Button; swap all 11 call sites.
+
+**Inbox flow (all [HOT] — serialize):**
+
+- **UX-15** · Mode tabs (Standard/Brief/De-escalate) silently overwrite in-progress edits (`DraftRail.tsx:82-85`). → Dirty-check in `selectMode`; inline confirm before discarding a diverged draft.
+- **UX-16** · Send friction is identical for calm WISMO vs chargeback threat (ApprovalBar never receives priority). → Pass priority; when escalated, first press becomes an explicit confirm state ("Confirm send to {firstName} — chargeback risk") + one line "sends immediately, no recall". Normal tickets stay ceremony-free.
+- **UX-47** · Blocked-send never shows WHERE the hard date is (`qa.ts:101-113` boolean only). → Return the matched substring, thread as `match?: string`, render quoted in QaRow ("Found: 'by March 15th' — remove it to send").
+- **UX-50** · Unsent edits silently discarded on any navigation (QueueList/MerchantSwitcher/QueueKeyboard all navigate unguarded). → Compute `dirty` in DraftRail, lift it; first step: persistent inline banner when dirty ("Unsaved edit — send it or it's lost when you switch").
+- **UX-52** · ⌘↵ silently dead after every auto-advance (new textarea never refocused). → Auto-focus the new draft textarea after advance (mount effect or `focusDraftEditor`), so the send loop chains.
+- **UX-34** · Queue sorted by `priorityRank` but rows show `riskScore`; order unexplained (`service.ts:654-658`). → Caption under "Priority queue": "Sorted by refund risk, oldest wait first"; align the visible number with the sort key.
+- **UX-41** · Up to 7 pill shapes stack on one escalated ticket. → Implement D3: demote "Escalated/Normal priority" + "Draft only · human-approved" to caption text; pills = RiskBadge, SlaChip, Overdue only.
+- **UX-42** · Escalate renders as a bare quiet link between two real buttons (`Button.tsx:10-17` quiet variant drops `.btn` entirely). → Give it a ghost-button treatment with risk-red border so it reads as a real, deliberately-different action.
+- **UX-48** · QA checklist passes are silent for screen readers (`DraftRail.tsx:209-231`, mark is aria-hidden). → Add `sr-only` status text per row ("Passed" / "Blocked, needs fix" / "Guidance").
+- **UX-49** · Evidence pack unreachable from the ticket (only link is on Customers). → "View evidence pack" ghost button in ticket detail; "Sent by {approvedBy}" on the post-send card (pairs with UX-03).
+- **UX-28** · "Queue clear 🎉" congratulates a merchant who never imported anything (`inbox/page.tsx:118`). → Thread has-any-orders (reuse setup checklist signal); first-run empty state teaches the next step ("Import your backer list" + Button) instead of false praise. (R14: empty states teach.)
+- **UX-20** *(QOL)* · "Previously told" clamps the prior reply at 6 lines with no expand (`PreviouslyTold.tsx:50`) — can hide the exact promise consistency depends on. → "Show full reply" toggle.
+- **UX-19** *(QOL)* · Bare risk number ("72") with zero explanation anywhere in the queue (`QueueList.tsx:82`; `Badge.tsx:6-24` has no title). → Add `title` to RiskBadge; pass "Refund-risk score, 0-100. Red = act now, amber = watch, green = standard." at all three bare-score call sites.
+
+**Dashboard ([HOT] via app/app/page.tsx — serialize with the above):**
+
+- **UX-11** · Undefined jargon tiles (WISMO/Deflection/Saves/SLA); MetricTile has no gloss slot (4 sources). → Add `info?: string` prop rendering `title=` on the label; populate all jargon tiles; spell WISMO out on first use (dashboard, Sidebar hint, Forecast).
+- **UX-17** · Analytics-first layout buries the daily action (built with UX-07's banner). → Action banner first; At-risk queue + CTA directly under the header; GMV panel and risk curve demoted below.
+- **UX-21** · At-risk count is gray mid-sentence text (`page.tsx:81-84`). → Own emphasized element: red pill "{N} at-risk" linking to the inbox when >0, quiet "All clear" when 0.
+- **UX-22** · Tile literally renders "n=7"/"n=0" as its headline (`page.tsx:103`). → Plain language: "{answered} answered" / "No data yet"; keep the n≥10 gate mechanics in the sublabel.
+- **UX-43** · "Still collecting" placeholder styled identically to a real 30px metric. → Render ungated values in `text-ink-mute` non-serif so in-progress reads different at a glance.
+- **UX-35** · Deflection tile prints hard "100%" from n=1 while its SLA neighbor gates at n=10 (`service.ts:715-716`). → Apply the same `ATTAINMENT_MIN_N` floor + "collecting" treatment.
+- **UX-29** · New-merchant dashboard is a wall of zeros with no path to setup. → If `ordersInWindow===0`, banner: "You haven't imported any orders yet — finish setup to see live numbers" + Button to `/app/setup`. (R13: checklist lives in-product until done.)
+- **UX-36** · "Money at risk" dollars are a dead end. → Wrap the stat blocks in Links to the inbox (or anchor-scroll to the At-risk table).
+- **UX-46** · Always-on ~90-word Visa-mechanics paragraph fights the 15-minute glance (`page.tsx:198-210`). → Native `<details><summary>How this is calculated</summary>` — no new JS.
+
+**Shell / navigation (parallel-safe):**
+
+- **UX-12** · No error boundary or 404 anywhere under `app/` (3 sources). → Add `app/app/error.tsx` + `app/app/not-found.tsx` inside AppLayout chrome (calm copy + Button to /app), plus root `app/error.tsx` + `app/not-found.tsx`.
+- **UX-13** · Zero loading feedback in /app; merchant switch + queue nav freeze (3 sources). → `app/app/inbox/loading.tsx` (3-column skeleton), `app/app/loading.tsx` (tile-grid skeleton); wrap MerchantSwitcher push in `useTransition`, dim the Select while pending.
+- **UX-14** · No help affordance anywhere in the operator app (2 sources). → Persistent "Need help?" in the Sidebar footer → mailto support + a short static "what's safe to send" panel. (R20 ladder: inline → popover → doc.)
+- **UX-44** · Operator footer row looks like an account menu but is a dead div; `/api/logout` has zero UI callers (`Sidebar.tsx:106-119`). → Make it a real control: sign-out button calling `/api/logout` then `router.push('/login')`.
+- **UX-51** · "N/5" Setup badge pulls reps into founder-only tasks. → Reframe the setup page for reps ("Your account owner still needs to finish setup — you can answer tickets now") or role-scope the badge.
+
+**Onboarding (parallel-safe):**
+
+- **UX-30** · Wizard loses ALL answers on refresh/back (pure useState, `OnboardingWizard.tsx:78-109`). → Serialize to sessionStorage on change, hydrate on mount, clear on submit.
+- **UX-31** · CSV import: no format guidance upfront; "unrecognized headers" styled like success (`ImportPanel.tsx:24-28`, `:116-121`). → Expected-columns hint above the picker; unknown-format line gets the terracotta warning treatment.
+- **UX-32** · Timeline editor accepts windowMin>windowMax and stage from>to silently (`OnboardingWizard.tsx:371-457`). → Inline validation + disable Continue/Generate until sane.
+
+**Customer surfaces (status/widget — parallel-safe):**
+
+- **UX-26** · Backer sees the raw internal id "ord_4f8a2k9dq0pl" as their order reference (`StatusView.tsx:59`, `status.ts:108`). → Surface the merchant's own order number if captured on ingest; otherwise drop the Tag. Never show internal ids to customers.
+- **UX-27** · Widget invalid-token state has nothing clickable (`widget/[token]/page.tsx:26-39`). → Add a merchant-configurable "Contact us" link (match AskBox's escape-hatch pattern).
+- **UX-37** · Avatar initial + done-dots hardcode near-white glyphs over the raw merchant accent — illegible on pastel brands (`StatusView.tsx:41-47`, `StageDot.tsx:18-29`). → Pick glyph color via `relativeLuminance(accent)` (already in `lib/color.ts`), like the rest of the page.
+- **UX-38** · Blank white page while the order resolves (no loading.tsx on status/widget). → Skeleton `loading.tsx` for both routes (sand background, dimmed panel outlines).
+- **UX-39** · WaitProgress's computed day-window can contradict OrderTimeline's static day-bands on the same screen. → Make WaitProgress the single canonical number: drop numeric day-band chips from non-active timeline rows (keep qualitative done/active/upcoming), or derive them from the same lo/hi math.
+- **UX-40** · CsatTap can't be corrected after a mis-tap (docstring promises re-tap; buttons unmount, `CsatTap.tsx:37-54`). → "Change your answer" link in the thank-you state resetting to idle.
+
+**Marketing touchpoint (LAST, isolated diff — see execution rule 4):**
+
+- **UX-45** · No "Sign in" anywhere on the public site (`Nav.tsx:19-25`). → Add a small "Sign in" text link to `/login` left of the Book-a-pilot CTA, in both desktop row and mobile panel. Two lines; touch nothing else in the file.
+
+---
+
+# WAVE 3 — P3 polish (one pass, batch by file; evidence + full text in the JSON)
+
+**Inbox / keyboard:**
+- **UX-53** · Hint shows only "⌘↵" — Windows reps never learn Ctrl+Enter works (`inbox/page.tsx:145` vs `DraftRail.tsx:163`). → "Ctrl/⌘+Enter to send".
+- **UX-54** · Shortcuts documented in one 11px caption that vanishes when the queue is empty. → Keycap-styled `<kbd>` chips + a persistent "Shortcuts" item in the Sidebar footer (see QOL-2 overlay).
+- **UX-56** · "Save as tracked variant" prompt: jargon, blocks the flow, decline path unexplained (`ApprovalBar.tsx:182-198`). → Lead with "Reply sent ✓"; rename destination plainly ("save this wording to Script Performance?"); state that skipping still sends.
+- **UX-62** · FactorBreakdown names a "top driver" no bar visually matches. → Bold + accent the matching row.
+- **UX-64** · Bare "LTV" acronym (inbox/customers/gifts). → Spell "Lifetime value" on first use; `title=` on the table header.
+- **UX-65** · Engine's stageKey/variantKey computed but never shown (`reassurance.ts:31-45` → DraftRail). → Caption under the draft header: "Sourced from: Day-30 playbook · production-stage override." (Read-only engine access.)
+- **UX-76** · DraftRail hand-copies Tag's markup with a divergent text color. → Use `<Tag>` (or fold into UX-41's demotion).
+- **UX-83** · The "never a hard date" guarantee only appears AFTER tripping the gate. → One persistent line in the QaChecklist footer: "Tideover never lets a hard delivery date go out — only confidence bands."
+- **UX-84** · "De-escalate" tab jargon + fear of clicking. → Rename "Calmer tone"; caption: "Switches the wording below — nothing sends until you click Approve & send."
+
+**Dashboard:**
+- **UX-59** · Risk-curve bars aren't clickable into their tickets. → Thread ticketId through `riskCurve` points; wrap bars in Links.
+- **UX-61** · "Estimate, not a guarantee" is the dimmest text on the money card. → 13px semibold "Estimate, not a bill" directly under the dollar figure.
+- **UX-68** · "Estimate · Visa 13.1 orientation" badge leads with jargon. → Badge says "Estimate, not a guarantee"; Visa 13.1 lives only in the footer paragraph.
+- **UX-69** · Six equal-weight tiles, nothing reads first. → Promote one headline tile (span 2, larger value, accent border); risk-relevant tiles lead.
+- **UX-70** · Half the tiles have trend deltas, half unexplained bare numbers. → Wire deltas where a baseline exists; else sublabel "no baseline tracked".
+- **UX-71** *(QOL)* · Truncated subjects unreadable without opening (`page.tsx:262-264`). → `title={subject}`.
+- **UX-82** · Risk-curve detail is hover-only, keyboard-unreachable. → Focusable bars (`tabIndex` + focus handlers mirroring hover).
+
+**Shell:**
+- **UX-55** · Baseline + Evidence orphaned from nav, no way back. → Sidebar "Baseline" entry (preserve `?merchant=`); "‹ Back to Customers" in both print toolbars.
+- **UX-60** · Nine nav items, identical weight. → Group with kickers: Daily (Dashboard, Inbox) / Insights (Customers, Forecast, Scripts, Social, Gifts) / Account (Setup, Updates).
+- **UX-63** · 8 of 11 pages share one marketing tab title. → Per-page `metadata` titles ("Inbox — Tideover", …).
+- **UX-77** · No favicon anywhere. → `app/icon.tsx` from the Logo wave-mark.
+- **UX-78** · Merchant switch drops other query params (Forecast horizon resets). → Preserve searchParams, set only `merchant`.
+- **UX-79** · Fixed 240px sidebar + ~960px inbox grid: unusable on half-monitor/tablet. → Collapse pattern below `lg` (reuse the marketing hamburger approach).
+
+**Status/customer:**
+- **UX-58** · Invalid-token page's only CTA goes to Tideover's marketing site. → Drop the button (prose already says contact the store).
+- **UX-72** *(QOL)* · AskBox is one-shot — no follow-up question without a reload (`AskBox.tsx:38-53`). → "Ask another question" link resets to idle.
+- **UX-73** · 15px inputs trigger iOS auto-zoom (`Field.tsx:7`). → 16px base input font.
+- **UX-74** · Fixed demo pill can cover live controls on mobile. → Bottom padding on the scroll container when `isDemo`.
+- **UX-75** · Footer "Tideover" link navigates the backer away in-tab (widget version already uses `_blank`). → Match the widget.
+
+**Other:**
+- **UX-57** · Tooltips exist but have zero visible affordance and don't fire on touch. → Shared `.has-hint` (dotted underline + `cursor-help`) wherever a `title` carries real content; FactorBreakdown hints become visible captions.
+- **UX-66** · Customers page renders a bare empty table. → `.proof-placeholder` empty state matching gifts/updates.
+- **UX-67** *(QOL)* · Onboarding has no "Already set up? Sign in". → Small link near the wizard header.
+- **UX-80** · Scripts table jargon headers defined only in a paragraph below. → `title=` per `<th>`, lifted from the existing sentences.
+- **UX-81** · "KS backer" vs "Kickstarter backer" for the same value on different screens. → Spell it out in the three GROUP_LABEL maps (or `title=` if width-constrained in the queue).
+
+---
+
+# QOL FEATURES — new small builds (Fable's build/park calls)
+
+**BUILD NOW (with the waves):**
+1. **Undo-send window** *(M, [HOT] ApprovalBar + send path)* — after Approve & send, hold the reply ~8s with a visible "Sending… Undo" bar before it posts (R6: Gmail/Zendesk reply-delay). Catches the most common approval mistake with zero added clicks. Escalated sends (UX-16) keep their confirm step *plus* this. Implementation: client-side timer before the POST; Undo cancels cleanly; auto-advance still fires immediately so the loop stays fast (undo restores the ticket).
+2. **"?" shortcut overlay + kbd chips** *(S)* — pressing `?` anywhere in /app opens a read-only shortcut sheet (j/k, Enter, Ctrl/⌘+Enter, Esc); pairs with UX-54's keycap chips (R15: Linear). Read-only overlay — safe outside the hot write paths.
+3. **First-send micro-celebration** *(S, rides UX-03)* — the FIRST approve-and-send ever shows a one-time line tied to the differentiator: "Sent — confidence band attached, no unverified claims." One-time flag; never decoration after that (R19: Loom/Slack).
+4. **Confidence-band "?" popover** *(S)* — small popover off the confidence chip explaining how the band is computed and what feeds it; ADR-0006 methodology link as the footer line only (R20).
+
+**PARK (needs Dylan or post-first-cohort data — do NOT build):**
+- **Queue-level ⌘↵ / batch-clear for green tickets** (UX-85) — real leverage for persona B, but it changes the one-ticket-one-human-approval ceremony; Dylan signs off first.
+- **Practice queue / seeded training tickets** (R9/R16 Superhuman) — strong onboarding play, needs seed + role work; post-pilot.
+- **Per-intent earned autonomy** (R1) — requires months of approval-rate data; post-first-cohort.
+- **Cmd-K palette** (R12/R23) — power-user surface; premature at current app size.
+- **Coaching digest of repeated draft edits** (R10) — needs edit-pattern volume that doesn't exist yet.
+- **"Assign to me" multi-rep claiming** (R5) — single-operator product today; revisit at first multi-seat merchant.
+
+---
+
+# Appendix A — comparable-SaaS patterns informing this plan
+
+Full detail in `ux-audit-research-2026-07-06.json` (23 patterns). The ones already absorbed above: propose-then-approve default (R1 — Tideover's existing model, validated), draft-in-composer (R2 — existing model, validated), SLA color on queue rows (R4 → UX-02/09, D2), undo-send (R6 → QOL-1), fixed context rail (R7/R8 — existing model, validated), structured escalation handoff (R11 → UX-10), setup checklist in-product (R13 → UX-29), teaching empty states (R14 → UX-28/66), "?" overlay (R15 → QOL-2), status-color vocabulary (R18 → D2), micro-celebration (R19 → QOL-3), help ladder (R20 → UX-14/QOL-4), source citations under drafts (R3 → partially UX-65; full source-pills version is post-pilot), progressive disclosure (R17 — respected throughout), drip onboarding (R22 — parked with the practice queue).
+
+# Appendix B — refuted finding (don't re-report)
+
+- "Draft-version toggle buttons under minimum pointer target size" — REFUTED. Computed cascade (body 1.6 line-height inherited by buttons + py-1) yields ~27px rendered height, clearing WCAG 2.5.8's 24px minimum. See the verifier note in the JSON.
+
+# Verification checklist for the executing agent (per wave)
+
+1. `cd tideover && npm run verify && npm test` — green.
+2. `npm run dev` → drive: login → land in Inbox (UX-07) → j/k → Enter → edit → Ctrl+Enter send → confirmation (UX-03) → auto-advance → Ctrl+Enter again works (UX-52) → Escalate persists across refresh (UX-10) → dashboard counts drop (UX-08).
+3. Status page on a seeded token: loads with skeleton, no internal id, accent-safe glyphs, CSAT correctable.
+4. Keyboard-only pass: tab through inbox + dashboard; focus always visible (UX-24); no hover-only dead ends on the paths above.
+5. Update board task UX1 + LOG; commit; then next wave.
+</script><script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script><script>try{if(window.marked){document.getElementById("c").innerHTML=marked.parse(document.getElementById("md").textContent)}}catch(e){}</script></main></body></html>
