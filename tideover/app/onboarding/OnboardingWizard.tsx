@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { clsx } from "clsx";
 import { Button } from "@/components/ui/Button";
 import { Field, TextInput, TextArea, Select } from "@/components/ui/Field";
-import { Stepper } from "@/components/ui/Stepper";
 import { Logo } from "@/components/ui/Logo";
+import { ProgressRail, MobileProgress } from "@/app/onboarding/WizardShell";
 import { DataSourcePicker } from "@/components/product/DataSourcePicker";
 import { ConnectPanel } from "@/app/onboarding/ConnectPanel";
 import {
@@ -20,14 +20,13 @@ import type { HelpdeskSetup } from "@/lib/ingest-templates";
 import type { ImportFormat, MappedRow } from "@/lib/csv";
 
 /**
- * Merchant onboarding. A multi-step discovery wizard that collects brand voice,
- * current tools, and the real production timeline, then STAGES the merchant's
- * backer CSV in-flow so the final submit is one atomic call: create merchant +
- * import backers. It POSTs to /api/onboarding and lands on an action-first
- * "you're set — {N} backers imported" screen pointed straight at the inbox.
- * Connecting your data is an integral step, not an afterthought. A "6-question
- * fast-start" toggle collapses to just the essentials. Relative day bands,
- * never hard dates.
+ * Merchant onboarding. A single guided flow — five named steps in one boxed card
+ * with a vertical progress rail — that collects brand voice, current tools, and
+ * the real production timeline, then STAGES the merchant's backer CSV in-flow so
+ * the final submit is one atomic call: create merchant + import backers. It POSTs
+ * to /api/onboarding and lands on an action-first "you're set — {N} backers
+ * imported" screen pointed straight at the inbox. Connecting your data is an
+ * integral step, not an afterthought. Relative day bands, never hard dates.
  */
 
 type Helpdesk = "mock" | "gorgias" | "tidio" | "intercom" | "email";
@@ -90,11 +89,30 @@ const DEFAULT_STAGES: StageRow[] = [
   { key: "dispatch", label: "Pick, pack & dispatch", from: 104, to: 118, blurb: "your order is being packed for dispatch" },
 ];
 
-// D-onboarding revamp: "Support reality" (worstStory) removed; "Connect your
-// data" promoted to a real step BEFORE review; final step reframed to "finish".
-const FULL_STEPS = ["Brand & voice", "Real timeline", "Goodwill gifts", "Connect your data", "Review & finish"];
-const FAST_STEPS = ["Essentials", "Timeline", "Review & finish"];
+// One guided flow: five named steps. "Connect your data" is a real step BEFORE
+// review; the final step is the review + finish. No mode toggle — the box always
+// reads as the same five steps.
+const STEPS = ["Brand & voice", "Real timeline", "Goodwill gifts", "Connect your data", "Review & finish"];
 const GIFT_STEP_LABEL = "Goodwill gifts";
+
+// Card title + one-line subhead per step — the boxed frame's heading. Subheads
+// state mechanics only (proof-only): what the answers become, never a result.
+const STEP_META: Array<{ title: string; subhead: string }> = [
+  { title: "Brand & voice", subhead: "How you look and sound to a customer who's waiting." },
+  {
+    title: "Real timeline",
+    subhead: "The window and the stages. We turn these into confidence bands, never a hard date.",
+  },
+  {
+    title: "Goodwill gifts",
+    subhead: "Small gestures the cockpit can offer a customer who has waited a long time. Start from ours and edit.",
+  },
+  {
+    title: "Connect your data",
+    subhead: "Bring in the backer list you already hold. It stages here and imports the moment you finish.",
+  },
+  { title: "Review & finish", subhead: "Everything we'll use to build your playbook. Check it, then finish." },
+];
 
 const PREVIEW_LABEL: Record<string, string> = {
   "day-7": "Day 7 — calm confirmation",
@@ -106,7 +124,6 @@ const PREVIEW_LABEL: Record<string, string> = {
 const STAGE_LABEL = "text-[13px] font-semibold text-ink";
 
 export function OnboardingWizard() {
-  const [fast, setFast] = useState(false);
   const [step, setStep] = useState(0);
 
   // brand & voice
@@ -138,9 +155,21 @@ export function OnboardingWizard() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<OnboardingResult | null>(null);
 
-  const steps = fast ? FAST_STEPS : FULL_STEPS;
-  const lastStep = steps.length - 1;
+  const lastStep = STEPS.length - 1;
   const brandValid = brandName.trim().length > 0;
+
+  // Move focus to the step heading when the step changes (skip the first render
+  // so we don't grab focus / scroll on initial load). Screen readers announce the
+  // new step; keyboard users land at the top of the step.
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const firstRender = useRef(true);
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    headingRef.current?.focus();
+  }, [step]);
 
   function toggleTone(t: string) {
     setTone((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
@@ -179,13 +208,13 @@ export function OnboardingWizard() {
 
   function next() {
     setError(null);
-    // brandName lives on the first step in both modes
+    // brandName lives on the first step
     if (step === 0 && !brandValid) {
       setError("Please add your brand name to continue.");
       return;
     }
     // gift gate: can't leave the Goodwill gifts step without a valid catalog
-    if (steps[step] === GIFT_STEP_LABEL && !giftsValid(gifts)) {
+    if (STEPS[step] === GIFT_STEP_LABEL && !giftsValid(gifts)) {
       setError("Add at least 3 goodwill gifts, including one Base gift, to continue.");
       return;
     }
@@ -197,10 +226,19 @@ export function OnboardingWizard() {
     setStep((s) => Math.max(s - 1, 0));
   }
 
-  function switchMode(toFast: boolean) {
-    setFast(toFast);
-    setStep(0);
+  // Completed steps in the rail jump back (all data is preserved in state).
+  function jumpTo(i: number) {
+    if (i > step) return;
     setError(null);
+    setStep(i);
+  }
+
+  // Enter-to-continue: the card is a real <form>, so Enter in a text field (and
+  // the primary button) advances the step, or finishes on the last one.
+  function onFormSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (step < lastStep) next();
+    else void submit();
   }
 
   async function submit() {
@@ -211,7 +249,7 @@ export function OnboardingWizard() {
     }
     if (!giftsValid(gifts)) {
       setError("Add at least 3 goodwill gifts, including one Base gift, before finishing.");
-      const giftStep = steps.indexOf(GIFT_STEP_LABEL);
+      const giftStep = STEPS.indexOf(GIFT_STEP_LABEL);
       if (giftStep >= 0) setStep(giftStep);
       return;
     }
@@ -262,173 +300,200 @@ export function OnboardingWizard() {
     }
   }
 
-  // ── success / "you're set" screen (action-first) ─────────────────────────
+  // ── success / "you're set" screen (action-first, boxed) ──────────────────
   if (result) {
     const importedBackers = result.imported?.customersCreated ?? 0;
     return (
-      <div className="wrap max-w-[820px] py-12 md:py-16">
-        <div className="mb-8 flex items-center justify-between">
-          <Logo href="/" />
-        </div>
+      <div className="wrap py-10 md:py-16">
+        <div className="mx-auto max-w-[880px]">
+          <div className="panel px-6 py-8 md:px-10 md:py-10">
+            <div className="mb-8 flex items-center justify-between">
+              <Logo href="/" />
+            </div>
 
-        <div className="mb-8">
-          <p className="kicker mb-2">You&rsquo;re covered</p>
-          <h1 className="mb-3 text-balance">
-            {importedBackers > 0
-              ? `You're set. ${importedBackers} backer${importedBackers === 1 ? "" : "s"} imported.`
-              : "You're set."}
-          </h1>
-          <p className="max-w-[620px] text-[16px] leading-relaxed text-slate">
-            {importedBackers > 0
-              ? `Your reassurance layer is live for ${brandName}. Open your inbox — the first calm replies are drafted and waiting for your review.`
-              : `Your reassurance layer is live for ${brandName}. Import your backer list whenever you're ready; your setup checklist keeps the next step in front of you.`}
-          </p>
-        </div>
+            <div className="mb-8">
+              <p className="kicker mb-2">You&rsquo;re covered</p>
+              <h1 className="mb-3 text-balance">
+                {importedBackers > 0
+                  ? `You're set. ${importedBackers} backer${importedBackers === 1 ? "" : "s"} imported.`
+                  : "You're set."}
+              </h1>
+              <p className="max-w-[620px] text-[16px] leading-relaxed text-slate">
+                {importedBackers > 0
+                  ? `Your reassurance layer is live for ${brandName}. Open your inbox — the first calm replies are drafted and waiting for your review.`
+                  : `Your reassurance layer is live for ${brandName}. Import your backer list whenever you're ready; your setup checklist keeps the next step in front of you.`}
+              </p>
+            </div>
 
-        <div className="flex flex-wrap items-center gap-4">
-          <Button href={`/app/inbox?merchant=${result.merchantId}`}>Open your inbox &rarr;</Button>
-        </div>
+            <div className="flex flex-wrap items-center gap-4">
+              <Button href={`/app/inbox?merchant=${result.merchantId}`}>Open your inbox &rarr;</Button>
+            </div>
 
-        {/* The day-stage previews are demoted: proof the drafts exist, one click away. */}
-        <details className="panel mt-8 p-6">
-          <summary className="cursor-pointer list-none text-[14.5px] font-semibold text-ink">
-            See the replies we&rsquo;ll draft from your answers
-          </summary>
-          <p className="mt-3 max-w-[620px] text-[13.5px] leading-relaxed text-slate">
-            Calm, in your voice, and pinned to a confidence band &mdash; never a hard date. Each goes
-            out as a backer crosses that day-stage, and you approve every send.
-          </p>
-          <div className="mt-4 flex flex-col gap-4">
-            {result.previews.map((p) => (
-              <div key={p.stageKey} className="rounded-xl border border-border bg-sand p-5">
-                <p className="kicker mb-3">{PREVIEW_LABEL[p.stageKey] ?? p.stageKey}</p>
-                <p className="whitespace-pre-line text-[15px] leading-relaxed text-slate">{p.text}</p>
+            {/* The day-stage previews are demoted: proof the drafts exist, one click away. */}
+            <details className="panel mt-8 p-6">
+              <summary className="cursor-pointer list-none text-[14.5px] font-semibold text-ink">
+                See the replies we&rsquo;ll draft from your answers
+              </summary>
+              <p className="mt-3 max-w-[620px] text-[13.5px] leading-relaxed text-slate">
+                Calm, in your voice, and pinned to a confidence band &mdash; never a hard date. Each goes
+                out as a backer crosses that day-stage, and you approve every send.
+              </p>
+              <div className="mt-4 flex flex-col gap-4">
+                {result.previews.map((p) => (
+                  <div key={p.stageKey} className="rounded-xl border border-border bg-sand p-5">
+                    <p className="kicker mb-3">{PREVIEW_LABEL[p.stageKey] ?? p.stageKey}</p>
+                    <p className="whitespace-pre-line text-[15px] leading-relaxed text-slate">{p.text}</p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </details>
+            </details>
 
-        {/* Optional next steps — never presented as required. */}
-        <div className="mt-8 flex flex-col gap-5">
-          {result.connect ? (
-            <div>
-              <p className="mb-2 text-[13.5px] leading-relaxed text-ink-mute">
-                <strong className="text-ink">Optional.</strong> On Gorgias or Zendesk? Route presale
-                tickets straight in with one rule &mdash; now or anytime from your cockpit.
-              </p>
-              <ConnectPanel gorgias={result.connect.gorgias} zendesk={result.connect.zendesk} />
-            </div>
-          ) : null}
+            {/* Optional next steps — never presented as required. */}
+            <div className="mt-8 flex flex-col gap-5">
+              {result.connect ? (
+                <div>
+                  <p className="mb-2 text-[13.5px] leading-relaxed text-ink-mute">
+                    <strong className="text-ink">Optional.</strong> On Gorgias or Zendesk? Route presale
+                    tickets straight in with one rule &mdash; now or anytime from your cockpit.
+                  </p>
+                  <ConnectPanel gorgias={result.connect.gorgias} zendesk={result.connect.zendesk} />
+                </div>
+              ) : null}
 
-          <div className="panel flex flex-wrap items-center justify-between gap-4 p-6">
-            <div>
-              <h3 className="mb-1">Want a hand getting going?</h3>
-              <p className="max-w-[520px] text-[13.5px] leading-relaxed text-slate">
-                Book a short walkthrough and we&rsquo;ll set your queue up with you, live.
-              </p>
+              <div className="panel flex flex-wrap items-center justify-between gap-4 p-6">
+                <div>
+                  <h3 className="mb-1">Want a hand getting going?</h3>
+                  <p className="max-w-[520px] text-[13.5px] leading-relaxed text-slate">
+                    Book a short walkthrough and we&rsquo;ll set your queue up with you, live.
+                  </p>
+                </div>
+                <Button href="/book" variant="ghost">
+                  Book a walkthrough
+                </Button>
+              </div>
             </div>
-            <Button href="/book" variant="ghost">
-              Book a walkthrough
-            </Button>
           </div>
         </div>
       </div>
     );
   }
 
-  // ── wizard ───────────────────────────────────────────────────────────────
+  // ── wizard (boxed card + progress rail) ──────────────────────────────────
+  const meta = STEP_META[step];
   return (
-    <div className="wrap max-w-[760px] py-12 md:py-16">
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <Logo href="/" />
-        <label className="flex cursor-pointer items-center gap-2.5 rounded-full border border-border bg-paper px-3.5 py-2">
-          <input
-            type="checkbox"
-            checked={fast}
-            onChange={(e) => switchMode(e.target.checked)}
-            className="h-4 w-4 accent-[#0E5366]"
-          />
-          <span className="text-[13px] font-semibold text-ink">6-question fast-start</span>
-        </label>
-      </div>
+    <div className="wrap py-10 md:py-16">
+      <div className="mx-auto max-w-[880px]">
+        <div className="panel">
+          {/* header — logo + plain step counter, no marketing copy */}
+          <div className="flex items-center justify-between gap-4 px-6 py-5 md:px-8">
+            <Logo href="/" />
+            <span className="hidden text-[13px] font-semibold text-ink-mute md:inline">
+              Step {step + 1} of {STEPS.length}
+            </span>
+          </div>
+          <div className="border-t border-border" aria-hidden />
 
-      <div className="mb-8">
-        <h1 className="mb-3 text-balance">Set up Tideover</h1>
-        <p className="max-w-[600px] text-[16px] leading-relaxed text-slate">
-          A few questions about your brand, your timeline, and your backers. Tideover turns them into
-          calm, ready-to-send replies, so the waiting-customer queue stops landing on you.
-        </p>
-      </div>
+          <form aria-label="Set up Tideover" onSubmit={onFormSubmit}>
+            <div className="grid px-6 py-7 md:grid-cols-[196px_1fr] md:px-8 md:py-8">
+              {/* progress rail — desktop only */}
+              <div className="hidden md:block md:border-r md:border-border md:pr-7">
+                <ProgressRail steps={STEPS} current={step} onJump={jumpTo} />
+              </div>
 
-      <div className="mb-8">
-        <Stepper steps={steps} current={step} />
-      </div>
+              {/* the current step */}
+              <div className="md:pl-8">
+                <MobileProgress steps={STEPS} current={step} />
+                <StepFade key={step}>
+                  <h2
+                    ref={headingRef}
+                    tabIndex={-1}
+                    className="font-serif text-[22px] font-semibold text-ink focus:outline-none"
+                  >
+                    {meta.title}
+                  </h2>
+                  <p className="mt-1.5 max-w-[54ch] text-[14px] leading-relaxed text-slate">{meta.subhead}</p>
+                  <div className="mt-6">
+                    <StepBody
+                      step={step}
+                      brandName={brandName}
+                      setBrandName={setBrandName}
+                      voice={voice}
+                      setVoice={setVoice}
+                      tone={tone}
+                      toggleTone={toggleTone}
+                      banned={banned}
+                      setBanned={setBanned}
+                      signoff={signoff}
+                      setSignoff={setSignoff}
+                      helpdesk={helpdesk}
+                      setHelpdesk={setHelpdesk}
+                      preorderApp={preorderApp}
+                      setPreorderApp={setPreorderApp}
+                      windowMin={windowMin}
+                      setWindowMin={setWindowMin}
+                      windowMax={windowMax}
+                      setWindowMax={setWindowMax}
+                      stages={stages}
+                      updateStage={updateStage}
+                      gifts={gifts}
+                      updateGift={updateGift}
+                      removeGift={removeGift}
+                      addGift={addGift}
+                      stagedRows={stagedRows}
+                      stagedFileName={stagedFileName}
+                      onStage={stageImport}
+                      onClearStaged={clearStaged}
+                    />
+                  </div>
+                </StepFade>
 
-      <div className="panel p-6 md:p-8">
-        {fast ? (
-          <FastSteps
-            step={step}
-            brandName={brandName}
-            setBrandName={setBrandName}
-            helpdesk={helpdesk}
-            setHelpdesk={setHelpdesk}
-            windowMin={windowMin}
-            setWindowMin={setWindowMin}
-            windowMax={windowMax}
-            setWindowMax={setWindowMax}
-            stages={stages}
-            updateStage={updateStage}
-            gifts={gifts}
-          />
-        ) : (
-          <FullSteps
-            step={step}
-            brandName={brandName}
-            setBrandName={setBrandName}
-            voice={voice}
-            setVoice={setVoice}
-            tone={tone}
-            toggleTone={toggleTone}
-            banned={banned}
-            setBanned={setBanned}
-            signoff={signoff}
-            setSignoff={setSignoff}
-            helpdesk={helpdesk}
-            setHelpdesk={setHelpdesk}
-            preorderApp={preorderApp}
-            setPreorderApp={setPreorderApp}
-            windowMin={windowMin}
-            setWindowMin={setWindowMin}
-            windowMax={windowMax}
-            setWindowMax={setWindowMax}
-            stages={stages}
-            updateStage={updateStage}
-            gifts={gifts}
-            updateGift={updateGift}
-            removeGift={removeGift}
-            addGift={addGift}
-            stagedRows={stagedRows}
-            stagedFileName={stagedFileName}
-            onStage={stageImport}
-            onClearStaged={clearStaged}
-          />
-        )}
+                {error ? (
+                  <p role="alert" className="mt-5 text-[13.5px] font-medium text-terracotta-700">
+                    {error}
+                  </p>
+                ) : null}
+              </div>
+            </div>
 
-        {error ? <p className="mt-5 text-[13.5px] font-medium text-terracotta-600">{error}</p> : null}
-
-        <div className="mt-8 flex items-center justify-between border-t border-border pt-6">
-          <Button variant="quiet" onClick={back} disabled={step === 0}>
-            &larr; Back
-          </Button>
-          {step < lastStep ? (
-            <Button onClick={next}>Continue &rarr;</Button>
-          ) : (
-            <Button onClick={submit} disabled={submitting}>
-              {submitting ? "Setting things up…" : "Take the queue off my plate"}
-            </Button>
-          )}
+            {/* sticky footer — Back (ghost) left, primary action right */}
+            <div className="sticky bottom-0 z-10 flex items-center justify-between gap-4 rounded-b-[14px] border-t border-border bg-paper px-6 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] md:px-8 md:pb-4">
+              <Button variant="ghost" onClick={back} disabled={step === 0}>
+                &larr; Back
+              </Button>
+              {step < lastStep ? (
+                <Button type="submit">Continue &rarr;</Button>
+              ) : (
+                <Button type="submit" disabled={submitting}>
+                  {submitting ? "Setting things up…" : "Take the queue off my plate"}
+                </Button>
+              )}
+            </div>
+          </form>
         </div>
       </div>
+    </div>
+  );
+}
+
+// ── step transition ──────────────────────────────────────────────────────────
+// A gentle fade + slide-in on each step. Remounted per step (keyed by the caller)
+// so the new content starts hidden, then transitions to visible after one frame.
+// Pure CSS transition — under prefers-reduced-motion the global kill makes it
+// instant (content still ends fully visible).
+function StepFade({ children }: { children: ReactNode }) {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+  return (
+    <div
+      className={clsx(
+        "transition duration-200 ease-out",
+        shown ? "translate-y-0 opacity-100" : "translate-y-1.5 opacity-0",
+      )}
+    >
+      {children}
     </div>
   );
 }
@@ -460,7 +525,7 @@ function ToneChips({ tone, toggleTone }: { tone: string[]; toggleTone: (t: strin
   );
 }
 
-// ── timeline editor (shared by both modes) ──────────────────────────────────
+// ── timeline editor ──────────────────────────────────────────────────────────
 function TimelineEditor({
   windowMin,
   setWindowMin,
@@ -549,8 +614,8 @@ function TimelineEditor({
   );
 }
 
-// ── full flow steps ─────────────────────────────────────────────────────────
-function FullSteps(props: {
+// ── per-step body ────────────────────────────────────────────────────────────
+function StepBody(props: {
   step: number;
   brandName: string;
   setBrandName: (v: string) => void;
@@ -702,82 +767,6 @@ function FullSteps(props: {
   );
 }
 
-// ── fast flow steps ─────────────────────────────────────────────────────────
-function FastSteps(props: {
-  step: number;
-  brandName: string;
-  setBrandName: (v: string) => void;
-  helpdesk: Helpdesk;
-  setHelpdesk: (h: Helpdesk) => void;
-  windowMin: number;
-  setWindowMin: (n: number) => void;
-  windowMax: number;
-  setWindowMax: (n: number) => void;
-  stages: StageRow[];
-  updateStage: (i: number, patch: Partial<StageRow>) => void;
-  gifts: GiftRow[];
-}) {
-  const { step } = props;
-
-  if (step === 0) {
-    return (
-      <div className="flex flex-col gap-5">
-        <p className="text-[13.5px] text-ink-mute">
-          The fast path: just the essentials. You can fine-tune voice, gifts, groups, and import your
-          backers later from your cockpit.
-        </p>
-        <Field label="Brand name">
-          <TextInput
-            value={props.brandName}
-            onChange={(e) => props.setBrandName(e.target.value)}
-            placeholder="e.g. Northwind Goods"
-          />
-        </Field>
-        <Field label="Helpdesk" hint="Where your support already lives">
-          <Select value={props.helpdesk} onChange={(e) => props.setHelpdesk(e.target.value as Helpdesk)}>
-            {HELPDESK_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </Select>
-        </Field>
-      </div>
-    );
-  }
-
-  if (step === 1) {
-    return (
-      <TimelineEditor
-        windowMin={props.windowMin}
-        setWindowMin={props.setWindowMin}
-        windowMax={props.windowMax}
-        setWindowMax={props.setWindowMax}
-        stages={props.stages}
-        updateStage={props.updateStage}
-      />
-    );
-  }
-
-  return (
-    <ReviewPanel
-      brandName={props.brandName}
-      voice=""
-      tone={[]}
-      banned=""
-      signoff=""
-      helpdesk={props.helpdesk}
-      preorderApp=""
-      windowMin={props.windowMin}
-      windowMax={props.windowMax}
-      stages={props.stages}
-      gifts={props.gifts}
-      stagedCount={0}
-      fast
-    />
-  );
-}
-
 // ── review panel ────────────────────────────────────────────────────────────
 function ReviewRow({ label, value }: { label: string; value: string }) {
   return (
@@ -801,7 +790,6 @@ function ReviewPanel(props: {
   stages: StageRow[];
   gifts: GiftRow[];
   stagedCount: number;
-  fast?: boolean;
 }) {
   const helpdeskLabel = HELPDESK_OPTIONS.find((o) => o.value === props.helpdesk)?.label ?? props.helpdesk;
   const tierLabel = (t: GiftRow["tier"]) => GIFT_TIER_OPTIONS.find((o) => o.value === t)?.label ?? t;
@@ -814,15 +802,11 @@ function ReviewPanel(props: {
       </p>
       <div>
         <ReviewRow label="Brand name" value={props.brandName} />
-        {!props.fast ? (
-          <>
-            <ReviewRow label="Voice" value={props.voice} />
-            <ReviewRow label="Tone" value={props.tone.join(", ")} />
-            <ReviewRow label="Banned words" value={props.banned} />
-            <ReviewRow label="Sign-off" value={props.signoff} />
-            <ReviewRow label="Preorder app" value={props.preorderApp} />
-          </>
-        ) : null}
+        <ReviewRow label="Voice" value={props.voice} />
+        <ReviewRow label="Tone" value={props.tone.join(", ")} />
+        <ReviewRow label="Banned words" value={props.banned} />
+        <ReviewRow label="Sign-off" value={props.signoff} />
+        <ReviewRow label="Preorder app" value={props.preorderApp} />
         <ReviewRow label="Helpdesk" value={helpdeskLabel} />
         <ReviewRow label="Fulfillment window" value={`days ${props.windowMin}–${props.windowMax}`} />
         <ReviewRow
