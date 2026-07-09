@@ -45,6 +45,7 @@ export const config = {
     "/api/social-signal-feed",
     "/api/orders/:path*",
     "/api/onboarding",
+    "/api/analyze",
     "/api/import",
     "/api/updates",
     "/api/setup-status",

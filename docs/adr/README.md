@@ -39,6 +39,7 @@ Every non-trivial decision (a new dependency, an engine change, an integration, 
 | [0009](./ADR-0009-update-pipeline.md) | Update pipeline: one workshop update → status-page feed + Kickstarter draft |
 | [0010](./ADR-0010-csv-import.md) | CSV import (Rung 0): backer list → customers + orders, parsed client-side |
 | [0011](./ADR-0011-webhook-ingest.md) | Per-merchant helpdesk webhook ingest (Rung 2, the API path, tag-routed) |
+| [0019](./ADR-0019-site-analysis-autofill.md) | Site-analysis autofill: deterministic /api/analyze, SSRF-guarded, gift candidates from the merchant's own reward tiers |
 
 **Ops**
 | # | Decision |
