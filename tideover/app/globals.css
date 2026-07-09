@@ -512,6 +512,22 @@
     transform: translate3d(-8px, 0, 0);
   }
 }
+/* Features mega-menu entry: a short fade-and-rise on open. Governed by the
+   global prefers-reduced-motion kill above (animation: none !important). */
+@keyframes tv-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.tv-menu-in {
+  animation: tv-menu-in 140ms ease-out;
+}
+
 .paper-strata-drift-1 {
   animation: paper-strata-drift-a 26s ease-in-out infinite alternate;
 }

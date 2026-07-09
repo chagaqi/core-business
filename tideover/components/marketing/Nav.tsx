@@ -1,61 +1,97 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
-import { CalButton } from "@/components/booking/CalButton";
+import { FeaturesMenu } from "@/components/marketing/nav/FeaturesMenu";
+import { FEATURE_COLUMNS, resolveHref } from "@/components/marketing/nav/nav-data";
 
 /**
- * Sticky marketing nav, shared across every marketing page (Home, /how-it-works,
- * /who-its-for, /security, ...). Sand/blur background with a soft border. Center
- * links are real routes (absolute so they resolve correctly from any page);
- * "Pricing" is a same-page anchor on Home (#pricing, the Pilot section) since
- * there's no standalone /pricing page yet. The right CTA is the primary
- * "Book a pilot" action, routing to /book.
+ * Sticky marketing header, shared across every marketing page. IA adopts the
+ * studied model (structure only): Logo · Features (mega) · Live demo · How it
+ * works · FAQ · Pricing ‖ Book a call · Log in · Get started. One filled element
+ * only — the terracotta "Get started" pill (rule D1: terracotta = action). The
+ * old filled "Book a pilot" is demoted to a plain "Book a call" text link.
  *
- * Now that the site is multi-page, mobile gets a real menu (a hamburger toggling
- * a stacked link panel) — without it, a phone user couldn't reach any page but
- * Home. Client component for the toggle state + the blurred sticky bar.
+ * Center text links are same-page anchors on Home (#demo, #faq, #pricing) or
+ * absolute routes (/how-it-works) so they resolve from any page. Client
+ * component for the mega-menu, the mobile accordion, and the scroll-aware lift.
  */
-const LINKS: readonly { label: string; href: string }[] = [
-  { label: "Home", href: "/" },
+
+const CENTER_LINKS: readonly { label: string; href: string }[] = [
+  { label: "Live demo", href: "/#demo" },
   { label: "How it works", href: "/how-it-works" },
-  { label: "Who it's for", href: "/who-its-for" },
+  { label: "FAQ", href: "/#faq" },
   { label: "Pricing", href: "/#pricing" },
-  { label: "Security", href: "/security" },
 ];
+
+const linkCls =
+  "rounded-full px-3 py-2 text-[15px] font-medium text-slate no-underline transition-colors hover:bg-[rgba(14,83,102,0.07)] hover:text-teal";
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const [featOpen, setFeatOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const closeMobile = () => {
+    setOpen(false);
+    setFeatOpen(false);
+  };
 
   return (
     <nav
       aria-label="Primary"
-      className="sticky top-0 z-50 border-b border-border"
+      className={`sticky top-0 z-50 border-b border-border ${
+        scrolled ? "shadow-[0_6px_24px_-18px_rgba(17,37,42,0.5)]" : ""
+      }`}
       style={{
         background: "rgba(251,248,242,0.82)",
         backdropFilter: "saturate(140%) blur(12px)",
         WebkitBackdropFilter: "saturate(140%) blur(12px)",
       }}
     >
-      <div className="wrap flex items-center justify-between gap-4 py-3.5">
+      <div className="wrap flex items-center gap-3 py-4">
         <Logo />
 
-        {/* desktop links */}
+        {/* desktop center links */}
         <div className="hidden items-center gap-1 md:flex">
-          {LINKS.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="rounded-full px-3 py-2 text-[15px] font-medium text-slate no-underline transition-colors hover:bg-[rgba(14,83,102,0.07)] hover:text-teal"
-            >
+          <FeaturesMenu />
+          {CENTER_LINKS.map((l) => (
+            <Link key={l.href} href={l.href} className={linkCls}>
               {l.label}
             </Link>
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
-          <CalButton>Book a pilot</CalButton>
+        {/* right group: account actions + primary pill */}
+        <div className="ml-auto flex items-center gap-2">
+          <div className="hidden items-center gap-2 md:flex">
+            <Link href="/book" className={linkCls}>
+              Book a call
+            </Link>
+            <span className="h-5 w-px bg-border" aria-hidden />
+            <Link href="/login" className={linkCls}>
+              Log in
+            </Link>
+            <Link
+              href="/onboarding"
+              className="btn btn-primary group rounded-full"
+              style={{ padding: "11px 20px", fontSize: "15px" }}
+            >
+              Get started
+              <span aria-hidden className="transition-transform duration-150 group-hover:translate-x-0.5">
+                &rarr;
+              </span>
+            </Link>
+          </div>
+
           {/* mobile menu toggle */}
           <button
             type="button"
@@ -78,18 +114,98 @@ export function Nav() {
 
       {/* mobile menu panel */}
       {open ? (
-        <div id="mobile-nav" className="border-t border-border md:hidden">
-          <div className="wrap flex flex-col py-2">
-            {LINKS.map((l) => (
+        <div id="mobile-nav" className="max-h-[calc(100vh-66px)] overflow-y-auto border-t border-border md:hidden">
+          <div className="wrap flex flex-col py-3">
+            {/* Features accordion */}
+            <button
+              type="button"
+              aria-expanded={featOpen}
+              aria-controls="mobile-features"
+              onClick={() => setFeatOpen((v) => !v)}
+              className="flex items-center justify-between rounded-lg px-3 py-2.5 text-[15px] font-medium text-slate transition-colors hover:bg-[rgba(14,83,102,0.07)]"
+            >
+              Features
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                aria-hidden
+                className={`transition-transform duration-150 ${featOpen ? "rotate-180" : ""}`}
+              >
+                <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+            {featOpen ? (
+              <div id="mobile-features" className="mb-1 flex flex-col gap-4 px-3 pb-2 pt-1">
+                {FEATURE_COLUMNS.map((col) => (
+                  <div key={col.heading}>
+                    <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute">
+                      {col.heading}
+                    </p>
+                    <ul className="m-0 flex list-none flex-col gap-0.5 p-0">
+                      {col.items.map((item) => (
+                        <li key={item.label}>
+                          <Link
+                            href={resolveHref(item)}
+                            onClick={closeMobile}
+                            className="flex flex-col rounded-lg px-2 py-1.5 no-underline transition-colors hover:bg-[rgba(14,83,102,0.05)]"
+                          >
+                            <span className="flex items-center gap-2 text-[14.5px] font-semibold text-ink">
+                              {item.label}
+                              {item.badge === "beta" ? (
+                                <span
+                                  className="pill pill-amber"
+                                  style={{ fontSize: "10px", padding: "1px 7px", letterSpacing: "0.04em" }}
+                                >
+                                  Beta
+                                </span>
+                              ) : null}
+                            </span>
+                            <span className="text-[12.5px] leading-snug text-ink-mute">{item.desc}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
+            {/* flat links */}
+            {CENTER_LINKS.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                onClick={() => setOpen(false)}
+                onClick={closeMobile}
                 className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-slate no-underline transition-colors hover:bg-[rgba(14,83,102,0.07)] hover:text-teal"
               >
                 {l.label}
               </Link>
             ))}
+            <Link
+              href="/book"
+              onClick={closeMobile}
+              className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-slate no-underline transition-colors hover:bg-[rgba(14,83,102,0.07)] hover:text-teal"
+            >
+              Book a call
+            </Link>
+            <Link
+              href="/login"
+              onClick={closeMobile}
+              className="rounded-lg px-3 py-2.5 text-[15px] font-medium text-slate no-underline transition-colors hover:bg-[rgba(14,83,102,0.07)] hover:text-teal"
+            >
+              Log in
+            </Link>
+
+            {/* primary pill, full width */}
+            <Link
+              href="/onboarding"
+              onClick={closeMobile}
+              className="btn btn-primary mt-2 w-full rounded-full"
+            >
+              Get started &rarr;
+            </Link>
           </div>
         </div>
       ) : null}
