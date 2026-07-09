@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { IMPORT_ROW_CAP } from "@/lib/import";
 
 /**
  * Onboarding request validation, kept out of the route handler so it can be
@@ -29,6 +30,23 @@ const StageSchema = z.object({
   blurb: z.string(),
 });
 
+/**
+ * A single mapped backer row STAGED client-side by the wizard's "Connect your
+ * data" step. Submitted WITH the onboarding POST so create-merchant + import is
+ * one atomic call (no two-phase "finish onboarding, then go connect your data").
+ * Mirrors the /api/import Row contract and the csv `MappedRow` shape exactly.
+ */
+const ImportRowSchema = z.object({
+  firstName: z.string(),
+  email: z.string(),
+  group: z.enum(["ks-backer", "late-pledge", "new-preorder"]).optional(),
+  orderValueCents: z.number().int().nonnegative().optional(),
+  orderDate: z.string().optional(),
+  disclosedEtaValue: z.string().optional(),
+  sourceKey: z.string().optional(),
+  etaSource: z.enum(["campaign-page", "checkout"]).optional(),
+});
+
 export const OnboardingBodySchema = z.object({
   brandName: z.string().min(1),
   voice: z.string().default(""),
@@ -40,7 +58,13 @@ export const OnboardingBodySchema = z.object({
   windowMinDays: z.number().default(90),
   windowMaxDays: z.number().default(120),
   stages: z.array(StageSchema).default([]),
-  worstStory: z.string().optional(),
+  // Backer rows staged in the wizard's "Connect your data" step, parsed
+  // client-side and submitted here so create-merchant + import is ONE atomic
+  // call. Absent/empty → no import (the server behaves exactly as before).
+  // Bounded to the same row cap the standalone /api/import route enforces.
+  // NOTE: the removed `worstStory` field (D-onboarding revamp) is intentionally
+  // gone; old clients that still send it pass fine — zod strips unknown keys.
+  importRows: z.array(ImportRowSchema).max(IMPORT_ROW_CAP).default([]),
   // Tolerant gate: absent/empty passes (the write path substitutes the default
   // catalog); a non-empty catalog must carry >=3 gifts AND >=1 base gift — the
   // same rule the wizard enforces client-side before advancing/submitting.

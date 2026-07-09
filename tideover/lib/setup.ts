@@ -139,7 +139,7 @@ export function computeSetupChecklist(state: SetupState): SetupChecklist {
       key: "helpdesk",
       title: "Helpdesk connected",
       done: helpdeskConnected,
-      hint: "Point your helpdesk's presale tag at your private ingest URL, or forward your support inbox. Tagged tickets flow in structured; this flips on once a real inbound arrives.",
+      hint: "Point your helpdesk's presale tag at your private ingest URL. Tagged tickets flow in structured; this flips on once a real inbound arrives.",
       href: "/onboarding",
     },
     {

@@ -7,6 +7,7 @@ import { Field, TextInput, TextArea, Select } from "@/components/ui/Field";
 import { Stepper } from "@/components/ui/Stepper";
 import { Logo } from "@/components/ui/Logo";
 import { DataSourcePicker } from "@/components/product/DataSourcePicker";
+import { ConnectPanel } from "@/app/onboarding/ConnectPanel";
 import {
   GiftCatalogEditor,
   SUGGESTED_GIFTS,
@@ -16,13 +17,17 @@ import {
   type GiftRow,
 } from "@/app/onboarding/GiftCatalogEditor";
 import type { HelpdeskSetup } from "@/lib/ingest-templates";
+import type { ImportFormat, MappedRow } from "@/lib/csv";
 
 /**
- * Near-frictionless merchant onboarding. A multi-step discovery wizard that
- * collects brand voice, current tools, the real production timeline, and support
- * reality, then POSTs to /api/onboarding and shows the generated day-stage
- * reassurance scripts for review. A "6-question fast-start" toggle collapses to
- * just the essentials. Relative day bands, never hard dates.
+ * Merchant onboarding. A multi-step discovery wizard that collects brand voice,
+ * current tools, and the real production timeline, then STAGES the merchant's
+ * backer CSV in-flow so the final submit is one atomic call: create merchant +
+ * import backers. It POSTs to /api/onboarding and lands on an action-first
+ * "you're set — {N} backers imported" screen pointed straight at the inbox.
+ * Connecting your data is an integral step, not an afterthought. A "6-question
+ * fast-start" toggle collapses to just the essentials. Relative day bands,
+ * never hard dates.
  */
 
 type Helpdesk = "mock" | "gorgias" | "tidio" | "intercom" | "email";
@@ -40,6 +45,22 @@ interface Preview {
   stageKey: string;
   text: string;
 }
+
+interface ImportCounts {
+  customersCreated: number;
+  ordersCreated: number;
+  skipped: number;
+  datelessRows: number;
+  unparseableMoneyRows: number;
+}
+
+type OnboardingResult = {
+  merchantId: string;
+  slug: string;
+  connect?: { gorgias: HelpdeskSetup; zendesk: HelpdeskSetup };
+  imported?: ImportCounts | null;
+  previews: Preview[];
+};
 
 const TONE_OPTIONS = [
   "Warm",
@@ -69,8 +90,10 @@ const DEFAULT_STAGES: StageRow[] = [
   { key: "dispatch", label: "Pick, pack & dispatch", from: 104, to: 118, blurb: "your order is being packed for dispatch" },
 ];
 
-const FULL_STEPS = ["Brand & voice", "Current tools", "Real timeline", "Support reality", "Goodwill gifts", "Review & generate"];
-const FAST_STEPS = ["Essentials", "Timeline", "Review & generate"];
+// D-onboarding revamp: "Support reality" (worstStory) removed; "Connect your
+// data" promoted to a real step BEFORE review; final step reframed to "finish".
+const FULL_STEPS = ["Brand & voice", "Real timeline", "Goodwill gifts", "Connect your data", "Review & finish"];
+const FAST_STEPS = ["Essentials", "Timeline", "Review & finish"];
 const GIFT_STEP_LABEL = "Goodwill gifts";
 
 const PREVIEW_LABEL: Record<string, string> = {
@@ -93,7 +116,7 @@ export function OnboardingWizard() {
   const [banned, setBanned] = useState("");
   const [signoff, setSignoff] = useState("");
 
-  // tools
+  // tools (folded into the brand step)
   const [helpdesk, setHelpdesk] = useState<Helpdesk>("gorgias");
   const [preorderApp, setPreorderApp] = useState("");
 
@@ -102,22 +125,18 @@ export function OnboardingWizard() {
   const [windowMax, setWindowMax] = useState(120);
   const [stages, setStages] = useState<StageRow[]>(DEFAULT_STAGES);
 
-  // support reality
-  const [worstStory, setWorstStory] = useState("");
-
   // goodwill gifts — prefilled so the merchant edits, never authors from scratch
   const [gifts, setGifts] = useState<GiftRow[]>(SUGGESTED_GIFTS);
+
+  // connect your data — backer rows STAGED in-flow, imported atomically on submit
+  const [stagedRows, setStagedRows] = useState<MappedRow[]>([]);
+  const [stagedFileName, setStagedFileName] = useState<string | null>(null);
+  const [, setStagedFormat] = useState<ImportFormat | null>(null);
 
   // submit state
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<{
-    merchantId: string;
-    slug: string;
-    inboxAddress?: string;
-    connect?: { gorgias: HelpdeskSetup; zendesk: HelpdeskSetup };
-    previews: Preview[];
-  } | null>(null);
+  const [result, setResult] = useState<OnboardingResult | null>(null);
 
   const steps = fast ? FAST_STEPS : FULL_STEPS;
   const lastStep = steps.length - 1;
@@ -143,6 +162,19 @@ export function OnboardingWizard() {
   function addGift() {
     setError(null);
     setGifts((prev) => [...prev, newGiftRow()]);
+  }
+
+  function stageImport(rows: MappedRow[], format: ImportFormat, fileName: string) {
+    setError(null);
+    setStagedRows(rows);
+    setStagedFormat(format);
+    setStagedFileName(fileName);
+  }
+
+  function clearStaged() {
+    setStagedRows([]);
+    setStagedFormat(null);
+    setStagedFileName(null);
   }
 
   function next() {
@@ -173,12 +205,12 @@ export function OnboardingWizard() {
 
   async function submit() {
     if (!brandValid) {
-      setError("Please add your brand name before generating.");
+      setError("Please add your brand name before finishing.");
       setStep(0);
       return;
     }
     if (!giftsValid(gifts)) {
-      setError("Add at least 3 goodwill gifts, including one Base gift, before generating.");
+      setError("Add at least 3 goodwill gifts, including one Base gift, before finishing.");
       const giftStep = steps.indexOf(GIFT_STEP_LABEL);
       if (giftStep >= 0) setStep(giftStep);
       return;
@@ -209,7 +241,6 @@ export function OnboardingWizard() {
             to: Number(s.to) || 0,
             blurb: s.blurb,
           })),
-          worstStory: worstStory.trim() || undefined,
           gifts: gifts.map((g) => ({
             name: g.name.trim(),
             kind: g.kind,
@@ -217,67 +248,89 @@ export function OnboardingWizard() {
             costCents: Math.max(0, Math.round(g.costCents)),
             perceivedValueCents: Math.max(0, Math.round(g.perceivedValueCents)),
           })),
+          // Staged backer rows import atomically with the merchant create.
+          importRows: stagedRows,
         }),
       });
       if (!res.ok) throw new Error("request failed");
-      const data = (await res.json()) as {
-        merchantId: string;
-        slug: string;
-        inboxAddress?: string;
-        connect?: { gorgias: HelpdeskSetup; zendesk: HelpdeskSetup };
-        previews: Preview[];
-      };
+      const data = (await res.json()) as OnboardingResult;
       setResult(data);
     } catch {
-      setError("Something went wrong generating your playbook. Please try again.");
+      setError("Something went wrong setting up your workspace. Please try again.");
     } finally {
       setSubmitting(false);
     }
   }
 
-  // ── success / review screen ──────────────────────────────────────────────
+  // ── success / "you're set" screen (action-first) ─────────────────────────
   if (result) {
+    const importedBackers = result.imported?.customersCreated ?? 0;
     return (
       <div className="wrap max-w-[820px] py-12 md:py-16">
         <div className="mb-8 flex items-center justify-between">
           <Logo href="/" />
         </div>
+
         <div className="mb-8">
-          <p className="kicker mb-2">Your playbook is live</p>
-          <h1 className="mb-3 text-balance">{brandName} is set up on Tideover</h1>
+          <p className="kicker mb-2">You&rsquo;re covered</p>
+          <h1 className="mb-3 text-balance">
+            {importedBackers > 0
+              ? `You're set. ${importedBackers} backer${importedBackers === 1 ? "" : "s"} imported.`
+              : "You're set."}
+          </h1>
           <p className="max-w-[620px] text-[16px] leading-relaxed text-slate">
-            Here are the day-stage reassurance scripts Tideover generated from your answers. Each one
-            is calm, in your voice, and uses a confidence band &mdash; never a hard date.
-            Review them, and they&rsquo;re ready to go.
+            {importedBackers > 0
+              ? `Your reassurance layer is live for ${brandName}. Open your inbox — the first calm replies are drafted and waiting for your review.`
+              : `Your reassurance layer is live for ${brandName}. Import your backer list whenever you're ready; your setup checklist keeps the next step in front of you.`}
           </p>
         </div>
 
-        <div className="flex flex-col gap-4">
-          {result.previews.map((p) => (
-            <div key={p.stageKey} className="panel p-6">
-              <p className="kicker mb-3">{PREVIEW_LABEL[p.stageKey] ?? p.stageKey}</p>
-              <p className="whitespace-pre-line text-[15px] leading-relaxed text-slate">{p.text}</p>
-            </div>
-          ))}
+        <div className="flex flex-wrap items-center gap-4">
+          <Button href={`/app/inbox?merchant=${result.merchantId}`}>Open your inbox &rarr;</Button>
         </div>
 
-        {result.inboxAddress ? (
-          <div className="panel mt-6 p-6">
-            <p className="kicker mb-3">Your integration — one forwarding rule</p>
-            <p className="mb-3 text-[14px] leading-relaxed text-slate">
-              Forward your support email to this address &mdash; that&rsquo;s the whole integration.
-              No password, no app install; stop forwarding to revoke.
-            </p>
-            <code className="inline-block rounded-lg border border-border bg-sand px-3 py-2 text-[14px] font-semibold text-ink">
-              {result.inboxAddress}
-            </code>
+        {/* The day-stage previews are demoted: proof the drafts exist, one click away. */}
+        <details className="panel mt-8 p-6">
+          <summary className="cursor-pointer list-none text-[14.5px] font-semibold text-ink">
+            See the replies we&rsquo;ll draft from your answers
+          </summary>
+          <p className="mt-3 max-w-[620px] text-[13.5px] leading-relaxed text-slate">
+            Calm, in your voice, and pinned to a confidence band &mdash; never a hard date. Each goes
+            out as a backer crosses that day-stage, and you approve every send.
+          </p>
+          <div className="mt-4 flex flex-col gap-4">
+            {result.previews.map((p) => (
+              <div key={p.stageKey} className="rounded-xl border border-border bg-sand p-5">
+                <p className="kicker mb-3">{PREVIEW_LABEL[p.stageKey] ?? p.stageKey}</p>
+                <p className="whitespace-pre-line text-[15px] leading-relaxed text-slate">{p.text}</p>
+              </div>
+            ))}
           </div>
-        ) : null}
+        </details>
 
-        <DataSourcePicker merchantId={result.merchantId} />
+        {/* Optional next steps — never presented as required. */}
+        <div className="mt-8 flex flex-col gap-5">
+          {result.connect ? (
+            <div>
+              <p className="mb-2 text-[13.5px] leading-relaxed text-ink-mute">
+                <strong className="text-ink">Optional.</strong> On Gorgias or Zendesk? Route presale
+                tickets straight in with one rule &mdash; now or anytime from your cockpit.
+              </p>
+              <ConnectPanel gorgias={result.connect.gorgias} zendesk={result.connect.zendesk} />
+            </div>
+          ) : null}
 
-        <div className="mt-9 flex flex-wrap items-center gap-4">
-          <Button href={`/app?merchant=${result.merchantId}`}>See your cockpit</Button>
+          <div className="panel flex flex-wrap items-center justify-between gap-4 p-6">
+            <div>
+              <h3 className="mb-1">Want a hand getting going?</h3>
+              <p className="max-w-[520px] text-[13.5px] leading-relaxed text-slate">
+                Book a short walkthrough and we&rsquo;ll set your queue up with you, live.
+              </p>
+            </div>
+            <Button href="/book" variant="ghost">
+              Book a walkthrough
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -302,9 +355,8 @@ export function OnboardingWizard() {
       <div className="mb-8">
         <h1 className="mb-3 text-balance">Set up Tideover</h1>
         <p className="max-w-[600px] text-[16px] leading-relaxed text-slate">
-          A few questions about your brand, your tools, and your real production timeline. We&rsquo;ll
-          turn them into a working day-stage reassurance playbook &mdash; clear windows, never hard
-          dates.
+          A few questions about your brand, your timeline, and your backers. Tideover turns them into
+          calm, ready-to-send replies, so the waiting-customer queue stops landing on you.
         </p>
       </div>
 
@@ -351,12 +403,14 @@ export function OnboardingWizard() {
             setWindowMax={setWindowMax}
             stages={stages}
             updateStage={updateStage}
-            worstStory={worstStory}
-            setWorstStory={setWorstStory}
             gifts={gifts}
             updateGift={updateGift}
             removeGift={removeGift}
             addGift={addGift}
+            stagedRows={stagedRows}
+            stagedFileName={stagedFileName}
+            onStage={stageImport}
+            onClearStaged={clearStaged}
           />
         )}
 
@@ -370,7 +424,7 @@ export function OnboardingWizard() {
             <Button onClick={next}>Continue &rarr;</Button>
           ) : (
             <Button onClick={submit} disabled={submitting}>
-              {submitting ? "Generating…" : "Generate my playbook"}
+              {submitting ? "Setting things up…" : "Take the queue off my plate"}
             </Button>
           )}
         </div>
@@ -518,15 +572,19 @@ function FullSteps(props: {
   setWindowMax: (n: number) => void;
   stages: StageRow[];
   updateStage: (i: number, patch: Partial<StageRow>) => void;
-  worstStory: string;
-  setWorstStory: (v: string) => void;
   gifts: GiftRow[];
   updateGift: (i: number, patch: Partial<GiftRow>) => void;
   removeGift: (i: number) => void;
   addGift: () => void;
+  stagedRows: MappedRow[];
+  stagedFileName: string | null;
+  onStage: (rows: MappedRow[], format: ImportFormat, fileName: string) => void;
+  onClearStaged: () => void;
 }) {
   const { step } = props;
 
+  // Step 0 — Brand & voice, with "where your support lives" (helpdesk + preorder
+  // app) folded in so tools no longer need a standalone step.
   if (step === 0) {
     return (
       <div className="flex flex-col gap-5">
@@ -561,34 +619,34 @@ function FullSteps(props: {
             placeholder="— The Northwind team"
           />
         </Field>
+
+        <div className="mt-1 border-t border-border pt-5">
+          <p className="mb-4 text-[13px] font-semibold text-ink">Where your support lives</p>
+          <div className="flex flex-col gap-5">
+            <Field label="Helpdesk" hint="Where your support already lives — Tideover bolts on">
+              <Select value={props.helpdesk} onChange={(e) => props.setHelpdesk(e.target.value as Helpdesk)}>
+                {HELPDESK_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
+                ))}
+              </Select>
+            </Field>
+            <Field label="Preorder / crowdfunding app" hint="Where your order ETAs come from (optional)">
+              <TextInput
+                value={props.preorderApp}
+                onChange={(e) => props.setPreorderApp(e.target.value)}
+                placeholder="e.g. PreProduct, BackerKit, Purple Dot"
+              />
+            </Field>
+          </div>
+        </div>
       </div>
     );
   }
 
+  // Step 1 — Real timeline
   if (step === 1) {
-    return (
-      <div className="flex flex-col gap-5">
-        <Field label="Helpdesk" hint="Where your support already lives — Tideover bolts on">
-          <Select value={props.helpdesk} onChange={(e) => props.setHelpdesk(e.target.value as Helpdesk)}>
-            {HELPDESK_OPTIONS.map((o) => (
-              <option key={o.value} value={o.value}>
-                {o.label}
-              </option>
-            ))}
-          </Select>
-        </Field>
-        <Field label="Preorder / crowdfunding app" hint="Where your order ETAs come from (optional)">
-          <TextInput
-            value={props.preorderApp}
-            onChange={(e) => props.setPreorderApp(e.target.value)}
-            placeholder="e.g. PreProduct, BackerKit, Purple Dot"
-          />
-        </Field>
-      </div>
-    );
-  }
-
-  if (step === 2) {
     return (
       <TimelineEditor
         windowMin={props.windowMin}
@@ -601,30 +659,8 @@ function FullSteps(props: {
     );
   }
 
-  if (step === 3) {
-    return (
-      <div className="flex flex-col gap-5">
-        <div className="rounded-xl border border-border bg-accent-card/60 p-4 text-[13.5px] leading-relaxed text-slate">
-          Tideover treats your waiting customers as three groups &mdash; <strong>Kickstarter backers</strong>,{" "}
-          <strong>late pledges</strong>, and <strong>new preorders</strong>. Each tends to wait a
-          different length and arrive with a different mood. We tune the reassurance for each;
-          nothing to set up here.
-        </div>
-        <Field
-          label="The message that scares you most"
-          hint="Optional — paste a real anxious or refund-threat message so we can pressure-test the tone"
-        >
-          <TextArea
-            value={props.worstStory}
-            onChange={(e) => props.setWorstStory(e.target.value)}
-            placeholder="“It's been two months with no update — I'm filing a chargeback unless I hear back today.”"
-          />
-        </Field>
-      </div>
-    );
-  }
-
-  if (step === 4) {
+  // Step 2 — Goodwill gifts
+  if (step === 2) {
     return (
       <GiftCatalogEditor
         gifts={props.gifts}
@@ -635,7 +671,19 @@ function FullSteps(props: {
     );
   }
 
-  // review
+  // Step 3 — Connect your data (stages the backer CSV in-flow)
+  if (step === 3) {
+    return (
+      <DataSourcePicker
+        stagedRows={props.stagedRows}
+        stagedFileName={props.stagedFileName}
+        onStage={props.onStage}
+        onClear={props.onClearStaged}
+      />
+    );
+  }
+
+  // Step 4 — Review & finish
   return (
     <ReviewPanel
       brandName={props.brandName}
@@ -648,8 +696,8 @@ function FullSteps(props: {
       windowMin={props.windowMin}
       windowMax={props.windowMax}
       stages={props.stages}
-      worstStory={props.worstStory}
       gifts={props.gifts}
+      stagedCount={props.stagedRows.length}
     />
   );
 }
@@ -675,8 +723,8 @@ function FastSteps(props: {
     return (
       <div className="flex flex-col gap-5">
         <p className="text-[13.5px] text-ink-mute">
-          The fast path: just the essentials. You can fine-tune voice, gifts, and groups later from
-          your cockpit.
+          The fast path: just the essentials. You can fine-tune voice, gifts, groups, and import your
+          backers later from your cockpit.
         </p>
         <Field label="Brand name">
           <TextInput
@@ -723,8 +771,8 @@ function FastSteps(props: {
       windowMin={props.windowMin}
       windowMax={props.windowMax}
       stages={props.stages}
-      worstStory=""
       gifts={props.gifts}
+      stagedCount={0}
       fast
     />
   );
@@ -751,8 +799,8 @@ function ReviewPanel(props: {
   windowMin: number;
   windowMax: number;
   stages: StageRow[];
-  worstStory: string;
   gifts: GiftRow[];
+  stagedCount: number;
   fast?: boolean;
 }) {
   const helpdeskLabel = HELPDESK_OPTIONS.find((o) => o.value === props.helpdesk)?.label ?? props.helpdesk;
@@ -761,8 +809,8 @@ function ReviewPanel(props: {
   return (
     <div className="flex flex-col gap-5">
       <p className="text-[14px] leading-relaxed text-slate">
-        Here&rsquo;s what we&rsquo;ll use to build your day-stage playbook. Generate it and you&rsquo;ll
-        see the reassurance scripts for days 7, 30, 60, and 89.
+        Here&rsquo;s what we&rsquo;ll set up. Finish, and your reassurance layer goes live &mdash;
+        any staged backers import on the spot and land in your inbox as calm, ready-to-review drafts.
       </p>
       <div>
         <ReviewRow label="Brand name" value={props.brandName} />
@@ -782,7 +830,14 @@ function ReviewPanel(props: {
           value={props.stages.map((s) => `${s.label} (${s.from}–${s.to})`).join(" · ")}
         />
         <ReviewRow label={`Goodwill gifts (${props.gifts.length})`} value={giftsSummary} />
-        {!props.fast && props.worstStory ? <ReviewRow label="Toughest message" value={props.worstStory} /> : null}
+        <ReviewRow
+          label="Backers to import"
+          value={
+            props.stagedCount > 0
+              ? `${props.stagedCount} staged — imports when you finish`
+              : "None staged — import later from your setup checklist"
+          }
+        />
       </div>
     </div>
   );

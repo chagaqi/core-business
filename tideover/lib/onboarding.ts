@@ -1,6 +1,8 @@
 import { newId, newInboxToken, newStatusToken } from "@/lib/ids";
 import { getRepositories } from "@/lib/repositories";
 import { draftReassurance } from "@/lib/engines/reassurance";
+import { importBackerRows, type ImportResult } from "@/lib/import";
+import type { MappedRow } from "@/lib/csv";
 import type {
   Customer,
   DayStageKey,
@@ -44,13 +46,19 @@ export interface IntakeData {
   windowMinDays: number;
   windowMaxDays: number;
   stages: Array<{ key: StageDef["key"]; label: string; from: number; to: number; blurb: string }>;
-  worstStory?: string;
   /**
    * The merchant's goodwill gift catalog. Optional + tolerant: absent/empty
    * falls back to DEFAULT_GIFTS so legacy callers (and the CSV-import tests)
    * keep working — a real wizard submit always carries an edited catalog.
    */
   gifts?: GiftInput[];
+  /**
+   * Backer rows staged client-side in the wizard's "Connect your data" step.
+   * Optional + tolerant: absent/empty → no import, and the merchant is created
+   * exactly as before. When present, they import against the just-created
+   * merchant in the SAME call, so onboarding and first-import are atomic.
+   */
+  importRows?: MappedRow[];
 }
 
 /**
@@ -106,6 +114,8 @@ function buildPlaybook(brand: string, signoff: string): PlaybookTemplates {
 export async function createMerchantFromIntake(intake: IntakeData): Promise<{
   merchant: Merchant;
   previews: Array<{ stageKey: DayStageKey; text: string }>;
+  /** Counts from the atomic backer import, or null when no rows were staged. */
+  imported: ImportResult | null;
 }> {
   const repos = getRepositories();
   const slug = intake.brandName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -178,6 +188,15 @@ export async function createMerchantFromIntake(intake: IntakeData): Promise<{
   await repos.merchants.create(merchant);
   await repos.gifts.createMany(gifts);
 
+  // Atomic import (D-onboarding revamp): if the wizard staged the merchant's
+  // backer rows, import them NOW against the just-created merchant so onboarding
+  // and first-import are ONE call — no "finish onboarding, then separately go
+  // connect your data". Absent/empty → null and the merchant is created exactly
+  // as before. Runs through the existing importBackerRows path unchanged.
+  const importRows = intake.importRows ?? [];
+  const imported: ImportResult | null =
+    importRows.length > 0 ? await importBackerRows(merchant.id, importRows) : null;
+
   // generate preview scripts against sample orders at each day-stage
   const sampleCustomer: Customer = {
     id: "cus_preview",
@@ -217,5 +236,5 @@ export async function createMerchantFromIntake(intake: IntakeData): Promise<{
     return { stageKey, text: r.draftText };
   });
 
-  return { merchant, previews };
+  return { merchant, previews, imported };
 }

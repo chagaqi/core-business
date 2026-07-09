@@ -7,12 +7,21 @@ import { DEFAULT_ORDER_VALUE_CENTS, mapRows, parseCsv, type ImportFormat, type M
 /**
  * Rung-0 backer-list import (ADR-0010). The merchant picks their Kickstarter /
  * BackerKit export; it's parsed IN THIS COMPONENT (the browser) and only the
- * mapped rows shown in the preview are POSTed to /api/import. The raw file never
- * leaves the machine — that's the whole privacy story of the lowest trust rung.
+ * mapped rows shown in the preview leave the machine — the raw file never does.
+ *
+ * Two modes, one component:
+ *  - STAGING (wizard): `onStage` is provided → parsing + preview only; clicking
+ *    the action hands the mapped rows UP to the onboarding wizard, which submits
+ *    them WITH the final POST so create-merchant + import is one atomic call.
+ *  - DIRECT (legacy/standalone): `merchantId` is provided → the mapped rows are
+ *    POSTed to /api/import for an already-created merchant.
  */
 
 interface ImportPanelProps {
-  merchantId: string;
+  /** DIRECT mode: POST straight to /api/import for this existing merchant. */
+  merchantId?: string;
+  /** STAGING mode: hand the mapped rows up to the wizard instead of POSTing. */
+  onStage?: (rows: MappedRow[], format: ImportFormat, fileName: string) => void;
 }
 
 interface Counts {
@@ -36,7 +45,8 @@ function dollars(cents?: number): string {
   return `$${(cents / 100).toFixed(2)}`;
 }
 
-export function ImportPanel({ merchantId }: ImportPanelProps) {
+export function ImportPanel({ merchantId, onStage }: ImportPanelProps) {
+  const staging = typeof onStage === "function";
   const inputRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | null>(null);
   const [format, setFormat] = useState<ImportFormat | null>(null);
@@ -67,8 +77,14 @@ export function ImportPanel({ merchantId }: ImportPanelProps) {
     }
   }
 
-  async function runImport() {
+  async function runAction() {
     if (mapped.length === 0) return;
+    // STAGING mode: hand the parsed rows up to the wizard; nothing is sent yet —
+    // they import atomically when the merchant clicks the final onboarding CTA.
+    if (staging) {
+      onStage!(mapped, format ?? "unknown", fileName ?? "");
+      return;
+    }
     setImporting(true);
     setError(null);
     try {
@@ -94,15 +110,16 @@ export function ImportPanel({ merchantId }: ImportPanelProps) {
   const defaultedValueRows = mapped.filter((r) => r.orderValueCents === undefined).length;
 
   return (
-    <div className="panel mt-6 p-6">
+    <div className={staging ? "mt-4 rounded-xl border border-border bg-sand p-5" : "panel mt-6 p-6"}>
       <p className="kicker mb-3">Import your backer list</p>
       <p className="mb-4 text-[14px] leading-relaxed text-slate">
         Upload the export you already hold &mdash; a Kickstarter backer report or a BackerKit CSV
         &mdash; to populate your customers and orders. No password, no store access.
       </p>
-      <p className="mb-4 rounded-xl border border-border bg-sand p-3 text-[12.5px] leading-relaxed text-ink-mute">
+      <p className="mb-4 rounded-xl border border-border bg-paper p-3 text-[12.5px] leading-relaxed text-ink-mute">
         Your file is parsed <strong>in your browser</strong>. Only the mapped fields in the preview
-        below are sent to Tideover &mdash; the raw CSV never leaves your machine.
+        below leave your machine{staging ? " when you finish setup" : ""} &mdash; the raw CSV never
+        does.
       </p>
       <p className="mb-4 rounded-xl border border-teal-300 bg-accent-card/60 p-3 text-[12.5px] leading-relaxed text-ink">
         Works with Kickstarter backer reports + BackerKit exports &mdash; needs at least: name,
@@ -211,8 +228,12 @@ export function ImportPanel({ merchantId }: ImportPanelProps) {
         </div>
       ) : (
         <div className="mt-5">
-          <Button onClick={runImport} disabled={importing || mapped.length === 0}>
-            {importing ? "Importing…" : `Import ${mapped.length || ""} backer${mapped.length === 1 ? "" : "s"}`.trim()}
+          <Button onClick={runAction} disabled={importing || mapped.length === 0}>
+            {staging
+              ? `Stage ${mapped.length || ""} backer${mapped.length === 1 ? "" : "s"} for import`.trim()
+              : importing
+                ? "Importing…"
+                : `Import ${mapped.length || ""} backer${mapped.length === 1 ? "" : "s"}`.trim()}
           </Button>
         </div>
       )}

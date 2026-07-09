@@ -6,6 +6,7 @@ import { getRepositories } from "@/lib/repositories";
 import { jsonRepositories } from "@/lib/repositories/json/repositories";
 import { newId } from "@/lib/ids";
 import type { Gift } from "@/lib/types";
+import type { MappedRow } from "@/lib/csv";
 
 /**
  * UX-86 onboarding gift path — the repo write seam (gifts.createMany), the
@@ -117,6 +118,53 @@ test("createMerchantFromIntake treats an empty gift array like an omitted one (f
   const { merchant } = await createMerchantFromIntake(intake({ gifts: [] }));
   const repos = getRepositories();
   assert.equal((await repos.gifts.listByMerchant(merchant.id)).length, 5);
+});
+
+// ── atomic create + import (D-onboarding revamp) ─────────────────────────────
+
+test("createMerchantFromIntake imports staged backer rows atomically (create + import in one call)", async () => {
+  const importRows: MappedRow[] = [
+    { firstName: "Ada", email: "ada@example.com", orderValueCents: 6000, sourceKey: "KS-1" },
+    { firstName: "Boru", email: "boru@example.com", sourceKey: "KS-2" },
+    { firstName: "Ada-dupe", email: "ADA@example.com", sourceKey: "KS-1" }, // same order → deduped
+  ];
+
+  const { merchant, imported } = await createMerchantFromIntake(intake({ importRows }));
+
+  // the import ran in the SAME call and its real counts came back
+  assert.ok(imported, "atomic import result is returned, not null");
+  assert.equal(imported.customersCreated, 2, "ada + boru");
+  assert.equal(imported.ordersCreated, 2, "the repeated KS-1 order was deduped, not doubled");
+  assert.equal(imported.skipped, 1, "the duplicate row is recognized as already imported");
+
+  // and the orders actually persisted against the just-created merchant
+  const repos = getRepositories();
+  const ada = await repos.customers.findByEmail(merchant.id, "ada@example.com");
+  assert.ok(ada, "backer imported against the merchant created in the same call");
+  const adaOrders = await repos.orders.listByCustomer(ada.id);
+  assert.equal(adaOrders.length, 1);
+  assert.equal(adaOrders[0].merchantId, merchant.id);
+  const boru = await repos.customers.findByEmail(merchant.id, "boru@example.com");
+  assert.ok(boru);
+});
+
+test("createMerchantFromIntake with no staged rows imports nothing (imported is null)", async () => {
+  const { merchant, imported } = await createMerchantFromIntake(intake()); // no importRows
+  assert.equal(imported, null, "no rows staged → no import result");
+  const repos = getRepositories();
+  assert.equal((await repos.orders.listByMerchant(merchant.id)).length, 0, "no orders created");
+});
+
+test("onboarding zod carries staged importRows through (and defaults to [])", () => {
+  const withRows = OnboardingBodySchema.safeParse({
+    brandName: "X",
+    importRows: [{ firstName: "Ann", email: "ann@example.com", orderValueCents: 5000 }],
+  });
+  assert.equal(withRows.success, true);
+  assert.equal(withRows.success ? withRows.data.importRows.length : -1, 1);
+
+  const omitted = OnboardingBodySchema.safeParse({ brandName: "X" });
+  assert.deepEqual(omitted.success ? omitted.data.importRows : null, [], "omitted → []");
 });
 
 // ── server-side gate (zod) ───────────────────────────────────────────────────
