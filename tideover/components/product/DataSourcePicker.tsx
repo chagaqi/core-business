@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { clsx } from "clsx";
 import { Button } from "@/components/ui/Button";
 import { ImportPanel } from "@/app/onboarding/ImportPanel";
@@ -170,14 +170,23 @@ export function DataSourcePicker({
   stagedFileName,
   onStage,
   onClear,
+  preselect,
 }: {
   stagedRows: MappedRow[];
   stagedFileName: string | null;
   onStage: (rows: MappedRow[], format: ImportFormat, fileName: string) => void;
   onClear: () => void;
+  /** Site analysis can preselect a live source (e.g. Kickstarter) as the DEFAULT.
+   *  It never overrides a choice the merchant has already made. */
+  preselect?: LiveSourceId;
 }) {
   const staged = stagedRows.length > 0;
-  const [selected, setSelected] = useState<LiveSourceId | null>(staged ? "kickstarter" : null);
+  const [selected, setSelected] = useState<LiveSourceId | null>(staged ? "kickstarter" : preselect ?? null);
+  // Apply a late-arriving preselect (analysis may resolve after this mounts) only
+  // while nothing is selected yet — a merchant's own pick always wins.
+  useEffect(() => {
+    if (!staged && preselect && selected === null) setSelected(preselect);
+  }, [preselect, staged, selected]);
 
   return (
     <div className="flex flex-col gap-5">

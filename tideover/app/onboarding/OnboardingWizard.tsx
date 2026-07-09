@@ -15,6 +15,8 @@ import {
   newGiftRow,
   GIFT_TIER_OPTIONS,
   type GiftRow,
+  type GiftKind,
+  type GiftTier,
 } from "@/app/onboarding/GiftCatalogEditor";
 import type { HelpdeskSetup } from "@/lib/ingest-templates";
 import type { ImportFormat, MappedRow } from "@/lib/csv";
@@ -123,8 +125,91 @@ const PREVIEW_LABEL: Record<string, string> = {
 
 const STAGE_LABEL = "text-[13px] font-semibold text-ink";
 
+// ── site-analysis autofill (UX-90) ───────────────────────────────────────────
+// Shape mirrors POST /api/analyze (lib/site-analyze). Kept local so this client
+// file never imports the node-runtime analyzer module.
+type SiteGiftCandidate = { label: string; tier: GiftTier; source: "site" | "fallback" };
+type AnalyzeResponse =
+  | {
+      ok: true;
+      platform: string;
+      brandName?: string;
+      accentColor?: string;
+      estimatedDelivery?: string;
+      rewardTiers?: Array<{ title: string; amountUsd: number }>;
+      giftCandidates?: SiteGiftCandidate[];
+    }
+  | { ok: false; reason: string };
+
+type AnalyzeState =
+  | { status: "idle" }
+  | { status: "loading"; host: string }
+  | { status: "done"; host: string; count: number }
+  | { status: "error" };
+
+// Placeholder perceived-value per tier, mirroring the SUGGESTED_GIFTS scale, so a
+// prefilled gift is a usable row the merchant tunes — cost defaults to 0.
+const GIFT_VALUE_BY_TIER: Record<GiftTier, number> = { base: 2000, mid: 4000, full: 6000 };
+
+function kindFromLabel(label: string): GiftKind {
+  const l = label.toLowerCase();
+  if (/note|thank/.test(l)) return "founder-note";
+  if (/priorit|dispatch|ship/.test(l)) return "priority-dispatch";
+  if (/credit/.test(l)) return "next-order-credit";
+  if (/early|access/.test(l)) return "early-access";
+  return "digital-perk";
+}
+
+/** Map analysis candidates to catalog rows: site-sourced first, then topped up
+ *  from the suggested set until the >=3-gifts / >=1-base gate is satisfied. */
+function candidatesToGifts(cands: SiteGiftCandidate[]): GiftRow[] {
+  const ordered = [...cands].sort(
+    (a, b) => (a.source === "site" ? 0 : 1) - (b.source === "site" ? 0 : 1),
+  );
+  const rows: GiftRow[] = ordered.map((c) => ({
+    name: c.label,
+    kind: kindFromLabel(c.label),
+    tier: c.tier,
+    costCents: 0,
+    perceivedValueCents: GIFT_VALUE_BY_TIER[c.tier],
+  }));
+  const names = new Set(rows.map((r) => r.name.toLowerCase()));
+  for (const g of SUGGESTED_GIFTS) {
+    if (rows.length >= 3 && rows.some((r) => r.tier === "base")) break;
+    if (names.has(g.name.toLowerCase())) continue;
+    rows.push(g);
+    names.add(g.name.toLowerCase());
+  }
+  return rows;
+}
+
+/** Normalize a bare or full URL to something z.string().url() accepts; null if junk. */
+function normalizeUrl(raw: string): string | null {
+  const t = raw.trim();
+  if (!t) return null;
+  const withScheme = /^https?:\/\//i.test(t) ? t : `https://${t}`;
+  try {
+    return new URL(withScheme).toString();
+  } catch {
+    return null;
+  }
+}
+
+function safeHost(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}
+
 export function OnboardingWizard() {
   const [step, setStep] = useState(0);
+
+  // site-analysis autofill: the merchant's own URL, pasted on step 1
+  const [siteUrl, setSiteUrl] = useState("");
+  const [analyze, setAnalyze] = useState<AnalyzeState>({ status: "idle" });
+  const [preselectSource, setPreselectSource] = useState<"kickstarter" | null>(null);
 
   // brand & voice
   const [brandName, setBrandName] = useState("");
@@ -158,6 +243,16 @@ export function OnboardingWizard() {
   const lastStep = STEPS.length - 1;
   const brandValid = brandName.trim().length > 0;
 
+  // Refs let the async analysis resolver read the LATEST field state at apply time
+  // so it never overwrites something the merchant typed while the fetch was in
+  // flight. giftsTouched flips true the moment the merchant edits the catalog.
+  const brandNameRef = useRef(brandName);
+  useEffect(() => {
+    brandNameRef.current = brandName;
+  }, [brandName]);
+  const giftsTouchedRef = useRef(false);
+  const lastAnalyzedUrlRef = useRef<string | null>(null);
+
   // Move focus to the step heading when the step changes (skip the first render
   // so we don't grab focus / scroll on initial load). Screen readers announce the
   // new step; keyboard users land at the top of the step.
@@ -180,17 +275,77 @@ export function OnboardingWizard() {
   }
 
   function updateGift(i: number, patch: Partial<GiftRow>) {
+    giftsTouchedRef.current = true;
     setGifts((prev) => prev.map((g, idx) => (idx === i ? { ...g, ...patch } : g)));
   }
 
   function removeGift(i: number) {
     setError(null);
+    giftsTouchedRef.current = true;
     setGifts((prev) => prev.filter((_, idx) => idx !== i));
   }
 
   function addGift() {
     setError(null);
+    giftsTouchedRef.current = true;
     setGifts((prev) => [...prev, newGiftRow()]);
+  }
+
+  // Kick off site analysis when leaving step 1 (non-blocking). Fires BEFORE the
+  // brand-name gate: a merchant who pastes a URL and clicks Continue with an empty
+  // brand gets blocked on the gate, and the read fills that empty field in place.
+  function maybeAnalyze() {
+    const normalized = normalizeUrl(siteUrl);
+    if (!siteUrl.trim()) return;
+    if (!normalized) {
+      setAnalyze({ status: "error" });
+      return;
+    }
+    if (normalized === lastAnalyzedUrlRef.current) return;
+    lastAnalyzedUrlRef.current = normalized;
+    void runAnalysis(normalized);
+  }
+
+  async function runAnalysis(url: string) {
+    const host = safeHost(url);
+    setAnalyze({ status: "loading", host });
+    try {
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url }),
+      });
+      const data = (await res.json().catch(() => null)) as AnalyzeResponse | null;
+      if (!data || data.ok !== true) {
+        setAnalyze({ status: "error" });
+        return;
+      }
+      setAnalyze({ status: "done", host, count: applyPrefills(data) });
+    } catch {
+      setAnalyze({ status: "error" });
+    }
+  }
+
+  // Apply only what the merchant hasn't filled; return the count of fields we
+  // actually prefilled FROM the site (fallback-only gifts do not count).
+  function applyPrefills(data: Extract<AnalyzeResponse, { ok: true }>): number {
+    let count = 0;
+    if (data.brandName && brandNameRef.current.trim() === "") {
+      setBrandName(data.brandName);
+      count += 1;
+    }
+    if (!giftsTouchedRef.current) {
+      const cands = data.giftCandidates ?? [];
+      if (cands.some((c) => c.source === "site")) {
+        setGifts(candidatesToGifts(cands));
+        count += 1;
+      }
+    }
+    if (data.platform === "kickstarter") {
+      setPreselectSource("kickstarter");
+      count += 1;
+    }
+    return count;
   }
 
   function stageImport(rows: MappedRow[], format: ImportFormat, fileName: string) {
@@ -208,6 +363,9 @@ export function OnboardingWizard() {
 
   function next() {
     setError(null);
+    // Fire the site read on any Continue attempt from step 1 (even a gate-blocked
+    // one) so an empty brand name can be filled from the site in place.
+    if (step === 0) maybeAnalyze();
     // brandName lives on the first step
     if (step === 0 && !brandValid) {
       setError("Please add your brand name to continue.");
@@ -403,6 +561,7 @@ export function OnboardingWizard() {
               {/* the current step */}
               <div className="md:pl-8">
                 <MobileProgress steps={STEPS} current={step} />
+                {analyze.status !== "idle" ? <AnalyzeChip state={analyze} /> : null}
                 <StepFade key={step}>
                   <h2
                     ref={headingRef}
@@ -415,6 +574,8 @@ export function OnboardingWizard() {
                   <div className="mt-6">
                     <StepBody
                       step={step}
+                      siteUrl={siteUrl}
+                      setSiteUrl={setSiteUrl}
                       brandName={brandName}
                       setBrandName={setBrandName}
                       voice={voice}
@@ -443,6 +604,7 @@ export function OnboardingWizard() {
                       stagedFileName={stagedFileName}
                       onStage={stageImport}
                       onClearStaged={clearStaged}
+                      preselectSource={preselectSource}
                     />
                   </div>
                 </StepFade>
@@ -473,6 +635,36 @@ export function OnboardingWizard() {
       </div>
     </div>
   );
+}
+
+// ── site-analysis status ─────────────────────────────────────────────────────
+// The autofill confirmation. Teal accent only (terracotta stays action-only).
+// States: reading → read with a real prefill count → soft-fail note.
+function AnalyzeChip({ state }: { state: AnalyzeState }) {
+  if (state.status === "loading") {
+    return (
+      <p className="mb-5 inline-flex items-center gap-2 text-[12.5px] text-ink-mute">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-teal" aria-hidden />
+        Reading your site…
+      </p>
+    );
+  }
+  if (state.status === "error") {
+    return (
+      <p className="mb-5 text-[12.5px] text-ink-mute">Couldn&rsquo;t read that URL &middot; fill in below.</p>
+    );
+  }
+  if (state.status === "done") {
+    if (state.count > 0) {
+      return (
+        <p className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-teal-300 bg-accent-card/60 px-3 py-1 text-[12.5px] font-medium text-ink">
+          Read {state.host} &middot; {state.count} field{state.count === 1 ? "" : "s"} prefilled
+        </p>
+      );
+    }
+    return <p className="mb-5 text-[12.5px] text-ink-mute">Read {state.host}.</p>;
+  }
+  return null;
 }
 
 // ── step transition ──────────────────────────────────────────────────────────
@@ -617,6 +809,8 @@ function TimelineEditor({
 // ── per-step body ────────────────────────────────────────────────────────────
 function StepBody(props: {
   step: number;
+  siteUrl: string;
+  setSiteUrl: (v: string) => void;
   brandName: string;
   setBrandName: (v: string) => void;
   voice: string;
@@ -645,6 +839,7 @@ function StepBody(props: {
   stagedFileName: string | null;
   onStage: (rows: MappedRow[], format: ImportFormat, fileName: string) => void;
   onClearStaged: () => void;
+  preselectSource: "kickstarter" | null;
 }) {
   const { step } = props;
 
@@ -653,6 +848,15 @@ function StepBody(props: {
   if (step === 0) {
     return (
       <div className="flex flex-col gap-5">
+        <Field label="Your website or campaign URL" hint="We'll read it and prefill what we can.">
+          <TextInput
+            type="url"
+            inputMode="url"
+            value={props.siteUrl}
+            onChange={(e) => props.setSiteUrl(e.target.value)}
+            placeholder="yourbrand.com or kickstarter.com/projects/…"
+          />
+        </Field>
         <Field label="Brand name" hint="What your customers know you as">
           <TextInput
             value={props.brandName}
@@ -744,6 +948,7 @@ function StepBody(props: {
         stagedFileName={props.stagedFileName}
         onStage={props.onStage}
         onClear={props.onClearStaged}
+        preselect={props.preselectSource ?? undefined}
       />
     );
   }
