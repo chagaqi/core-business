@@ -2,6 +2,7 @@
 
 import { Reveal } from "@/components/ui/Reveal";
 import { PaperEdge } from "@/components/marketing/paper/PaperEdge";
+import { PLANS, usd } from "@/components/marketing/PricingParts";
 
 /**
  * FAQ accordion using native <details>/<summary> (no JS state needed beyond the
@@ -11,7 +12,7 @@ import { PaperEdge } from "@/components/marketing/paper/PaperEdge";
 const FAQS: readonly { q: string; a: React.ReactNode }[] = [
   {
     q: "Do you actually have proof it reduces refunds?",
-    a: "Not yet, and we won't pretend we do. A real refund number needs a full cycle, 60–120 days, which is the entire reason we're running founding pilots now. What we can show you during the pilot are leading indicators: faster first-response times, fewer repeat tickets, logged saves. The refund case study comes after your first cohort finishes its wait, built on your own data.",
+    a: "Not yet, and we won't pretend we do. A real refund number needs a full cycle, 60–120 days, longer than any trial can run. What we can show you on the trial and during your first cycle are leading indicators: faster first-response times, fewer repeat tickets, logged saves. The refund case study comes after your first cohort finishes its wait, built on your own data.",
   },
   {
     q: "How is this different from my helpdesk's AI add-on?",
@@ -19,7 +20,7 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "Is this just ChatGPT?",
-    a: "No. The pilot doesn't require an LLM at all. Four deterministic engines do the work, and their math is on screen: the risk score shows the exact factors behind it, order value, how long the buyer has waited, sentiment, and production stage. Replies are assembled from an approved playbook keyed to where that order actually sits, so there's nothing to hallucinate. And it reads your real fulfillment window, which ChatGPT has no way to know.",
+    a: "No. The core doesn't require an LLM at all. Four deterministic engines do the work, and their math is on screen: the risk score shows the exact factors behind it, order value, how long the buyer has waited, sentiment, and production stage. Replies are assembled from an approved playbook keyed to where that order actually sits, so there's nothing to hallucinate. And it reads your real fulfillment window, which ChatGPT has no way to know.",
   },
   {
     q: "We already have a VA who answers tickets.",
@@ -27,7 +28,7 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "What if your AI invents a ship date and makes things worse?",
-    a: "It can't. During the pilot nothing goes out without your approval, and replies are constrained to confidence-band windows (“ships in weeks 9–11”), never invented hard dates. We lived the damage a bad timeline promise does to a brand. The check runs in code at send time, so a hard date physically cannot leave the system.",
+    a: "It can't. Nothing goes out without your approval, and replies are constrained to confidence-band windows (“ships in weeks 9–11”), never invented hard dates. We lived the damage a bad timeline promise does to a brand. The check runs in code at send time, so a hard date physically cannot leave the system.",
   },
   {
     q: "We're juggling Kickstarter backers, late-pledges, and Shopify preorders at once. Can you handle that?",
@@ -45,7 +46,7 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
     q: "You'll see our customers. What about data security?",
     a: (
       <>
-        Less than you&rsquo;d think, and that&rsquo;s by design. The pilot is forward-only email: no OAuth, no
+        Less than you&rsquo;d think, and that&rsquo;s by design. The default setup is forward-only email: no OAuth, no
         passwords, no Shopify admin. We see only the tickets you forward, nothing else in your inbox. The public
         status page shows a buyer just their first name and a timeline, never their email or lifetime value. Revoking
         us is deleting that one forwarding rule. We don&rsquo;t hold SOC 2 and we don&rsquo;t claim certifications we
@@ -62,20 +63,26 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
     a: "Fair question, and the answer is built into how this works, not a promise. Your replies live in your own helpdesk, sent under your name, so the customer relationship was always yours. The status page is a separate hosted page, so switching it off never touches your store. And the whole integration is one email-forwarding rule you created, so ending it is deleting that rule. If Tideover vanished tomorrow you'd lose a tool, not your support.",
   },
   {
-    q: "Why is it free? What's the catch?",
-    a: "We need to author the playbooks alongside real merchants, and the only way to do that is on real orders. You get the work free, we earn the case study. The only ask is read access to do the work, and, if you're happy, a testimonial about the experience.",
-  },
-  {
     q: "Do I switch helpdesks or install anything?",
     a: "No. Tideover bolts onto the Gorgias, Tidio, or Intercom you already run. Nothing to rip out, no second inbox, no infra change. We work inside your existing setup and handle the presale tickets specifically.",
   },
   {
     q: "What happens after the wait ends?",
-    a: "You pause. Tideover runs during the wait, so between cycles there's nothing to pay for and nothing to manage. When the next campaign or drop opens, you switch it back on for that cohort. Month to month, no annual lock-in.",
+    a: "You pause. Tideover runs during the wait, so between cycles there's nothing to manage. When the next campaign or drop opens, you switch it back on for that cohort. Plans are month to month unless you choose annual.",
   },
   {
-    q: "What does it cost after the pilot?",
-    a: "The pilot is free: no software fee, no setup fee, no card. On proof, the founding-partner intro is roughly $199–$499/mo, scaling to $799–$999+/mo as volume grows. Any performance fee waits until there's a real case study to stand on.",
+    q: "What does it cost?",
+    a: (
+      <>
+        Plans start at {usd(PLANS[0].monthly)}/mo, sized by seats and the presale orders in your wait window, and every plan opens with
+        a 14-day free trial &mdash; no card required, nothing auto-bills when it ends. Seat counts, order caps, and
+        the full feature table are on the{" "}
+        <a className="link-quiet" href="/pricing">
+          pricing page
+        </a>
+        .
+      </>
+    ),
   },
 ];
 

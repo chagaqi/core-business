@@ -1,26 +1,17 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
-import { PricingLadder, GuaranteeBox } from "@/components/marketing/PricingParts";
+import { PricingSummary, GuaranteeBox } from "@/components/marketing/PricingParts";
 
 /**
- * The founding-partner pilot — a dark section. Headline + "what's included"
- * checklist on one side, the value ladder + guarantee on the other.
- * Pricing and the deferred performance fee come straight from the locked offer.
- * CTA uses the ondark button variant.
+ * Home pricing section — a dark section, still anchored at #pricing for the
+ * nav. Compact 3-tier summary (name + monthly price + one-liner) rendered from
+ * the SAME shared PLANS source of truth as /pricing, so the figures cannot
+ * drift, plus the guarantee and the trial CTA.
  *
- * The value ladder (held figures) and the guarantee box are extracted into
- * <PricingLadder/> / <GuaranteeBox/> (PricingParts.tsx) so this Home section and
- * the standalone /pricing page share one source of truth for the numbers.
+ * The pilot offer is off all public pricing surfaces (2026-07-09) — it lives
+ * on as an off-page lead magnet, so the old pilot card and its framing are gone.
+ * The guarantee box survives with only its pilot reference retired.
  */
-const INCLUDED: readonly string[] = [
-  "Works inside your helpdesk — nothing to migrate.",
-  "Timeline-aware, human-approved replies in two fixed daily windows.",
-  "A day-by-day reassurance playbook, built from your real tickets.",
-  "Leading-indicator measurement vs. your own clean baseline.",
-  "Logged “saves” — anxious buyers who stayed aboard.",
-  "Founder-led, by hand, for one full presale cycle.",
-];
-
 export function Pilot() {
   return (
     <section id="pricing" className="section section-dark scroll-mt-20">
@@ -28,60 +19,49 @@ export function Pilot() {
         <Reveal index={0}>
           <div className="mb-11 max-w-[720px]">
             <span className="kicker mb-3.5" style={{ color: "#E9B486" }}>
-              The founding-partner pilot
+              Pricing
             </span>
-            <h2 className="mb-4 text-balance">We&rsquo;ll run your presale support by hand for one cycle. Free.</h2>
+            <h2 className="mb-4 text-balance">Priced by the presale orders you&rsquo;re carrying.</h2>
             <p className="m-0 text-[17px] leading-relaxed" style={{ color: "#BDD4D2" }}>
-              Concierge first. The founder and our drafting system run your presale support manually, inside your own
-              helpdesk &mdash; capturing the day-by-day reassurance language that works, measured against a clean
-              baseline.
+              Three plans, sized by seats and the orders in your wait window. Every one starts with a 14-day free
+              trial &mdash; no card required, nothing auto-bills when it ends.
             </p>
           </div>
         </Reveal>
 
-        {/* Value ladder — mechanics only: the old inline pill strip, now a 3-card
-            tier row rising like a tide. Numbers HELD; shared with /pricing. */}
+        {/* Compact tier summary — shared figures with /pricing. */}
         <Reveal index={1}>
-          <PricingLadder />
+          <PricingSummary />
         </Reveal>
 
         <div className="grid grid-cols-1 items-start gap-[22px] md:grid-cols-2">
-          {/* included card */}
+          {/* guarantee — kept adjacent to the tiers; shared with /pricing */}
           <Reveal index={2}>
-            <div
-              className="rounded-[22px] p-[30px]"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.14)" }}
-            >
-              <span
-                className="mb-5 inline-flex items-center rounded-full px-3.5 py-1.5 text-[13px] font-bold"
-                style={{ background: "#E9B486", color: "#5A2D14" }}
-              >
-                Free &middot; one full cycle
-              </span>
-              <h3 className="mb-5 font-serif text-[22px] font-semibold" style={{ color: "#F4F9F8" }}>
-                What&rsquo;s included
-              </h3>
-              <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
-                {INCLUDED.map((item) => (
-                  <li key={item} className="flex items-start gap-3 text-[15px] leading-snug" style={{ color: "#D7E6E4" }}>
-                    <span className="mt-px flex-none font-bold" style={{ color: "#E9B486" }} aria-hidden>
-                      &#10003;
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-7">
-                <Button href="/book" variant="ondark">
-                  Apply for a founding-partner pilot &rarr;
-                </Button>
-              </div>
-            </div>
+            <GuaranteeBox />
           </Reveal>
 
-          {/* guarantee — kept adjacent to the ladder; shared with /pricing */}
+          {/* CTA card — trial first, full table one click away */}
           <Reveal index={3}>
-            <GuaranteeBox />
+            <div
+              className="flex h-full flex-col justify-center rounded-[22px] p-[30px]"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.14)" }}
+            >
+              <h3 className="mb-3 font-serif text-[22px] font-semibold" style={{ color: "#F4F9F8" }}>
+                Try it on your own queue
+              </h3>
+              <p className="mb-6 mt-0 text-[15px] leading-relaxed" style={{ color: "#C7DAD8" }}>
+                Import your backers, see the risk scores and drafted replies on your real tickets, and decide with
+                the evidence in front of you.
+              </p>
+              <div className="flex flex-wrap items-center gap-4">
+                <Button href="/onboarding" variant="ondark">
+                  Start your 14-day free trial &rarr;
+                </Button>
+                <a className="text-[14.5px] font-semibold underline underline-offset-4" style={{ color: "#F4F9F8" }} href="/pricing">
+                  Compare plans
+                </a>
+              </div>
+            </div>
           </Reveal>
         </div>
       </div>

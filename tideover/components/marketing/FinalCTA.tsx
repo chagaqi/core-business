@@ -4,14 +4,18 @@ import { CalButton } from "@/components/booking/CalButton";
 /**
  * Final CTA — a dark, centered close. The tide-comes-in headline, a calm
  * reassurance subhead, the primary booking CTA, and three supporting points.
+ *
+ * The supporting points are a prop: the default set keeps the pilot bullet for
+ * lead-magnet surfaces (Home, who-its-for, how-it-works), while /pricing passes
+ * a pilot-free set so the close never contradicts the paid tiers above it.
  */
-const POINTS: readonly string[] = [
+const DEFAULT_POINTS: readonly string[] = [
   "No new helpdesk to install",
   "Free founding-partner pilot",
   "Talk to the operator, not a queue",
 ];
 
-export function FinalCTA() {
+export function FinalCTA({ points = DEFAULT_POINTS }: { points?: readonly string[] }) {
   return (
     <section className="section section-dark">
       <div className="wrap max-w-[820px] text-center">
@@ -42,7 +46,7 @@ export function FinalCTA() {
 
         <Reveal index={4}>
           <div className="mt-8 flex flex-wrap justify-center gap-x-7 gap-y-2.5 text-[14px]" style={{ color: "#A9C5C2" }}>
-            {POINTS.map((p) => (
+            {points.map((p) => (
               <span key={p} className="inline-flex items-center gap-2">
                 <span style={{ color: "#E9B486" }}>&bull;</span>
                 {p}

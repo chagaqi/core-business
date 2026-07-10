@@ -5,49 +5,60 @@ import { FinalCTA } from "@/components/marketing/FinalCTA";
 import { Reveal } from "@/components/ui/Reveal";
 import { PaperStrata } from "@/components/marketing/paper/PaperStrata";
 import { PaperEdge } from "@/components/marketing/paper/PaperEdge";
-import { PricingLadder, GuaranteeBox } from "@/components/marketing/PricingParts";
+import { ANNUAL_LABEL, GuaranteeBox, PLANS, usd } from "@/components/marketing/PricingParts";
+import { PricingTiers } from "@/components/marketing/PricingTiers";
 
 /**
- * /pricing — the standalone pricing page (Dylan, 2026-07-09: "our own pricing
- * page"). Mechanics from the SWAN pricing playbook (§5): a real tier row, a
- * "how the deferred fee works" explainer promoted out of the FAQ, the guarantee
- * kept adjacent, and a billing-only FAQ under the table.
+ * /pricing — the standalone pricing page, restructured Swan-style (2026-07-09):
+ * tier cards with seats + order caps, checkmark feature lists laddered with
+ * "Everything in X, plus:", a monthly/annual toggle (annual = 2 months free),
+ * free-trial CTAs, a Beyond Scale custom card, a seats explainer, and a
+ * pricing-only FAQ. The old free-cycle offer is off all public pricing
+ * surfaces, so the shared FinalCTA gets a trial-framed points set below.
  *
- * NUMBERS HELD: the tier row and guarantee are the shared <PricingLadder/> /
- * <GuaranteeBox/> primitives — the exact same held figures the Home <Pilot/>
- * section renders (one source of truth). Every other figure/answer here is
- * lifted verbatim from Pilot.tsx / the Home FAQ; nothing new is invented (no
- * per-tier order caps, no "most popular" — the tier-2 line stays the
- * trigger-conditioned recommendation). Public page, no auth.
+ * NUMBERS LOCKED: the tier cards render from the shared PLANS array in
+ * PricingParts.tsx — the exact figures the Home pricing section summarizes
+ * (one source of truth, nothing can drift). Proof-only: the Growth badge is
+ * "Recommended", never a popularity claim; every listed feature is a shipped
+ * module (grounding table in PricingParts.tsx). Public page, no auth.
  *
- * Paper treatment mirrors /how-it-works: a light PaperStrata hero, a wave edge
- * into the dark pricing block (where the ladder colours belong), a torn-sand
- * edge back up into the light billing FAQ, then the shared FinalCTA → /book.
+ * Paper treatment: light PaperStrata hero into the light tier grid, a wave
+ * edge into the dark guarantee block, a torn-sand edge back up into the light
+ * pricing FAQ, then the shared FinalCTA.
  */
 export const metadata: Metadata = {
   title: "Pricing — Tideover",
-  description:
-    "Start free with a founding-partner pilot. You only move to paid once it proves out on your own tickets, and any performance fee is deferred until a real case study exists.",
+  description: `Plans from ${usd(PLANS[0].monthly)}/mo, sized by seats and the presale orders in your wait window. 14-day free trial, no card required. Annual is ${ANNUAL_LABEL}.`,
 };
 
-// Billing-only questions, lifted verbatim from the Home FAQ (kept there too):
-// the four that are purely about money and setup mechanics.
-const BILLING_FAQ: readonly { q: string; a: string }[] = [
+// FinalCTA points for this page: trial-framed, never contradicting the tiers.
+const PRICING_CTA_POINTS: readonly string[] = [
+  "No new helpdesk to install",
+  "14-day free trial, no card required",
+  "Talk to the operator, not a queue",
+];
+
+// Pricing-only questions: trial mechanics, caps, plan changes, annual.
+const PRICING_FAQ: readonly { q: string; a: string }[] = [
   {
-    q: "What does it cost after the pilot?",
-    a: "The pilot is free: no software fee, no setup fee, no card. On proof, the founding-partner intro is roughly $199–$499/mo, scaling to $799–$999+/mo as volume grows. Any performance fee waits until there's a real case study to stand on.",
+    q: "What happens when the trial ends?",
+    a: "We contact you. There's no card on file, so nothing auto-bills: you pick a plan when the trial has shown you enough, or you walk away and owe nothing.",
   },
   {
-    q: "Why is it free? What's the catch?",
-    a: "We need to author the playbooks alongside real merchants, and the only way to do that is on real orders. You get the work free, we earn the case study. The only ask is read access to do the work, and, if you're happy, a testimonial about the experience.",
+    q: "What counts toward the order cap?",
+    a: "Presale orders currently in the wait window. Once an order ships and its wait ends, it stops counting, so your delivered history never eats the cap.",
   },
   {
-    q: "What happens after the wait ends?",
-    a: "You pause. Tideover runs during the wait, so between cycles there's nothing to pay for and nothing to manage. When the next campaign or drop opens, you switch it back on for that cohort. Month to month, no annual lock-in.",
+    q: "Can I change plans later?",
+    a: "Yes, any time. Plan changes take effect immediately, and we settle the billing difference with you directly rather than burying it in a statement.",
   },
   {
-    q: "Do I switch helpdesks or install anything?",
-    a: "No. Tideover bolts onto the Gorgias, Tidio, or Intercom you already run. Nothing to rip out, no second inbox, no infra change. We work inside your existing setup and handle the presale tickets specifically.",
+    q: "Do you offer annual billing?",
+    a: `Yes, and it's ${ANNUAL_LABEL}: ${PLANS.map((p) => `${usd(p.annual)} for ${p.name}`).join(", ")} per year. The toggle above shows both views.`,
+  },
+  {
+    q: "What happens if I go over my cap?",
+    a: "We reach out about the next tier. Nothing hard-stops mid-wait: your queue keeps working and your customers keep getting answers while we sort it out.",
   },
 ];
 
@@ -56,56 +67,53 @@ export default function PricingPage() {
     <>
       <Nav />
       <main>
-        {/* Page hero — light, no numbers. */}
-        <section className="section relative overflow-hidden">
+        {/* Page hero — light, sets the trial terms before any number. */}
+        <section className="section relative overflow-hidden !pb-10">
           <PaperStrata />
           <div className="wrap relative z-10 max-w-[820px]">
             <span className="kicker mb-3.5">Pricing</span>
-            <h1 className="mb-5 text-balance">Priced on proof, not on promises.</h1>
+            <h1 className="mb-5 text-balance">Sized by the orders in your wait window.</h1>
             <p className="m-0 max-w-[680px] text-[17px] leading-relaxed text-slate">
-              Start free with a founding-partner pilot. You only move to paid once it proves out on your own tickets,
-              and any performance fee waits for a real case study.
+              Every plan starts with a 14-day free trial, no card required. Nothing auto-bills when it ends &mdash;
+              we talk first.
             </p>
+          </div>
+        </section>
+
+        {/* Tier cards + billing toggle — the shared source of truth. */}
+        <section className="pb-16">
+          <div className="wrap">
+            <Reveal index={0}>
+              <PricingTiers />
+            </Reveal>
+
+            {/* Seats explainer — promoted out of the FAQ, next to the cards. */}
+            <Reveal index={1}>
+              <div className="panel mx-auto mt-9 max-w-[720px] p-7">
+                <h2 className="mb-3 font-serif text-[20px] font-semibold text-teal">What counts as a seat?</h2>
+                <p className="m-0 text-[15px] leading-relaxed text-slate">
+                  A seat is a teammate who works the queue: drafting, approving replies, sending goodwill gifts. Add
+                  their email on the Team page; when they sign up with it, they land in your workspace. Customer
+                  status pages and everything your buyers see stay unlimited and free on every plan. You are never
+                  charged for the people checking on their orders.
+                </p>
+              </div>
+            </Reveal>
           </div>
         </section>
 
         <PaperEdge variant="wave" color="teal" />
 
-        {/* Dark pricing block — the tier row, the deferred-fee explainer, the guarantee. */}
+        {/* Dark block — the guarantee, kept adjacent to the tiers. */}
         <section className="section section-dark scroll-mt-20">
-          <div className="wrap">
+          <div className="wrap max-w-[860px]">
             <Reveal index={0}>
-              <PricingLadder />
+              <GuaranteeBox />
             </Reveal>
-
-            <div className="mt-[22px] grid grid-cols-1 items-start gap-[22px] md:grid-cols-2">
-              {/* How the deferred fee works — the #1 pricing objection, promoted
-                  out of the FAQ. Copy lifted from Pilot.tsx / the Home FAQ. */}
-              <Reveal index={1}>
-                <div
-                  className="rounded-[22px] p-7"
-                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.14)" }}
-                >
-                  <h3 className="mb-3.5 font-serif text-[20px] font-semibold" style={{ color: "#F4F9F8" }}>
-                    How the deferred fee works
-                  </h3>
-                  <p className="m-0 text-[15px] leading-relaxed" style={{ color: "#C7DAD8" }}>
-                    The pilot is free: no software fee, no setup fee, no card. You only move to proof-pricing once the
-                    pilot proves out on your own tickets. Any performance fee is deferred until a real case study
-                    exists.
-                  </p>
-                </div>
-              </Reveal>
-
-              {/* The guarantee — shared with the Home pilot section. */}
-              <Reveal index={2}>
-                <GuaranteeBox />
-              </Reveal>
-            </div>
           </div>
         </section>
 
-        {/* Billing-only FAQ — the money/setup mechanics, directly under the table. */}
+        {/* Pricing-only FAQ — trial, caps, plan changes, annual. */}
         <section className="section scroll-mt-20 relative">
           <PaperEdge
             variant="torn"
@@ -123,7 +131,7 @@ export default function PricingPage() {
 
             <Reveal index={1}>
               <div>
-                {BILLING_FAQ.map((item) => (
+                {PRICING_FAQ.map((item) => (
                   <details key={item.q} className="group border-t border-border last:border-b">
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-[22px] font-serif text-[18.5px] font-semibold text-teal [&::-webkit-details-marker]:hidden">
                       {item.q}
@@ -143,7 +151,7 @@ export default function PricingPage() {
         </section>
 
         <PaperEdge variant="wave" color="teal" />
-        <FinalCTA />
+        <FinalCTA points={PRICING_CTA_POINTS} />
       </main>
       <Footer />
     </>

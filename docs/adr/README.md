@@ -19,6 +19,7 @@ Every non-trivial decision (a new dependency, an engine change, an integration, 
 | [0003](./ADR-0003-mongo-driver.md) | MongoDB via the official driver, behind the existing Repositories seam |
 | [0004](./ADR-0004-app-auth.md) | Operator auth: env-gated demo mode + shared-password HMAC-cookie session |
 | [0017](./ADR-0017-real-vs-demo-subdomain-split.md) | Real vs demo split by request host: app.tideover.app = auth + live store; everywhere else = open seeded demo |
+| [0020](./ADR-0020-auth0-user-accounts.md) | Auth0 user accounts + per-merchant tenancy (ownerSub), env-gated, fail-closed on partial config; password mode stays the fallback |
 
 **Engine & proof**
 | # | Decision |

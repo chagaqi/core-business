@@ -30,7 +30,7 @@ function CheckTick() {
 const CALL_POINTS: readonly string[] = [
   "We look at how your presale tickets are handled today — live, on the call.",
   "We point to the two or three moments in the wait where buyers are most likely to bail.",
-  "We tell you straight whether a free founding-partner pilot is worth your time.",
+  "We size the plan that fits your volume — and if a founding pilot makes sense for you, we offer it on the call.",
   "If it's a fit, we map the pilot. If it's not, you keep the teardown either way.",
 ];
 
@@ -69,7 +69,7 @@ export default function BookPage() {
             <Reveal index={2}>
               <p className="mx-auto max-w-[560px] text-[clamp(16px,1.5vw,18px)] leading-relaxed text-slate">
                 A real operator looks at your real presale support, shows you where buyers are most likely to bail, and
-                tells you straight whether a pilot is worth your time. No deck, no obligation.
+                tells you straight whether Tideover is worth your time. No deck, no obligation.
               </p>
             </Reveal>
           </div>

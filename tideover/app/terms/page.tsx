@@ -3,16 +3,18 @@ import { Nav } from "@/components/marketing/Nav";
 import { Footer } from "@/components/marketing/Footer";
 
 /**
- * /terms — plain-English terms of service for the pilot-stage product. Pilot
- * terms mirror the sales page (free one cycle, no lock-in, keep-your-scripts).
- * Proof-only: no outcome guarantees; drafts are human-approved by the merchant;
- * not legal/financial advice. Dates are literal publish-time placeholders.
+ * /terms — plain-English terms of service for the subscription product
+ * (Starter/Growth/Scale per the posted pricing) plus the invitation-only
+ * founding pilot. Trial terms mirror /pricing: 14 days free, no payment
+ * method collected, nothing auto-bills, paid invoicing starts only on
+ * explicit written agreement. Proof-only: no outcome guarantees; drafts are
+ * human-approved by the merchant; not legal/financial advice.
  * Public page: not in middleware.ts's matcher, so it renders with no auth.
  */
 export const metadata: Metadata = {
   title: "Terms — Tideover",
   description:
-    "Plain-English terms for the Tideover founding-partner pilot: what the service is, the free-cycle pilot terms, acceptable use, disclaimers, and liability at pilot scale.",
+    "Plain-English terms for Tideover: the subscription plans and free trial, acceptable use, disclaimers, data handling, and the liability cap.",
 };
 
 interface Section {
@@ -26,22 +28,24 @@ const SECTIONS: readonly Section[] = [
     heading: "1. What Tideover is",
     paras: [
       "Tideover is a presale-support layer for merchants with long fulfillment waits. It reads each order's real production timeline and drafts calm, day-stage reassurance, bolted onto the helpdesk you already run or shown as a native Tideover status surface. The playbooks and the measurement are the product; the drafting is a means to them.",
+      "The service is sold as subscription plans — Starter, Growth, and Scale — at the prices, seat counts, and order caps posted on the pricing page. Separately, we run a founding-partner pilot by invitation only; if you are in one, the terms of your invitation apply alongside these.",
     ],
   },
   {
-    heading: "2. The founding-partner pilot",
-    paras: ["These are the pilot terms, and they match what the sales page says:"],
+    heading: "2. Trial and billing",
+    paras: ["These match what the pricing page says:"],
     bullets: [
-      "Free for one full presale cycle. No card required to start.",
-      "No lock-in. You can stop at any time, and you can cut off each integration in one action (see the Security page).",
-      "Keep your scripts on exit. The reassurance playbooks and scripts generated during your pilot are yours to keep and use, with or without Tideover.",
-      "Any later paid plan is opt-in, and any performance-based fee is deferred until a real, completed-cohort case study exists.",
+      "Every plan starts with a 14-day free trial. We collect no payment method for the trial, so nothing can auto-bill when it ends.",
+      "Paid invoicing begins only when you explicitly agree to a plan in writing. Until then, you owe nothing.",
+      "Annual billing is prepaid for the year and priced at 2 months free compared to paying monthly.",
+      "The first-cycle guarantee posted on the pricing page applies as written there: if your first cycle doesn't move the leading indicators we track, you don't pay.",
+      "You can cancel at any time, and a full export of your data is available to every plan on request.",
     ],
   },
   {
     heading: "3. Human approval",
     paras: [
-      "Tideover drafts replies; it does not speak to your customers on its own. Every reply that reaches a customer during the pilot is reviewed and approved by you or your team before it is sent. The drafting engine also refuses to promise hard delivery dates — it works in confidence bands by design.",
+      "Tideover drafts replies; it does not speak to your customers on its own. Every reply that reaches a customer is reviewed and approved by you or your team before it is sent. The drafting engine also refuses to promise hard delivery dates — it works in confidence bands by design.",
     ],
   },
   {
@@ -69,19 +73,19 @@ const SECTIONS: readonly Section[] = [
   {
     heading: "7. Limitation of liability",
     paras: [
-      "To the maximum extent permitted by law, Tideover and its operator are not liable for indirect, incidental, special, or consequential damages, or for lost profits, revenue, or data. Our total aggregate liability for any claim relating to the service is limited to the amount you paid us for it in the three months before the claim — which, for the free pilot, is zero. This reflects the early, pilot-stage nature of the service.",
+      "To the maximum extent permitted by law, Tideover and its operator are not liable for indirect, incidental, special, or consequential damages, or for lost profits, revenue, or data. Our total aggregate liability for any claim relating to the service is limited to the fees you actually paid us in the 12 months before the claim. If you paid no fees in that period — on the free trial, for example, or in an invitation-only pilot — our total aggregate liability is USD 50.",
     ],
   },
   {
     heading: "8. Your data",
     paras: [
-      "How Tideover handles data is governed by the Privacy page. In short: you are the data controller, Tideover is your processor, and you can have your routed data exported or deleted on request or when your account ends.",
+      "How Tideover handles data is governed by the Privacy page. In short: you are the data controller, Tideover is your processor, and you can have your routed data exported or deleted on request or when your account ends. If you switch on AI-assisted drafting, the optional drafting subprocessor listed on the Privacy page handles that drafting — it is off unless you enable it.",
     ],
   },
   {
     heading: "9. Availability and changes to the service",
     paras: [
-      "Tideover is pilot-stage software and is provided on a reasonable-efforts basis. Features may change, and the service may be interrupted or discontinued. We will give notice of material changes that affect active pilots.",
+      "Tideover is early-stage software and is provided on a reasonable-efforts basis. Features may change, and the service may be interrupted or discontinued. We will give notice of material changes that affect active subscriptions or pilots.",
     ],
   },
   {
@@ -107,10 +111,10 @@ export default function TermsPage() {
             <h1 className="mb-4 text-balance">Terms of service</h1>
             <p className="m-0 text-[16px] leading-relaxed text-slate">
               {
-                "Plain English. These cover the founding-partner pilot and how the Tideover product is meant to be used. They are written for an early-stage tool and say so where it matters."
+                "Plain English. These cover the Tideover subscription plans, the free trial, the invitation-only founding pilot, and how the product is meant to be used. They are written for an early-stage tool and say so where it matters."
               }
             </p>
-            <p className="mt-4 text-[14px] font-semibold text-ink-mute">Last updated: July 3, 2026</p>
+            <p className="mt-4 text-[14px] font-semibold text-ink-mute">Last updated: July 9, 2026</p>
             <nav aria-label="Legal pages" className="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-[14px] text-ink-mute">
               <a className="link-quiet" href="/privacy">
                 Privacy
