@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { FoldCard } from "@/components/marketing/paper/FoldCard";
 import { citedStat } from "@/lib/proof";
 
 /**
@@ -78,18 +79,24 @@ export function LongWait() {
 
         <ol className="mb-7 grid list-none grid-cols-1 gap-[18px] p-0 sm:grid-cols-2 lg:grid-cols-4">
           {STAGES.map((s, i) => (
-            <Reveal key={s.day} index={i} as="li">
-              <div className="h-full rounded-[18px] border border-border bg-paper p-[22px] shadow-card">
-                <div className="mb-3 flex items-center gap-2.5">
-                  <span className="h-3 w-3 rounded-full" style={{ background: s.dot }} />
-                  <span className="text-[13px] font-bold tracking-[0.05em]" style={{ color: s.dayColor }}>
-                    {s.day}
-                  </span>
-                </div>
-                <h3 className="mb-[7px] font-serif text-[20px] font-semibold text-ink">{s.title}</h3>
-                <p className="m-0 text-[14.5px] leading-snug text-slate">{s.body}</p>
+            <FoldCard
+              key={s.day}
+              as="li"
+              index={i}
+              className="group h-full rounded-[18px] border border-border bg-paper p-[22px]"
+            >
+              <div className="mb-3 flex items-center gap-2.5">
+                <span
+                  className="h-3 w-3 rounded-full transition-transform duration-300 ease-out group-hover:scale-125"
+                  style={{ background: s.dot }}
+                />
+                <span className="text-[13px] font-bold tracking-[0.05em]" style={{ color: s.dayColor }}>
+                  {s.day}
+                </span>
               </div>
-            </Reveal>
+              <h3 className="mb-[7px] font-serif text-[20px] font-semibold text-ink">{s.title}</h3>
+              <p className="m-0 text-[14.5px] leading-snug text-slate">{s.body}</p>
+            </FoldCard>
           ))}
         </ol>
 
@@ -123,12 +130,14 @@ export function LongWait() {
 
         <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
           {STAKES.map((s, i) => (
-            <Reveal key={s.title} index={i}>
-              <div className="h-full rounded-[18px] border border-border bg-sand-2 p-[26px]">
-                <h3 className="mb-2.5 font-serif text-[20px] font-semibold text-ink">{s.title}</h3>
-                <p className="m-0 text-[15px] leading-relaxed text-slate">{s.body}</p>
-              </div>
-            </Reveal>
+            <FoldCard
+              key={s.title}
+              index={i}
+              className="group h-full rounded-[18px] border border-border bg-sand-2 p-[26px]"
+            >
+              <h3 className="mb-2.5 font-serif text-[20px] font-semibold text-ink">{s.title}</h3>
+              <p className="m-0 text-[15px] leading-relaxed text-slate">{s.body}</p>
+            </FoldCard>
           ))}
         </div>
       </div>

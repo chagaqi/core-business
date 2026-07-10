@@ -13,28 +13,37 @@ import { clsx } from "clsx";
  */
 type Corner = "tl" | "tr" | "bl" | "br";
 
-// Triangle path (in a 40×40 space) and crease line per corner. The right-angle
-// vertex sits in the card corner; the hypotenuse is the fold crease.
-const FOLD: Record<Corner, { flap: string; crease: string; pos: string }> = {
-  tl: { flap: "M0 0 L40 0 L0 40 Z", crease: "M40 0 L0 40", pos: "top-0 left-0" },
-  tr: { flap: "M40 0 L0 0 L40 40 Z", crease: "M0 0 L40 40", pos: "top-0 right-0" },
-  bl: { flap: "M0 40 L40 40 L0 0 Z", crease: "M40 40 L0 0", pos: "bottom-0 left-0" },
-  br: { flap: "M40 40 L0 40 L40 0 Z", crease: "M0 40 L40 0", pos: "bottom-0 right-0" },
+// Triangle path (in a 40×40 space), crease line, pin position, and the scale
+// origin per corner. The right-angle vertex sits in the card corner; the
+// hypotenuse is the fold crease; the fold grows from its pinned corner.
+const FOLD: Record<Corner, { flap: string; crease: string; pos: string; origin: string }> = {
+  tl: { flap: "M0 0 L40 0 L0 40 Z", crease: "M40 0 L0 40", pos: "top-0 left-0", origin: "origin-top-left" },
+  tr: { flap: "M40 0 L0 0 L40 40 Z", crease: "M0 0 L40 40", pos: "top-0 right-0", origin: "origin-top-right" },
+  bl: { flap: "M0 40 L40 40 L0 0 Z", crease: "M40 40 L0 0", pos: "bottom-0 left-0", origin: "origin-bottom-left" },
+  br: { flap: "M40 40 L0 40 L40 0 Z", crease: "M0 40 L40 0", pos: "bottom-0 right-0", origin: "origin-bottom-right" },
 };
 
 export function CornerFold({
   corner = "tr",
   size = 26,
+  grow = false,
   className,
 }: {
   corner?: Corner;
   size?: number;
+  /** Grow slightly from the pinned corner on parent `group` hover. */
+  grow?: boolean;
   className?: string;
 }) {
-  const { flap, crease, pos } = FOLD[corner];
+  const { flap, crease, pos, origin } = FOLD[corner];
   return (
     <svg
-      className={clsx("pointer-events-none absolute", pos, className)}
+      className={clsx(
+        "pointer-events-none absolute",
+        pos,
+        grow && `${origin} transition-transform duration-300 ease-out group-hover:scale-[1.16]`,
+        className,
+      )}
       width={size}
       height={size}
       viewBox="0 0 40 40"

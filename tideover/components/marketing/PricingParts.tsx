@@ -132,7 +132,9 @@ export function TierCard({ plan, period }: { plan: Plan; period: BillingPeriod }
   return (
     <div
       className={`panel relative flex h-full flex-col p-7 ${
-        plan.recommended ? "border-teal shadow-[0_14px_36px_-18px_rgba(14,83,102,0.35)]" : ""
+        plan.recommended
+          ? "border-teal shadow-[0_14px_36px_-18px_rgba(14,83,102,0.35)] transition-[transform,box-shadow] duration-[0.34s] ease-[cubic-bezier(0.2,0.7,0.2,1)] hover:-translate-y-1 hover:shadow-[var(--elev-3)]"
+          : "lift"
       }`}
     >
       {plan.recommended && (
@@ -182,7 +184,7 @@ export function TierCard({ plan, period }: { plan: Plan; period: BillingPeriod }
 
 export function CustomCard() {
   return (
-    <div className="panel flex h-full flex-col p-7">
+    <div className="panel lift flex h-full flex-col p-7">
       <h3 className="mb-2 font-serif text-[22px] font-semibold text-teal">{CUSTOM_PLAN.name}</h3>
       <div className="mb-5 font-serif text-[24px] font-semibold leading-snug text-ink">{CUSTOM_PLAN.line}</div>
       <div className="mb-5 border-t border-border pt-4">

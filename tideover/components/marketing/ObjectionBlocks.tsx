@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { Reveal } from "@/components/ui/Reveal";
 import { CornerFold } from "@/components/marketing/paper/CornerFold";
+import { FoldCard } from "@/components/marketing/paper/FoldCard";
 
 /**
  * S7 — Three-column objection blocks. Converts features into a worldview and
@@ -57,14 +57,16 @@ export function ObjectionBlocks() {
       <div className="wrap">
         <div className="grid grid-cols-1 gap-[22px] md:grid-cols-3">
           {OBJECTIONS.map((obj, i) => (
-            <Reveal key={obj.label} index={i}>
-              <div className="relative h-full overflow-hidden rounded-[20px] border border-border bg-paper p-7 shadow-card">
-                <CornerFold />
-                <span className="kicker mb-4">{obj.label}</span>
-                <h3 className="mb-3.5 font-serif text-[22px] font-semibold leading-snug text-ink">{obj.aphorism}</h3>
-                <p className="m-0 text-[15px] leading-relaxed text-slate">{obj.mechanism}</p>
-              </div>
-            </Reveal>
+            <FoldCard
+              key={obj.label}
+              index={i}
+              className="group relative h-full overflow-hidden rounded-[20px] border border-border bg-paper p-7"
+            >
+              <CornerFold grow />
+              <span className="kicker mb-4">{obj.label}</span>
+              <h3 className="mb-3.5 font-serif text-[22px] font-semibold leading-snug text-ink">{obj.aphorism}</h3>
+              <p className="m-0 text-[15px] leading-relaxed text-slate">{obj.mechanism}</p>
+            </FoldCard>
           ))}
         </div>
       </div>

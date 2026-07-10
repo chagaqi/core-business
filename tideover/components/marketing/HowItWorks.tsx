@@ -1,6 +1,7 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { CornerFold } from "@/components/marketing/paper/CornerFold";
+import { FoldCard } from "@/components/marketing/paper/FoldCard";
 
 /**
  * "How it works" — the presale-specialist layer. Four feature cards, then a
@@ -16,7 +17,7 @@ import { CornerFold } from "@/components/marketing/paper/CornerFold";
  */
 function FeatureIcon({ path }: { path: React.ReactNode }) {
   return (
-    <span className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-[11px] bg-accent-card">
+    <span className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-[11px] bg-accent-card transition-transform duration-300 ease-out group-hover:-translate-y-0.5">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
         {path}
       </svg>
@@ -110,41 +111,48 @@ const PIPELINE_STEPS: readonly { n: number; label: React.ReactNode; note?: strin
 
 function Pipeline() {
   return (
-    <Reveal index={4}>
-      <div id="pipeline" className="mb-11 mt-12 scroll-mt-24">
+    <div id="pipeline" className="mb-11 mt-12 scroll-mt-24">
+      <Reveal index={0}>
         <span className="kicker mb-5">The pipeline</span>
-        <ol className="m-0 grid list-none grid-cols-1 gap-3.5 p-0 sm:grid-cols-2 lg:grid-cols-5">
-          {PIPELINE_STEPS.map((s) => (
-            <li
-              key={s.n}
-              className="flex h-full flex-col gap-2.5 rounded-[16px] border border-border bg-paper p-5 shadow-card"
-            >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent-card font-serif text-[15px] font-bold text-teal">
-                {s.n}
-              </span>
-              <p className="m-0 text-[14px] font-semibold leading-snug text-ink">{s.label}</p>
-              {s.note && <span className="text-[12.5px] italic text-ink-mute">the {s.note}</span>}
-            </li>
-          ))}
-
-          {/* Step 5 — the emphasized terminal beacon (human approval). */}
-          <li className="relative flex h-full flex-col gap-2 overflow-hidden rounded-[16px] bg-teal p-5 text-ink-inverse shadow-lift sm:col-span-2 lg:col-span-1">
-            <CornerFold corner="tr" />
-            <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden className="mb-0.5">
-              <path d="M2 23 Q9 17 16 23 T30 23" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" />
-              <path d="M5 17 Q11 12 16 17 T27 17" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" opacity="0.66" />
-              <path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" opacity="0.4" />
-            </svg>
-            <span className="text-[12px] font-bold uppercase tracking-[0.06em] text-ink-inverse opacity-85">
-              5 &middot; Route to a person for approval
+      </Reveal>
+      <ol className="m-0 grid list-none grid-cols-1 gap-3.5 p-0 sm:grid-cols-2 lg:grid-cols-5">
+        {PIPELINE_STEPS.map((s, i) => (
+          <FoldCard
+            key={s.n}
+            as="li"
+            index={i}
+            className="group flex h-full flex-col gap-2.5 rounded-[16px] border border-border bg-paper p-5"
+          >
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent-card font-serif text-[15px] font-bold text-teal transition-transform duration-300 ease-out group-hover:-translate-y-0.5">
+              {s.n}
             </span>
-            <h3 className="m-0 font-serif text-[16.5px] font-semibold leading-snug text-ink-inverse">
-              Every reply to a worried buyer waits for your yes.
-            </h3>
-          </li>
-        </ol>
-      </div>
-    </Reveal>
+            <p className="m-0 text-[14px] font-semibold leading-snug text-ink">{s.label}</p>
+            {s.note && <span className="text-[12.5px] italic text-ink-mute">the {s.note}</span>}
+          </FoldCard>
+        ))}
+
+        {/* Step 5 — the emphasized terminal beacon (human approval). */}
+        <FoldCard
+          as="li"
+          index={4}
+          lift="strong"
+          className="group relative flex h-full flex-col gap-2 overflow-hidden rounded-[16px] bg-teal p-5 text-ink-inverse sm:col-span-2 lg:col-span-1"
+        >
+          <CornerFold corner="tr" grow />
+          <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden className="mb-0.5">
+            <path d="M2 23 Q9 17 16 23 T30 23" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" />
+            <path d="M5 17 Q11 12 16 17 T27 17" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" opacity="0.66" />
+            <path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" opacity="0.4" />
+          </svg>
+          <span className="text-[12px] font-bold uppercase tracking-[0.06em] text-ink-inverse opacity-85">
+            5 &middot; Route to a person for approval
+          </span>
+          <h3 className="m-0 font-serif text-[16.5px] font-semibold leading-snug text-ink-inverse">
+            Every reply to a worried buyer waits for your yes.
+          </h3>
+        </FoldCard>
+      </ol>
+    </div>
   );
 }
 
@@ -166,13 +174,16 @@ export function HowItWorks({ condensed = false }: { condensed?: boolean } = {}) 
         {/* 4 feature cards */}
         <div className={condensed ? "grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4" : "mb-11 grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4"}>
           {FEATURES.map((f, i) => (
-            <Reveal key={f.title} index={i}>
-              <div id={f.id} className="h-full scroll-mt-24 rounded-[18px] border border-border bg-paper p-[26px] shadow-card">
-                <FeatureIcon path={f.icon} />
-                <h3 className="mb-2 font-serif text-[19px] font-semibold text-ink">{f.title}</h3>
-                <p className="m-0 text-[14.5px] leading-relaxed text-slate">{f.body}</p>
-              </div>
-            </Reveal>
+            <FoldCard
+              key={f.title}
+              id={f.id}
+              index={i}
+              className="group h-full scroll-mt-24 rounded-[18px] border border-border bg-paper p-[26px]"
+            >
+              <FeatureIcon path={f.icon} />
+              <h3 className="mb-2 font-serif text-[19px] font-semibold text-ink">{f.title}</h3>
+              <p className="m-0 text-[14.5px] leading-relaxed text-slate">{f.body}</p>
+            </FoldCard>
           ))}
         </div>
 

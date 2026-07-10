@@ -2,6 +2,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { CalButton } from "@/components/booking/CalButton";
 import { PaperStrata } from "@/components/marketing/paper/PaperStrata";
+import { FoldCard } from "@/components/marketing/paper/FoldCard";
 import { ImageSlot } from "@/components/marketing/paper/ImageSlot";
 
 /**
@@ -65,24 +66,37 @@ export function Hero() {
           <div className="min-w-[300px] flex-1 basis-[460px]">
             {/* Honest badge row (their star/avatar slot, our truth): real operator anchor,
                 a verifiable live-demo link, and the proof-only pledge. No stars, no counts. */}
-            <Reveal index={0}>
-              <div className="mb-7 flex flex-wrap items-center gap-2.5">
-                <span className="inline-flex items-center gap-2 rounded-full border border-[#D2E2E4] bg-accent-card px-3.5 py-2 text-[13px] font-semibold text-teal">
-                  <WaveMark />
-                  Built by a $2M-ops operator
-                </span>
-                <a
-                  href="#demo"
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#D2E2E4] bg-accent-card px-3.5 py-2 text-[13px] font-semibold text-teal transition-colors hover:border-teal/40 hover:bg-[#DCEAEC]"
-                >
-                  Live demo below &mdash; real engine, sample data
-                  <CaretDown />
-                </a>
-                <span className="inline-flex items-center rounded-full border border-[#D2E2E4] bg-accent-card px-3.5 py-2 text-[13px] font-semibold text-teal">
-                  No invented numbers. Ever.
-                </span>
-              </div>
-            </Reveal>
+            {/* Honest badge chips — each folds in from its top edge, staggered,
+                as the calm opening beat before the headline rises. */}
+            <div className="mb-7 flex flex-wrap items-center gap-2.5">
+              <FoldCard
+                index={0}
+                hover={false}
+                shadow={false}
+                className="inline-flex items-center gap-2 rounded-full border border-[#D2E2E4] bg-accent-card px-3.5 py-2 text-[13px] font-semibold text-teal"
+              >
+                <WaveMark />
+                Built by a $2M-ops operator
+              </FoldCard>
+              <FoldCard
+                index={1}
+                hover={false}
+                shadow={false}
+                href="#demo"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#D2E2E4] bg-accent-card px-3.5 py-2 text-[13px] font-semibold text-teal transition-colors hover:border-teal/40 hover:bg-[#DCEAEC]"
+              >
+                Live demo below &mdash; real engine, sample data
+                <CaretDown />
+              </FoldCard>
+              <FoldCard
+                index={2}
+                hover={false}
+                shadow={false}
+                className="inline-flex items-center rounded-full border border-[#D2E2E4] bg-accent-card px-3.5 py-2 text-[13px] font-semibold text-teal"
+              >
+                No invented numbers. Ever.
+              </FoldCard>
+            </div>
 
             <Reveal index={1}>
               <h1 className="display mb-5 text-balance">Keep them waiting, not walking.</h1>
@@ -117,9 +131,13 @@ export function Hero() {
             <div className="pointer-events-none absolute inset-x-0 -top-10 z-0 hidden opacity-95 lg:block" aria-hidden>
               <ImageSlot slotId="hero-boat" aspect="3/2" />
             </div>
-            <Reveal index={2}>
-              <div className="relative z-10 overflow-hidden rounded-3xl border border-border bg-paper shadow-lift">
-                <div className="flex items-center justify-between gap-3 border-b border-accent-card bg-[#F3F8F8] px-5 py-4">
+            <FoldCard
+              index={2}
+              lift="strong"
+              hover={false}
+              className="relative z-10 overflow-hidden rounded-3xl border border-border bg-paper"
+            >
+              <div className="flex items-center justify-between gap-3 border-b border-accent-card bg-[#F3F8F8] px-5 py-4">
                   <div className="flex items-center gap-2.5">
                     <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-card text-[14px] font-bold text-teal">
                       D
@@ -157,8 +175,7 @@ export function Hero() {
                     timeline-aware &middot; human-approved &middot; no hard date promised
                   </div>
                 </div>
-              </div>
-            </Reveal>
+            </FoldCard>
           </div>
         </div>
 

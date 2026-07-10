@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { FoldCard } from "@/components/marketing/paper/FoldCard";
 import { ImageSlot } from "@/components/marketing/paper/ImageSlot";
 
 /**
@@ -86,22 +87,24 @@ export function CapabilityShowcase() {
 
         <div className="grid grid-cols-1 gap-[22px] md:grid-cols-2 lg:grid-cols-3">
           {CAPABILITIES.map((cap, i) => (
-            <Reveal key={cap.scene} index={1 + i}>
-              <a
-                href={`?scene=${cap.scene}#demo`}
-                className="group flex h-full flex-col rounded-[20px] border border-border bg-paper p-6 no-underline shadow-card transition-[transform,box-shadow] duration-300 ease-in-out hover:-translate-y-1.5 hover:shadow-lift"
-              >
-                <div className="mb-5 w-[92px]">
+            <FoldCard
+              key={cap.scene}
+              href={`?scene=${cap.scene}#demo`}
+              index={1 + i}
+              className="group flex h-full flex-col rounded-[20px] border border-border bg-paper p-6 no-underline"
+            >
+              <div className="mb-5 w-[92px] overflow-hidden rounded-2xl">
+                <div className="transition-transform duration-300 ease-out group-hover:scale-[1.04]">
                   <ImageSlot slotId={cap.slotId} aspect="1/1" />
-                  <span className="sr-only">{cap.motif}</span>
                 </div>
-                <h3 className="mb-2 font-serif text-[20px] font-semibold text-ink">{cap.label}</h3>
-                <p className="m-0 text-[15px] leading-snug text-slate">{cap.outcome}</p>
-                <span className="mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-teal transition-transform duration-300 ease-in-out group-hover:translate-x-0.5">
-                  See it run &rarr;
-                </span>
-              </a>
-            </Reveal>
+                <span className="sr-only">{cap.motif}</span>
+              </div>
+              <h3 className="mb-2 font-serif text-[20px] font-semibold text-ink">{cap.label}</h3>
+              <p className="m-0 text-[15px] leading-snug text-slate">{cap.outcome}</p>
+              <span className="mt-5 inline-flex items-center gap-1.5 text-[13.5px] font-semibold text-teal transition-transform duration-300 ease-out group-hover:translate-x-1">
+                See it run &rarr;
+              </span>
+            </FoldCard>
           ))}
         </div>
       </div>

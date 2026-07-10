@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { CalButton } from "@/components/booking/CalButton";
+import { FoldCard } from "@/components/marketing/paper/FoldCard";
 import { ImageSlot } from "@/components/marketing/paper/ImageSlot";
 
 /**
@@ -54,11 +55,16 @@ export function DemoCenterpiece() {
           </div>
         </Reveal>
 
-        <Reveal index={1}>
-          <figure className="mx-auto max-w-[960px]">
-            <div className="overflow-hidden rounded-[24px] border border-border bg-paper shadow-lift">
-              <ImageSlot slotId="demo-cockpit-capture" aspect="16/10" />
-            </div>
+        <figure className="mx-auto max-w-[960px]">
+          <FoldCard
+            index={1}
+            lift="strong"
+            hover={false}
+            className="overflow-hidden rounded-[24px] border border-border bg-paper"
+          >
+            <ImageSlot slotId="demo-cockpit-capture" aspect="16/10" />
+          </FoldCard>
+          <Reveal index={2}>
             <figcaption className="mt-4 flex flex-col items-center gap-1 text-center">
               {sceneLabel ? (
                 <span className="inline-flex items-center gap-2 rounded-full border border-[#D2E2E4] bg-accent-card px-3 py-1 text-[12px] font-semibold text-teal">
@@ -69,10 +75,10 @@ export function DemoCenterpiece() {
                 Live cockpit on sample data
               </span>
             </figcaption>
-          </figure>
-        </Reveal>
+          </Reveal>
+        </figure>
 
-        <Reveal index={2}>
+        <Reveal index={3}>
           <div className="mt-9 text-center">
             {/* The demo is the show-don't-tell proof; the action it drives is a
                 booked demo call (Dylan, 2026-07-09), not a self-serve draft. */}

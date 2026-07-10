@@ -136,13 +136,13 @@ export default function PricingPage() {
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-[22px] font-serif text-[18.5px] font-semibold text-teal [&::-webkit-details-marker]:hidden">
                       {item.q}
                       <span
-                        className="flex-none text-[24px] font-light leading-none text-terracotta transition-transform group-open:rotate-45"
+                        className="flex-none text-[24px] font-light leading-none text-terracotta transition-transform duration-300 ease-[cubic-bezier(0.34,1.5,0.6,1)] group-open:rotate-45"
                         aria-hidden
                       >
                         +
                       </span>
                     </summary>
-                    <div className="max-w-[720px] px-1 pb-6 text-[15.5px] leading-[1.7] text-slate">{item.a}</div>
+                    <div className="faq-answer max-w-[720px] px-1 pb-6 text-[15.5px] leading-[1.7] text-slate">{item.a}</div>
                   </details>
                 ))}
               </div>

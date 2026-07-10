@@ -512,20 +512,23 @@
     transform: translate3d(-8px, 0, 0);
   }
 }
-/* Features mega-menu entry: a short fade-and-rise on open. Governed by the
-   global prefers-reduced-motion kill above (animation: none !important). */
+/* Features mega-menu entry: the panel UNFOLDS from its top edge (a slight
+   rotateX + scaleY under perspective) rather than fading — a sheet of paper
+   dropping open. Governed by the global prefers-reduced-motion kill above
+   (animation: none !important → the panel simply appears). */
 @keyframes tv-menu-in {
   from {
     opacity: 0;
-    transform: translateY(4px);
+    transform: perspective(900px) rotateX(-9deg) scaleY(0.94);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: perspective(900px) rotateX(0) scaleY(1);
   }
 }
 .tv-menu-in {
-  animation: tv-menu-in 140ms ease-out;
+  transform-origin: top center;
+  animation: tv-menu-in 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 .paper-strata-drift-1 {
@@ -585,4 +588,68 @@
   background:
     radial-gradient(130% 72% at 50% -18%, rgba(14, 83, 102, 0.08), rgba(14, 83, 102, 0) 56%),
     linear-gradient(180deg, rgba(228, 238, 240, 0.55), rgba(251, 248, 242, 0) 40%);
+}
+
+/* ============================================================
+   Motion + depth pass (marketing) — the origami LIFT system.
+   One 3-level paper-elevation scale plus the interaction states the paper
+   primitives share, so elevation is systematic, not per-card improvisation.
+   Everything here is transform / opacity / box-shadow only, and is fully
+   governed by the global prefers-reduced-motion kill above (which zeroes every
+   animation + transition, leaving the resting state visible and static).
+   The matching JS <FoldCard> reveal (framer-motion) mirrors these same shadow
+   values and is separately gated with useReducedMotion().
+   ============================================================ */
+
+:root {
+  /* 3-level paper elevation: resting → hover → lifted. Warm ink-tinted, never
+     a pure-black drop shadow. --elev-3 is reserved for the hero/demo anchors. */
+  --elev-1: 0 1px 2px rgba(17, 37, 42, 0.05), 0 12px 28px -18px rgba(17, 37, 42, 0.2);
+  --elev-2: 0 2px 6px rgba(17, 37, 42, 0.06), 0 24px 46px -22px rgba(17, 37, 42, 0.28);
+  --elev-3: 0 4px 10px rgba(17, 37, 42, 0.07), 0 34px 60px -26px rgba(17, 37, 42, 0.34);
+}
+
+/* CSS lift for cards that are NOT framer motion elements (e.g. the pricing
+   tiers): rests at --elev-1, rises 4px to --elev-2 on hover, settles on press.
+   Pair with a `group` parent so a CornerFold can grow in the same gesture. */
+.lift {
+  box-shadow: var(--elev-1);
+  transition: transform 0.34s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.34s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--elev-2);
+}
+.lift:active {
+  transform: translateY(-1px);
+}
+
+/* Terracotta CTA press — the pill pushes into the page on click, its shadow
+   collapsing, so the primary action feels physical. Hover-lift lives on
+   .btn-primary above; these are the down-states. Unlayered → beats the
+   @layer components `.btn:active` translate. */
+.btn-primary:active {
+  transform: translateY(1px) scale(0.985);
+  box-shadow: 0 4px 12px -8px rgba(217, 118, 47, 0.5);
+}
+.btn-ondark:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+/* FAQ answer reveal — a short rise-and-fade as the native <details> opens.
+   Transform/opacity only; the height change is left to the browser and never
+   animated. Disabled wholesale under prefers-reduced-motion by the global kill,
+   so the answer simply appears. */
+@keyframes tv-faq-open {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+details[open] .faq-answer {
+  animation: tv-faq-open 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
 }

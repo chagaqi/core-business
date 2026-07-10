@@ -8,6 +8,7 @@
  */
 
 import { useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ANNUAL_LABEL,
   CustomCard,
@@ -16,6 +17,8 @@ import {
   type BillingPeriod,
 } from "@/components/marketing/PricingParts";
 
+const PERIODS: readonly BillingPeriod[] = ["monthly", "annual"];
+
 function BillingToggle({
   period,
   onChange,
@@ -23,30 +26,46 @@ function BillingToggle({
   period: BillingPeriod;
   onChange: (p: BillingPeriod) => void;
 }) {
+  const reduce = useReducedMotion();
   const base =
-    "rounded-full px-5 py-2.5 text-[14px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2";
+    "relative rounded-full px-5 py-2.5 text-[14px] font-semibold transition-colors focus-visible:outline focus-visible:outline-2";
   return (
     <div
       role="group"
       aria-label="Billing period"
-      className="inline-flex items-center gap-1 rounded-full border border-border bg-white p-1"
+      className="relative inline-flex items-center gap-1 rounded-full border border-border bg-white p-1"
     >
-      <button
-        type="button"
-        aria-pressed={period === "monthly"}
-        onClick={() => onChange("monthly")}
-        className={`${base} ${period === "monthly" ? "bg-teal text-white" : "bg-transparent text-teal"}`}
-      >
-        Monthly
-      </button>
-      <button
-        type="button"
-        aria-pressed={period === "annual"}
-        onClick={() => onChange("annual")}
-        className={`${base} ${period === "annual" ? "bg-teal text-white" : "bg-transparent text-teal"}`}
-      >
-        Annual <span className={period === "annual" ? "text-white/80" : "text-ink-mute"}>({ANNUAL_LABEL})</span>
-      </button>
+      {PERIODS.map((p) => {
+        const active = period === p;
+        return (
+          <button
+            key={p}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onChange(p)}
+            className={`${base} ${active ? "text-white" : "text-teal"}`}
+          >
+            {active && (
+              // Shared-layout pill that slides to the active option (snaps instantly
+              // under reduced motion). The label paints above it via z-10.
+              <motion.span
+                layoutId="billing-pill"
+                className="absolute inset-0 rounded-full bg-teal"
+                transition={reduce ? { duration: 0 } : { type: "spring", stiffness: 420, damping: 34 }}
+              />
+            )}
+            <span className="relative z-10">
+              {p === "monthly" ? (
+                "Monthly"
+              ) : (
+                <>
+                  Annual <span className={active ? "text-white/80" : "text-ink-mute"}>({ANNUAL_LABEL})</span>
+                </>
+              )}
+            </span>
+          </button>
+        );
+      })}
     </div>
   );
 }

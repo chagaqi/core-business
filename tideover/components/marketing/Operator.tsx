@@ -1,6 +1,7 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { CASE_STUDY_PLACEHOLDER } from "@/lib/proof";
 import { CornerFold } from "@/components/marketing/paper/CornerFold";
+import { FoldCard } from "@/components/marketing/paper/FoldCard";
 
 /**
  * The operator-behind-it section. The founder note is Dylan's own first-person
@@ -45,18 +46,19 @@ export function Operator() {
           </blockquote>
         </Reveal>
 
-        <Reveal index={2}>
-          <div className="relative overflow-hidden rounded-[20px] border border-border bg-paper p-[30px] shadow-card">
-            <CornerFold corner="tr" />
-            <h3 className="mb-3.5 font-serif text-[20px] font-semibold text-ink">A plain-spoken proof pledge</h3>
-            <p className="mb-6 text-[15.5px] leading-relaxed text-slate">
-              No invented metric. No fake testimonial. No borrowed logo. No unearned star rating. Every number on this
-              page is a target measured against your own baseline &mdash; and the full refund-reduction case study lands
-              only after a real cohort completes.
-            </p>
-            <div className="proof-placeholder">{CASE_STUDY_PLACEHOLDER}</div>
-          </div>
-        </Reveal>
+        <FoldCard
+          index={2}
+          className="group relative overflow-hidden rounded-[20px] border border-border bg-paper p-[30px]"
+        >
+          <CornerFold corner="tr" grow />
+          <h3 className="mb-3.5 font-serif text-[20px] font-semibold text-ink">A plain-spoken proof pledge</h3>
+          <p className="mb-6 text-[15.5px] leading-relaxed text-slate">
+            No invented metric. No fake testimonial. No borrowed logo. No unearned star rating. Every number on this
+            page is a target measured against your own baseline &mdash; and the full refund-reduction case study lands
+            only after a real cohort completes.
+          </p>
+          <div className="proof-placeholder">{CASE_STUDY_PLACEHOLDER}</div>
+        </FoldCard>
       </div>
     </section>
   );
