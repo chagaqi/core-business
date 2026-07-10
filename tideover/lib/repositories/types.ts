@@ -36,6 +36,19 @@ export interface MerchantRepository {
   findBySlug(slug: string): Promise<Merchant | null>;
   /** Resolve an inbound address local-part → merchant (ADR-0008 email ingest). */
   findByInboxToken(token: string): Promise<Merchant | null>;
+  /**
+   * Resolve an Auth0 user (`sub` claim) → the merchant they own (ADR-0020
+   * tenancy; one merchant per user v1). Seed/demo merchants have no ownerSub
+   * and are never returned. Both drivers implement the same strict equality.
+   */
+  findByOwnerSub(sub: string): Promise<Merchant | null>;
+  /**
+   * Resolve an Auth0 user (`sub`) → the merchant they OWN or are a MEMBER of
+   * (seats). Strict equality on ownerSub, containment on memberSubs; seed/demo
+   * merchants match nothing. One merchant per user still holds across both
+   * roles, so at most one merchant resolves.
+   */
+  findByMemberOrOwnerSub(sub: string): Promise<Merchant | null>;
   list(): Promise<Merchant[]>;
   create(merchant: Merchant): Promise<Merchant>;
   /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */

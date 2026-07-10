@@ -105,6 +105,18 @@ const merchants: MerchantRepository = {
   async findByInboxToken(token) {
     return store.merchants.find((m) => m.inboxToken === token) ?? null;
   },
+  async findByOwnerSub(sub) {
+    // Strict equality: seed/demo merchants omit ownerSub (undefined) and can
+    // never match a real sub. Matches the Mongo driver's { ownerSub: sub }.
+    return store.merchants.find((m) => m.ownerSub === sub) ?? null;
+  },
+  async findByMemberOrOwnerSub(sub) {
+    // Owner OR attached member (seats). Matches the Mongo driver's
+    // $or: [{ ownerSub: sub }, { memberSubs: sub }] containment query.
+    return (
+      store.merchants.find((m) => m.ownerSub === sub || (m.memberSubs ?? []).includes(sub)) ?? null
+    );
+  },
   async list() {
     return ordered(store.merchants);
   },

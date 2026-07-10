@@ -445,6 +445,15 @@ async function recordReplyAttribution(repos: Repositories, ticket: Ticket): Prom
  */
 export async function ingestTicket(
   n: NormalizedTicket,
+  opts?: {
+    /**
+     * Shorter LLM-draft deadline for latency-sensitive callers — the buyer-facing
+     * widget (/api/widget-submit) passes INGEST_DRAFT_TIMEOUT_MS so a slow
+     * provider can't hold the buyer's HTTP response for the full 8s default.
+     * The deterministic fallback ignores it.
+     */
+    draftTimeoutMs?: number;
+  },
 ): Promise<{ ticket: Ticket; duplicate?: boolean } | { error: string }> {
   const repos = getRepositories();
   const merchant = await repos.merchants.findById(n.merchantId);
@@ -504,8 +513,17 @@ export async function ingestTicket(
   // matched-path logic, unchanged; an unmatched ticket simply carries no draft.
   let draft: DraftReply | undefined;
   if (order) {
-    const drafter = getDrafter();
-    const drafted = await drafter.draft({ ticket: { sentiment: n.sentiment } as Ticket, order, customer, merchant });
+    const drafter = getDrafter(
+      opts?.draftTimeoutMs !== undefined ? { timeoutMs: opts.draftTimeoutMs } : undefined,
+    );
+    // subject/body ride along so the LLM drafter (ADR-0018) can ground the reply
+    // in what the buyer actually wrote; the deterministic drafter ignores them.
+    const drafted = await drafter.draft({
+      ticket: { sentiment: n.sentiment, subject: n.subject, body: n.body } as Ticket,
+      order,
+      customer,
+      merchant,
+    });
 
     const catalog = await repos.gifts.listByMerchant(merchant.id);
     const ticketsLast7d = await ticketsLast7dFor(merchant.id, customer.id);
@@ -644,6 +662,15 @@ export async function approveSend(
   const repos = getRepositories();
   const ticket = await repos.tickets.findById(ticketId);
   if (!ticket) return { error: "ticket not found" };
+  // Tenant gate (ADR-0020): the TICKETS repository is not tenant-scoped, so a
+  // caller-supplied ticketId can resolve a foreign tenant's ticket. Resolve the
+  // ticket's merchant through the SCOPED merchants seam BEFORE any read of the
+  // ticket's contents (including the already-sent fast path below) or any
+  // mutation. Under a scoped request a foreign merchant resolves to null —
+  // indistinguishable from "does not exist" (mirrors getTicketView). Demo and
+  // unscoped requests resolve their merchants exactly as before.
+  const merchant = await repos.merchants.findById(ticket.merchantId);
+  if (!merchant) return { error: "ticket not found" };
   // Idempotent fast path: an already-sent ticket must not re-send or emit a
   // second reply_sent event. Return the STORED reply so a double-click / retry
   // still copies the same text and shows the confirmation.
@@ -653,15 +680,11 @@ export async function approveSend(
   const baseText = approvedText ?? ticket.draft?.text;
   if (!baseText) return { error: "no draft to send" };
 
-  const [merchant, order] = await Promise.all([
-    repos.merchants.findById(ticket.merchantId),
-    ticket.orderId ? repos.orders.findById(ticket.orderId) : Promise.resolve(null),
-  ]);
-  // A real merchant routes to the ManualAdapter (an honest record of the human
+  const order = ticket.orderId ? await repos.orders.findById(ticket.orderId) : null;
+  // A real merchant routes to the ManualAdapter (a true record of the human
   // paste); a demo merchant keeps the simulated MockAdapter send so the seeded
-  // walk is unchanged. A merchant that fails to resolve is treated as demo (the
-  // safe, side-effect-free path).
-  const isDemo = !merchant || merchant.isDemo || merchant.helpdesk === "mock";
+  // walk is unchanged.
+  const isDemo = merchant.isDemo || merchant.helpdesk === "mock";
   const channel = channelOverride ?? ticket.channel;
   const adapter = getSendAdapter(channel, isDemo);
   const { externalId, sentAt } = await adapter.sendReply(ticketId, baseText);
@@ -751,8 +774,13 @@ export async function promoteVariant(
   const ticket = await repos.tickets.findById(ticketId);
   if (!ticket) return { error: "ticket not found" };
 
+  // Tenant gate (ADR-0020): getTicketView resolves the ticket's merchant
+  // through the SCOPED merchants seam, so a scoped request on a foreign
+  // tenant's ticket gets null here. Stop BEFORE deriving a parent from
+  // ticket.draft — a foreign ticket must never seed a variant.
   const view = await getTicketView(ticketId);
-  const reassurance = view?.intel.reassurance;
+  if (!view) return { error: "ticket not found" };
+  const reassurance = view.intel.reassurance;
   const parentVariantId =
     ticket.draft?.variantId ??
     (reassurance ? await resolveVariantId(repos, ticket.merchantId, reassurance) : undefined);
@@ -794,6 +822,11 @@ export async function escalateTicket(
   const repos = getRepositories();
   const ticket = await repos.tickets.findById(ticketId);
   if (!ticket) return { error: "ticket not found" };
+  // Tenant gate (ADR-0020): the tickets repository is not tenant-scoped —
+  // resolve the ticket's merchant through the SCOPED merchants seam before the
+  // tags mutation below. Foreign merchant → null → "not found", never a write.
+  const merchant = await repos.merchants.findById(ticket.merchantId);
+  if (!merchant) return { error: "ticket not found" };
 
   // Drop any existing escalation flag first, so re-flagging re-stamps rather than
   // piling on a second tag, and undo removes it cleanly.

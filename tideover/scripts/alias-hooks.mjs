@@ -35,6 +35,9 @@ function withExt(base) {
 // next/headers through lib/request-mode.ts) loads under `node --test` / eval.
 const NEXT_SUBPATH_FILES = {
   "next/headers": "node_modules/next/headers.js",
+  // middleware.ts (and the Auth0 SDK it loads in auth0 mode) import
+  // next/server; mapped for the ADR-0020 middleware/matcher tests.
+  "next/server": "node_modules/next/server.js",
 };
 
 export async function resolve(specifier, context, next) {

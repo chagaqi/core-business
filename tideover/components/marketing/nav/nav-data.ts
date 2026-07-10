@@ -14,6 +14,21 @@
  * by key. Density mirrors the studied 3-column pattern (4 / 5 / 5 = 14 items).
  */
 
+/**
+ * "Get started" CTA destination (ADR-0020). The real onboarding lives on the
+ * real-app host (login-gated there), so a PUBLIC MARKETING build points the
+ * CTA at `https://<real host>/onboarding` — the same host-awareness pattern as
+ * lib/service.ts appUrl(), but build-time: this file feeds client components,
+ * so it reads the NEXT_PUBLIC_ twin (inlined at build, like
+ * NEXT_PUBLIC_DEMO_MODE). Set NEXT_PUBLIC_REAL_APP_HOST=app.tideover.app on
+ * the marketing deploy; unset (demo/preview builds) falls back to the local
+ * relative /onboarding sandbox — exactly today's behavior.
+ */
+const REAL_APP_HOST = process.env.NEXT_PUBLIC_REAL_APP_HOST?.trim().replace(/\/+$/, "");
+export const GET_STARTED_HREF = REAL_APP_HOST
+  ? `https://${REAL_APP_HOST}/onboarding`
+  : "/onboarding";
+
 export type IconName =
   | "inbox"
   | "gauge"
@@ -117,7 +132,7 @@ export const FEATURE_COLUMNS: readonly NavColumn[] = [
       {
         label: "CSV backer import",
         desc: "Bring Kickstarter and BackerKit backers in minutes",
-        href: "/onboarding",
+        href: GET_STARTED_HREF,
         icon: "import",
       },
       {

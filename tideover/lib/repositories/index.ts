@@ -1,6 +1,8 @@
 import { jsonRepositories } from "@/lib/repositories/json/repositories";
 import { mongoRepositories } from "@/lib/repositories/mongo/repositories";
+import { withTenantScope } from "@/lib/repositories/tenant-scope";
 import { resolveDatastoreModeFromRequest } from "@/lib/request-mode";
+import { authMode } from "@/lib/auth-mode";
 import type { Mode } from "@/lib/mode";
 import type { Repositories } from "@/lib/repositories/types";
 
@@ -52,7 +54,14 @@ export function repositoriesForMode(mode: Mode): Repositories {
 }
 
 export function getRepositories(): Repositories {
-  return repositoriesForMode(resolveDatastoreModeFromRequest());
+  const repos = repositoriesForMode(resolveDatastoreModeFromRequest());
+  // ADR-0020: with Auth0 accounts configured, every repo access runs through
+  // the tenant-scope wrapper. The wrapper re-resolves the request's scope per
+  // call and passes through UNSCOPED everywhere except marked operator
+  // requests with a live session — so demo hosts, public surfaces, cron,
+  // scripts and tests behave exactly as before. Password mode ("auth0" vars
+  // absent) skips the wrapper entirely.
+  return authMode() === "auth0" ? withTenantScope(repos) : repos;
 }
 
 export type { Repositories } from "@/lib/repositories/types";

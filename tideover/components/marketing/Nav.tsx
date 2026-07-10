@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import { FeaturesMenu } from "@/components/marketing/nav/FeaturesMenu";
-import { FEATURE_COLUMNS } from "@/components/marketing/nav/nav-data";
+import { FEATURE_COLUMNS, GET_STARTED_HREF } from "@/components/marketing/nav/nav-data";
 
 /**
  * Sticky marketing header, shared across every marketing page. IA (structure):
@@ -81,7 +81,7 @@ export function Nav() {
               Log in
             </Link>
             <Link
-              href="/onboarding"
+              href={GET_STARTED_HREF}
               className="btn btn-primary group rounded-full"
               style={{ padding: "11px 20px", fontSize: "15px" }}
             >
@@ -200,7 +200,7 @@ export function Nav() {
 
             {/* primary pill, full width */}
             <Link
-              href="/onboarding"
+              href={GET_STARTED_HREF}
               onClick={closeMobile}
               className="btn btn-primary mt-2 w-full rounded-full"
             >

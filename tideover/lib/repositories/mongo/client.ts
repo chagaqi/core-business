@@ -56,6 +56,23 @@ async function ensureIndexes(db: Db): Promise<void> {
       // ADR-0008: inbound email routing resolves an address local-part →
       // merchant; the token is unique per merchant and looked up on every hit.
       if (name === "merchants") await col.createIndex({ inboxToken: 1 }, { unique: true });
+      // ADR-0020 tenancy: findByOwnerSub resolves an Auth0 user → their
+      // merchant on every operator request. Partial + unique: only docs where
+      // ownerSub is an actual string are indexed (seed/demo merchants carry
+      // null/absent and must not collide), and uniqueness is the DB-level
+      // backstop for the one-merchant-per-user rule the onboarding path
+      // enforces in-app.
+      if (name === "merchants") {
+        await col.createIndex(
+          { ownerSub: 1 },
+          { unique: true, partialFilterExpression: { ownerSub: { $type: "string" } } },
+        );
+        // Seats: findByMemberOrOwnerSub also matches on memberSubs containment
+        // (multikey). Non-unique — one-merchant-per-user for members is
+        // enforced in-app at invite acceptance (lib/team.ts); sparse so the
+        // many docs without the field aren't indexed on null.
+        await col.createIndex({ memberSubs: 1 }, { sparse: true });
+      }
       // Customer email dedup (EN-24). The unique (merchantId, email) index is the
       // backstop the check-then-act findByEmail-then-create path lacked, so a
       // truly-concurrent create can't duplicate a backer. Case-insensitive

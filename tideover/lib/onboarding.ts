@@ -111,13 +111,45 @@ function buildPlaybook(brand: string, signoff: string): PlaybookTemplates {
   };
 }
 
-export async function createMerchantFromIntake(intake: IntakeData): Promise<{
+/**
+ * Thrown when the owning user already has a merchant (ADR-0020: one merchant
+ * per user, v1). The API layer maps this to a 409 + an "already onboarded"
+ * redirect signal instead of creating a duplicate.
+ */
+export class AlreadyOnboardedError extends Error {
+  readonly merchantId: string;
+  constructor(merchantId: string) {
+    super("already onboarded");
+    this.name = "AlreadyOnboardedError";
+    this.merchantId = merchantId;
+  }
+}
+
+export async function createMerchantFromIntake(
+  intake: IntakeData,
+  opts: {
+    /**
+     * Auth0 user (`sub`) the new merchant belongs to (ADR-0020). Stamped from
+     * the SESSION by the API layer — never from the client body. null/absent =
+     * ownerless (demo sandbox, legacy password mode): exactly the pre-Auth0
+     * behavior.
+     */
+    ownerSub?: string | null;
+  } = {},
+): Promise<{
   merchant: Merchant;
   previews: Array<{ stageKey: DayStageKey; text: string }>;
   /** Counts from the atomic backer import, or null when no rows were staged. */
   imported: ImportResult | null;
 }> {
   const repos = getRepositories();
+  const ownerSub = opts.ownerSub ?? null;
+  if (ownerSub) {
+    // Member-or-owner: an attached teammate is "already onboarded" too — one
+    // merchant per user holds across both roles (their 409 routes them to /app).
+    const existing = await repos.merchants.findByMemberOrOwnerSub(ownerSub);
+    if (existing) throw new AlreadyOnboardedError(existing.id);
+  }
   const slug = intake.brandName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   const stages: StageDef[] = (intake.stages.length ? intake.stages : DEFAULT_STAGES).map((s) => ({
     key: s.key,
@@ -135,6 +167,11 @@ export async function createMerchantFromIntake(intake: IntakeData): Promise<{
     // ADR-0008: mint the merchant's inbound address up front so onboarding can
     // hand them the one forwarding rule that IS the integration.
     inboxToken: newInboxToken(),
+    // ADR-0020: the tenancy key. Session-derived in auth0 mode; null elsewhere.
+    ownerSub,
+    // Seats: a fresh merchant starts with no teammates and no open invites.
+    memberSubs: [],
+    pendingInvites: [],
     brand: {
       voice: intake.voice,
       tone: intake.tone,

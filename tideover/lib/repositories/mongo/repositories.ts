@@ -98,6 +98,20 @@ const merchants: MerchantRepository = {
   async findByInboxToken(token) {
     return findOneWhere<Merchant>("merchants", { inboxToken: token });
   },
+  async findByOwnerSub(sub) {
+    // Symmetric with the JSON driver's strict === : sub is always a non-empty
+    // string here, so the equality filter can't match null/absent ownerSub
+    // docs (seed/demo merchants). Served by the partial unique index on
+    // { ownerSub } (mongo/client.ts), which also enforces one-merchant-per-user
+    // at the DB level.
+    return findOneWhere<Merchant>("merchants", { ownerSub: sub });
+  },
+  async findByMemberOrOwnerSub(sub) {
+    // Owner OR attached member (seats). { memberSubs: sub } is Mongo array
+    // containment — same predicate as the JSON driver's includes(). sub is a
+    // non-empty string, so null/absent fields never match.
+    return findOneWhere<Merchant>("merchants", { $or: [{ ownerSub: sub }, { memberSubs: sub }] });
+  },
   async list() {
     return findWhere<Merchant>("merchants", {});
   },

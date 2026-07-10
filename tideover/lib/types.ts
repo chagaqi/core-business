@@ -85,6 +85,12 @@ export interface MerchantBrand {
   colors: { primary: string; bg: string; ink: string };
 }
 
+/** A pending teammate invite (seats): claimed by a verified-email login. */
+export interface TeamInvite {
+  email: string;
+  invitedAt: string;
+}
+
 export interface Merchant {
   id: string;
   name: string;
@@ -98,6 +104,30 @@ export interface Merchant {
    * local-part back to this merchant. Rotating it revokes the old address.
    */
   inboxToken: string;
+  /**
+   * Auth0 user (`sub` claim) who owns this merchant — the tenancy key
+   * (ADR-0020). Nullable/absent: demo + seed merchants and merchants created
+   * under the legacy password mode carry no owner. In auth0 mode every
+   * operator surface resolves its merchant through this field, one merchant
+   * per user (v1).
+   */
+  ownerSub?: string | null;
+  /**
+   * Auth0 subs of teammates attached to this merchant via an accepted invite
+   * (seats). A session matches a merchant when sub === ownerSub OR
+   * memberSubs includes it — the tenant seam (lib/repositories/tenant-scope.ts)
+   * enforces both. Absent = [] (pre-seats records). Members share the
+   * workspace; only the owner manages seats (/api/team). Per-plan seat-count
+   * enforcement is deferred to billing; the hard cap is TEAM_SEAT_CAP.
+   */
+  memberSubs?: string[];
+  /**
+   * Outstanding teammate invites, by email. Claimed at login through
+   * /api/auth/tenant: a session whose VERIFIED email matches moves from here
+   * into memberSubs (lib/team.ts). No outbound email is sent — the owner
+   * shares the sign-in link themselves. Absent = [].
+   */
+  pendingInvites?: TeamInvite[];
   brand: MerchantBrand;
   helpdesk: Channel;
   preorderApp: string;

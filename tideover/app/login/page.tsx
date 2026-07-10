@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { Field, TextInput } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
+import { authMode } from "@/lib/auth-mode";
+import { resolveModeFromRequest } from "@/lib/request-mode";
 
 export const metadata: Metadata = {
   title: "Operator sign-in — Tideover",
@@ -13,6 +16,13 @@ export default function LoginPage({
 }: {
   searchParams: { next?: string; error?: string };
 }) {
+  // ADR-0020: with Auth0 accounts configured, sign-in is Auth0's hosted page —
+  // this password form only exists for the legacy password mode. Demo hosts
+  // never gate, so they keep rendering the form as inert marketing chrome.
+  if (resolveModeFromRequest() === "real" && authMode() === "auth0") {
+    const returnTo = searchParams.next || "/app/inbox";
+    redirect(`/auth/login?returnTo=${encodeURIComponent(returnTo)}`);
+  }
   // UX-07(a): land the operator on their queue, not the dashboard, post-login.
   const next = searchParams.next || "/app/inbox";
   return (

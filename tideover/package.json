@@ -22,6 +22,7 @@
     "verify": "npm run seed-check && npm run proof-lint && npm run eval && npm run lint && npm run build"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^4.25.0",
     "@calcom/embed-react": "^1.5.3",
     "clsx": "^2.1.1",
     "framer-motion": "^11.18.2",
