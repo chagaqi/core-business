@@ -45,7 +45,7 @@ const POSTURE: readonly { title: string; body: string }[] = [
   {
     title: "Data minimization by architecture, not by policy",
     body:
-      "Tideover holds only what a routed presale ticket needs (see above). The one place buyer data leaves the system — a status link you share — is a single narrow function (getPublicStatus in lib/status.ts) that exposes only that order's first name, order reference, region, timeline, and a confidence band. Email, lifetime value, risk score, and every other order are defined out of that function, so the status page cannot leak them even by mistake.",
+      "Tideover holds only what a routed presale ticket needs (see above). With AI drafting off (the default), the one place buyer data leaves the system — a status link you share — is a single narrow function (getPublicStatus in lib/status.ts) that exposes only that order's first name, order reference, region, timeline, and a confidence band. Email, lifetime value, risk score, and every other order are defined out of that function, so the status page cannot leak them even by mistake.",
   },
   {
     title: "Presale-only, dropped at the edge",

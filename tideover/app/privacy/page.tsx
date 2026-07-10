@@ -7,7 +7,8 @@ import { SUB_PROCESSORS, RETENTION, DELETION_EXPORT } from "@/lib/security-conte
  * /privacy — plain-English privacy policy for the Tideover product. Proof-only:
  * sub-processors are named only where they are real dependencies of this repo
  * (Vercel deploy target, MongoDB Atlas via the mongo driver, Cal.com via
- * @calcom/embed-react, Resend configured-but-not-yet-active for future email).
+ * @calcom/embed-react, Resend configured-but-not-yet-active for future email,
+ * DeepSeek behind the env-gated LLM drafting seam — ADR-0018/0019).
  * Dates are literal publish-time placeholders — never a fabricated
  * "last updated". Public page: not in middleware.ts's matcher.
  */

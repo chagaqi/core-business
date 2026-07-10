@@ -107,6 +107,10 @@ export const SUB_PROCESSORS: readonly SubProcessor[] = [
     name: "Resend",
     role: "configured for future transactional email (e.g. status notifications). It is not active in the pilot: Tideover sends no email to your customers today, and pilot replies are reviewed and sent by you. Listed here in advance of activation.",
   },
+  {
+    name: "DeepSeek (Hangzhou DeepSeek Artificial Intelligence Co., Ltd.)",
+    role: "AI reply drafting — optional and off by default. When you turn it on, the ticket's subject and text, the buyer's first name, the production stage, and the timing band are sent to DeepSeek's servers in the People's Republic of China to draft the reply; DeepSeek's own privacy policy governs that text. Email addresses, order values, and payment data are never in the prompt, and a person approves every AI draft before it sends. Leave the feature off and no ticket text is sent.",
+  },
 ];
 
 /** How long routed data is kept. */

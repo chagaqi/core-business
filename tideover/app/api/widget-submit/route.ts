@@ -3,6 +3,7 @@ import { z } from "zod";
 import { verifyStatusToken } from "@/lib/ids";
 import { getRepositories } from "@/lib/repositories";
 import { getAdapter } from "@/lib/channel-adapters/registry";
+import { INGEST_DRAFT_TIMEOUT_MS } from "@/lib/drafting/LlmDrafter";
 import { ingestTicket } from "@/lib/service";
 
 /**
@@ -33,7 +34,10 @@ export async function POST(req: Request) {
     subject: "Question from order status page",
     body: parsed.data.message,
   });
-  const result = await ingestTicket(normalized);
+  // The buyer is waiting on this response: cap the optional LLM draft at
+  // ~4.5s instead of the 8s default — past the deadline the deterministic
+  // drafter answers and the ticket still ingests normally.
+  const result = await ingestTicket(normalized, { draftTimeoutMs: INGEST_DRAFT_TIMEOUT_MS });
   if ("error" in result) return NextResponse.json({ error: result.error }, { status: 422 });
   return NextResponse.json({ status: "received", ticketId: result.ticket.id });
 }

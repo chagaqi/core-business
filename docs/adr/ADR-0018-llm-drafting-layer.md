@@ -1,6 +1,6 @@
 # ADR-0018 — LLM drafting layer: per-tenant context, shared stateless model, deterministic floor
 
-**Date:** 2026-07-09 · **Status:** accepted (provider + key pending Dylan) · **Task:** AI1
+**Date:** 2026-07-09 · **Status:** accepted · provider decided (DeepSeek, Dylan 2026-07-09) · **Task:** AI1
 
 ## Context
 
@@ -13,6 +13,8 @@ Today every reply is drafted by the DeterministicDrafter (stage-aware template e
 1. **No training, no fine-tuning, no per-user agents.** "The agent learns your brand" is implemented as **per-tenant context, not per-tenant weights**: every merchant already has a brand/voice/timeline profile from onboarding (intake + gifts + product stages). Drafting = one stateless API call per ticket with that profile assembled into the system prompt. This is how production support-AI companies actually engineer it; a "spawned agent per user" is a prompt, not a process.
 2. **Model class: Haiku-tier** (small, fast, cheap — `claude-haiku-4-5` class). Drafting a reassurance reply is a constrained rewrite task, not deep reasoning. At ~2k in / ~300 out per draft and pilot volume (≤50 tickets/mo/merchant), model cost is **well under $1/mo per merchant** — margin-irrelevant at every rung of the ladder. Prompt caching applies to the static system-prompt prefix (tenant profile), cutting input cost further (~0.1× on cached reads).
 3. **Provider: first-party API from a US/EU-hostable vendor; NOT DeepSeek's first-party API.** DeepSeek V3 weights are fine engineering, but the first-party API is China-hosted inference — merchant support emails (customer names, addresses, order details) would transit infrastructure we cannot defend on the /security and /procurement pages we sell with. If Dylan wants DeepSeek-class economics later, the acceptable route is a US-hosted serving vendor of open weights. Default recommendation: Anthropic Haiku-tier. **Final provider pick + API key = Dylan's call (money/account); everything below is provider-agnostic.**
+
+   **Decision taken (Dylan, 2026-07-09): DeepSeek first-party API**, overriding the recommendation above. `LLM_PROVIDER=deepseek`, `LLM_MODEL=deepseek-chat`, OpenAI-compatible chat-completions endpoint. Condition of the override: the /security page ships a plain subprocessor disclosure with it — ticket text is processed by Hangzhou DeepSeek AI on servers in the PRC, drafts remain human-approved, deterministic floor and QA gate unchanged. The provider switch in `LlmDrafter` keeps an "anthropic" (or other) adapter a one-case addition if this call is revisited.
 4. **Prompt assembly lives server-side in `LlmDrafter.draft()`**: system = tenant profile (brand voice, product, real timeline, stage definitions, confidence-band rules, banned-claims list) + the proof-only contract; user = the ticket. Temperature low. Output = draft body only.
 5. **The deterministic engine is the floor, not the fallback of last resort.** Three hard rules:
    a. `LlmDrafter` errors/timeouts → serve the DeterministicDrafter draft (already the seam's behavior — keep it).

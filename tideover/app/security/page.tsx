@@ -113,11 +113,23 @@ export default function SecurityPage() {
             {/* Public status-page boundary */}
             <div className="mt-[22px] rounded-[20px] border-l-[3px] border-teal bg-accent-card p-[26px]">
               <h3 className="mb-2 font-serif text-[20px] font-semibold text-teal">
-                The one place buyer data leaves Tideover: the status page
+                With AI drafting off (the default), buyer data leaves Tideover in one place: the status page
               </h3>
               <p className="m-0 text-[15px] leading-relaxed text-slate">
                 {
-                  "A status link you share with a buyer exposes only that one order's own low-sensitivity fields: the buyer's first name, order reference, region, the timeline, and a confidence band (never a hard delivery date). Email, lifetime value, risk score, and any other order are defined out of that function on purpose. It is a single, audited boundary in the code (getPublicStatus in lib/status.ts), so the status page cannot leak those excluded fields even if we wanted it to."
+                  "A status link you share with a buyer exposes only that one order's own low-sensitivity fields: the buyer's first name, order reference, region, the timeline, and a confidence band (never a hard delivery date). Email, lifetime value, risk score, and any other order are defined out of that function on purpose. It is a single, audited boundary in the code (getPublicStatus in lib/status.ts), so the status page cannot leak those excluded fields even if we wanted it to. Turn on AI drafting and there is exactly one more exit, covered next."
+                }
+              </p>
+            </div>
+
+            {/* AI drafting subprocessor boundary (ADR-0018) */}
+            <div className="mt-[22px] rounded-[20px] border-l-[3px] border-teal bg-accent-card p-[26px]">
+              <h3 className="mb-2 font-serif text-[20px] font-semibold text-teal">
+                If you turn on AI drafting: one subprocessor
+              </h3>
+              <p className="m-0 text-[15px] leading-relaxed text-slate">
+                {
+                  "AI drafting is optional and off by default. When it is on, the ticket's subject and text — plus the buyer's first name, order stage, and timing band — are sent to DeepSeek (Hangzhou DeepSeek Artificial Intelligence Co., Ltd., servers in the People's Republic of China) to draft the reply; DeepSeek's own privacy policy governs its handling of that text. Email addresses, lifetime value, and payment data are never in the prompt. Every AI draft passes the same hard-date gate as a template draft, and a person approves it before anything sends. Leave the feature off and no ticket text leaves Tideover."
                 }
               </p>
             </div>
