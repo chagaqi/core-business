@@ -554,9 +554,12 @@
    h1 without a global override. */
 .display {
   font-family: var(--font-fraunces), "Iowan Old Style", Palatino, Georgia, serif;
-  font-size: clamp(44px, 8vw, 88px);
+  /* Sized for the split hero's copy column and the two-sentence headline: still
+     a bold "funded" read, but resolves to ~3 balanced lines beside the origami
+     scene rather than a 5-line stack. */
+  font-size: clamp(40px, 5.8vw, 66px);
   font-weight: 600;
-  line-height: 1.02;
+  line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--ink);
 }
@@ -652,4 +655,85 @@
 }
 details[open] .faq-answer {
   animation: tv-faq-open 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ============================================================
+   Origami hero scene (OrigamiScene.tsx) — the ONE ambient element on the page.
+   Entrance then a calm perpetual loop, all transform/opacity. Every resting
+   style is the finished visible state, so under the global prefers-reduced-motion
+   kill (animation: none !important) the whole scene renders complete and static.
+   ============================================================ */
+
+/* Entrance — wave bands rise/unfold in; the boat drops and settles. `both` fill
+   holds the folded/hidden `from` during the stagger delay and the visible `to`
+   after; reduced-motion drops the animation, leaving the visible resting state. */
+@keyframes oc-wave-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes oc-boat-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-36px);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Ambient — the boat bobs (rocks around its own waterline) while each wave band
+   drifts horizontally at its own rate + direction. Loops start after the
+   entrance settles (delays below). Calm: a harbor, not a storm. */
+@keyframes oc-bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.4deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(1.4deg);
+  }
+}
+@keyframes oc-drift {
+  to {
+    transform: translateX(var(--dx, -20px));
+  }
+}
+
+.oc-wave-enter {
+  animation: oc-wave-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.oc-boat-enter {
+  animation: oc-boat-in 0.9s cubic-bezier(0.2, 0.8, 0.25, 1) 0.45s both;
+}
+.oc-boat-bob {
+  transform-box: fill-box;
+  transform-origin: 50% 62%;
+  animation: oc-bob 6s ease-in-out 1.5s infinite;
+}
+.oc-drift-a {
+  --dx: -20px;
+  animation: oc-drift 15s ease-in-out 1.2s infinite alternate;
+}
+.oc-drift-b {
+  --dx: 16px;
+  animation: oc-drift 19s ease-in-out 1.2s infinite alternate;
+}
+.oc-drift-c {
+  --dx: -26px;
+  animation: oc-drift 13s ease-in-out 1.2s infinite alternate;
+}
+.oc-drift-d {
+  --dx: 22px;
+  animation: oc-drift 17s ease-in-out 1.2s infinite alternate;
 }
