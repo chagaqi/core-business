@@ -554,12 +554,12 @@
    h1 without a global override. */
 .display {
   font-family: var(--font-fraunces), "Iowan Old Style", Palatino, Georgia, serif;
-  /* Sized for the split hero's copy column and the two-sentence headline: still
-     a bold "funded" read, but resolves to ~3 balanced lines beside the origami
-     scene rather than a 5-line stack. */
-  font-size: clamp(40px, 5.8vw, 66px);
+  /* Sized for the full-bleed ocean hero: a large centred manifesto headline over
+     the sky. Resolves to ~3 lines on desktop and settles to the 40px floor on
+     phones, where the ocean drops to give the headline room. */
+  font-size: clamp(40px, 7vw, 88px);
   font-weight: 600;
-  line-height: 1.05;
+  line-height: 1.04;
   letter-spacing: -0.03em;
   color: var(--ink);
 }
@@ -658,82 +658,138 @@ details[open] .faq-answer {
 }
 
 /* ============================================================
-   Origami hero scene (OrigamiScene.tsx) — the ONE ambient element on the page.
-   Entrance then a calm perpetual loop, all transform/opacity. Every resting
-   style is the finished visible state, so under the global prefers-reduced-motion
-   kill (animation: none !important) the whole scene renders complete and static.
+   Origami hero scene (OrigamiScene.tsx + Hero.tsx) — a FULL-BLEED papercraft
+   ocean. This seascape IS the page's one ambient element (the deliberate
+   exception to one-ambient-element): the water breathes while everything else
+   rests. The entrance assembles the ocean edge-to-edge, settles the boat, then
+   raises the copy — all transform/opacity. Every resting style is the finished
+   visible state, so under the global prefers-reduced-motion kill the whole
+   landscape renders complete and static, with all copy visible.
    ============================================================ */
 
-/* Entrance — wave bands rise/unfold in; the boat drops and settles. `both` fill
-   holds the folded/hidden `from` during the stagger delay and the visible `to`
-   after; reduced-motion drops the animation, leaving the visible resting state. */
-@keyframes oc-wave-in {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Layer primitives — each wave band is a full-width SVG anchored to the bottom
+   (preserveAspectRatio="none", so it spans edge to edge); the boat + distant
+   boat are their own small SVGs sitting on the waterline. Heights are svh so the
+   ocean scales with the fold; z-index stacks back → boat → front band. */
+.oc-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  display: block;
 }
-@keyframes oc-boat-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-36px);
-  }
-  65% {
-    opacity: 1;
-    transform: translateY(5px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Sky crumple — a static, lighter-touch crease layer behind the copy. */
+.oc-sky {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 58svh;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+}
+.oc-boat {
+  position: absolute;
+  right: 23%;
+  bottom: 36svh;
+  width: clamp(82px, 10vw, 150px);
+  z-index: 3;
+  animation: oc-boat-in 0.9s cubic-bezier(0.2, 0.8, 0.25, 1) 0.5s both;
+}
+.oc-dist {
+  position: absolute;
+  left: 26%;
+  bottom: 47svh;
+  width: clamp(32px, 3.6vw, 52px);
+  opacity: 0.6;
+  z-index: 2;
+  animation: oc-fade 0.8s ease-out 0.7s both;
+}
+.oc-band-a { height: 63svh; z-index: 1; animation: oc-wave-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+.oc-band-b { height: 55svh; z-index: 1; animation: oc-wave-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.09s both; }
+.oc-band-c { height: 47svh; z-index: 1; animation: oc-wave-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.18s both; }
+.oc-band-front { height: 41svh; z-index: 4; animation: oc-wave-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 0.27s both; }
+
+/* Copy rise — the headline/sub/CTA/meta lift after the ocean assembles. Add the
+   per-element stagger via an inline animation-delay. */
+.oc-rise {
+  animation: oc-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
-/* Ambient — the boat bobs (rocks around its own waterline) while each wave band
-   drifts horizontally at its own rate + direction. Loops start after the
-   entrance settles (delays below). Calm: a harbor, not a storm. */
-@keyframes oc-bob {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-1.4deg);
-  }
-  50% {
-    transform: translateY(-7px) rotate(1.4deg);
-  }
-}
-@keyframes oc-drift {
-  to {
-    transform: translateX(var(--dx, -20px));
-  }
+/* Scroll cue — fades in, then bobs; stays horizontally centred throughout. */
+.oc-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  z-index: 6;
+  transform: translateX(-50%);
+  color: #e8f1f1;
+  opacity: 0.85;
+  animation: oc-fade 0.6s ease-out 1.4s both, oc-cue-bob 2.4s ease-in-out 2s infinite;
 }
 
-.oc-wave-enter {
-  animation: oc-wave-in 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
-}
-.oc-boat-enter {
-  animation: oc-boat-in 0.9s cubic-bezier(0.2, 0.8, 0.25, 1) 0.45s both;
-}
+/* Ambient — the boat bobs (rocks around its own waterline), each band drifts
+   horizontally at its own rate + direction; loops start after the entrance. */
 .oc-boat-bob {
   transform-box: fill-box;
-  transform-origin: 50% 62%;
+  transform-origin: 50% 64%;
   animation: oc-bob 6s ease-in-out 1.5s infinite;
 }
-.oc-drift-a {
-  --dx: -20px;
-  animation: oc-drift 15s ease-in-out 1.2s infinite alternate;
+.oc-dist-bob {
+  transform-box: fill-box;
+  transform-origin: 50% 70%;
+  animation: oc-bob 8s ease-in-out 1.6s infinite;
 }
-.oc-drift-b {
-  --dx: 16px;
-  animation: oc-drift 19s ease-in-out 1.2s infinite alternate;
+.oc-drift-a { --dx: -20px; animation: oc-drift 16s ease-in-out 1.1s infinite alternate; }
+.oc-drift-b { --dx: 16px; animation: oc-drift 20s ease-in-out 1.1s infinite alternate; }
+.oc-drift-c { --dx: -26px; animation: oc-drift 13s ease-in-out 1.1s infinite alternate; }
+.oc-drift-d { --dx: 24px; animation: oc-drift 18s ease-in-out 1.1s infinite alternate; }
+
+@keyframes oc-wave-rise {
+  from { opacity: 0; transform: translateY(46px); }
+  to { opacity: 1; transform: translateY(0); }
 }
-.oc-drift-c {
-  --dx: -26px;
-  animation: oc-drift 13s ease-in-out 1.2s infinite alternate;
+@keyframes oc-boat-in {
+  0% { opacity: 0; transform: translateY(-40px); }
+  65% { opacity: 1; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
-.oc-drift-d {
-  --dx: 22px;
-  animation: oc-drift 17s ease-in-out 1.2s infinite alternate;
+@keyframes oc-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes oc-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes oc-bob {
+  0%, 100% { transform: translateY(0) rotate(-1.5deg); }
+  50% { transform: translateY(-8px) rotate(1.5deg); }
+}
+@keyframes oc-drift {
+  to { transform: translateX(var(--dx, -22px)); }
+}
+@keyframes oc-cue-bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(6px); }
+}
+
+/* Mobile — fewer bands, a lower ocean so the copy never meets the water, the
+   boat still present on the waterline, the headline still the hero. */
+@media (max-width: 640px) {
+  .oc-band-c,
+  .oc-dist {
+    display: none;
+  }
+  .oc-band-a { height: 40svh; }
+  .oc-band-b { height: 35svh; }
+  .oc-band-front { height: 28svh; }
+  .oc-boat {
+    right: 14%;
+    bottom: 20svh;
+    width: clamp(78px, 17vw, 116px);
+  }
 }

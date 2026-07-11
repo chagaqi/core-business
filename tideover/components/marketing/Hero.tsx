@@ -1,44 +1,28 @@
-import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 import { CalButton } from "@/components/booking/CalButton";
-import { FoldCard } from "@/components/marketing/paper/FoldCard";
 import { OrigamiScene } from "@/components/marketing/paper/OrigamiScene";
 
 /**
- * Homepage hero — the origami signature moment.
+ * Homepage hero — a full-bleed origami ocean.
  *
- * A split fold: the value prop on the left (giant .display headline, honest
- * badge chips, one terracotta CTA), a code-drawn papercraft boat riding folded
- * paper waves on the right (<OrigamiScene/>, inline SVG, CSS-animated). The
- * scene IS the page's single ambient element — the deliberate exception to the
- * one-ambient-element rule; everything else stays at rest.
+ * The entire fold is the landscape: sand-paper sky above, a code-drawn papercraft
+ * sea (<OrigamiScene/>) bleeding edge to edge across the lower half, with a small
+ * boat riding the waves off-centre. The value prop sits LARGE and centred in the
+ * sky; a single terracotta CTA plus a ghost secondary; one muted credibility
+ * line; a folded-paper scroll cue at the bottom edge. Nothing sits over the
+ * water — text is on the sky only, at AA contrast (ink on sand).
  *
- * The old reassurance reply-card is removed from the fold (Dylan, 2026-07-10) —
- * the live proof now lives in the DemoCenterpiece section below (#demo, the
- * "See a live draft" target). Copy is proof-only, unchanged in claim.
+ * Motion is 100% CSS (no JS): the ocean assembles, the boat settles, then the
+ * copy rises (see .oc-* in globals.css). The scene is the page's single ambient
+ * element. Under prefers-reduced-motion the global kill zeroes it and the whole
+ * landscape + all copy render complete and static. The SVG is inline (no fetch)
+ * so the headline text is the LCP, and the section reserves 100svh → zero CLS.
  *
- * Layout: on mobile the scene sits above the copy in a bounded 4:3 panel; on
- * desktop it takes the right column. The headline text is the LCP (the SVG is
- * inline, no fetch), contrast is AA (ink on sand, never text over the scene),
- * and the panel reserves its aspect box so there is zero CLS.
+ * The reassurance reply-card is gone from the fold (Dylan, 2026-07-10); the live
+ * proof lives in the DemoCenterpiece section below (#demo — the ghost CTA target).
+ * The confidence strip has moved below the fold. Copy is proof-only, existing
+ * approved strings, lightly re-flowed to fit — no new claims.
  */
-function WaveMark() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden className="flex-none">
-      <path d="M2 9c2.5-2.6 5-2.6 7.5 0S14.5 11.6 17 9s4.5-2.6 5 0" stroke="#0E5366" strokeWidth="1.7" strokeLinecap="round" fill="none" />
-      <path d="M2 15c2.5-2.6 5-2.6 7.5 0S14.5 17.6 17 15s4.5-2.6 5 0" stroke="#0E5366" strokeWidth="1.7" strokeLinecap="round" fill="none" opacity="0.5" />
-    </svg>
-  );
-}
-
-function CaretDown() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden className="flex-none">
-      <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 function StripTick() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden className="mt-px flex-none">
@@ -47,106 +31,69 @@ function StripTick() {
   );
 }
 
-// Below-hero confidence strip — honest mechanism facts, never social proof. Our
-// substitute for their avatar/rating strip (spec §2.3 doctrine).
+// Honest mechanism facts, never social proof — now the first beat below the fold.
 const STRIP = ["Works inside your current helpdesk", "Nothing to rip out", "Every reply waits for your approval"];
 
 export function Hero() {
   return (
-    <header className="relative overflow-hidden bg-sand">
-      {/* Soft top wash + fiber grain so the fold reads crafted, not flat. */}
-      <div className="hero-wash" aria-hidden />
-      <div className="paper-grain" aria-hidden />
+    <>
+      <header
+        className="relative min-h-[100svh] overflow-hidden max-[640px]:min-h-[88svh]"
+        style={{ background: "linear-gradient(180deg, #FBF8F2 0%, #F6F2EA 34%, #EAF1F0 64%, #DCE9E9 100%)" }}
+      >
+        <div className="paper-grain" aria-hidden />
+        <OrigamiScene />
 
-      <div className="wrap relative z-10 py-14 lg:py-24">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
-          {/* right on desktop, top on mobile: the origami scene */}
-          <div className="order-1 lg:order-2">
-            <div
-              className="relative aspect-[4/3] w-full overflow-hidden rounded-[28px] border border-border"
-              style={{
-                background: "linear-gradient(180deg, #FBF8F2 0%, #EDF3F3 56%, #E4EEF0 100%)",
-                boxShadow: "var(--elev-2)",
-              }}
-            >
-              <OrigamiScene />
-            </div>
+        {/* Copy — centred in the sky region, never over the water. */}
+        <div className="relative z-10 mx-auto flex max-w-[1100px] flex-col items-center px-6 pt-[clamp(66px,10vh,140px)] text-center max-[640px]:pt-[58px]">
+          <h1 className="display oc-rise m-0 max-w-[14ch]" style={{ animationDelay: "0.85s" }}>
+            Navigate choppy waters. Tide your customers over.
+          </h1>
+          <p
+            className="oc-rise mt-5 max-w-[52ch] text-[clamp(15px,1.5vw,19px)] leading-relaxed text-slate"
+            style={{ animationDelay: "1s" }}
+          >
+            Reads each order&rsquo;s real timeline and drafts the calm reply in your voice, ready for your approval.
+          </p>
+          <div
+            className="oc-rise mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-4"
+            style={{ animationDelay: "1.12s" }}
+          >
+            <CalButton large className="btn-pill">
+              Get a free 15-min teardown{" "}
+              <span className="cta-arrow" aria-hidden>
+                &rarr;
+              </span>
+            </CalButton>
+            <Button href="#demo" variant="ghost" large className="btn-pill">
+              See a live draft &darr;
+            </Button>
           </div>
-
-          {/* left on desktop, below the scene on mobile: the copy */}
-          <div className="order-2 lg:order-1">
-            {/* Honest badge chips — each folds in from its top edge, staggered. */}
-            <div className="mb-7 flex flex-wrap items-center gap-2.5">
-              <FoldCard
-                index={0}
-                hover={false}
-                shadow={false}
-                className="inline-flex items-center gap-2 rounded-full border border-[#D2E2E4] bg-accent-card px-3.5 py-2 text-[13px] font-semibold text-teal"
-              >
-                <WaveMark />
-                Built by a $2M-ops operator
-              </FoldCard>
-              <FoldCard
-                index={1}
-                hover={false}
-                shadow={false}
-                href="#demo"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#D2E2E4] bg-accent-card px-3.5 py-2 text-[13px] font-semibold text-teal transition-colors hover:border-teal/40 hover:bg-[#DCEAEC]"
-              >
-                Live demo below &mdash; real engine, sample data
-                <CaretDown />
-              </FoldCard>
-              <FoldCard
-                index={2}
-                hover={false}
-                shadow={false}
-                className="inline-flex items-center rounded-full border border-[#D2E2E4] bg-accent-card px-3.5 py-2 text-[13px] font-semibold text-teal"
-              >
-                No invented numbers. Ever.
-              </FoldCard>
-            </div>
-
-            <Reveal index={1}>
-              <h1 className="display mb-5 text-balance">Navigate choppy waters. Tide your customers over.</h1>
-            </Reveal>
-
-            <Reveal index={2}>
-              <p className="mb-8 max-w-[560px] text-[clamp(17px,1.6vw,20px)] leading-relaxed text-slate">
-                It reads each order&rsquo;s real production timeline and drafts the calm, no-false-promises reply
-                &mdash; in your voice, for your approval.
-              </p>
-            </Reveal>
-
-            <Reveal index={3}>
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-4">
-                <CalButton large className="btn-pill">
-                  Get a free 15-min teardown{" "}
-                  <span className="cta-arrow" aria-hidden>
-                    &rarr;
-                  </span>
-                </CalButton>
-                <Button href="#demo" variant="quiet">
-                  See a live draft &darr;
-                </Button>
-              </div>
-            </Reveal>
-          </div>
+          <p className="oc-rise mt-[18px] text-[13px] text-[#54666A]" style={{ animationDelay: "1.22s" }}>
+            Built by a $2M-ops operator. No invented numbers, ever.
+          </p>
         </div>
 
-        {/* Below-hero confidence strip — one calm, honest device spanning the fold. */}
-        <Reveal index={4}>
-          <div className="mt-12 border-t border-border pt-6 lg:mt-16">
-            <ul className="m-0 flex flex-wrap items-center gap-x-7 gap-y-3 p-0 text-[14px] font-medium text-slate">
-              {STRIP.map((item) => (
-                <li key={item} className="inline-flex items-center gap-2">
-                  <StripTick />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Reveal>
+        {/* Folded-paper scroll cue, bobbing at the bottom edge of the scene. */}
+        <div className="oc-cue" aria-hidden>
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+            <path d="M5 9l7 7 7-7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M5 4l7 7 7-7" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" opacity="0.4" />
+          </svg>
+        </div>
+      </header>
+
+      {/* Confidence strip — one calm, honest device, now the first beat below the fold. */}
+      <div className="wrap border-t border-border py-7">
+        <ul className="m-0 flex flex-wrap items-center gap-x-7 gap-y-3 p-0 text-[14px] font-medium text-slate">
+          {STRIP.map((item) => (
+            <li key={item} className="inline-flex items-center gap-2">
+              <StripTick />
+              {item}
+            </li>
+          ))}
+        </ul>
       </div>
-    </header>
+    </>
   );
 }
