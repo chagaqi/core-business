@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/Button";
 
 /**
  * Operator-facing fallback for when an app page can't resolve a merchant/account
- * (UX-33). Replaces the leaked dev string "No merchants seeded." on the non-hot
- * operator surfaces. The two hot-file call sites (app/app/page.tsx,
- * app/app/inbox/page.tsx) still carry the raw string pending a serialized pass.
+ * (UX-33). Replaces the leaked dev string "No merchants seeded." on every
+ * operator surface, including the two hot files (app/app/page.tsx,
+ * app/app/inbox/page.tsx — serialized pass completed 2026-07-11, RC2).
  */
 export function NoMerchantState() {
   return (

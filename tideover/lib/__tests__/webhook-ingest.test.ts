@@ -327,6 +327,103 @@ test("route: drop-at-edge discards a payload whose tags miss the merchant's pres
   assert.equal(await repos.tickets.findByExternalId(merchant.id, "email", externalId3), null);
 });
 
+/** Swap env vars (computed keys, so the readonly NODE_ENV typing is bypassed the
+ *  same way health.test.ts does) and restore them after the test body. */
+async function withEnv(vars: Record<string, string | undefined>, fn: () => Promise<void>) {
+  const prev: Record<string, string | undefined> = {};
+  for (const key of Object.keys(vars)) prev[key] = process.env[key];
+  for (const [key, val] of Object.entries(vars)) {
+    if (val === undefined) delete process.env[key];
+    else process.env[key] = val;
+  }
+  try {
+    await fn();
+  } finally {
+    for (const [key, val] of Object.entries(prev)) {
+      if (val === undefined) delete process.env[key];
+      else process.env[key] = val;
+    }
+  }
+}
+
+test("route (LAUNCH CONFIG): production + DEMO_MODE unset + no root secret rejects unsigned — fails closed", async () => {
+  // The go-live posture is host-based mode with DEMO_MODE deliberately UNSET.
+  // The gate must not read that as demo: under NODE_ENV=production an unsigned
+  // POST is 401 even when WEBHOOK_ROOT_SECRET is also missing (misconfigured
+  // deploy), matching the .env.example posture and the resend inbound route.
+  await withEnv({ NODE_ENV: "production", DEMO_MODE: undefined, WEBHOOK_ROOT_SECRET: undefined }, async () => {
+    const repos = getRepositories();
+    const merchant = (await repos.merchants.list())[0];
+    const externalId = `wh_prod_unset_${Date.now()}`;
+    const res = await handleCanonicalIngest(
+      ingestRequest({ external_id: externalId, customer_email: "attacker@evil.com", subject: "s", body: "b" }),
+      "webhook",
+      merchant.inboxToken,
+    );
+    assert.equal(res.status, 401);
+    assert.equal(await repos.tickets.findByExternalId(merchant.id, "email", externalId), null);
+  });
+});
+
+test("route (LAUNCH CONFIG): production + DEMO_MODE unset + root secret set requires a valid signature", async () => {
+  await withEnv({ NODE_ENV: "production", DEMO_MODE: undefined, WEBHOOK_ROOT_SECRET: "root-secret-prod" }, async () => {
+    const repos = getRepositories();
+    const merchant = (await repos.merchants.list())[0];
+    const externalId = `wh_prod_signed_${Date.now()}`;
+    const payload = { external_id: externalId, customer_email: "buyer@example.com", subject: "s", body: "b" };
+
+    // unsigned → 401
+    const unsigned = await handleCanonicalIngest(ingestRequest(payload), "webhook", merchant.inboxToken);
+    assert.equal(unsigned.status, 401);
+
+    // correctly signed → ingests
+    const raw = JSON.stringify(payload);
+    const signed = await handleCanonicalIngest(
+      ingestRequest(raw, { [SIGNATURE_HEADER]: `sha256=${signWebhookBody(raw, deriveWebhookSecret(merchant.inboxToken))}` }),
+      "webhook",
+      merchant.inboxToken,
+    );
+    assert.equal(signed.status, 200);
+    assert.equal(((await signed.json()) as { status: string }).status, "ingested");
+  });
+});
+
+test("route (demo/dev): DEMO_MODE unset outside production still accepts unsigned — seeded/test path unchanged", async () => {
+  await withEnv({ NODE_ENV: undefined, DEMO_MODE: undefined, WEBHOOK_ROOT_SECRET: undefined }, async () => {
+    const repos = getRepositories();
+    const merchant = (await repos.merchants.list())[0];
+    const externalId = `wh_dev_unset_${Date.now()}`;
+    const res = await handleCanonicalIngest(
+      ingestRequest({ external_id: externalId, customer_email: "buyer@example.com", subject: "s", body: "b" }),
+      "webhook",
+      merchant.inboxToken,
+    );
+    assert.equal(res.status, 200);
+    assert.equal(((await res.json()) as { status: string }).status, "ingested");
+  });
+});
+
+test("route (demo + root secret): once WEBHOOK_ROOT_SECRET is set, unsigned is rejected even in demo", async () => {
+  // Mirrors .env.example: "with the root set it requires a valid signature".
+  await withEnv({ NODE_ENV: undefined, DEMO_MODE: "true", WEBHOOK_ROOT_SECRET: "root-secret-demo" }, async () => {
+    const repos = getRepositories();
+    const merchant = (await repos.merchants.list())[0];
+    const externalId = `wh_demo_secret_${Date.now()}`;
+    const payload = { external_id: externalId, customer_email: "buyer@example.com", subject: "s", body: "b" };
+
+    const unsigned = await handleCanonicalIngest(ingestRequest(payload), "webhook", merchant.inboxToken);
+    assert.equal(unsigned.status, 401);
+
+    const raw = JSON.stringify(payload);
+    const signed = await handleCanonicalIngest(
+      ingestRequest(raw, { [SIGNATURE_HEADER]: `sha256=${signWebhookBody(raw, deriveWebhookSecret(merchant.inboxToken))}` }),
+      "webhook",
+      merchant.inboxToken,
+    );
+    assert.equal(signed.status, 200);
+  });
+});
+
 test("route (live mode): fails closed when WEBHOOK_ROOT_SECRET is unset (no forgeable-secret path)", async () => {
   const repos = getRepositories();
   const merchant = (await repos.merchants.list())[0];

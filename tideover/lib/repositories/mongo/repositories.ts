@@ -16,6 +16,8 @@ import { getDb } from "@/lib/repositories/mongo/client";
 import type {
   CustomerRepository,
   GiftRepository,
+  Lead,
+  LeadRepository,
   MerchantRepository,
   MerchantUpdateRepository,
   OrderRepository,
@@ -360,6 +362,15 @@ const merchantUpdates: MerchantUpdateRepository = {
   },
 };
 
+const leads: LeadRepository = {
+  async create(l) {
+    // Same _id-stripping insert as every other collection; the "leads"
+    // collection is append-only marketing input (see LeadRepository docs).
+    const lead: Lead = { ...l, id: newId("ld") };
+    return insert("leads", lead);
+  },
+};
+
 export const mongoRepositories: Repositories = {
   merchants,
   orders,
@@ -371,4 +382,5 @@ export const mongoRepositories: Repositories = {
   scriptVariants,
   outcomeEvents,
   merchantUpdates,
+  leads,
 };

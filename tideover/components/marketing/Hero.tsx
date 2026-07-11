@@ -46,7 +46,10 @@ export function Hero() {
 
         {/* Copy — centred in the sky region, never over the water. */}
         <div className="relative z-10 mx-auto flex max-w-[1100px] flex-col items-center px-6 pt-[clamp(66px,10vh,140px)] text-center max-[640px]:pt-[58px]">
-          <h1 className="display oc-rise m-0 max-w-[14ch]" style={{ animationDelay: "0.85s" }}>
+          {/* .oc-rise-lcp: transform-only entrance — the h1 is the LCP element and
+              must be visible (opacity 1) at first paint; only the fade-free rise
+              is choreographed. Secondary copy below keeps the staged fade. */}
+          <h1 className="display oc-rise-lcp m-0 max-w-[14ch]" style={{ animationDelay: "0.85s" }}>
             Navigate choppy waters. Tide your customers over.
           </h1>
           <p

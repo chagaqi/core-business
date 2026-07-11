@@ -25,6 +25,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { GET_STARTED_HREF } from "@/components/marketing/nav/nav-data";
 
 export type BillingPeriod = "monthly" | "annual";
 
@@ -173,7 +174,10 @@ export function TierCard({ plan, period }: { plan: Plan; period: BillingPeriod }
       </ul>
 
       <div className="mt-auto">
-        <Button href="/onboarding" variant={plan.recommended ? "primary" : "ghost"} className="w-full">
+        {/* GET_STARTED_HREF (ADR-0020): on the www marketing host the relative
+            /onboarding is the DEMO sandbox — the trial CTA must point at the
+            real-app host's login-gated onboarding, same as the nav CTA. */}
+        <Button href={GET_STARTED_HREF} variant={plan.recommended ? "primary" : "ghost"} className="w-full">
           Start free trial
         </Button>
         <p className="mb-0 mt-2.5 text-center text-[12.5px] text-ink-mute">{TRIAL_LINE}</p>

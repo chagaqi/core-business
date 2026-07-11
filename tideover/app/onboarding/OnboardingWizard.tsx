@@ -53,6 +53,10 @@ interface ImportCounts {
   skipped: number;
   datelessRows: number;
   unparseableMoneyRows: number;
+  /** import chunks fully persisted (each ≤500 rows). */
+  chunksPersisted?: number;
+  /** set when the import stopped partway — re-uploading the same file resumes. */
+  failedAtChunk?: number | null;
 }
 
 type OnboardingResult = {
@@ -448,6 +452,14 @@ export function OnboardingWizard() {
           importRows: stagedRows,
         }),
       });
+      if (res.status === 409) {
+        // Already onboarded (one workspace per login) — the API answers with
+        // where home is. Route there instead of a dead-end retry loop; the
+        // setup-checklist links that land here resolve the same way.
+        const data = (await res.json().catch(() => null)) as { redirect?: string } | null;
+        window.location.assign(data?.redirect ?? "/app");
+        return;
+      }
       if (!res.ok) throw new Error("request failed");
       const data = (await res.json()) as OnboardingResult;
       setResult(data);
@@ -461,6 +473,12 @@ export function OnboardingWizard() {
   // ── success / "you're set" screen (action-first, boxed) ──────────────────
   if (result) {
     const importedBackers = result.imported?.customersCreated ?? 0;
+    // A mid-import chunk failure does NOT fail the request — the API returns
+    // the truncated counts with failedAtChunk set. Surface it; a truncated
+    // import must never read as a clean success.
+    const partialImport = result.imported?.failedAtChunk != null;
+    const datelessRows = result.imported?.datelessRows ?? 0;
+    const unparseableMoneyRows = result.imported?.unparseableMoneyRows ?? 0;
     return (
       <div className="wrap py-10 md:py-16">
         <div className="mx-auto max-w-[880px]">
@@ -473,18 +491,44 @@ export function OnboardingWizard() {
               <p className="kicker mb-2">You&rsquo;re covered</p>
               <h1 className="mb-3 text-balance">
                 {importedBackers > 0
-                  ? `You're set. ${importedBackers} backer${importedBackers === 1 ? "" : "s"} imported.`
+                  ? `You're set. ${importedBackers} backer${importedBackers === 1 ? "" : "s"} imported${partialImport ? " so far" : ""}.`
                   : "You're set."}
               </h1>
+              {/* Proof-only: imports create customers + orders, not tickets — a
+                  reply is drafted when a backer MESSAGE arrives, so the inbox
+                  starts empty. Say exactly that; never promise waiting drafts. */}
               <p className="max-w-[620px] text-[16px] leading-relaxed text-slate">
                 {importedBackers > 0
-                  ? `Your reassurance layer is live for ${brandName}. Open your inbox — the first calm replies are drafted and waiting for your review.`
+                  ? `Your reassurance layer is live for ${brandName}. Your backers are in. The moment one messages you, the reply is drafted and waiting for your review — until then the inbox sits empty. Connect your helpdesk below to route those messages in.`
                   : `Your reassurance layer is live for ${brandName}. Import your backer list whenever you're ready; your setup checklist keeps the next step in front of you.`}
               </p>
             </div>
 
+            {partialImport ? (
+              <p className="mb-6 max-w-[620px] rounded-xl border border-[rgba(138,102,18,0.3)] bg-[rgba(138,102,18,0.08)] p-3 text-[13.5px] leading-relaxed text-amber-status">
+                The import stopped partway &mdash; the {importedBackers} backer
+                {importedBackers === 1 ? "" : "s"} above made it in. Upload the same file again from
+                your setup checklist to finish; rows already imported are skipped, never duplicated.
+              </p>
+            ) : null}
+            {datelessRows > 0 ? (
+              <p className="mb-6 max-w-[620px] rounded-xl border border-[rgba(138,102,18,0.3)] bg-[rgba(138,102,18,0.08)] p-3 text-[13.5px] leading-relaxed text-amber-status">
+                {datelessRows} row{datelessRows === 1 ? "" : "s"} had no readable date &mdash; those
+                backers default to today. Check your export has a pledge/order date column.
+              </p>
+            ) : null}
+            {unparseableMoneyRows > 0 ? (
+              <p className="mb-6 max-w-[620px] rounded-xl border border-[rgba(138,102,18,0.3)] bg-[rgba(138,102,18,0.08)] p-3 text-[13.5px] leading-relaxed text-amber-status">
+                {unparseableMoneyRows} row{unparseableMoneyRows === 1 ? "" : "s"} had no readable
+                pledge amount and use the default order value.
+              </p>
+            ) : null}
+
             <div className="flex flex-wrap items-center gap-4">
               <Button href={`/app/inbox?merchant=${result.merchantId}`}>Open your inbox &rarr;</Button>
+              <Button href={`/app/setup?merchant=${result.merchantId}`} variant="ghost">
+                Open your setup checklist
+              </Button>
             </div>
 
             {/* The day-stage previews are demoted: proof the drafts exist, one click away. */}
@@ -512,7 +556,8 @@ export function OnboardingWizard() {
                 <div>
                   <p className="mb-2 text-[13.5px] leading-relaxed text-ink-mute">
                     <strong className="text-ink">Optional.</strong> On Gorgias or Zendesk? Route presale
-                    tickets straight in with one rule &mdash; now or anytime from your cockpit.
+                    tickets straight in with one rule &mdash; now, or anytime from your setup
+                    checklist.
                   </p>
                   <ConnectPanel gorgias={result.connect.gorgias} zendesk={result.connect.zendesk} />
                 </div>
@@ -561,7 +606,14 @@ export function OnboardingWizard() {
               {/* the current step */}
               <div className="md:pl-8">
                 <MobileProgress steps={STEPS} current={step} />
-                {analyze.status !== "idle" ? <AnalyzeChip state={analyze} /> : null}
+                {/* Always-mounted live region (a11y): screen readers only announce
+                    content changes inside a PRE-EXISTING live container, so the
+                    role="status" div stays mounted and the chip swaps within it.
+                    Gated to the steps the analysis actually prefills (brand 0,
+                    gifts 2) — the chip must not linger onto Connect/Review. */}
+                <div role="status">
+                  {step <= 2 && analyze.status !== "idle" ? <AnalyzeChip state={analyze} /> : null}
+                </div>
                 <StepFade key={step}>
                   <h2
                     ref={headingRef}
@@ -650,8 +702,12 @@ function AnalyzeChip({ state }: { state: AnalyzeState }) {
     );
   }
   if (state.status === "error") {
+    // Step-agnostic wording: the analysis resolves AFTER the merchant has
+    // moved past step 1, so "fill in below" would point at nothing there.
     return (
-      <p className="mb-5 text-[12.5px] text-ink-mute">Couldn&rsquo;t read that URL &middot; fill in below.</p>
+      <p className="mb-5 text-[12.5px] text-ink-mute">
+        Couldn&rsquo;t read that URL &middot; no problem, fill things in as you go.
+      </p>
     );
   }
   if (state.status === "done") {
@@ -871,9 +927,17 @@ function StepBody(props: {
             placeholder="Warm and direct, like a maker writing to a friend who backed us early…"
           />
         </Field>
-        <Field label="Tone" hint="Pick the words that fit — these shape the reassurance copy">
+        {/* NOT a <Field>: Field renders a wrapping <label>, and a label's click
+            target is its first labelable descendant — clicking the "Tone" text
+            would silently toggle the first chip. A grouped div is the correct
+            semantics for a set of toggle buttons. */}
+        <div role="group" aria-label="Tone" className="flex flex-col gap-1.5">
+          <span className="text-[13px] font-semibold text-ink">Tone</span>
+          <span className="text-[12px] text-ink-mute">
+            Pick the words that fit &mdash; these shape the reassurance copy
+          </span>
           <ToneChips tone={props.tone} toggleTone={props.toggleTone} />
-        </Field>
+        </div>
         <Field label="Banned words" hint="Comma-separated — we'll keep these out of every reply">
           <TextInput
             value={props.banned}

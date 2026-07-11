@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Sidebar } from "@/components/product/Sidebar";
 import { DemoBadge } from "@/components/ui/DemoBadge";
 import { getDemoOperator, isDemoMode } from "@/lib/auth";
+import { authMode } from "@/lib/auth-mode";
 import { getRepositories } from "@/lib/repositories";
 
 /**
@@ -22,11 +23,17 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   const merchants = await getRepositories().merchants.list();
   const operator = getDemoOperator(merchants[0]?.name);
   const demo = isDemoMode();
+  // Mode-aware sign-out (ADR-0020): in real+auth0 mode the live session is the
+  // Auth0 SDK cookie, so sign-out must be a full-page navigation through the
+  // SDK's /auth/logout (which also clears the tenant hint via the middleware).
+  // Password/demo deployments keep the legacy POST /api/logout path — the
+  // /auth/* routes don't exist there.
+  const signOutHref = !demo && authMode() === "auth0" ? "/auth/logout" : null;
   return (
     // Stack on narrow widths (Sidebar renders its own mobile top bar + drawer),
     // restore the fixed sidebar + main row at lg. Desktop layout is unchanged.
     <div className="flex min-h-screen flex-col bg-sand lg:flex-row">
-      <Sidebar operator={operator} isDemo={demo} />
+      <Sidebar operator={operator} isDemo={demo} signOutHref={signOutHref} />
       <main className="min-w-0 flex-1">{children}</main>
       {demo && <DemoBadge />}
     </div>

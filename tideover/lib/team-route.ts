@@ -3,6 +3,7 @@ import { getRepositories } from "@/lib/repositories";
 import { getTenantSession } from "@/lib/tenant";
 import {
   TEAM_SEAT_CAP,
+  memberEmailsOf,
   memberSubsOf,
   normalizeEmail,
   pendingInvitesOf,
@@ -119,8 +120,13 @@ export async function handleTeamDELETE(req: Request): Promise<Response> {
   const sub = (body as { sub: string }).sub;
   const members = memberSubsOf(merchant);
   if (!members.includes(sub)) return json(404, { error: "member not found" });
+  // Drop the recorded display email with the seat, keeping the map in step
+  // with memberSubs on both drivers (plain shallow-set field on each).
+  const remainingEmails = { ...memberEmailsOf(merchant) };
+  delete remainingEmails[sub];
   const updated = await getRepositories().merchants.update(merchant.id, {
     memberSubs: members.filter((m) => m !== sub),
+    memberEmails: remainingEmails,
   });
   return json(200, teamView(updated));
 }

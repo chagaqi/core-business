@@ -27,12 +27,10 @@ const PRODUCT_LINKS: readonly { label: string; href: string }[] = [
   { label: "Baseline report", key: "Day-0 baseline report" },
 ].map((x) => ({ label: x.label, href: featBy.get(x.key)!.href }));
 
-const RESOURCE_LINKS: readonly { label: string; href: string }[] = [
-  { label: "Cold Loom", href: "/vsl/cold-loom" },
-  { label: "Landing VSL", href: "/vsl/landing-vsl" },
-  { label: "Partner demo", href: "/vsl/partner-demo" },
-  { label: "Playbook promo", href: "/vsl/playbook-promo" },
-];
+// Resources column (RC2): the four /vsl transcript pages are UNLINKED and
+// noindexed until real walkthrough videos exist — they carried placeholder
+// players and internal outreach scripts. Re-add a Resources column when the
+// demo video or the WISMO teardown ships.
 
 const COMPANY_LINKS: readonly { label: string; href: string }[] = [
   { label: "How it works", href: "/how-it-works" },
@@ -45,6 +43,7 @@ const COMPANY_LINKS: readonly { label: string; href: string }[] = [
 ];
 
 const HELP_LINKS: readonly { label: string; href: string }[] = [
+  // Address matches CONTACT_EMAIL in lib/security-content.ts (one address site-wide).
   { label: "Email us", href: "mailto:contact@tideover.app" },
   { label: "Book a demo", href: "/book" },
   { label: "Security", href: "/security" },
@@ -111,7 +110,7 @@ export function Footer() {
 
         <nav
           aria-label="Footer"
-          className="grid grid-cols-2 gap-x-8 gap-y-9 pt-9 sm:grid-cols-3 lg:grid-cols-6"
+          className="grid grid-cols-2 gap-x-8 gap-y-9 pt-9 sm:grid-cols-2 lg:grid-cols-4"
           style={{ color: "#A9C2C0" }}
         >
           <FooterCol heading="Product" links={PRODUCT_LINKS} />
@@ -126,7 +125,6 @@ export function Footer() {
             Light this column the moment /compare/hiring-a-va exists.
           */}
 
-          <FooterCol heading="Resources" links={RESOURCE_LINKS} linkColor="#E9B486" />
           <FooterCol heading="Company" links={COMPANY_LINKS} />
           {/*
             TODO(Dylan): affiliate program — a business call, not something we

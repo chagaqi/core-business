@@ -90,3 +90,40 @@ export function tenantHintCookieOptions() {
     maxAge: 30 * 24 * 60 * 60,
   };
 }
+
+/**
+ * Short-lived "tenant was just re-resolved" marker, set alongside the hint by
+ * GET /api/auth/tenant. While it is present the middleware skips the
+ * document-navigation re-resolve below, so ordinary browsing stays
+ * redirect-free; once it lapses, the NEXT full-page /app navigation takes one
+ * cheap hop through /api/auth/tenant. That re-resolve is what frees a user
+ * whose 30-day hint went stale (e.g. their seat was removed) — without it they
+ * would be pinned on an empty workspace until the hint expired.
+ */
+export const TENANT_RESOLVED_COOKIE = "tideover_tenant_res";
+
+/** Cookie attributes for TENANT_RESOLVED_COOKIE — same shape, 60s lifetime. */
+export function tenantResolvedCookieOptions() {
+  return { ...tenantHintCookieOptions(), maxAge: 60 };
+}
+
+/**
+ * PURE middleware decision: should this /app request bounce through
+ * GET /api/auth/tenant to (re-)resolve tenancy?
+ *   - no hint cookie          → yes (first-visit routing, unchanged behavior);
+ *   - hint present            → only for a DOCUMENT navigation whose resolved
+ *                               marker has lapsed — a stale hint (removed seat,
+ *                               deleted merchant) self-heals on the next
+ *                               full-page load instead of dead-ending for 30
+ *                               days. Client-side/RSC requests never bounce.
+ * The resolver always answers with a redirect that sets the marker, so this
+ * can never redirect-loop: the follow-up document request carries the marker.
+ */
+export function shouldResolveTenant(args: {
+  hasHint: boolean;
+  recentlyResolved: boolean;
+  isDocumentNav: boolean;
+}): boolean {
+  if (!args.hasHint) return true;
+  return args.isDocumentNav && !args.recentlyResolved;
+}

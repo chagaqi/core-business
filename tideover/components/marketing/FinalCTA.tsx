@@ -5,13 +5,15 @@ import { CalButton } from "@/components/booking/CalButton";
  * Final CTA — a dark, centered close. The tide-comes-in headline, a calm
  * reassurance subhead, the primary booking CTA, and three supporting points.
  *
- * The supporting points are a prop: the default set keeps the pilot bullet for
- * lead-magnet surfaces (Home, who-its-for, how-it-works), while /pricing passes
- * a pilot-free set so the close never contradicts the paid tiers above it.
+ * The supporting points are a prop. The DEFAULT set is trial-true and safe on
+ * every public surface (Home renders the paid #pricing section on the same
+ * page, so the default must never contradict the tiers). The founding-pilot
+ * bullet is NOT in the defaults — pass it explicitly, and only on allowed
+ * lead-magnet surfaces (the /vsl pages), per the pricing doctrine.
  */
 const DEFAULT_POINTS: readonly string[] = [
   "No new helpdesk to install",
-  "Free founding-partner pilot",
+  "14-day free trial, no card required",
   "Talk to the operator, not a queue",
 ];
 

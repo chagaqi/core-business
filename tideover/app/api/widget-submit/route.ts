@@ -5,15 +5,28 @@ import { getRepositories } from "@/lib/repositories";
 import { getAdapter } from "@/lib/channel-adapters/registry";
 import { INGEST_DRAFT_TIMEOUT_MS } from "@/lib/drafting/LlmDrafter";
 import { ingestTicket } from "@/lib/service";
+import { createRateLimiter, clientIp } from "@/lib/rate-limit";
 
 /**
  * POST /api/widget-submit — the native embeddable widget / status-page AskBox.
  * A customer's question (scoped by their status token) becomes a real ticket via
  * the Mock channel, flowing into the same ingest→draft pipeline as any helpdesk.
+ *
+ * Rate limited (20/min per IP): every accepted POST creates a ticket and may
+ * spend an LLM draft call, and the status token is in every buyer's hands, so
+ * an unthrottled loop means inbox flooding plus unbounded paid drafting. 20/min
+ * is generous for a human filling in a question box. Per-instance caveat: see
+ * lib/rate-limit.ts.
  */
 const Body = z.object({ token: z.string(), message: z.string().min(1) });
 
+const rateLimited = createRateLimiter(20);
+
 export async function POST(req: Request) {
+  if (rateLimited(clientIp(req))) {
+    return NextResponse.json({ error: "rate limited" }, { status: 429 });
+  }
+
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "invalid body" }, { status: 400 });
 

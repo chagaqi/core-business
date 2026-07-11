@@ -52,10 +52,10 @@ export default function LandingVslPage() {
             <strong>Problem:</strong> Here&rsquo;s the setup. You run a presale. The cash comes in, that&rsquo;s the hard
             part. But the moment it clears, a 60-to-120-day clock starts, and the paid-but-waiting window is where it goes
             wrong. The inbox floods. Your helpdesk can&rsquo;t tell which orders are even preorders. And the buyers who
-            can&rsquo;t get a calm, specific answer don&rsquo;t wait. They dispute. Industry benchmarks put presale-heavy
-            stores at five-to-ten times the &ldquo;where is my order&rdquo; tickets during a long wait (Source: YepAI
-            2026, industry benchmark), and every chargeback runs fifteen to twenty-five dollars in fees before you lose
-            the product and the customer (Source: card-network dispute fee range).
+            can&rsquo;t get a calm, specific answer don&rsquo;t wait. They dispute. The same &ldquo;where is my
+            order&rdquo; question arrives in waves for months during a long wait, and every chargeback runs fifteen to
+            twenty-five dollars in fees before you lose the product and the customer (Source: card-network dispute fee
+            range).
           </p>
           <p>
             <strong>Why helpdesks fail:</strong> So why doesn&rsquo;t your helpdesk just handle this? It&rsquo;s built
@@ -89,9 +89,9 @@ export default function LandingVslPage() {
           <p>
             <strong>Offer + CTA:</strong> So here&rsquo;s what I&rsquo;m doing. I&rsquo;m running a small first cohort of
             founding partners&rsquo; presale support by hand, inside the tools they already use. Free for one cycle. No
-            software to install, and you approve every reply before it goes out. If you convert after, the founding intro
-            is a hundred-ninety-nine to two-ninety-nine a month, and the productized version runs two-ninety-nine to
-            four-ninety-nine, with no performance fee until a real case study exists. If you graduated off crowdfunding
+            software to install, and you approve every reply before it goes out. If you continue after, plans run $299
+            to $749 a month, sized by seats and the presale orders in your wait window &mdash; and every plan opens with
+            a 14-day free trial, no card required. If you graduated off crowdfunding
             onto Shopify and you&rsquo;ve got real buyers in the wait window now, book the free 15-minute teardown below.
             I&rsquo;ll show you where buyers are most likely to bail and tell you straight whether a pilot is worth your
             time. Operator to operator. Talk soon.

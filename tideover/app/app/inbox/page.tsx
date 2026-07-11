@@ -1,4 +1,8 @@
+import type { Metadata } from "next";
 import { getDraftAlternates, getPreviouslyTold, getQueue, getTicketView } from "@/lib/service";
+import { NoMerchantState } from "@/components/product/NoMerchantState";
+
+export const metadata: Metadata = { title: "Inbox — Tideover" };
 import { getRepositories } from "@/lib/repositories";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { QueueList, type QueueItem } from "@/components/product/QueueList";
@@ -63,7 +67,7 @@ export default async function InboxPage({
   const repos = getRepositories();
   const merchants = await repos.merchants.list();
   if (merchants.length === 0) {
-    return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
+    return <NoMerchantState />;
   }
   const merchantId =
     searchParams.merchant && merchants.some((m) => m.id === searchParams.merchant)

@@ -12,6 +12,8 @@ import { store } from "@/lib/repositories/json/store";
 import type {
   CustomerRepository,
   GiftRepository,
+  Lead,
+  LeadRepository,
   MerchantRepository,
   MerchantUpdateRepository,
   OrderRepository,
@@ -359,6 +361,22 @@ const merchantUpdates: MerchantUpdateRepository = {
   },
 };
 
+/**
+ * Marketing leads live OUTSIDE the seeded store (lib/data/seed carries no
+ * leads — they are visitor input, not demo data). Module-level array: writes
+ * persist for the process life, restart = empty, same lifecycle the seeded
+ * demo store has. Mirrors the Mongo driver's "leads" collection.
+ */
+const leadStore: Lead[] = [];
+
+const leads: LeadRepository = {
+  async create(l) {
+    const lead: Lead = { ...l, id: newId("ld") };
+    leadStore.push(lead);
+    return lead;
+  },
+};
+
 export const jsonRepositories: Repositories = {
   merchants,
   orders,
@@ -370,4 +388,5 @@ export const jsonRepositories: Repositories = {
   scriptVariants,
   outcomeEvents,
   merchantUpdates,
+  leads,
 };

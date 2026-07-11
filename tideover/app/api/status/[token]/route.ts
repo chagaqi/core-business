@@ -1,22 +1,14 @@
 import { NextResponse } from "next/server";
 import { getPublicStatus, viewMetaFromHeaders } from "@/lib/status";
+import { createRateLimiter } from "@/lib/rate-limit";
 
 /**
  * GET /api/status/[token] — token-scoped customer status. Delegates the PII
  * boundary to getPublicStatus (shared with the /status page). Invalid/forged
- * tokens 404. Basic in-memory rate limiting.
+ * tokens 404. Basic in-memory rate limiting (60/min per forwarded-for value —
+ * shared impl in lib/rate-limit.ts; see its per-instance caveat).
  */
-const HITS = new Map<string, { n: number; ts: number }>();
-function rateLimited(key: string): boolean {
-  const now = Date.now();
-  const e = HITS.get(key);
-  if (!e || now - e.ts > 60000) {
-    HITS.set(key, { n: 1, ts: now });
-    return false;
-  }
-  e.n += 1;
-  return e.n > 60;
-}
+const rateLimited = createRateLimiter(60);
 
 export async function GET(req: Request, { params }: { params: { token: string } }) {
   const ip = req.headers.get("x-forwarded-for") ?? "local";

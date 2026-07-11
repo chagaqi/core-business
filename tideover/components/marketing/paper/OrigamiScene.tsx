@@ -5,9 +5,14 @@
  *
  * Seamless treadmill (Goodkatz structure): every band's geometry is PERIODIC —
  * built by tiling one period across the run, one spare period past each edge —
- * and the loop translates the inner <g> by exactly one period in SVG USER UNITS
- * (globals.css .oc-roll-*, translate3d/linear/infinite). User-unit transforms
- * stretch with the viewBox, so the seam survives preserveAspectRatio="none".
+ * drawn once into a strip SVG that is one viewport-width PLUS one period wide
+ * (viewBox 0..1200+P). The LOOP animates an HTML WRAPPER DIV (.oc-roll) around
+ * that strip, not an inner SVG <g>: Safari never composites transforms on inner
+ * SVG elements (main-thread repaint of every path per frame), but a div
+ * transform is composited everywhere. The wrapper is sized (1200+P)/1200 of the
+ * band, and the keyframe translates it by calc(-100% · P/(1200+P)) — a percent
+ * OF ITS OWN WIDTH, so the shift is exactly one period at every viewport width
+ * and the wrap-around seam lands on identical periodic geometry.
  * All bands travel the SAME direction; front fastest → back slowest. Vertical
  * swell is a CSS-px translateY carry on each band's outer wrapper (own duration,
  * not a multiple of its X duration), so X and Y compose without merging.
@@ -82,7 +87,9 @@ function crumpleTiled(seed: number, xS: number, xE: number, y0: number, wave: nu
       const up = rnd(seed + (((c % per) + per) % per) * 13 + r * 29) > 0.5;
       facets.push({ d: tri(a, b, d), fill: up ? hi : sh });
       facets.push({ d: tri(a, d, e), fill: up ? sh : hi });
-      creases.push({ d: `M ${a[0]} ${a[1]} L ${d[0]} ${d[1]}`, light: rnd(seed + c * 5 + r * 17) > 0.5 });
+      // Seed with the PERIOD index (like the facets above) so crease tone is
+      // period-exact and the treadmill loop point stays invisible.
+      creases.push({ d: `M ${a[0]} ${a[1]} L ${d[0]} ${d[1]}`, light: rnd(seed + (((c % per) + per) % per) * 5 + r * 17) > 0.5 });
     }
   }
   return { facets, creases, ch: `rgba(255,255,255,${creaseA})`, cs: `rgba(17,37,42,${(creaseA * 0.7).toFixed(3)})` };
@@ -99,36 +106,42 @@ const BANDS: Band[] = [
 
 function BandLayer({ b }: { b: Band }) {
   const P = b.pp * b.wave;
+  const W = 1200 + P; // strip width: one viewport span + one spare period to roll through
   const xS = -b.wave;
-  const xE = 1200 + P + b.wave;
+  const xE = W + b.wave;
   const colored = crest(b.seed, b.base, b.amp, b.wave, b.pp, xS, xE, 0);
   const white = crest(b.seed, b.base - 4, b.amp, b.wave, b.pp, xS, xE, 50); // different jitter → varying gap
   const dark = crest(b.seed, b.base - 7, b.amp, b.wave, b.pp, xS, xE, 0);
   const cr = crumpleTiled(b.seed, xS, xE, 168, b.wave, b.pp, b.rows, b.grad ? 0.06 : 0.055, b.grad ? 0.14 : 0.12);
   return (
     <div className={`oc-band ${b.cls}`} aria-hidden>
-      <svg preserveAspectRatio="none" viewBox="0 0 1200 360">
-        {b.grad && (
-          <defs>
-            <linearGradient id="oc-deep-water" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stopColor="#94BEC3" />
-              <stop offset="1" stopColor="#7AA9AF" />
-            </linearGradient>
-          </defs>
-        )}
-        <g className={b.roll}>
-          <path d={fillD(dark)} fill="rgba(17,37,42,0.13)" />
-          <path d={fillD(white)} fill="#FFFFFF" />
-          <path d={fillD(colored)} fill={b.color} />
-          {cr.facets.map((f, k) => (
-            <path key={`f${k}`} d={f.d} fill={f.fill} />
-          ))}
-          {cr.creases.map((c, k) => (
-            <path key={`c${k}`} d={c.d} fill="none" stroke={c.light ? cr.ch : cr.cs} strokeWidth={0.7} strokeLinecap="round" />
-          ))}
-          <path d={edgeD(colored)} fill="none" stroke={b.edge} strokeWidth={1.6} strokeLinejoin="round" opacity={0.55} />
-        </g>
-      </svg>
+      {/* .oc-roll — the treadmill rides on this HTML div (composited in Safari;
+          inner-SVG <g> transforms are not). Shadow + white-edge + crumple copies
+          all ride inside the one strip SVG unchanged. */}
+      <div className={`oc-roll ${b.roll}`}>
+        <svg preserveAspectRatio="none" viewBox={`0 0 ${W} 360`}>
+          {b.grad && (
+            <defs>
+              <linearGradient id="oc-deep-water" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stopColor="#94BEC3" />
+                <stop offset="1" stopColor="#7AA9AF" />
+              </linearGradient>
+            </defs>
+          )}
+          <g>
+            <path d={fillD(dark)} fill="rgba(17,37,42,0.13)" />
+            <path d={fillD(white)} fill="#FFFFFF" />
+            <path d={fillD(colored)} fill={b.color} />
+            {cr.facets.map((f, k) => (
+              <path key={`f${k}`} d={f.d} fill={f.fill} />
+            ))}
+            {cr.creases.map((c, k) => (
+              <path key={`c${k}`} d={c.d} fill="none" stroke={c.light ? cr.ch : cr.cs} strokeWidth={0.7} strokeLinecap="round" />
+            ))}
+            <path d={edgeD(colored)} fill="none" stroke={b.edge} strokeWidth={1.6} strokeLinejoin="round" opacity={0.55} />
+          </g>
+        </svg>
+      </div>
     </div>
   );
 }

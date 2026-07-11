@@ -88,6 +88,11 @@ test("invite → verified-email login attaches the member, removes the invite, a
     assert.ok(claimed && "merchant" in claimed, "verified invitee attaches");
     assert.deepEqual(claimed.merchant.memberSubs, [memberSub]);
     assert.deepEqual(claimed.merchant.pendingInvites, [], "claimed invite is removed");
+    assert.deepEqual(
+      claimed.merchant.memberEmails,
+      { [memberSub]: inviteEmail.toLowerCase() },
+      "the claimed email is recorded against the sub so the seats UI can show WHO holds the seat",
+    );
 
     // The member is scoped IN: the tenant seam resolves the workspace for them.
     const scoped = withTenantScope(jsonRepositories);
@@ -177,6 +182,7 @@ test("owner can remove an invite and a member; unknown targets 404", async () =>
   const { merchant } = await createMerchantFromIntake(intake(), { ownerSub });
   await jsonRepositories.merchants.update(merchant.id, {
     memberSubs: [memberSub],
+    memberEmails: { [memberSub]: `member-${rand()}@example.com` },
     pendingInvites: [{ email: inviteEmail, invitedAt: new Date().toISOString() }],
   });
 
@@ -189,6 +195,7 @@ test("owner can remove an invite and a member; unknown targets 404", async () =>
     const stored = await jsonRepositories.merchants.findById(merchant.id);
     assert.deepEqual(stored!.memberSubs, []);
     assert.deepEqual(stored!.pendingInvites, []);
+    assert.deepEqual(stored!.memberEmails, {}, "removing the seat drops the recorded email too");
 
     assert.equal((await handleTeamDELETE(del({ email: inviteEmail }))).status, 404);
     assert.equal((await handleTeamDELETE(del({ sub: memberSub }))).status, 404);

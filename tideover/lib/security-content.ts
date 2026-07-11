@@ -30,7 +30,7 @@ export interface SubProcessor {
 export const CAN_SEE: readonly DataItem[] = [
   {
     title: "The presale tickets you route to us",
-    body: "The subject and body text of the support messages you forward or webhook to Tideover, the customer's email address, an order reference if the message carries one, and when it was sent. That is the message you chose to send us — nothing more from your inbox.",
+    body: "The subject and body text of the support messages your helpdesk webhook routes to Tideover, the customer's email address, an order reference if the message carries one, and when it was sent. That is the message you chose to send us — nothing more from your inbox.",
   },
   {
     title: "The order and customer details needed to match a ticket to a real timeline",
@@ -50,7 +50,7 @@ export const NEVER_SEE: readonly DataItem[] = [
   },
   {
     title: "Your Shopify admin",
-    body: "Running the pilot needs no app install, no admin password, and no OAuth into your store. The forwarding and webhook rungs move tickets to us without granting any access to your Shopify admin.",
+    body: "Running the pilot needs no app install, no admin password, and no OAuth into your store. The CSV and webhook rungs move your data to us without granting any access to your Shopify admin.",
   },
   {
     title: "Your full customer list",
@@ -58,7 +58,7 @@ export const NEVER_SEE: readonly DataItem[] = [
   },
   {
     title: "Passwords",
-    body: "No integration rung asks for a login. Forwarding aliases, webhooks with a shared secret, and least-privilege API keys are the only mechanisms — never your password.",
+    body: "No integration rung asks for a login. CSV files you export yourself and helpdesk webhooks with a shared secret are the only mechanisms — never your password.",
   },
   {
     title: "Anything outside the tickets you send us",
@@ -74,19 +74,14 @@ export const REVOCATION: readonly RevocationRung[] = [
     cutoff: "Nothing recurring to revoke — stop uploading, and email us to delete the imported records.",
   },
   {
-    rung: "1 — Email forwarding",
-    grants: "A copy of the presale mail your forwarding rule sends to a Tideover alias.",
-    cutoff: "Delete the forwarding rule in your mail settings. Mail stops reaching us immediately.",
-  },
-  {
-    rung: "2 — Helpdesk webhook",
-    grants: "Presale ticket events your helpdesk fires at our ingest URL (e.g. a Gorgias HTTP integration).",
+    rung: "1 — Helpdesk webhook",
+    grants: "Presale ticket events your helpdesk fires at our ingest URL (e.g. a Gorgias HTTP integration or Zendesk trigger), authenticated with a shared secret.",
     cutoff: "Deactivate or delete the webhook or trigger in your helpdesk. No further events reach us.",
   },
   {
-    rung: "3 — Write-back API key",
-    grants: "A least-privilege agent-user key so approved replies post back inside your helpdesk.",
-    cutoff: "Reset the API key (invalidates instantly) or delete the Tideover agent user.",
+    rung: "Future — Write-back API key",
+    grants: "Nothing today: approved replies are sent by you, from your own helpdesk. If a direct write-back integration ships, it would use a least-privilege agent-user key you create.",
+    cutoff: "Nothing to revoke until it exists. If you ever create such a key, resetting it (invalidates instantly) or deleting the agent user cuts it off.",
   },
   {
     rung: "Optional — Shopify custom app",
@@ -102,6 +97,10 @@ export const REVOCATION: readonly RevocationRung[] = [
 export const SUB_PROCESSORS: readonly SubProcessor[] = [
   { name: "Vercel", role: "application hosting." },
   { name: "MongoDB Atlas", role: "database storage on the production data path." },
+  {
+    name: "Auth0 (Okta)",
+    role: "operator sign-in for the live app: it processes your team's account emails and credentials to run the login. It never receives your customers' data or the tickets you route to us.",
+  },
   { name: "Cal.com", role: "the booking embed on our marketing site." },
   {
     name: "Resend",
@@ -119,8 +118,8 @@ export const RETENTION =
 
 /** How a merchant exports or deletes the data they routed to us. */
 export const DELETION_EXPORT =
-  "You can ask us to export or delete the data you have routed to us at any time by emailing hello@tideover.app, and we will act on the request within a reasonable period. When your account ends, we delete the data you routed to us. Because you are the controller, you can also cut the flow at the source at any time — the Security page lists the one action that revokes each integration.";
+  "You can ask us to export or delete the data you have routed to us at any time by emailing contact@tideover.app, and we will act on the request within a reasonable period. When your account ends, we delete the data you routed to us. Because you are the controller, you can also cut the flow at the source at any time — the Security page lists the one action that revokes each integration.";
 
 /** Contact + physical postal address (CAN-SPAM requirement), used site-wide. */
-export const CONTACT_EMAIL = "hello@tideover.app";
+export const CONTACT_EMAIL = "contact@tideover.app";
 export const POSTAL_ADDRESS = "54 Beasley Dr, Unit 3, Kitchener, ON, Canada";

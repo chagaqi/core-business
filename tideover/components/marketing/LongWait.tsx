@@ -50,10 +50,7 @@ const STAKES: readonly { title: string; body: string }[] = [
   },
   {
     title: "WISMO floods the inbox",
-    body: `“Where's my order?” arrives in waves for months, burying the tickets that actually need you. ${citedStat(
-      "Presale-heavy stores see 5–10× more “where is my order?” tickets during long waits",
-      "YepAI 2026, industry benchmark",
-    )}.`,
+    body: "“Where's my order?” arrives in waves for months, burying the tickets that actually need you. The longer the wait runs, the more of your inbox becomes the same question — asked again at day 7, day 30, and day 60, often by the same buyer.",
   },
   {
     title: "“Scam” reviews stick",

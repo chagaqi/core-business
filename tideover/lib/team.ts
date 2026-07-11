@@ -24,6 +24,8 @@ export const normalizeEmail = (email: string): string => email.trim().toLowerCas
 
 export const memberSubsOf = (m: Merchant): string[] => m.memberSubs ?? [];
 export const pendingInvitesOf = (m: Merchant): TeamInvite[] => m.pendingInvites ?? [];
+/** Display emails recorded at claim time, keyed by sub (presentation only). */
+export const memberEmailsOf = (m: Merchant): Record<string, string> => m.memberEmails ?? {};
 
 /** Members + outstanding invites — what the cap counts. */
 export const seatCountOf = (m: Merchant): number =>
@@ -67,6 +69,10 @@ export async function acceptPendingInvite(session: TenantSession): Promise<Accep
 
   const merchant = await repos.merchants.update(target.id, {
     memberSubs: [...memberSubsOf(target), session.sub],
+    // Record WHO claimed the seat: the invite email is otherwise destroyed
+    // here, leaving the owner a bare Auth0 sub they can't recognize. Display
+    // only — tenancy keeps reading memberSubs.
+    memberEmails: { ...memberEmailsOf(target), [session.sub]: email },
     pendingInvites: pendingInvitesOf(target).filter((i) => normalizeEmail(i.email) !== email),
   });
   return { merchant };

@@ -1,6 +1,6 @@
 import { getRepositories } from "@/lib/repositories";
 import { getTenantSession } from "@/lib/tenant";
-import { TEAM_SEAT_CAP, memberSubsOf, pendingInvitesOf } from "@/lib/team";
+import { TEAM_SEAT_CAP, memberEmailsOf, memberSubsOf, pendingInvitesOf } from "@/lib/team";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { TeamManager } from "@/components/product/TeamManager";
@@ -56,7 +56,12 @@ export default async function TeamPage({
 
       <TeamManager
         isOwner={isOwner}
-        members={memberSubsOf(merchant)}
+        members={memberSubsOf(merchant).map((sub) => ({
+          sub,
+          // Display email recorded at invite-claim time; members attached
+          // before that field existed fall back to their sub in the UI.
+          email: memberEmailsOf(merchant)[sub] ?? null,
+        }))}
         invites={pendingInvitesOf(merchant)}
         seatCap={TEAM_SEAT_CAP}
       />

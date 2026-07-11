@@ -91,6 +91,7 @@ function scopedMerchants(base: MerchantRepository): MerchantRepository {
         delete safePatch.ownerSub;
         if (current.ownerSub !== s.sub) {
           delete safePatch.memberSubs;
+          delete safePatch.memberEmails;
           delete safePatch.pendingInvites;
         }
         return base.update(id, safePatch);

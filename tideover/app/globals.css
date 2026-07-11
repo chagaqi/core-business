@@ -140,14 +140,17 @@
     padding: 17px 28px;
     font-size: 16px;
   }
+  /* AA-safe terracotta: white 15-16px/600 text needs ≥4.5:1 at BOTH gradient
+     stops — #B85422 = 4.85:1, #A54A1D = 5.84:1 (computed, not eyeballed). The
+     old #E0833D→#C25C29 pair sat at 2.81:1/4.32:1 and failed across the range. */
   .btn-primary {
-    background: linear-gradient(135deg, var(--terracotta-300), var(--terracotta-600));
+    background: linear-gradient(135deg, var(--terracotta-700), #a54a1d);
     color: #fff;
-    box-shadow: 0 10px 24px -12px rgba(217, 118, 47, 0.5);
+    box-shadow: 0 10px 24px -12px rgba(184, 84, 34, 0.5);
   }
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 16px 30px -14px rgba(217, 118, 47, 0.6);
+    box-shadow: 0 16px 30px -14px rgba(184, 84, 34, 0.6);
   }
   .btn-ghost {
     background: transparent;
@@ -633,7 +636,7 @@
    @layer components `.btn:active` translate. */
 .btn-primary:active {
   transform: translateY(1px) scale(0.985);
-  box-shadow: 0 4px 12px -8px rgba(217, 118, 47, 0.5);
+  box-shadow: 0 4px 12px -8px rgba(184, 84, 34, 0.5);
 }
 .btn-ondark:active {
   transform: translateY(1px) scale(0.985);
@@ -662,27 +665,38 @@ details[open] .faq-answer {
    ocean that ROLLS. This seascape IS the page's one ambient element: waves roll
    forward like a treadmill (seamless user-unit loops, all same direction, front
    fastest) with a vertical swell carry, a boat sails across bobbing + pitching,
-   and white cut-paper edges stack the sheets. All transform/opacity, GPU-promoted
-   (translate3d + will-change) on the moving layers, zero filters on anything that
-   moves. Every resting style is the finished visible state, so under the global
+   and white cut-paper edges stack the sheets. All transform/opacity, zero filters
+   on anything that moves. The four ~250-path treadmill loops ride HTML wrapper
+   divs (.oc-roll) — not inner SVG <g>s — because Safari repaints inner-SVG
+   transforms on the main thread; only the small boat bob/pitch and sun-ray spin
+   (a handful of paths each) stay on inner <g>s. Every resting style is the
+   finished visible state, so under the global
    prefers-reduced-motion kill the whole landscape renders static with all copy
    visible and the boat parked at its base position.
    ============================================================ */
 
 /* Layer primitives. Each wave band is an outer WRAPPER div (does the CSS-px
-   vertical swell carry) holding a full-width SVG (preserveAspectRatio="none", so
-   it spans edge to edge and clips the rolled-out geometry); the inner <g> does
-   the horizontal treadmill in SVG user units. The boat + distant boat are their
-   own small SVGs that sail across. Heights are svh; z stacks back → boat → front. */
+   vertical swell carry, and clips) holding an oversized ROLL div (.oc-roll —
+   the horizontal treadmill) that carries one strip SVG whose viewBox is one
+   viewport span + one period wide (preserveAspectRatio="none"). The roll is an
+   HTML element on purpose: Safari repaints transforms on inner SVG <g>s on the
+   main thread every frame, but composites a div transform like everything else.
+   The boat + distant boat are their own small SVGs that sail across. Heights
+   are svh; z stacks back → boat → front. */
 .oc-band {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   width: 100%;
+  overflow: hidden;
   will-change: transform;
 }
-.oc-band > svg {
+.oc-roll {
+  height: 100%;
+  will-change: transform;
+}
+.oc-roll > svg {
   display: block;
   width: 100%;
   height: 100%;
@@ -706,17 +720,22 @@ details[open] .faq-answer {
 .oc-band-c { height: 34svh; z-index: 1; --carry: -9px; animation: oc-carry 5.7s ease-in-out -1s infinite; }
 .oc-band-front { height: 30svh; z-index: 4; --carry: -9px; animation: oc-carry 5s ease-in-out -1.5s infinite; }
 
-/* Treadmill roll (inner <g>): translate one PERIOD in user units, linear/infinite,
-   ALL same direction, front fastest → back slowest (~2:1), negative delays so the
-   layers never sync-lock. User-unit px stretches with the viewBox → seamless. */
-.oc-roll-a { will-change: transform; animation: oc-roll-a 20s linear -7s infinite; }
-.oc-roll-b { will-change: transform; animation: oc-roll-b 15s linear -5s infinite; }
-.oc-roll-c { will-change: transform; animation: oc-roll-c 12s linear -3s infinite; }
-.oc-roll-d { will-change: transform; animation: oc-roll-d 9s linear -1.5s infinite; }
-@keyframes oc-roll-a { to { transform: translate3d(-632px, 0, 0); } }
-@keyframes oc-roll-b { to { transform: translate3d(-660px, 0, 0); } }
-@keyframes oc-roll-c { to { transform: translate3d(-580px, 0, 0); } }
-@keyframes oc-roll-d { to { transform: translate3d(-612px, 0, 0); } }
+/* Treadmill roll (.oc-roll div): each band's strip SVG is (1200+P)/1200 of the
+   band's width (P = that band's period in user units — a:632 b:660 c:580 d:612),
+   and one cycle translates the div by P/(1200+P) OF ITS OWN WIDTH — i.e. exactly
+   one period in rendered px at every viewport width, so the wrap seam always
+   lands on identical periodic geometry. Linear/infinite, ALL same direction,
+   front fastest → back slowest (~2:1), negative delays so the layers never
+   sync-lock. Durations are unchanged from the old user-unit version → same
+   speeds. HTML-element transform → composited in Safari too. */
+.oc-roll-a { width: calc(100% * 1832 / 1200); animation: oc-roll-a 20s linear -7s infinite; }
+.oc-roll-b { width: calc(100% * 1860 / 1200); animation: oc-roll-b 15s linear -5s infinite; }
+.oc-roll-c { width: calc(100% * 1780 / 1200); animation: oc-roll-c 12s linear -3s infinite; }
+.oc-roll-d { width: calc(100% * 1812 / 1200); animation: oc-roll-d 9s linear -1.5s infinite; }
+@keyframes oc-roll-a { to { transform: translate3d(calc(-100% * 632 / 1832), 0, 0); } }
+@keyframes oc-roll-b { to { transform: translate3d(calc(-100% * 660 / 1860), 0, 0); } }
+@keyframes oc-roll-c { to { transform: translate3d(calc(-100% * 580 / 1780), 0, 0); } }
+@keyframes oc-roll-d { to { transform: translate3d(calc(-100% * 612 / 1812), 0, 0); } }
 @keyframes oc-carry {
   0%, 100% { transform: translate3d(0, 0, 0); }
   50% { transform: translate3d(0, var(--carry, -8px), 0); }
@@ -801,13 +820,25 @@ details[open] .faq-answer {
   to { transform: translate3d(122vw, 0, 0); }
 }
 
-/* Copy rise — the headline/sub/CTA/meta lift on load. Stagger via inline delay. */
+/* Copy rise — the sub/CTA/meta lift on load. Stagger via inline delay. */
 .oc-rise {
   animation: oc-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 @keyframes oc-rise {
   from { opacity: 0; transform: translateY(22px); }
   to { opacity: 1; transform: translateY(0); }
+}
+/* LCP-safe rise for the headline ONLY: transform, never opacity. The h1 is the
+   homepage's LCP element — Chrome excludes opacity:0 content from LCP, so the
+   headline must be fully visible at first paint. It waits a few px low during
+   the entrance delay, then lifts into place; the fade stagger stays on the
+   secondary copy (.oc-rise). Do not add opacity here. */
+.oc-rise-lcp {
+  animation: oc-rise-lcp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes oc-rise-lcp {
+  from { transform: translateY(12px); }
+  to { transform: translateY(0); }
 }
 @keyframes oc-fade {
   from { opacity: 0; }

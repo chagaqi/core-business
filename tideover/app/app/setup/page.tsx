@@ -6,6 +6,9 @@ import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { Button } from "@/components/ui/Button";
 import { integrationHealth, type SetupItemKey } from "@/lib/setup";
+import { ConnectPanel } from "@/app/onboarding/ConnectPanel";
+import { ImportPanel } from "@/app/onboarding/ImportPanel";
+import { gorgiasHttpIntegration, zendeskTrigger } from "@/lib/ingest-templates";
 import type { Metadata } from "next";
 
 /**
@@ -72,9 +75,14 @@ export default async function SetupPage({
         : `${health.quietDays} day${health.quietDays === 1 ? "" : "s"} ago`;
 
   // ?merchant= is preserved onto the in-app links so the operator stays on the
-  // same merchant; the /onboarding links are merchant-agnostic and left as-is.
+  // same merchant. Fragment-aware: the query must sit BEFORE any #anchor
+  // (checklist items point at the #import / #connect panels on this page).
   const suffix = `?merchant=${merchantId}`;
-  const resolveHref = (href: string) => (href.startsWith("/app") ? `${href}${suffix}` : href);
+  const resolveHref = (href: string) => {
+    if (!href.startsWith("/app")) return href;
+    const [path, hash] = href.split("#");
+    return `${path}${suffix}${hash ? `#${hash}` : ""}`;
+  };
   const firstUndoneIndex = items.findIndex((i) => !i.done);
 
   return (
@@ -228,6 +236,22 @@ export default async function SetupPage({
           })}
         </section>
       )}
+
+      {/* ── Import your backer list (checklist target: #import) ─────────────
+          The DIRECT-mode ImportPanel POSTs to /api/import (middleware-gated,
+          tenant-scoped). This is the post-onboarding import surface: skipped
+          the CSV during setup, a >10k list imported in parts, or resuming a
+          partial import — re-uploads are deduped by importKey. */}
+      <section id="import" aria-label="Import your backer list" className="scroll-mt-6">
+        <ImportPanel merchantId={merchantId} />
+      </section>
+
+      {/* ── Connect your helpdesk (checklist target: #connect) ──────────────
+          The same webhook kit shown once on the onboarding success screen —
+          re-derived server-side here so it is always recoverable. */}
+      <section id="connect" aria-label="Connect your helpdesk" className="scroll-mt-6">
+        <ConnectPanel gorgias={gorgiasHttpIntegration(merchant)} zendesk={zendeskTrigger(merchant)} />
+      </section>
 
       <p className="rounded-xl border border-dashed border-border bg-sand px-4 py-3 text-[12px] leading-relaxed text-ink-mute">
         Proof-only: this checklist is computed from what actually exists in your account, never a

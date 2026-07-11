@@ -105,11 +105,20 @@ function Section({
           <Button variant="primary" disabled={!dirty || problem !== null || busy} onClick={onSave}>
             {busy ? "Saving…" : "Save"}
           </Button>
+          {/* Always-mounted polite live region: screen readers hear the
+              Saving… → Saved transition. A live region must pre-exist in the
+              DOM to announce reliably, so this span never unmounts; sr-only is
+              position:absolute, so it adds no flex gap. */}
+          <span role="status" aria-live="polite" className="sr-only">
+            {busy ? "Saving…" : saved && !dirty ? "Saved" : ""}
+          </span>
           {saved && !dirty ? (
             <span className="text-[12px] font-medium text-teal">Saved</span>
           ) : null}
           {dirty && problem ? (
-            <span className="text-[12px] text-terracotta-700">{problem}</span>
+            <span role="alert" className="text-[12px] text-terracotta-700">
+              {problem}
+            </span>
           ) : null}
           {error ? (
             <p

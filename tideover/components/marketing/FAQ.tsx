@@ -20,7 +20,7 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "Is this just ChatGPT?",
-    a: "No. The core doesn't require an LLM at all. Four deterministic engines do the work, and their math is on screen: the risk score shows the exact factors behind it, order value, how long the buyer has waited, sentiment, and production stage. Replies are assembled from an approved playbook keyed to where that order actually sits, so there's nothing to hallucinate. And it reads your real fulfillment window, which ChatGPT has no way to know.",
+    a: "No. The core doesn't require an LLM at all. Four deterministic engines do the work, and their math is on screen: the risk score shows the exact factors behind it, order value, how long the buyer has waited, sentiment, and production stage. Replies are assembled from an approved playbook keyed to where that order actually sits, so there's nothing to hallucinate. And it reads your real fulfillment window, which ChatGPT has no way to know. There is an optional AI-drafting layer — off by default, disclosed on the security page — and its drafts pass the same hard-date check in code, with a person approving every one before it sends.",
   },
   {
     q: "We already have a VA who answers tickets.",
@@ -46,11 +46,12 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
     q: "You'll see our customers. What about data security?",
     a: (
       <>
-        Less than you&rsquo;d think, and that&rsquo;s by design. The default setup is forward-only email: no OAuth, no
-        passwords, no Shopify admin. We see only the tickets you forward, nothing else in your inbox. The public
-        status page shows a buyer just their first name and a timeline, never their email or lifetime value. Revoking
-        us is deleting that one forwarding rule. We don&rsquo;t hold SOC 2 and we don&rsquo;t claim certifications we
-        haven&rsquo;t earned. What we can and can&rsquo;t see is laid out line by line on the{" "}
+        Less than you&rsquo;d think, and that&rsquo;s by design. The default setup is one rule in your helpdesk: tag
+        presale tickets and route them to a private Tideover webhook, plus a CSV of backers you export yourself. No
+        OAuth, no passwords, no Shopify admin. We see only the tickets you route to us, nothing else in your inbox. The
+        public status page shows a buyer just their first name and a timeline, never their email or lifetime value.
+        Revoking us is deleting that one webhook rule in your helpdesk. We don&rsquo;t hold SOC 2 and we don&rsquo;t
+        claim certifications we haven&rsquo;t earned. What we can and can&rsquo;t see is laid out line by line on the{" "}
         <a className="link-quiet" href="/security">
           security page
         </a>
@@ -60,11 +61,11 @@ const FAQS: readonly { q: string; a: React.ReactNode }[] = [
   },
   {
     q: "What if you disappear mid-cycle? You're one person.",
-    a: "Fair question, and the answer is built into how this works, not a promise. Your replies live in your own helpdesk, sent under your name, so the customer relationship was always yours. The status page is a separate hosted page, so switching it off never touches your store. And the whole integration is one email-forwarding rule you created, so ending it is deleting that rule. If Tideover vanished tomorrow you'd lose a tool, not your support.",
+    a: "Fair question, and the answer is built into how this works, not a promise. You send every reply from your own helpdesk, under your own name, so the customer relationship was always yours. The status page is a separate hosted page, so switching it off never touches your store. And the whole integration is one routing rule you created in your own helpdesk, so ending it is deleting that rule. If Tideover vanished tomorrow you'd lose a tool, not your support.",
   },
   {
     q: "Do I switch helpdesks or install anything?",
-    a: "No. Tideover bolts onto the Gorgias, Tidio, or Intercom you already run. Nothing to rip out, no second inbox, no infra change. We work inside your existing setup and handle the presale tickets specifically.",
+    a: "No. Tideover bolts onto the Gorgias, Zendesk, Tidio, or Intercom you already run: it reads the presale tickets you route to it and drafts the replies, and you approve and send them from your own inbox. Nothing to rip out, no second inbox, no infra change.",
   },
   {
     q: "What happens after the wait ends?",

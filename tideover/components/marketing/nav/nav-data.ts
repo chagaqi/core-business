@@ -11,7 +11,7 @@
  * DEMO_MODE href/fallback split; there is no cockpit deep-link left to gate.)
  *
  * Icons live in ./icons.tsx (this file stays .ts / JSX-free); each item names one
- * by key. Density mirrors the studied 3-column pattern (4 / 5 / 5 = 14 items).
+ * by key. Density mirrors the studied 3-column pattern (4 / 5 / 4 = 13 items).
  */
 
 /**
@@ -154,12 +154,10 @@ export const FEATURE_COLUMNS: readonly NavColumn[] = [
         href: "/procurement",
         icon: "clipboard",
       },
-      {
-        label: "Watch a walkthrough",
-        desc: "Short video tours of the engine at work",
-        href: "/vsl/landing-vsl",
-        icon: "play",
-      },
+      // "Watch a walkthrough" removed 2026-07-11: the /vsl pages render a
+      // placeholder player, no video — a nav promise must not dead-end there.
+      // The transcripts stay reachable via the footer's Resources links.
+      // Restore an item here only when a real video ships.
     ],
   },
 ];

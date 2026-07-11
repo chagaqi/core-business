@@ -99,9 +99,9 @@ export default function PartnerDemoPage() {
           <p>
             <strong>6. The ask + founding terms:</strong> So the ask is simple. A free concierge pilot for one cycle. No
             software fee, no setup fee, no card. You approve every reply, you keep the entire reassurance library we
-            build, and you lock the lowest price I&rsquo;ll ever offer if you continue. After the pilot, the founding
-            intro is a hundred-ninety-nine to two-ninety-nine a month, and the productized version runs two-ninety-nine to
-            four-ninety-nine, with no performance fee until a real case study exists. In exchange, I learn from your real
+            build, and you lock the lowest price I&rsquo;ll ever offer if you continue. After the pilot, plans run $299
+            to $749 a month, sized by seats and the presale orders in your wait window, and every plan opens with a
+            14-day free trial &mdash; no card required. In exchange, I learn from your real
             inbox, and only if you&rsquo;re genuinely happy, a testimonial. You&rsquo;re a strong fit, with real
             buyers in the wait window right now. If you want in, I can send the one-page pilot agreement today and capture
             your baseline this week. Want me to send it?

@@ -207,12 +207,12 @@ export default function SecurityPage() {
             <div className="flex flex-col gap-4 text-[16px] leading-relaxed text-slate">
               <p className="m-0">
                 {
-                  "The dashboard and cockpit — where drafts are reviewed and approved — sit behind a signed session cookie. In production, every operator page and operator API is gated by middleware: a request without a valid, unexpired, correctly-signed session is redirected to sign-in or refused."
+                  "The dashboard and cockpit — where drafts are reviewed and approved — sit behind per-user accounts. In production, sign-in runs through Auth0, and every operator page and operator API is gated by middleware: a request without a valid session is redirected to sign-in or refused. If the auth configuration is ever incomplete, the gate fails closed with an explicit error — it never silently opens."
                 }
               </p>
               <p className="m-0">
                 {
-                  "The session is an HMAC-signed token minted from a server-side secret. Rotating that secret revokes every active session immediately; changing the operator password stops new sign-ins. The public pages — this one, your buyers' status links, and the marketing site — are intentionally not gated, so nothing a buyer needs is ever behind a login."
+                  "Each workspace is isolated to the account that created it and the seats that owner invites; removing a member revokes their access. A legacy single-password mode remains only as an env-gated fallback for deployments without Auth0 configured. The public pages — this one, your buyers' status links, and the marketing site — are intentionally not gated, so nothing a buyer needs is ever behind a login."
                 }
               </p>
             </div>
@@ -242,8 +242,8 @@ export default function SecurityPage() {
               <h3 className="mb-2 font-serif text-[19px] font-semibold text-teal">Questions?</h3>
               <p className="m-0 text-[15px] leading-relaxed text-slate">
                 Send them to{" "}
-                <a className="link-quiet" href="mailto:hello@tideover.app">
-                  hello@tideover.app
+                <a className="link-quiet" href="mailto:contact@tideover.app">
+                  contact@tideover.app
                 </a>{" "}
                 and I&rsquo;ll answer them myself.
               </p>

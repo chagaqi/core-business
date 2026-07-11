@@ -53,7 +53,21 @@ interface SetupSummary {
   allDone: boolean;
 }
 
-export function Sidebar({ operator, isDemo }: { operator: string; isDemo: boolean }) {
+export function Sidebar({
+  operator,
+  isDemo,
+  signOutHref = null,
+}: {
+  operator: string;
+  isDemo: boolean;
+  /**
+   * Mode-aware sign-out target, decided by the server layout (ADR-0020):
+   * "/auth/logout" in real+auth0 mode (the Auth0 SDK route — must be a full
+   * page navigation so the SDK clears its session cookie and ends the IdP
+   * session), null for password/demo mode (legacy POST /api/logout).
+   */
+  signOutHref?: string | null;
+}) {
   const pathname = usePathname();
   const router = useRouter();
   const params = useSearchParams();
@@ -93,7 +107,14 @@ export function Sidebar({ operator, isDemo }: { operator: string; isDemo: boolea
     href === "/app" ? pathname === "/app" : pathname.startsWith(href);
 
   // UX-44: footer was a dead account-menu-looking <div>. Sign out for real.
+  // In auth0 mode this must be a FULL-PAGE navigation to the SDK's
+  // /auth/logout — a fetch cannot follow the IdP logout redirect chain, and
+  // router.push would leave the still-valid Auth0 session signed in.
   const handleSignOut = () => {
+    if (signOutHref) {
+      window.location.assign(signOutHref);
+      return;
+    }
     fetch("/api/logout", { method: "POST" }).then(() => router.push("/login"));
   };
 

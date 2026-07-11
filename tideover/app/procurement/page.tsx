@@ -22,8 +22,8 @@ import {
  * packet can never drift from the live pages.
  *
  * Proof-only: every line describes real behavior in this repo (lib/status.ts,
- * app/api/ticket-ingest/route.ts, middleware.ts, lib/session.ts). No SOC 2, no
- * ISO, no "bank-level", no invented audit or compliance claim — the honesty is
+ * app/api/ticket-ingest/route.ts, middleware.ts, lib/auth-mode.ts). No SOC 2, no
+ * ISO, no "bank-level", no invented audit or compliance claim — the restraint is
  * the credibility. Standards (CAN-SPAM) are cited only as context the merchant's
  * own counsel applies, never as a Tideover certification.
  *
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
 
 // A plain publish date — the day this packet's text was set. NOT a fabricated
 // "last audited" or "last pen-tested" date; Tideover holds no such audit.
-const PUBLISHED = "July 4, 2026";
+const PUBLISHED = "July 11, 2026";
 
 const POSTURE: readonly { title: string; body: string }[] = [
   {
@@ -53,9 +53,9 @@ const POSTURE: readonly { title: string; body: string }[] = [
       "When you scope Tideover to your presale tags, the ingest endpoint verifies the vendor's signature over the exact raw bytes received, then parses, then checks the payload against your tag allow-list, then persists. A non-matching payload is acknowledged with a 200 and discarded before it is ever written to a database or drafted — the only trace is a log line. Untrusted input is never parsed or stored before it is authenticated (app/api/ticket-ingest/route.ts).",
   },
   {
-    title: "Single-operator auth model (ADR-0004)",
+    title: "Per-user account auth model (ADR-0020)",
     body:
-      "The cockpit and dashboards sit behind a signed session cookie. In live mode, middleware on the edge gates every operator page and API: a request without a valid, unexpired, HMAC-SHA256-signed session (keyed with a server-side AUTH_SECRET) is redirected to sign-in or refused. Rotating that secret revokes every active session immediately; changing the operator password stops new sign-ins. Public surfaces — this packet, buyers' status links, and the marketing site — are intentionally never gated.",
+      "The cockpit and dashboards sit behind per-user accounts. In live mode, sign-in runs through Auth0, and middleware on the edge gates every operator page and API: a request without a valid session is redirected to sign-in or refused. An incomplete auth configuration fails closed with an explicit error — it never silently opens the gate. Each workspace is isolated to its owning account and the seats that owner invites; removing a member revokes their access. A legacy single-password mode remains only as an env-gated fallback. Public surfaces — this packet, buyers' status links, and the marketing site — are intentionally never gated.",
   },
   {
     title: "Append-only status-view evidence log",
@@ -65,7 +65,7 @@ const POSTURE: readonly { title: string; body: string }[] = [
   {
     title: "No payment, admin, or password access",
     body:
-      "There is no code path in Tideover that reads card or payment data, your Shopify admin, your full customer list, or any password. Integrations are forwarding aliases, webhooks with a shared secret, and least-privilege API keys only. Each rung is revocable in one action (see the ladder above).",
+      "There is no code path in Tideover that reads card or payment data, your Shopify admin, your full customer list, or any password. Integrations are CSV files you export yourself and helpdesk webhooks with a shared secret — never a login. Each rung is revocable in one action (see the ladder above).",
   },
   {
     title: "Proof-only doctrine (ADR-0002)",
@@ -77,7 +77,7 @@ const POSTURE: readonly { title: string; body: string }[] = [
 // Cited by name only where they are real, current dependencies of this repo.
 const KEY_ADRS: readonly { id: string; what: string }[] = [
   { id: "ADR-0002", what: "the repository seam + the proof-only doctrine every later decision assumes" },
-  { id: "ADR-0004", what: "the operator auth model described above (env-gated demo + HMAC-cookie session)" },
+  { id: "ADR-0020", what: "the per-user account auth model described above (Auth0 sign-in, fail-closed middleware, per-workspace isolation)" },
   { id: "ADR-0005", what: "the disclosed-ETA + status-view logging schema (dispute evidence)" },
   { id: "ADR-0011", what: "per-merchant helpdesk webhook ingest, tag-routed and signature-verified" },
 ];
@@ -211,7 +211,7 @@ export default function ProcurementPacketPage() {
         </div>
       </section>
 
-      {/* What Tideover does NOT claim — the honesty box */}
+      {/* What Tideover does NOT claim — the no-badges box */}
       <section className="ev-section mb-5">
         <p className="ev-label mb-2">What Tideover does not claim</p>
         <div className="ev-card ev-eta space-y-3">
@@ -224,7 +224,7 @@ export default function ProcurementPacketPage() {
           <p className="text-[13px] leading-relaxed text-slate">
             What we can give you is everything on this page: what we store, what we drop, who processes it, and how you
             cut us off in one action. The safety here is structural — we hold as little as the job needs — rather than a
-            badge we point at. That honesty is the credibility.
+            badge we point at. That restraint is the credibility.
           </p>
         </div>
       </section>

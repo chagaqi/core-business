@@ -39,7 +39,7 @@ const SECTIONS: readonly Section[] = [
       "Support ticket content you route to us — subject, body text, the customer's email, an order reference if present, and the time it was sent — so we can match the ticket to the right order and draft a reply.",
       "Order and customer records you route or import — first name, email, order value, region, production stage, and the delivery estimate disclosed at purchase — so we can compute the timeline and risk you see and the reassurance the buyer sees.",
       "Status-page view metadata — the time a status link was opened, a shortened browser user-agent, and only the first two octets of the viewer's IP address (never the full address) — kept as a factual record of when a buyer was notified and viewed their status, usable as dispute evidence.",
-      "Operator account data — the sign-in state for your team members who review drafts, held in a signed session cookie.",
+      "Operator account data — the sign-in state for your team members who review drafts, held in an httpOnly session cookie.",
     ],
   },
   {
@@ -51,7 +51,7 @@ const SECTIONS: readonly Section[] = [
   {
     heading: "Cookies",
     paras: [
-      "The product uses a single first-party session cookie for logged-in operators. It is httpOnly and signed, and it exists only to keep an operator signed in. Our marketing site embeds Cal.com to let you book a call; that embed is subject to Cal.com's own privacy terms.",
+      "The product uses first-party cookies only, and only for logged-in operators: an httpOnly session cookie that keeps an operator signed in, plus a small routing hint that remembers a signed-in operator has a workspace. Our marketing site embeds Cal.com to let you book a call; that embed is subject to Cal.com's own privacy terms.",
     ],
   },
   {
@@ -72,7 +72,7 @@ const SECTIONS: readonly Section[] = [
   {
     heading: "Where your data is processed",
     paras: [
-      "Tideover is operated from the United States, and your data is processed by the sub-processors named above. If you route data about people in other regions, you remain their controller and are responsible for the lawful basis of routing it to us as your processor.",
+      "Tideover is operated from Canada, and your data is processed by the sub-processors named above, in the locations their entries describe. If you route data about people in other regions, you remain their controller and are responsible for the lawful basis of routing it to us as your processor.",
     ],
   },
   {
@@ -97,7 +97,7 @@ const SECTIONS: readonly Section[] = [
   {
     heading: "Contact",
     paras: [
-      "Questions about privacy, or a deletion or export request, go to hello@tideover.app. Physical address: 54 Beasley Dr, Unit 3, Kitchener, ON, Canada.",
+      "Questions about privacy, or a deletion or export request, go to contact@tideover.app. Physical address: 54 Beasley Dr, Unit 3, Kitchener, ON, Canada.",
     ],
   },
 ];
@@ -116,7 +116,7 @@ export default function PrivacyPage() {
                 "Plain English, no boilerplate maze. This describes how the Tideover product handles the tickets and order data merchants route to us."
               }
             </p>
-            <p className="mt-4 text-[14px] font-semibold text-ink-mute">Last updated: July 3, 2026</p>
+            <p className="mt-4 text-[14px] font-semibold text-ink-mute">Last updated: July 11, 2026</p>
             <nav aria-label="Legal pages" className="mt-5 flex flex-wrap gap-x-4 gap-y-1 text-[14px] text-ink-mute">
               <span className="font-semibold text-teal">Privacy</span>
               <a className="link-quiet" href="/terms">

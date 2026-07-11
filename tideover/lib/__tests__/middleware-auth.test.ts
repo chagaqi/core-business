@@ -146,3 +146,36 @@ test("auth0 mode, full config, no session: API 401s; pages redirect to /auth/log
     },
   );
 });
+
+test("auth0 sign-out: /auth/logout is served by the SDK AND clears the tenant hint + resolved marker", async () => {
+  await withEnv(
+    {
+      AUTH0_DOMAIN: "tideover-test.us.auth0.com",
+      AUTH0_CLIENT_ID: "client_abc123",
+      AUTH0_CLIENT_SECRET: "secret_abc123",
+      AUTH0_SECRET: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      APP_BASE_URL: "https://app.tideover.app",
+    },
+    async () => {
+      const host = "app.tideover.app";
+      const logout = new NextRequest(`https://${host}/auth/logout`, {
+        headers: { host, cookie: "tideover_tenant=1; tideover_tenant_res=1" },
+      });
+      const res = await middleware(logout);
+      // The SDK answers the mounted route itself (a redirect out to the IdP
+      // logout) — the middleware must not pass through or 401 here.
+      assert.ok(!passesThrough(res), "/auth/logout is handled, not passed through");
+      const cookies = res.headers.getSetCookie();
+      const hint = cookies.find((c) => c.startsWith("tideover_tenant="));
+      assert.ok(hint, "sign-out rewrites the tenant hint cookie");
+      assert.match(
+        hint!,
+        /Max-Age=0|Expires=Thu, 01 Jan 1970/i,
+        "…as a DELETION — the next login on this browser must re-resolve tenancy",
+      );
+      const marker = cookies.find((c) => c.startsWith("tideover_tenant_res="));
+      assert.ok(marker, "sign-out rewrites the resolved marker cookie");
+      assert.match(marker!, /Max-Age=0|Expires=Thu, 01 Jan 1970/i, "…also as a deletion");
+    },
+  );
+});

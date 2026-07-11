@@ -25,6 +25,7 @@ export function Button({
   onClick,
   type = "button",
   disabled,
+  "aria-label": ariaLabel,
 }: {
   children: ReactNode;
   href?: string;
@@ -34,25 +35,28 @@ export function Button({
   onClick?: () => void;
   type?: "button" | "submit";
   disabled?: boolean;
+  /** Accessible name when the visible text alone is ambiguous (e.g. a list of
+   *  identical "Remove" buttons — WCAG 2.4.6 label-in-context). */
+  "aria-label"?: string;
 }) {
   const cls = clsx(VARIANT[variant], large && variant !== "quiet" && "btn-lg", className);
   if (href) {
     const external = href.startsWith("http");
     if (external) {
       return (
-        <a href={href} className={cls} target="_blank" rel="noreferrer">
+        <a href={href} className={cls} target="_blank" rel="noreferrer" aria-label={ariaLabel}>
           {children}
         </a>
       );
     }
     return (
-      <Link href={href} className={cls}>
+      <Link href={href} className={cls} aria-label={ariaLabel}>
         {children}
       </Link>
     );
   }
   return (
-    <button type={type} className={cls} onClick={onClick} disabled={disabled}>
+    <button type={type} className={cls} onClick={onClick} disabled={disabled} aria-label={ariaLabel}>
       {children}
     </button>
   );

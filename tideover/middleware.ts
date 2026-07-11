@@ -5,7 +5,9 @@ import { resolveMode } from "@/lib/mode";
 import {
   authMode,
   auth0ConfigMissing,
+  shouldResolveTenant,
   TENANT_HINT_COOKIE,
+  TENANT_RESOLVED_COOKIE,
   TENANT_SCOPE_HEADER,
 } from "@/lib/auth-mode";
 
@@ -85,7 +87,16 @@ export async function middleware(req: NextRequest) {
   // The SDK middleware serves the mounted /auth/* routes and keeps rolling
   // sessions fresh (its cookie updates are re-applied below for other paths).
   const authRes = await auth0.middleware(req);
-  if (pathname.startsWith("/auth")) return authRes;
+  if (pathname.startsWith("/auth")) {
+    // Sign-out must clear OUR tenant cookies too, not just the SDK session —
+    // otherwise the next login on this browser (possibly a different user)
+    // inherits a stale hint and skips tenant re-resolution.
+    if (pathname === "/auth/logout") {
+      authRes.cookies.delete(TENANT_HINT_COOKIE);
+      authRes.cookies.delete(TENANT_RESOLVED_COOKIE);
+    }
+    return authRes;
+  }
 
   const session = await auth0.getSession(req);
   if (!session) {
@@ -101,10 +112,24 @@ export async function middleware(req: NextRequest) {
   // The hint cookie is set by /api/auth/tenant (which resolves ownerSub →
   // merchant in the Node runtime — this middleware stays Mongo-free) and by a
   // successful POST /api/onboarding. Pages only; APIs answer data, not tours.
-  if (pathname.startsWith("/app") && req.cookies.get(TENANT_HINT_COOKIE)?.value !== "1") {
-    const resolve = new URL("/api/auth/tenant", req.url);
-    resolve.searchParams.set("next", pathname + search);
-    return NextResponse.redirect(resolve);
+  //
+  // Stale-hint recovery: the hint lives 30 days but tenancy can change under
+  // it (a removed seat, a deleted merchant). Document navigations therefore
+  // re-resolve through /api/auth/tenant whenever the short-lived resolved
+  // marker has lapsed — one cheap 302 per marker window, and a login whose
+  // merchant is gone is routed to /onboarding (hint cleared) instead of
+  // dead-ending on an empty workspace. See shouldResolveTenant (lib/auth-mode).
+  if (pathname.startsWith("/app")) {
+    const resolveNeeded = shouldResolveTenant({
+      hasHint: req.cookies.get(TENANT_HINT_COOKIE)?.value === "1",
+      recentlyResolved: req.cookies.get(TENANT_RESOLVED_COOKIE)?.value === "1",
+      isDocumentNav: req.headers.get("sec-fetch-dest") === "document",
+    });
+    if (resolveNeeded) {
+      const resolve = new URL("/api/auth/tenant", req.url);
+      resolve.searchParams.set("next", pathname + search);
+      return NextResponse.redirect(resolve);
+    }
   }
 
   // Stamp the tenant-scope marker for the repository layer (overwriting any

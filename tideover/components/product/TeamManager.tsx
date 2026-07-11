@@ -11,6 +11,13 @@ import type { TeamInvite } from "@/lib/types";
  * list). After any successful change we router.refresh() so the server
  * component re-reads the merchant.
  */
+/** A seat row: sub is the identity key; email is the display name recorded at
+ *  invite-claim time (null for members attached before that was recorded). */
+export interface TeamMemberRow {
+  sub: string;
+  email: string | null;
+}
+
 export function TeamManager({
   isOwner,
   members,
@@ -18,18 +25,23 @@ export function TeamManager({
   seatCap,
 }: {
   isOwner: boolean;
-  members: string[];
+  members: TeamMemberRow[];
   invites: TeamInvite[];
   seatCap: number;
 }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
+  // Announced via the always-mounted role="status" region below — screen
+  // readers get the same "it worked" signal sighted users infer from the list
+  // refresh.
+  const [notice, setNotice] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
   const call = async (method: "POST" | "DELETE", body: Record<string, string>) => {
     setBusy(true);
     setError(null);
+    setNotice(null);
     try {
       const res = await fetch("/api/team", {
         method,
@@ -52,8 +64,10 @@ export function TeamManager({
 
   const addInvite = async () => {
     if (!email.trim()) return;
+    const invited = email.trim();
     if (await call("POST", { email })) {
       setEmail("");
+      setNotice(`Invite added for ${invited}.`);
       router.refresh();
     }
   };
@@ -76,28 +90,44 @@ export function TeamManager({
               <div className="text-[11px] text-ink-mute">Owner — manages seats</div>
             </div>
           </li>
-          {members.map((sub) => (
-            <li
-              key={sub}
-              className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 last:border-b-0"
-            >
-              <div className="min-w-0">
-                <div className="truncate text-[14px] text-ink">{sub}</div>
-                <div className="text-[11px] text-ink-mute">Member</div>
-              </div>
-              {isOwner ? (
-                <Button
-                  variant="ghost"
-                  disabled={busy}
-                  onClick={() => {
-                    void call("DELETE", { sub }).then((ok) => ok && router.refresh());
-                  }}
-                >
-                  Remove
-                </Button>
-              ) : null}
-            </li>
-          ))}
+          {members.map((member) => {
+            // Lead with the email recorded at claim time — the owner can't
+            // recognize a raw Auth0 sub. The sub stays visible as the
+            // secondary line (and title) since it is the identity key.
+            const label = member.email ?? member.sub;
+            return (
+              <li
+                key={member.sub}
+                className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 last:border-b-0"
+              >
+                <div className="min-w-0">
+                  <div className="truncate text-[14px] text-ink" title={member.sub}>
+                    {label}
+                  </div>
+                  <div className="truncate text-[11px] text-ink-mute">
+                    Member{member.email ? ` · ${member.sub}` : ""}
+                  </div>
+                </div>
+                {isOwner ? (
+                  <Button
+                    variant="ghost"
+                    disabled={busy}
+                    aria-label={`Remove ${label}`}
+                    onClick={() => {
+                      void call("DELETE", { sub: member.sub }).then((ok) => {
+                        if (ok) {
+                          setNotice(`Removed ${label}.`);
+                          router.refresh();
+                        }
+                      });
+                    }}
+                  >
+                    Remove
+                  </Button>
+                ) : null}
+              </li>
+            );
+          })}
           {members.length === 0 ? (
             <li className="px-4 py-3 text-[13px] text-ink-mute">No teammates yet.</li>
           ) : null}
@@ -124,8 +154,14 @@ export function TeamManager({
                 <Button
                   variant="ghost"
                   disabled={busy}
+                  aria-label={`Remove invite for ${invite.email}`}
                   onClick={() => {
-                    void call("DELETE", { email: invite.email }).then((ok) => ok && router.refresh());
+                    void call("DELETE", { email: invite.email }).then((ok) => {
+                      if (ok) {
+                        setNotice(`Removed invite for ${invite.email}.`);
+                        router.refresh();
+                      }
+                    });
                   }}
                 >
                   Remove
@@ -140,25 +176,45 @@ export function TeamManager({
       </div>
 
       {isOwner ? (
-        <form
-          className="flex items-start gap-2"
-          onSubmit={(e) => {
-            e.preventDefault();
-            void addInvite();
-          }}
-        >
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="teammate@company.com"
-            aria-label="Teammate email"
-            className="w-full rounded-lg border border-border bg-paper px-3 py-2 text-[14px] text-ink outline-none focus:border-teal"
-          />
-          <Button variant="primary" type="submit" disabled={busy || !email.trim()}>
-            Invite
-          </Button>
-        </form>
+        <>
+          <form
+            className="flex items-start gap-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              void addInvite();
+            }}
+          >
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="teammate@company.com"
+              aria-label="Teammate email"
+              className="w-full rounded-lg border border-border bg-paper px-3 py-2 text-[14px] text-ink outline-none focus:border-teal"
+            />
+            <Button variant="primary" type="submit" disabled={busy || !email.trim()}>
+              Invite
+            </Button>
+          </form>
+          {/* The page says "share the sign-in link yourself" — so hand the
+              owner that link instead of leaving them to guess it. */}
+          <p className="text-[12px] text-ink-mute">
+            No invite email is sent &mdash; send your teammate the sign-in link yourself:{" "}
+            <button
+              type="button"
+              className="link-quiet"
+              onClick={() => {
+                const link = `${window.location.origin}/auth/login`;
+                navigator.clipboard
+                  .writeText(link)
+                  .then(() => setNotice("Sign-in link copied."))
+                  .catch(() => setNotice(`Sign-in link: ${link}`));
+              }}
+            >
+              Copy sign-in link
+            </button>
+          </p>
+        </>
       ) : (
         <p className="text-[12px] text-ink-mute">
           Only the workspace owner can add or remove seats.
@@ -170,6 +226,14 @@ export function TeamManager({
           {error}
         </p>
       ) : null}
+
+      {/* Always-mounted live region: screen readers announce content CHANGES
+          inside a pre-existing container reliably; a conditionally-mounted
+          role="status" node is flaky across SR/browser pairs. Visible too —
+          sighted users get the same confirmation (empty = zero height). */}
+      <p role="status" aria-live="polite" className="text-[12px] font-medium text-teal">
+        {notice}
+      </p>
     </div>
   );
 }

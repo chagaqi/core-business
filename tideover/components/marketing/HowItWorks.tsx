@@ -30,7 +30,7 @@ const FEATURES: readonly { id: string; title: string; body: string; icon: React.
   {
     id: "stack",
     title: "Plugs into your existing stack",
-    body: "We bolt onto the Gorgias, Tidio, or Intercom you already run. No migration, no second inbox, no infra change.",
+    body: "We bolt onto the Gorgias, Zendesk, Tidio, or Intercom you already run, reading the presale tickets you route to us. You approve and send from your own inbox. No migration, no infra change.",
     icon: (
       <>
         <rect x="3" y="4" width="8" height="7" rx="2" stroke="#0E5366" strokeWidth="1.7" />
@@ -84,7 +84,7 @@ const COMPARISON: readonly { row: string; generic: string; tideover: string }[] 
   { row: "Setup", generic: "Migration, new tool to learn", tideover: "Bolt-on — zero infra change" },
   { row: "Pricing model", generic: "Ticket fee, plus a per-AI-resolution meter*", tideover: "One flat fee on presale tickets" },
   { row: "Who approves replies", generic: "A confidence threshold decides", tideover: "You approve every reply" },
-  { row: "If you leave", generic: "Export what you can", tideover: "Already in your helpdesk; status page off" },
+  { row: "If you leave", generic: "Export what you can", tideover: "Every reply was sent from your own helpdesk; status page off" },
 ];
 
 function Arrow() {
@@ -233,7 +233,7 @@ export function HowItWorks({ condensed = false }: { condensed?: boolean } = {}) 
                   <path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" opacity="0.4" />
                 </svg>
                 <div className="font-serif text-[21px] font-semibold">Tideover</div>
-                <div className="mt-0.5 text-[12.5px] opacity-80">presale layer &middot; routes WISMO only</div>
+                <div className="mt-0.5 text-[12.5px] opacity-80">presale layer &middot; drafts replies you approve</div>
               </div>
 
               <Arrow />
@@ -243,7 +243,7 @@ export function HowItWorks({ condensed = false }: { condensed?: boolean } = {}) 
                 <div className="mb-0.5 text-center text-[12px] font-bold uppercase tracking-[0.05em] text-[#8A9A9D]">
                   Your helpdesk
                 </div>
-                {["Gorgias", "Tidio", "Intercom"].map((d) => (
+                {["Gorgias", "Zendesk", "Tidio", "Intercom"].map((d) => (
                   <div
                     key={d}
                     className="rounded-xl border border-border bg-sand-2 px-4 py-2.5 text-center text-[14px] font-semibold text-slate"
@@ -251,7 +251,9 @@ export function HowItWorks({ condensed = false }: { condensed?: boolean } = {}) 
                     {d}
                   </div>
                 ))}
-                <div className="mt-0.5 text-center text-[12px] italic text-[#8A9A9D]">stays exactly as it is</div>
+                <div className="mt-0.5 text-center text-[12px] italic text-[#8A9A9D]">
+                  you approve &amp; send there &mdash; it stays as it is
+                </div>
               </div>
             </div>
           </div>
@@ -271,7 +273,7 @@ export function HowItWorks({ condensed = false }: { condensed?: boolean } = {}) 
                     <th scope="col" className="border-b border-border px-5 py-4 text-left text-[14px] font-semibold text-slate">
                       Generic helpdesk
                       <br />
-                      <span className="text-[12.5px] font-normal text-[#9AA8AB]">Gorgias / Tidio / Intercom</span>
+                      <span className="text-[12.5px] font-normal text-[#9AA8AB]">Gorgias / Zendesk / Tidio / Intercom</span>
                     </th>
                     <th
                       scope="col"

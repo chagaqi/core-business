@@ -204,6 +204,25 @@ export interface MerchantUpdateRepository {
   listRecentPublic(merchantId: string, limit: number): Promise<MerchantUpdate[]>;
 }
 
+/**
+ * Marketing lead capture (the VSL playbook email form). Append-only and tiny by
+ * design: no merchant linkage, no PII beyond the email the visitor typed. A
+ * human reads the collection and sends the playbook — there is no automated
+ * email path off this record.
+ */
+export interface Lead {
+  id: string;
+  email: string;
+  /** Where the form was submitted from (e.g. "/vsl/playbook-promo"). */
+  source: string;
+  /** ISO timestamp of the submission. */
+  at: string;
+}
+
+export interface LeadRepository {
+  create(lead: Omit<Lead, "id">): Promise<Lead>;
+}
+
 export interface Repositories {
   merchants: MerchantRepository;
   orders: OrderRepository;
@@ -215,4 +234,5 @@ export interface Repositories {
   scriptVariants: ScriptVariantRepository;
   outcomeEvents: OutcomeEventRepository;
   merchantUpdates: MerchantUpdateRepository;
+  leads: LeadRepository;
 }

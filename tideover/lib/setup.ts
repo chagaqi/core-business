@@ -121,26 +121,28 @@ export function computeSetupChecklist(state: SetupState): SetupChecklist {
   const statusVisible = statusViews.length > 0 || updates.some((u) => !u.hidden);
 
   const items: SetupItem[] = [
+    // Hrefs point at POST-onboarding surfaces: an onboarded (real-mode) user
+    // who re-enters /onboarding gets a 409 — never send them back there.
     {
       key: "brand",
       title: "Brand & voice configured",
       done: brandConfigured,
-      hint: "Your voice, tone, and sign-off, captured in onboarding. Every reassurance draft is written in this voice.",
-      href: "/onboarding",
+      hint: "Your voice, tone, and sign-off, captured in onboarding. Every reassurance draft is written in this voice; review or adjust it in Settings.",
+      href: "/app/settings",
     },
     {
       key: "import",
       title: "Backer list imported",
       done: backersImported,
       hint: "Bring in your Kickstarter or BackerKit export so every backer has an order to track. Parsed in your browser; the raw file never leaves your machine.",
-      href: "/onboarding",
+      href: "/app/setup#import",
     },
     {
       key: "helpdesk",
       title: "Helpdesk connected",
       done: helpdeskConnected,
       hint: "Point your helpdesk's presale tag at your private ingest URL. Tagged tickets flow in structured; this flips on once a real inbound arrives.",
-      href: "/onboarding",
+      href: "/app/setup#connect",
     },
     {
       key: "first-reply",

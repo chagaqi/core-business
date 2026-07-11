@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { withApiErrorHandling } from "@/lib/api-handler";
 import { analyzeSite } from "@/lib/site-analyze";
+import { createRateLimiter, clientIp } from "@/lib/rate-limit";
 
 /**
  * POST /api/analyze — deterministic site / Kickstarter analysis for onboarding
@@ -18,21 +19,12 @@ export const runtime = "nodejs";
 
 const Body = z.object({ url: z.string().url().max(2048) });
 
-// Naive in-memory per-IP limiter (10/min), mirroring app/api/status/[token].
-const HITS = new Map<string, { n: number; ts: number }>();
-function rateLimited(key: string): boolean {
-  const now = Date.now();
-  const e = HITS.get(key);
-  if (!e || now - e.ts > 60000) {
-    HITS.set(key, { n: 1, ts: now });
-    return false;
-  }
-  e.n += 1;
-  return e.n > 10;
-}
+// Naive in-memory per-IP limiter (10/min) — shared impl in lib/rate-limit.ts;
+// see its header for the per-instance-on-serverless caveat.
+const rateLimited = createRateLimiter(10);
 
 export const POST = withApiErrorHandling("/api/analyze", async (req: Request): Promise<Response> => {
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "local";
+  const ip = clientIp(req);
   if (rateLimited(ip)) return Response.json({ ok: false, reason: "rate-limited" }, { status: 429 });
 
   const parsed = Body.safeParse(await req.json().catch(() => null));

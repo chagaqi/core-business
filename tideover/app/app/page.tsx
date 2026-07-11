@@ -1,6 +1,8 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { getDashboard } from "@/lib/service";
 import { getRepositories } from "@/lib/repositories";
+import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { MetricTile } from "@/components/product/MetricTile";
 import { RiskCurve } from "@/components/product/RiskCurve";
@@ -9,6 +11,7 @@ import { ATTAINMENT_MIN_N } from "@/lib/sla";
 import type { RiskColor } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Dashboard — Tideover" };
 
 function formatFrt(sec: number | null): string {
   if (sec == null) return "—";
@@ -49,7 +52,7 @@ export default async function DashboardPage({
   const repos = getRepositories();
   const merchants = await repos.merchants.list();
   if (merchants.length === 0) {
-    return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
+    return <NoMerchantState />;
   }
   const merchantId =
     searchParams.merchant && merchants.some((m) => m.id === searchParams.merchant)

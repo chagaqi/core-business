@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import { resolveModeFromRequest } from "@/lib/request-mode";
-import { authMode, TENANT_HINT_COOKIE, tenantHintCookieOptions } from "@/lib/auth-mode";
+import {
+  authMode,
+  TENANT_HINT_COOKIE,
+  TENANT_RESOLVED_COOKIE,
+  tenantHintCookieOptions,
+  tenantResolvedCookieOptions,
+} from "@/lib/auth-mode";
 import { findMerchantByMemberOrOwnerSub, getTenantSession } from "@/lib/tenant";
 import { acceptPendingInvite } from "@/lib/team";
 
@@ -51,7 +57,15 @@ export async function GET(req: Request) {
     // resolved tenant; otherwise it's a genuine first run → onboarding.
     const claimed = await acceptPendingInvite(session);
     if (!claimed || "error" in claimed) {
-      return NextResponse.redirect(new URL("/onboarding", req.url));
+      // No workspace for this login — a genuine first run, OR a seat that was
+      // removed while the browser still held the 30-day hint. CLEAR the hint
+      // so the middleware keeps routing this login back here (never a stale
+      // dead-end on an empty workspace), and stamp the resolved marker so the
+      // decision isn't re-run on every document navigation.
+      const res = NextResponse.redirect(new URL("/onboarding", req.url));
+      res.cookies.delete(TENANT_HINT_COOKIE);
+      res.cookies.set(TENANT_RESOLVED_COOKIE, "1", tenantResolvedCookieOptions());
+      return res;
     }
     // Confirm the claim actually persisted before stamping the 30-day hint
     // cookie — a lost write (concurrent seat mutation) would otherwise pin the
@@ -64,5 +78,8 @@ export async function GET(req: Request) {
 
   const res = NextResponse.redirect(new URL(next, req.url));
   res.cookies.set(TENANT_HINT_COOKIE, "1", tenantHintCookieOptions());
+  // Short-lived marker: while present, the middleware skips the document-
+  // navigation re-resolve, keeping browsing redirect-free between resolves.
+  res.cookies.set(TENANT_RESOLVED_COOKIE, "1", tenantResolvedCookieOptions());
   return res;
 }

@@ -1,5 +1,6 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
+import { GET_STARTED_HREF } from "@/components/marketing/nav/nav-data";
 import { PricingSummary, GuaranteeBox } from "@/components/marketing/PricingParts";
 
 /**
@@ -54,7 +55,10 @@ export function Pilot() {
                 the evidence in front of you.
               </p>
               <div className="flex flex-wrap items-center gap-4">
-                <Button href="/onboarding" variant="ondark">
+                {/* GET_STARTED_HREF (ADR-0020): the real onboarding lives on the
+                    real-app host — a relative /onboarding on www is the demo
+                    sandbox, not signup. */}
+                <Button href={GET_STARTED_HREF} variant="ondark">
                   Start your 14-day free trial &rarr;
                 </Button>
                 <a className="text-[14.5px] font-semibold underline underline-offset-4" style={{ color: "#F4F9F8" }} href="/pricing">

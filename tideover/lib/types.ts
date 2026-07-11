@@ -122,6 +122,14 @@ export interface Merchant {
    */
   memberSubs?: string[];
   /**
+   * Display emails for attached members, keyed by sub — recorded when an
+   * invite is claimed (lib/team.ts) so the seats UI can show WHO holds each
+   * seat instead of a raw Auth0 sub. Purely presentational: tenancy and
+   * authorization read memberSubs only, never this map. Absent = {} (members
+   * attached before this field simply have no recorded email).
+   */
+  memberEmails?: Record<string, string>;
+  /**
    * Outstanding teammate invites, by email. Claimed at login through
    * /api/auth/tenant: a session whose VERIFIED email matches moves from here
    * into memberSubs (lib/team.ts). No outbound email is sent — the owner

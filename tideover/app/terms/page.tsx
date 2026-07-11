@@ -96,7 +96,7 @@ const SECTIONS: readonly Section[] = [
   },
   {
     heading: "11. Contact",
-    paras: ["Questions about these terms go to hello@tideover.app."],
+    paras: ["Questions about these terms go to contact@tideover.app."],
   },
 ];
 

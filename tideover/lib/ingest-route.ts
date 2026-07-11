@@ -63,20 +63,22 @@ export async function handleCanonicalIngest(
   // ── auth gate ──────────────────────────────────────────────────────────────
   // Two layers of secret protect this endpoint: the unguessable per-merchant URL
   // token (already verified above — a bad token 404'd) AND, for a live merchant,
-  // an HMAC body signature. In demo mode the URL token alone authenticates (it is
-  // a per-merchant capability, revocable by rotation) so the hosted demo is
-  // testable. A real pilot runs with DEMO_MODE=false (set at go-live, task D12),
-  // which requires the signature over the RAW bytes before any parse — a forged
-  // or unsigned POST then fails closed with 401.
-  if (process.env.DEMO_MODE !== "false") {
-    // demo: token-authenticated, signature optional.
+  // an HMAC body signature. Unsigned payloads are accepted ONLY on the demo/test
+  // path: DEMO_MODE != "false" AND NODE_ENV != "production" AND no root secret —
+  // the same posture as .env.example and the resend inbound route. Everywhere
+  // else (any production build, an explicit DEMO_MODE=false, or a root secret
+  // set) the signature over the RAW bytes must verify before any parse, and a
+  // missing WEBHOOK_ROOT_SECRET fails closed — an empty root would make the
+  // derived secret computable from the public URL token, so we 401 rather than
+  // accept a forgeable signature.
+  const secret = process.env.WEBHOOK_ROOT_SECRET;
+  const demo = process.env.DEMO_MODE !== "false" && process.env.NODE_ENV !== "production";
+  if (demo && !secret) {
+    // demo/test path: token-authenticated, signature optional.
   } else if (
-    !process.env.WEBHOOK_ROOT_SECRET ||
+    !secret ||
     !verifyWebhookSig(raw, req.headers.get(SIGNATURE_HEADER), deriveWebhookSecret(token))
   ) {
-    // live: a real HMAC signature is required, AND WEBHOOK_ROOT_SECRET must be
-    // set — an empty root makes the derived secret computable from the public
-    // URL token, so we fail closed rather than accept a forgeable signature.
     return new Response(null, { status: 401 });
   }
 
