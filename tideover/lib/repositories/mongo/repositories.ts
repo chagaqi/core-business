@@ -146,6 +146,16 @@ const orders: OrderRepository = {
     // the unique { id: 1 } index (mongo/client.ts) rejects a duplicate order id.
     return insert("orders", o);
   },
+  async createMany(os: Order[]) {
+    // One ordered insertMany per import chunk (≤500 docs — lib/import.ts), so
+    // a 50k import never builds a single giant array op. Copies are inserted
+    // (insertMany attaches _id to its arguments) and an ordered failure leaves
+    // a prefix persisted, which the import's dedupe resumes over.
+    if (os.length === 0) return os;
+    const c = await col<Order>("orders");
+    await c.insertMany(os.map((o) => ({ ...o })) as Parameters<typeof c.insertMany>[0]);
+    return os;
+  },
   async update(id, p) {
     return updateById<Order>("orders", id, p);
   },
@@ -167,6 +177,15 @@ const customers: CustomerRepository = {
   async create(c: Customer) {
     // Same _id-stripping insert; unique { id: 1 } index guards duplicate ids.
     return insert("customers", c);
+  },
+  async createMany(cs: Customer[]) {
+    // Ordered insertMany of copies per import chunk (see orders.createMany).
+    // A unique-index violation fails with the same code 11000 the JSON
+    // driver's uniqueness backstop mirrors.
+    if (cs.length === 0) return cs;
+    const c = await col<Customer>("customers");
+    await c.insertMany(cs.map((x) => ({ ...x })) as Parameters<typeof c.insertMany>[0]);
+    return cs;
   },
   async update(id, p) {
     return updateById<Customer>("customers", id, p);
@@ -227,6 +246,11 @@ const gifts: GiftRepository = {
     // caller's gift objects (and their giftCatalogIds link) stay clean.
     await c.insertMany(gs.map((g) => ({ ...g })) as Parameters<typeof c.insertMany>[0]);
     return gs;
+  },
+  async update(id, p) {
+    // Same shallow $set semantics as every other update (symmetric with the
+    // JSON driver's spread merge).
+    return updateById<Gift>("gifts", id, p);
   },
 };
 

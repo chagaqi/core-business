@@ -88,6 +88,14 @@ async function ensureIndexes(db: Db): Promise<void> {
       }
       if (name === "orders") {
         await col.createIndex({ statusToken: 1 });
+        // Import idempotency backstop: the importKey dedupe set is preloaded
+        // in-memory per import run; this partial unique index is the DB-level
+        // guarantee that a concurrent duplicate insert fails (11000) instead
+        // of silently double-creating an order on resume/racing part-uploads.
+        await col.createIndex(
+          { merchantId: 1, importKey: 1 },
+          { unique: true, partialFilterExpression: { importKey: { $type: "string" } } },
+        );
         // listByCustomer is on the ingest + import hot paths (EN-10) and queries
         // orders by customerId alone — the merchantId index can't serve it.
         await col.createIndex({ customerId: 1 });

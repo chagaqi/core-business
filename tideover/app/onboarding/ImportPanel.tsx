@@ -2,7 +2,14 @@
 
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { DEFAULT_ORDER_VALUE_CENTS, mapRows, parseCsv, type ImportFormat, type MappedRow } from "@/lib/csv";
+import {
+  DEFAULT_ORDER_VALUE_CENTS,
+  IMPORT_ROW_CAP,
+  mapRows,
+  parseCsv,
+  type ImportFormat,
+  type MappedRow,
+} from "@/lib/csv";
 
 /**
  * Rung-0 backer-list import (ADR-0010). The merchant picks their Kickstarter /
@@ -32,10 +39,15 @@ interface Counts {
   datelessRows?: number;
   /** rows with no parseable pledge amount — defaulted to the $50 floor. */
   unparseableMoneyRows?: number;
+  /** import chunks fully persisted (each ≤500 rows). */
+  chunksPersisted?: number;
+  /** set when the import stopped partway — re-uploading the same file resumes. */
+  failedAtChunk?: number | null;
 }
 
 const FORMAT_LABEL: Record<ImportFormat, string> = {
   kickstarter: "Kickstarter backer report",
+  "kickstarter-pm": "Kickstarter Pledge Manager export",
   backerkit: "BackerKit export",
   unknown: "unrecognized headers — mapping best-effort as Kickstarter",
 };
@@ -44,6 +56,9 @@ function dollars(cents?: number): string {
   if (cents === undefined) return "—";
   return `$${(cents / 100).toFixed(2)}`;
 }
+
+/** Wizard-staging row cap: rows travel inside the one onboarding POST. */
+const WIZARD_STAGE_CAP = 10_000;
 
 export function ImportPanel({ merchantId, onStage }: ImportPanelProps) {
   const staging = typeof onStage === "function";
@@ -65,6 +80,28 @@ export function ImportPanel({ merchantId, onStage }: ImportPanelProps) {
       const text = await file.text(); // parsed locally — the file stays on-device
       const { format: fmt, rows } = mapRows(parseCsv(text));
       const withEmail = rows.filter((r) => r.email.trim() !== "");
+      // Enforce the server's row cap up front, before anything is staged or
+      // sent, so a too-big file fails here with a way forward, not at the API.
+      // STAGING rides inside the single onboarding POST, whose body must stay
+      // under serverless request limits (~4.5MB) — so the wizard path caps at
+      // 10k rows; bigger lists import in parts from the app afterward, where
+      // the importKey dedupe makes sequential part-uploads safe.
+      if (staging && withEmail.length > WIZARD_STAGE_CAP) {
+        setFormat(fmt);
+        setMapped([]);
+        setError(
+          `This file has ${withEmail.length.toLocaleString()} backers — bigger than the ${WIZARD_STAGE_CAP.toLocaleString()}-row setup import. Finish setup without it, then import the full list in parts from your workspace; rows already imported are skipped, never duplicated.`,
+        );
+        return;
+      }
+      if (withEmail.length > IMPORT_ROW_CAP) {
+        setFormat(fmt);
+        setMapped([]);
+        setError(
+          `This file has ${withEmail.length.toLocaleString()} rows with an email; imports are capped at ${IMPORT_ROW_CAP.toLocaleString()} rows per file. Split the CSV and import each part; rows already imported are skipped, never duplicated.`,
+        );
+        return;
+      }
       setFormat(fmt);
       setMapped(withEmail);
       if (withEmail.length === 0) {
@@ -122,9 +159,9 @@ export function ImportPanel({ merchantId, onStage }: ImportPanelProps) {
         does.
       </p>
       <p className="mb-4 rounded-xl border border-teal-300 bg-accent-card/60 p-3 text-[12.5px] leading-relaxed text-ink">
-        Works with Kickstarter backer reports + BackerKit exports &mdash; needs at least: name,
-        email, pledge amount, and a pledge/order <strong>date</strong> column so we can track each
-        backer&rsquo;s real wait.
+        Works with Kickstarter backer reports (including the native Pledge Manager export) +
+        BackerKit exports &mdash; needs at least: name, email, pledge amount, and a pledge/order{" "}
+        <strong>date</strong> column so we can track each backer&rsquo;s real wait.
       </p>
 
       <input
@@ -223,6 +260,12 @@ export function ImportPanel({ merchantId, onStage }: ImportPanelProps) {
             <p className="rounded-xl border border-[rgba(138,102,18,0.3)] bg-[rgba(138,102,18,0.08)] p-3 text-[13px] text-amber-status">
               {counts.unparseableMoneyRows} row{counts.unparseableMoneyRows === 1 ? "" : "s"} had no
               readable pledge amount.
+            </p>
+          ) : null}
+          {counts.failedAtChunk ? (
+            <p className="rounded-xl border border-[rgba(138,102,18,0.3)] bg-[rgba(138,102,18,0.08)] p-3 text-[13px] text-amber-status">
+              The import stopped partway; the counts above made it in. Upload the same file again to
+              finish &mdash; rows already imported are skipped, never duplicated.
             </p>
           ) : null}
         </div>

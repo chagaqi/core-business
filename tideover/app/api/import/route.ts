@@ -7,7 +7,15 @@ import { withApiErrorHandling } from "@/lib/api-handler";
  * POST /api/import (ADR-0010, task W3) — operator-side backer-list import.
  * Client parses the CSV in the browser and POSTs only the mapped rows here.
  * Gated by the operator-auth middleware (matcher includes /api/import) so it
- * fails closed with DEMO_MODE=false. Bounded to IMPORT_ROW_CAP rows.
+ * fails closed with DEMO_MODE=false. Bounded to IMPORT_ROW_CAP rows (50k).
+ *
+ * Body size at the cap: App Router route handlers apply NO body-parser limit
+ * (the 4MB `bodyParser.sizeLimit` is Pages-Router-only, and the 1MB
+ * `serverActions.bodySizeLimit` default applies only to server actions), so
+ * `req.json()` accepts the ~10MB a 50k-row MappedRow payload serializes to on
+ * `next start`. NOTE: serverless platforms add their own request caps (e.g.
+ * Vercel ~4.5MB) — if this ever deploys there, split the POST client-side;
+ * the importKey dedupe makes sequential part-uploads safe.
  */
 const Row = z.object({
   firstName: z.string(),
@@ -22,7 +30,12 @@ const Row = z.object({
 
 const Body = z.object({
   merchantId: z.string().min(1),
-  rows: z.array(Row).max(IMPORT_ROW_CAP),
+  rows: z
+    .array(Row)
+    .max(
+      IMPORT_ROW_CAP,
+      `imports are capped at ${IMPORT_ROW_CAP.toLocaleString("en-US")} rows per file; split larger exports and import each part`,
+    ),
 });
 
 async function handlePOST(req: Request) {

@@ -1,5 +1,6 @@
 import { getQueue } from "@/lib/service";
 import { getRepositories } from "@/lib/repositories";
+import { activeCatalog } from "@/lib/gift-catalog";
 import { isEscalatedSentiment, recommendGift } from "@/lib/engines";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { NoMerchantState } from "@/components/product/NoMerchantState";
@@ -40,10 +41,14 @@ export default async function GiftsPage({
       ? searchParams.merchant
       : merchants[0].id;
 
-  const [catalog, queue] = await Promise.all([
+  const merchant = merchants.find((m) => m.id === merchantId)!;
+  const [allGifts, queue] = await Promise.all([
     repos.gifts.listByMerchant(merchantId),
     getQueue(merchantId),
   ]);
+  // Only the ACTIVE catalog (giftCatalogIds) — a gift retired in /app/settings
+  // keeps its record but must stop showing as offerable.
+  const catalog = activeCatalog(merchant, allGifts);
 
   const recommendations = queue
     .filter((r) => r.band !== "standard")

@@ -1,13 +1,19 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  assembleEvidencePack,
   buildCommLog,
   computeDisputeWindow,
+  extractCsat,
+  extractGiftGestures,
   parseBandDays,
   CAP_FROM_TXN_DAYS,
   RC131_WINDOW_DAYS,
 } from "@/lib/evidence";
-import type { Ticket } from "@/lib/types";
+import { jsonRepositories } from "@/lib/repositories/json/repositories";
+import { __setTenantScopeForTests } from "@/lib/tenant";
+import { AUTH0_ENV_VARS } from "@/lib/auth-mode";
+import type { OutcomeEvent, Ticket } from "@/lib/types";
 
 const DAY = 86_400_000;
 
@@ -133,4 +139,124 @@ test("buildCommLog includes inbound + sent replies chronologically, and excludes
   assert.equal(log[0].at, "2026-06-01T00:00:00.000Z"); // tkt_a inbound, earliest
   assert.equal(log[2].actor, "Dylan (operator)");
   assert.equal(log[2].statusLabel, "sent");
+});
+
+test("extractGiftGestures reads gift-sent tags only, deterministically ordered", () => {
+  const gestures = extractGiftGestures([
+    ticket({ id: "tkt_b", subject: "still waiting", tags: ["presale", "gift-sent:priority-dispatch"] }),
+    ticket({ id: "tkt_a", subject: "where is it", tags: ["gift-sent:card", "escalated:Dylan"] }),
+    ticket({ id: "tkt_c", tags: ["presale"] }),
+  ]);
+  assert.deepEqual(gestures, [
+    { kind: "card", ticketId: "tkt_a", ticketSubject: "where is it" },
+    { kind: "priority-dispatch", ticketId: "tkt_b", ticketSubject: "still waiting" },
+  ]);
+});
+
+function csatEvent(over: Partial<OutcomeEvent>): OutcomeEvent {
+  return {
+    id: "evt_x",
+    merchantId: "mch_t",
+    ticketId: "tkt_x",
+    orderId: "ord_t",
+    customerId: "cus_t",
+    variantId: "var_x",
+    stageKey: "day-30",
+    sentimentAtSend: "anxious",
+    kind: "csat_up",
+    observedAt: "2026-07-01T00:00:00.000Z",
+    ...over,
+  };
+}
+
+test("extractCsat returns the LAST csat row for the order and ignores other orders/kinds", () => {
+  const events: OutcomeEvent[] = [
+    csatEvent({ id: "e1", kind: "reply_sent", observedAt: "2026-06-01T00:00:00.000Z" }),
+    csatEvent({ id: "e2", kind: "csat_down", observedAt: "2026-06-02T00:00:00.000Z" }),
+    csatEvent({ id: "e3", kind: "csat_up", orderId: "ord_other", observedAt: "2026-06-03T00:00:00.000Z" }),
+    csatEvent({ id: "e4", kind: "csat_up", observedAt: "2026-06-04T00:00:00.000Z" }),
+  ];
+  assert.deepEqual(extractCsat(events, "ord_t"), { value: "up", observedAt: "2026-06-04T00:00:00.000Z" });
+  assert.equal(extractCsat(events, "ord_none"), null);
+});
+
+// ─── assembled pack: seeded-data completeness + tenant isolation ─────────────
+// Seeded demo order (mch_lumen0001): disclosedEta + status view + sent reply +
+// gift-sent tag + campaign/wave labels — the full INR evidence surface.
+const SEEDED_ORDER = "ord_oaoizbqal569";
+// Seeded demo order with a csat_up outcome event AND a sent reply.
+const SEEDED_CSAT_ORDER = "ord_mx4s8st5zaeq";
+
+test("assembleEvidencePack on a seeded order: disclosure, views, sent replies, gift gestures — timestamps verbatim from the ledgers", async () => {
+  const pack = await assembleEvidencePack(SEEDED_ORDER);
+  assert.ok(pack, "seeded order assembles");
+
+  // Demo watermark driver: the seeded merchant is a demo merchant.
+  assert.equal(pack.isDemo, true, "isDemo drives the SAMPLE DATA watermark");
+
+  // Disclosure: present, and the timestamp is byte-for-byte the stored one.
+  const order = await jsonRepositories.orders.findById(SEEDED_ORDER);
+  assert.ok(order?.disclosedEta, "seeded order carries a disclosed ETA");
+  assert.equal(pack.disclosedEta?.value, order!.disclosedEta!.value);
+  assert.equal(pack.disclosedEta?.disclosedAt, order!.disclosedEta!.disclosedAt);
+
+  // Status views: >=1, verbatim from the status_views ledger.
+  const views = await jsonRepositories.statusViews.listByOrder(SEEDED_ORDER);
+  assert.ok(views.length >= 1, "seeded order has a logged status view");
+  assert.deepEqual(pack.statusViews, views);
+
+  // Sent replies: >=1 outbound-sent entry whose timestamp is the stored sentAt.
+  const tickets = await jsonRepositories.tickets.list({ orderId: SEEDED_ORDER });
+  const sentTicket = tickets.find((t) => t.sent);
+  assert.ok(sentTicket, "seeded order has a sent reply");
+  const outbound = pack.commLog.filter((e) => e.kind === "outbound-sent");
+  assert.ok(outbound.length >= 1);
+  assert.ok(
+    outbound.some((e) => e.at === sentTicket!.sent!.sentAt && e.ticketId === sentTicket!.id),
+    "sentAt is copied verbatim into the comm log",
+  );
+
+  // Gift gestures: the seeded gift-sent tag surfaces.
+  assert.ok(
+    pack.giftGestures.some((g) => g.kind === "priority-dispatch"),
+    "gift-sent tag surfaces as a gesture",
+  );
+
+  // Campaign/wave labels pass through.
+  assert.equal(pack.order.campaignName, order!.campaignName);
+  assert.equal(pack.order.wave, order!.wave);
+});
+
+test("assembleEvidencePack carries the seeded CSAT acknowledgment with its ledger timestamp", async () => {
+  const pack = await assembleEvidencePack(SEEDED_CSAT_ORDER);
+  assert.ok(pack);
+  const events = await jsonRepositories.outcomeEvents.listByMerchant(pack!.merchant.id);
+  const seeded = events.filter(
+    (e) => e.orderId === SEEDED_CSAT_ORDER && (e.kind === "csat_up" || e.kind === "csat_down"),
+  );
+  assert.ok(seeded.length >= 1, "seed carries a csat event for this order");
+  const last = seeded[seeded.length - 1];
+  assert.deepEqual(pack!.csat, {
+    value: last.kind === "csat_up" ? "up" : "down",
+    observedAt: last.observedAt,
+  });
+});
+
+test("ISOLATION: a scoped foreign session cannot assemble another merchant's pack (route answers 404 on null)", async () => {
+  // Auth0 mode on so getRepositories() wraps the driver — the production seam.
+  const saved = Object.fromEntries(AUTH0_ENV_VARS.map((k) => [k, process.env[k]]));
+  for (const k of AUTH0_ENV_VARS) process.env[k] = "test-value";
+  __setTenantScopeForTests({ kind: "scoped", sub: "auth0|foreign-evidence" });
+  try {
+    assert.equal(await assembleEvidencePack(SEEDED_ORDER), null, "foreign order dead-ends at the merchants seam");
+  } finally {
+    __setTenantScopeForTests(null);
+    for (const k of AUTH0_ENV_VARS) {
+      const v = saved[k];
+      if (v === undefined) delete process.env[k];
+      else process.env[k] = v;
+    }
+  }
+  // Unscoped (demo/password/scripts) still assembles — identical to before.
+  assert.ok(await assembleEvidencePack(SEEDED_ORDER), "unscoped access is unchanged");
 });

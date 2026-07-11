@@ -64,7 +64,13 @@ export const OnboardingBodySchema = z.object({
   // Bounded to the same row cap the standalone /api/import route enforces.
   // NOTE: the removed `worstStory` field (D-onboarding revamp) is intentionally
   // gone; old clients that still send it pass fine — zod strips unknown keys.
-  importRows: z.array(ImportRowSchema).max(IMPORT_ROW_CAP).default([]),
+  importRows: z
+    .array(ImportRowSchema)
+    .max(
+      IMPORT_ROW_CAP,
+      `imports are capped at ${IMPORT_ROW_CAP.toLocaleString("en-US")} rows per file; split larger exports and import each part`,
+    )
+    .default([]),
   // Tolerant gate: absent/empty passes (the write path substitutes the default
   // catalog); a non-empty catalog must carry >=3 gifts AND >=1 base gift — the
   // same rule the wizard enforces client-side before advancing/submitting.

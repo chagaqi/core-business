@@ -64,9 +64,11 @@ export interface IntakeData {
 /**
  * tier → minRiskScore, the retained eligibility field the ticket gift panel
  * still reads (the ENGINE gates on tier-vs-band now, not this). base = always
- * available, mid = watch-risk & up, full = high-risk / escalated.
+ * available, mid = watch-risk & up, full = high-risk / escalated. Exported so
+ * the settings surface (lib/settings-route.ts) derives the identical value on
+ * a gift edit.
  */
-const TIER_MIN_RISK: Record<GiftTier, number> = { base: 0, mid: 50, full: 75 };
+export const TIER_MIN_RISK: Record<GiftTier, number> = { base: 0, mid: 50, full: 75 };
 
 /**
  * The five suggested goodwill gifts a new merchant starts from (mirrors the demo

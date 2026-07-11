@@ -10,6 +10,7 @@ import {
   type TicketIntelligence,
 } from "@/lib/engines";
 import { getDrafter } from "@/lib/drafting/LlmDrafter";
+import { activeCatalog } from "@/lib/gift-catalog";
 import { getSendAdapter } from "@/lib/channel-adapters/registry";
 import { computeDisputeExposure, type DisputeExposure } from "@/lib/dispute-exposure";
 import { computeSlaAttainment, ticketSlaState, type SlaAttainment } from "@/lib/sla";
@@ -67,7 +68,7 @@ export async function getTicketView(ticketId: string, now: Date = new Date()): P
     repos.merchants.findById(ticket.merchantId),
   ]);
   if (!order || !customer || !merchant) return null;
-  const catalog = await repos.gifts.listByMerchant(merchant.id);
+  const catalog = activeCatalog(merchant, await repos.gifts.listByMerchant(merchant.id));
   const ticketsLast7d = await ticketsLast7dFor(merchant.id, customer.id);
   const intel = computeTicketIntelligence({
     ticket,
@@ -107,7 +108,7 @@ export async function getDraftAlternates(
   // does not change engine logic. draftText is currently sentiment-invariant, so
   // this commonly equals `standard`; that is acceptable and honest.
   const repos = getRepositories();
-  const catalog = await repos.gifts.listByMerchant(merchant.id);
+  const catalog = activeCatalog(merchant, await repos.gifts.listByMerchant(merchant.id));
   const ticketsLast7d = await ticketsLast7dFor(merchant.id, customer.id);
   const deEscalateIntel = computeTicketIntelligence({
     ticket: { ...ticket, sentiment: "chargeback-threat" },
@@ -525,7 +526,7 @@ export async function ingestTicket(
       merchant,
     });
 
-    const catalog = await repos.gifts.listByMerchant(merchant.id);
+    const catalog = activeCatalog(merchant, await repos.gifts.listByMerchant(merchant.id));
     const ticketsLast7d = await ticketsLast7dFor(merchant.id, customer.id);
     const intel = computeTicketIntelligence({
       ticket: { sentiment: n.sentiment } as Ticket,

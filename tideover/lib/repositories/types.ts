@@ -62,6 +62,15 @@ export interface OrderRepository {
   listByCustomer(customerId: string): Promise<Order[]>;
   /** Insert a new order (CSV import, ADR-0010). `id` is unique across the collection. */
   create(order: Order): Promise<Order>;
+  /**
+   * Bulk-insert one import CHUNK of orders (lib/import.ts persists ≤500 rows
+   * per call so neither driver builds a giant single array op). Symmetric to
+   * gifts.createMany: empty input is a no-op returning `[]`, drivers insert
+   * copies so the caller's objects are never mutated, and inserts are ordered —
+   * a mid-chunk failure leaves a PREFIX persisted, which the import's
+   * importKey dedupe resumes over cleanly.
+   */
+  createMany(orders: Order[]): Promise<Order[]>;
   /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */
   update(id: string, patch: Partial<Order>): Promise<Order>;
 }
@@ -72,6 +81,13 @@ export interface CustomerRepository {
   listByMerchant(merchantId: string): Promise<Customer[]>;
   /** Insert a new customer (CSV import, ADR-0010). Import dedupes by email first. */
   create(customer: Customer): Promise<Customer>;
+  /**
+   * Bulk-insert one import CHUNK of customers (≤500 per call, see
+   * orders.createMany). Same contract: empty input is a no-op, copies are
+   * inserted, inserts are ordered. The JSON driver applies the same
+   * (merchantId, lowercased email) uniqueness backstop as single create.
+   */
+  createMany(customers: Customer[]): Promise<Customer[]>;
   /** Patch values must not be explicitly `undefined`; drivers may drop or retain such keys. */
   update(id: string, patch: Partial<Customer>): Promise<Customer>;
 }
@@ -116,6 +132,14 @@ export interface GiftRepository {
    * are never mutated.
    */
   createMany(gifts: Gift[]): Promise<Gift[]>;
+  /**
+   * Patch one gift (settings surface: edit label/kind/tier/cost/perceived).
+   * Same contract as every other repository update: shallow top-level merge,
+   * values must not be explicitly `undefined`, throws on an unknown id.
+   * Records are never deleted — "retiring" a gift removes its id from the
+   * merchant's giftCatalogIds so past drafts' recommendedGiftId stays resolvable.
+   */
+  update(id: string, patch: Partial<Gift>): Promise<Gift>;
 }
 
 export interface SocialSignalRepository {

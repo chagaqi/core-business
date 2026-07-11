@@ -3,6 +3,7 @@ import type {
   Channel,
   CustomerGroup,
   Order,
+  OutcomeEvent,
   ProductionStageKey,
   StatusView,
   Ticket,
@@ -177,6 +178,59 @@ export function buildCommLog(tickets: Ticket[], customerFirstName: string): Comm
   );
 }
 
+/**
+ * A gift gesture logged against a ticket — read straight off the ticket's
+ * `gift-sent:<kind>` tag (UX-86, lib/gift-send.ts). The tag write stores no
+ * timestamp of its own, so none is claimed here: the entry cites only the
+ * ticket it was logged on. Never invented, never dated.
+ */
+export interface GiftGestureEntry {
+  kind: string;
+  ticketId: string;
+  ticketSubject: string;
+}
+
+/** Read every `gift-sent:*` tag across the order's tickets. Deterministic order
+ *  (ticketId, then kind) so both drivers and repeat renders agree. */
+export function extractGiftGestures(tickets: Ticket[]): GiftGestureEntry[] {
+  const out: GiftGestureEntry[] = [];
+  for (const t of tickets) {
+    for (const tag of t.tags) {
+      if (tag.startsWith("gift-sent:")) {
+        out.push({ kind: tag.slice("gift-sent:".length), ticketId: t.id, ticketSubject: t.subject });
+      }
+    }
+  }
+  return out.sort((a, b) =>
+    a.ticketId < b.ticketId ? -1 : a.ticketId > b.ticketId ? 1 : a.kind < b.kind ? -1 : a.kind > b.kind ? 1 : 0,
+  );
+}
+
+/**
+ * The customer's one-tap CSAT acknowledgment (ADR-0012): the customer opened
+ * their status page and rated the merchant's most recent sent reply. For an
+ * INR dispute this is direct engagement evidence — the buyer not only viewed
+ * the information, they responded to it. Re-taps REPLACE (api/csat), so at
+ * most one is current per order.
+ */
+export interface CsatAcknowledgment {
+  value: "up" | "down";
+  observedAt: string;
+}
+
+/** The order's current CSAT acknowledgment, or null. `events` is an
+ *  observedAt-ascending merchant ledger (outcomeEvents.listByMerchant); the
+ *  LAST csat row for the order is the current one. */
+export function extractCsat(events: OutcomeEvent[], orderId: string): CsatAcknowledgment | null {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const e = events[i];
+    if (e.orderId !== orderId) continue;
+    if (e.kind === "csat_up") return { value: "up", observedAt: e.observedAt };
+    if (e.kind === "csat_down") return { value: "down", observedAt: e.observedAt };
+  }
+  return null;
+}
+
 export interface EvidencePack {
   generatedAt: string;
   /** merchant.isDemo — drives the "SAMPLE DATA" watermark (screenshot-leak guard). */
@@ -198,6 +252,10 @@ export interface EvidencePack {
   disputeWindow?: DisputeWindowOrientation;
   commLog: CommLogEntry[];
   statusViews: StatusView[];
+  /** the customer's one-tap rating of a sent reply, or null if none is on file. */
+  csat: CsatAcknowledgment | null;
+  /** gift gestures logged against the order's tickets (`gift-sent:*` tags). */
+  giftGestures: GiftGestureEntry[];
 }
 
 /**
@@ -217,11 +275,12 @@ export async function assembleEvidencePack(
   const order = await repos.orders.findById(orderId);
   if (!order) return null;
 
-  const [merchant, customer, tickets, statusViews] = await Promise.all([
+  const [merchant, customer, tickets, statusViews, outcomeEvents] = await Promise.all([
     repos.merchants.findById(order.merchantId),
     repos.customers.findById(order.customerId),
     repos.tickets.list({ orderId: order.id }),
     repos.statusViews.listByOrder(order.id),
+    repos.outcomeEvents.listByMerchant(order.merchantId),
   ]);
   if (!merchant || !customer) return null;
 
@@ -240,6 +299,8 @@ export async function assembleEvidencePack(
     customer: { firstName: customer.firstName, email: customer.email },
     commLog: buildCommLog(tickets, customer.firstName),
     statusViews,
+    csat: extractCsat(outcomeEvents, order.id),
+    giftGestures: extractGiftGestures(tickets),
   };
 
   if (order.campaignName) pack.order.campaignName = order.campaignName;

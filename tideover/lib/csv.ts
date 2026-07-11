@@ -50,7 +50,15 @@ export interface MappedRow {
   orderDate?: string;
 }
 
-export type ImportFormat = "kickstarter" | "backerkit" | "unknown";
+export type ImportFormat = "kickstarter" | "kickstarter-pm" | "backerkit" | "unknown";
+
+/**
+ * Hard cap per import so a giant export can't stall the route. Sized for the
+ * ICP (campaigns ship 5k–50k backers). Lives HERE (client-safe, no server
+ * deps) so the wizard's staging panel and the server importer enforce the
+ * SAME number; lib/import.ts re-exports it for server-side callers.
+ */
+export const IMPORT_ROW_CAP = 50_000;
 
 /**
  * Floor order value applied when an export row has no parseable pledge amount —
@@ -154,12 +162,29 @@ const DATE_ALIASES = [
   "date",
 ];
 
-/** Kickstarter backer-report column aliases (case-insensitive). */
+/**
+ * Kickstarter backer-report column aliases (case-insensitive). Also serves the
+ * native Pledge Manager export ("kickstarter-pm", detected below): the PM-era
+ * amount/id variants at the tail of each list are DEFENSIVE aliases — see the
+ * KS_PM_SIGNATURE note for why they are plausible variants, not a verified spec.
+ * Ordering matters: the classic, known-good headers come first, so a PM alias
+ * only ever fills a gap, never shadows a verified column.
+ */
 const KS_ALIASES: AliasSet = {
   name: ["backer name", "name", "backer", "full name", "first name"],
   email: ["email", "email address", "backer email", "contact email"],
-  tier: ["reward title", "reward", "reward name", "tier", "pledge title", "pledged"],
-  amount: ["pledge amount", "pledge", "amount", "reward minimum", "pledge amount ($)"],
+  tier: ["reward title", "reward", "reward name", "tier", "pledge title", "pledged", "rewards"],
+  amount: [
+    "pledge amount",
+    "pledge",
+    "amount",
+    "reward minimum",
+    "pledge amount ($)",
+    // PM-era variants (pledge manager collects add-on / late-pledge payments)
+    "amount paid",
+    "total amount",
+    "total pledged",
+  ],
   eta: [
     "estimated delivery",
     "estimated delivery date",
@@ -167,7 +192,7 @@ const KS_ALIASES: AliasSet = {
     "estimated shipping",
     "eta",
   ],
-  id: ["backer number", "backer uid", "backer id", "backer #"],
+  id: ["backer number", "backer uid", "backer id", "backer #", "order id", "order number"],
   date: DATE_ALIASES,
 };
 
@@ -198,11 +223,51 @@ const BK_SIGNATURE = [
   "backerkit order id",
 ];
 
+/**
+ * Kickstarter's NATIVE Pledge Manager export (GA announced 2025-05-08:
+ * https://updates.kickstarter.com/bringing-the-kickstarter-pledge-manager-to-all-creators/).
+ *
+ * DEFENSIVE DETECTION — the authoritative column spec could NOT be verified
+ * online as of 2026-07-10. The creator-help article that documents the export
+ * (https://help.kickstarter.com/hc/en-us/articles/115005135894-How-can-I-use-the-downloaded-backer-report)
+ * is bot-blocked (HTTP 403 to automated fetch), and secondary sources
+ * (search excerpts of that article; https://www.hiveinteractive.net/wiki/manage-backer-information-11)
+ * describe the PM export only conceptually: backer number, profile name,
+ * email, shipping country, reward tier, add-ons, shipping/taxes paid, survey
+ * timestamps, then per-SKU columns. So no separate mapper is invented: PM
+ * exports are detected via the PM-flavored headers below and routed through
+ * the existing Kickstarter alias mapping (extended with plausible variants),
+ * exactly the fields we can map without fabricating a spec. A PLAUSIBLE
+ * (unverified) sample header row, per the sources above:
+ * <!-- Backer Number,Backer Name,Email,Shipping Country,Reward Title,Pledge Amount,Amount Paid,Pledged At,Add-ons,Shipping Status,Survey Response At
+ *      source: https://help.kickstarter.com/hc/en-us/articles/115005135894-How-can-I-use-the-downloaded-backer-report -->
+ * Add-on / shipping-status / tax columns are used for DETECTION only — they
+ * are not persisted onto orders until the real header row is confirmed.
+ */
+const KS_PM_SIGNATURE = [
+  "add-ons",
+  "add-on",
+  "addons",
+  "add-ons total",
+  "add-on total",
+  "pledge manager status",
+  "survey response at",
+  "shipping status",
+  "shipping and taxes",
+  "taxes paid",
+  "shipping paid",
+];
+
 export function detectFormat(headers: string[]): ImportFormat {
   const h = headers.map((x) => x.toLowerCase().trim());
   const hasKs = KS_SIGNATURE.some((s) => h.includes(s));
   const hasBk = BK_SIGNATURE.some((s) => h.includes(s));
-  if (hasBk && !hasKs) return "backerkit";
+  const hasPm = KS_PM_SIGNATURE.some((s) => h.includes(s));
+  // BackerKit first, UNCONDITIONALLY: real BK exports preserve Kickstarter
+  // identifier columns ("Backer Number"/"Backer UID"), so a KS signature hit
+  // never disproves BK — but every BK_SIGNATURE header is BK-only vocabulary.
+  if (hasBk) return "backerkit";
+  if (hasPm) return "kickstarter-pm"; // PM columns (± classic KS signature)
   if (hasKs) return "kickstarter"; // KS aliases are broader; prefer them when ambiguous
   return "unknown";
 }
@@ -376,7 +441,9 @@ export function mapBackerkitRow(row: Record<string, string>): MappedRow {
 
 /**
  * Detect the export format from the headers and map every row. `unknown` falls
- * back to the (broader) Kickstarter alias set as a best effort.
+ * back to the (broader) Kickstarter alias set as a best effort; the native
+ * Pledge Manager format ("kickstarter-pm") maps through the same Kickstarter
+ * alias set by design (see KS_PM_SIGNATURE — defensive, spec unverified).
  */
 export function mapRows(parsed: ParsedCsv): { format: ImportFormat; rows: MappedRow[] } {
   const format = detectFormat(parsed.headers);

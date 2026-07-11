@@ -151,6 +151,13 @@ const orders: OrderRepository = {
     store.orders.push(o);
     return o;
   },
+  async createMany(os) {
+    // Ordered pushes of copies (symmetric to gifts.createMany) — the caller's
+    // objects stay clean, and a hypothetical mid-loop failure leaves a prefix,
+    // matching Mongo's ordered insertMany semantics.
+    for (const o of os) store.orders.push({ ...o });
+    return os;
+  },
   async update(id, p) {
     return patch(store.orders, id, p);
   },
@@ -187,6 +194,23 @@ const customers: CustomerRepository = {
     }
     store.customers.push(c);
     return c;
+  },
+  async createMany(cs) {
+    // Ordered inserts with the SAME (merchantId, lowercased email) uniqueness
+    // backstop as single create — one shared guard, one failure shape (11000).
+    // Copies are pushed so the caller's working objects are never aliased into
+    // the store. Stops at the first violation (prefix persists), matching
+    // Mongo's ordered insertMany.
+    for (const c of cs) {
+      const existing = store.customers.find(
+        (x) => x.merchantId === c.merchantId && x.email.toLowerCase() === c.email.toLowerCase(),
+      );
+      if (existing) {
+        throw duplicateKeyError(`duplicate customer email for merchant ${c.merchantId}: ${c.email}`);
+      }
+      store.customers.push({ ...c });
+    }
+    return cs;
   },
   async update(id, p) {
     return patch(store.customers, id, p);
@@ -246,6 +270,9 @@ const gifts: GiftRepository = {
     // collections persist through (store.gifts survives for the process life).
     for (const g of gs) store.gifts.push({ ...g });
     return gs;
+  },
+  async update(id, p) {
+    return patch(store.gifts, id, p);
   },
 };
 

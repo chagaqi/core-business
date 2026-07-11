@@ -7,6 +7,7 @@ import {
   stageCeilDayFor,
 } from "@/lib/engines";
 import { ticketsLast7dFor } from "@/lib/service";
+import { activeCatalog } from "@/lib/gift-catalog";
 
 /**
  * Server-side gift-send authorization (UX-86). The one-click gift button posts a
@@ -41,7 +42,9 @@ export async function authorizeGiftSend(ticketId: string, giftId: string): Promi
     return { ok: false, status: 404, error: "ticket context not found" };
 
   const timeline = computeTimeline(order, merchant);
-  const catalog = await repos.gifts.listByMerchant(merchant.id);
+  // Active catalog only: a RETIRED gift (record kept, id removed from
+  // giftCatalogIds) fails the availability lookup below → 403, same as foreign.
+  const catalog = activeCatalog(merchant, await repos.gifts.listByMerchant(merchant.id));
   const ticketsLast7d = await ticketsLast7dFor(merchant.id, customer.id);
   const risk = scoreRefundRisk({
     order,

@@ -69,7 +69,7 @@ export default async function EvidencePackPage({ params }: { params: { orderId: 
   const pack = await assembleEvidencePack(params.orderId);
   if (!pack) return <NotFound />;
 
-  const { order, customer, disclosedEta, disputeWindow, commLog, statusViews } = pack;
+  const { order, customer, disclosedEta, disputeWindow, commLog, statusViews, csat, giftGestures } = pack;
 
   return (
     <div className="evpack">
@@ -84,7 +84,16 @@ export default async function EvidencePackPage({ params }: { params: { orderId: 
         <p className="text-[12px] text-ink-mute">
           Operator view · assembled {fmtDateTime(pack.generatedAt)}
         </p>
-        <PrintButton />
+        <div className="flex items-center gap-3">
+          <a
+            href={`/api/evidence/${order.id}`}
+            className="text-[12px] text-ink-mute no-underline hover:text-teal"
+            title="Same pack as structured JSON"
+          >
+            Export JSON
+          </a>
+          <PrintButton />
+        </div>
       </div>
 
       {/* Document header */}
@@ -94,7 +103,8 @@ export default async function EvidencePackPage({ params }: { params: { orderId: 
         <p className="mt-3 max-w-[62ch] text-[13.5px] leading-relaxed text-slate">
           This document compiles, for a single order, the fields Shopify&rsquo;s dispute-response form
           asks a merchant to provide: the delivery estimate the buyer was given at purchase, the full
-          record of communication with them, and when they opened their order-status page. Every field
+          record of communication with them, when they opened their order-status page, and any rating
+          or goodwill gesture on file. Every field
           is a record of information already held for this order. It is not legal advice and makes no
           claim about the outcome of any dispute.
         </p>
@@ -186,6 +196,55 @@ export default async function EvidencePackPage({ params }: { params: { orderId: 
                 <span className="ev-meta">
                   {v.ipPrefix ? `IP ${v.ipPrefix}.x.x` : "IP not recorded"}
                   {v.userAgent ? ` · ${shortUa(v.userAgent)}` : ""}
+                </span>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
+
+      {/* Customer acknowledgment (CSAT) */}
+      <section className="ev-section mb-5">
+        <p className="ev-label mb-2">Customer acknowledgment</p>
+        <div className="ev-card">
+          {csat ? (
+            <>
+              <p className="text-[15px] leading-relaxed text-ink">
+                The customer rated the merchant&rsquo;s reply{" "}
+                <strong className={csat.value === "up" ? "text-teal" : "text-terracotta-600"}>
+                  thumbs-{csat.value}
+                </strong>{" "}
+                from their order-status page on <strong>{fmtDateTime(csat.observedAt)}</strong>.
+              </p>
+              <p className="ev-meta mt-3">
+                A one-tap rating recorded against the most recent sent reply — the buyer engaged with
+                the communication, not just received it.
+              </p>
+            </>
+          ) : (
+            <p className="text-[14px] text-slate">No one-tap rating is on file for this order.</p>
+          )}
+        </div>
+      </section>
+
+      {/* Gift gestures */}
+      <section className="ev-section mb-5">
+        <p className="ev-label mb-2">Goodwill gestures ({giftGestures.length})</p>
+        <div className="ev-card p-0">
+          {giftGestures.length === 0 ? (
+            <p className="p-5 text-[14px] text-slate">No goodwill gestures are logged for this order.</p>
+          ) : (
+            giftGestures.map((g, i) => (
+              <div
+                key={`${g.ticketId}-${g.kind}-${i}`}
+                className="ev-entry flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-5 py-3"
+              >
+                <span className="text-[13.5px] text-ink">
+                  Gift gesture logged: <strong>{g.kind.replace(/-/g, " ")}</strong>
+                </span>
+                <span className="ev-meta">
+                  on ticket <span className="font-mono">{g.ticketId}</span>
+                  {g.ticketSubject ? ` · “${g.ticketSubject}”` : ""}
                 </span>
               </div>
             ))

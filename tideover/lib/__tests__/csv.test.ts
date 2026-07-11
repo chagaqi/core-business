@@ -45,6 +45,13 @@ test("detectFormat recognizes a BackerKit export, and unknown headers fall throu
   assert.equal(detectFormat(["foo", "bar"]), "unknown");
 });
 
+test("detectFormat routes a BackerKit export that preserves Kickstarter identifier columns to backerkit", () => {
+  // Real BK exports carry KS's "Backer Number"/"Backer UID" — BK vocabulary
+  // must win over the KS signature or these files map with the wrong columns.
+  const headers = ["Backer Number", "Backer UID", "First Name", "Email", "Pledge Level", "Pledge Total", "Order Total"];
+  assert.equal(detectFormat(headers), "backerkit");
+});
+
 // ── mapping ───────────────────────────────────────────────────────────────────
 
 test("mapKickstarterRow maps name/email/amount/eta and defaults group to undefined", () => {
@@ -150,4 +157,70 @@ test("mapping captures the order/pledge date column as an ISO orderDate", () => 
   // no date column → orderDate omitted (importer falls back to now + counts it)
   const none = mapKickstarterRow({ Email: "x@example.com" });
   assert.equal(none.orderDate, undefined);
+});
+
+// ── Kickstarter native Pledge Manager (defensive detection — spec unverified) ──
+// The authoritative PM export header row could not be verified online (the
+// creator-help article is bot-blocked); detection keys on PM-flavored columns
+// and mapping routes through the Kickstarter alias set. See KS_PM_SIGNATURE.
+
+test("detectFormat flags a Pledge Manager export when PM columns ride a KS report", () => {
+  const headers = [
+    "Backer Number",
+    "Backer Name",
+    "Email",
+    "Reward Title",
+    "Pledge Amount",
+    "Pledged At",
+    "Add-ons",
+    "Shipping Status",
+  ];
+  assert.equal(detectFormat(headers), "kickstarter-pm");
+});
+
+test("detectFormat resolves PM-only headers (no classic KS signature) to kickstarter-pm", () => {
+  assert.equal(
+    detectFormat(["Backer Name", "Email", "Add-ons", "Pledge Manager Status"]),
+    "kickstarter-pm",
+  );
+});
+
+test("a BackerKit export carrying add-on columns is still detected as BackerKit", () => {
+  assert.equal(
+    detectFormat(["First Name", "Email", "Pledge Level", "Pledge Total", "Add-ons"]),
+    "backerkit",
+  );
+});
+
+test("a classic KS backer report (no PM columns) still detects as plain kickstarter", () => {
+  assert.equal(
+    detectFormat(["Backer Number", "Backer Name", "Email", "Reward Title", "Pledge Amount"]),
+    "kickstarter",
+  );
+});
+
+test("a PM export maps through the Kickstarter alias set, including the amount-paid fallback", () => {
+  const csv = [
+    "Backer Number,Backer Name,Email,Reward Title,Amount Paid,Pledged At,Estimated Delivery,Add-ons",
+    '42,Jane Doe,jane@example.com,Deluxe Box,"$120.00",2026-05-02 11:03:00 -0400,October 2026,Extra dice set',
+  ].join("\n");
+  const { format, rows } = mapRows(parseCsv(csv));
+  assert.equal(format, "kickstarter-pm");
+  const m = rows[0];
+  assert.equal(m.firstName, "Jane");
+  assert.equal(m.email, "jane@example.com");
+  assert.equal(m.orderValueCents, 12000); // "Amount Paid" alias fills the gap
+  assert.equal(m.sourceKey, "42"); // backer number stays the dedupe id
+  assert.equal(m.orderDate, "2026-05-02T00:00:00.000Z"); // "Pledged At" date part
+  assert.equal(m.disclosedEtaValue, "October 2026"); // captured only because present
+});
+
+test('"Pledge Amount" still wins over the PM "Amount Paid" alias when both are present', () => {
+  const m = mapKickstarterRow({
+    "Backer Name": "Al B",
+    Email: "al@example.com",
+    "Pledge Amount": "$59.00",
+    "Amount Paid": "$74.00", // e.g. includes add-ons/shipping — must not shadow
+  });
+  assert.equal(m.orderValueCents, 5900);
 });

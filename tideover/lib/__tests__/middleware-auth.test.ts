@@ -35,6 +35,14 @@ const LEGACY_MATCHER = [
  *  other operator API and stamped with the tenant-scope marker). */
 const ADR_0020_ADDITIONS = ["/auth/:path*", "/onboarding", "/api/team"];
 
+/** Evidence-pack JSON export (M2 gap-fill): operator-gated like /api/export,
+ *  tenant-scoped through the merchants seam inside assembleEvidencePack. */
+const EVIDENCE_ADDITIONS = ["/api/evidence/:path*"];
+
+/** The self-serve settings API (owner-only PATCH /api/settings) — gated and
+ *  tenant-scope-stamped exactly like /api/team. */
+const SETTINGS_ADDITIONS = ["/api/settings"];
+
 const ENV_KEYS = ["DEMO_MODE", "REAL_APP_HOST", ...AUTH0_ENV_VARS] as const;
 
 async function withEnv(env: Record<string, string>, fn: () => Promise<void>): Promise<void> {
@@ -69,10 +77,10 @@ test("matcher regression: every legacy operator surface is still covered", () =>
   }
 });
 
-test("matcher: exactly the legacy list + the two ADR-0020 additions, nothing else", () => {
+test("matcher: exactly the legacy list + the ADR-0020 + evidence + settings additions, nothing else", () => {
   assert.deepEqual(
     [...config.matcher].sort(),
-    [...LEGACY_MATCHER, ...ADR_0020_ADDITIONS].sort(),
+    [...LEGACY_MATCHER, ...ADR_0020_ADDITIONS, ...EVIDENCE_ADDITIONS, ...SETTINGS_ADDITIONS].sort(),
   );
 });
 
