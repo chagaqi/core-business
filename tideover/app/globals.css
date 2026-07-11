@@ -750,8 +750,8 @@ details[open] .faq-answer {
 .oc-boat-carry {
   position: absolute;
   left: 58%;
-  bottom: 16svh;
-  width: clamp(140px, 17vw, 250px);
+  bottom: 11svh;
+  width: clamp(280px, 34vw, 500px);
   z-index: 3;
   will-change: transform;
   --carry: -9px;
@@ -888,7 +888,7 @@ details[open] .faq-answer {
   .oc-band-b { height: 29svh; }
   .oc-band-front { height: 25svh; }
   .oc-boat-carry {
-    bottom: 15svh;
-    width: clamp(80px, 20vw, 124px);
+    bottom: 13svh;
+    width: clamp(150px, 36vw, 210px);
   }
 }
