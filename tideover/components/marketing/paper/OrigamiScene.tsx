@@ -101,7 +101,7 @@ const BANDS: Band[] = [
   { cls: "oc-band-a", roll: "oc-roll-a", color: "#ECE3D0", edge: "#FAF6EE", base: 150, amp: 34, wave: 158, pp: 4, seed: 11, rows: 2 },
   { cls: "oc-band-b", roll: "oc-roll-b", color: "#C9DEE1", edge: "#E6F1F2", base: 150, amp: 38, wave: 132, pp: 5, seed: 23, rows: 2 },
   { cls: "oc-band-c", roll: "oc-roll-c", color: "#ABCFD3", edge: "#CFE4E6", base: 150, amp: 38, wave: 116, pp: 5, seed: 41, rows: 2 },
-  { cls: "oc-band-front", roll: "oc-roll-d", color: "url(#oc-deep-water)", edge: "#AFD3D6", base: 138, amp: 9, wave: 102, pp: 6, seed: 67, rows: 4, grad: true },
+  { cls: "oc-band-front", roll: "oc-roll-d", color: "url(#oc-deep-water)", edge: "#AFD3D6", base: 138, amp: 8, wave: 102, pp: 6, seed: 67, rows: 4, grad: true },
 ];
 
 function BandLayer({ b }: { b: Band }) {
@@ -255,14 +255,20 @@ export function OrigamiScene() {
         </g>
       </svg>
 
-      {/* the paper boat — the terracotta accent; sails L→R, riding band 2's swell */}
-      <svg className="oc-boat" aria-hidden viewBox="0 0 200 110">
-        <g className="oc-boat-bob">
-          <g className="oc-boat-pitch">
-            <BoatFacets />
+      {/* the paper boat — the terracotta accent; sails L→R. The outer wrapper
+          SHARES the front band's swell (same oc-carry) so the boat rises and
+          falls with the wave it sits in: the hull-vs-front-crest cut stays a
+          fixed margin, never sinking. Only pitch + a ±2px residual bob move
+          independently. */}
+      <div className="oc-boat-carry" aria-hidden>
+        <svg className="oc-boat" aria-hidden viewBox="0 0 200 110">
+          <g className="oc-boat-bob">
+            <g className="oc-boat-pitch">
+              <BoatFacets />
+            </g>
           </g>
-        </g>
-      </svg>
+        </svg>
+      </div>
 
       {/* nearer wave band — over the hull, largest visible water, fullest crumple */}
       <BandLayer b={front} />

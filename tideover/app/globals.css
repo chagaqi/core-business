@@ -744,12 +744,22 @@ details[open] .faq-answer {
 /* Boat sails L→R (traverse), bobbing + pitching. Base left is the reduced-motion
    resting spot; the traverse holds empty sea 80–100% then snaps back off-screen.
    Pitch leads bob by a quarter cycle so the bow rises into swells. */
-.oc-boat {
+/* The carry wrapper shares the FRONT band's exact swell (same oc-carry duration,
+   delay, and --carry) so the boat and the wave it sits in rise/fall together —
+   the hull-vs-front-crest overlap is a fixed margin, not an oscillation. */
+.oc-boat-carry {
   position: absolute;
   left: 58%;
-  bottom: 13svh;
+  bottom: 16svh;
   width: clamp(140px, 17vw, 250px);
   z-index: 3;
+  will-change: transform;
+  --carry: -9px;
+  animation: oc-carry 5s ease-in-out -1.5s infinite;
+}
+.oc-boat {
+  display: block;
+  width: 100%;
   will-change: transform;
   animation: oc-traverse 52s linear -16s infinite;
 }
@@ -766,8 +776,8 @@ details[open] .faq-answer {
 /* Boat bob + pitch are phase-tied to band 2's (band-c) swell — same 5.7s Y
    family + phase, pitch leading a quarter cycle so the bow rises INTO the swell:
    the boat visibly rides that wave rather than floating on its own clock. */
-.oc-boat-bob { transform-box: fill-box; transform-origin: 50% 68%; animation: oc-bob 5.7s ease-in-out -1s infinite; }
-.oc-boat-pitch { transform-box: fill-box; transform-origin: 50% 86%; animation: oc-pitch 5.7s ease-in-out -2.43s infinite; }
+.oc-boat-bob { transform-box: fill-box; transform-origin: 50% 68%; animation: oc-bob 5.3s ease-in-out -1s infinite; }
+.oc-boat-pitch { transform-box: fill-box; transform-origin: 50% 86%; animation: oc-pitch 5s ease-in-out -2.75s infinite; }
 .oc-dist-bob { transform-box: fill-box; transform-origin: 50% 68%; animation: oc-bob 6.3s ease-in-out infinite; }
 .oc-dist-pitch { transform-box: fill-box; transform-origin: 50% 86%; animation: oc-pitch 6.3s ease-in-out -1.6s infinite; }
 @keyframes oc-traverse {
@@ -777,7 +787,7 @@ details[open] .faq-answer {
 }
 @keyframes oc-bob {
   0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -4px, 0); }
+  50% { transform: translate3d(0, -2px, 0); }
 }
 @keyframes oc-pitch {
   0%, 100% { transform: rotate(-3deg); }
@@ -877,7 +887,7 @@ details[open] .faq-answer {
   .oc-band-a { height: 34svh; }
   .oc-band-b { height: 29svh; }
   .oc-band-front { height: 25svh; }
-  .oc-boat {
+  .oc-boat-carry {
     bottom: 15svh;
     width: clamp(80px, 20vw, 124px);
   }
