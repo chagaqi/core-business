@@ -94,7 +94,7 @@ const BANDS: Band[] = [
   { cls: "oc-band-a", roll: "oc-roll-a", color: "#ECE3D0", edge: "#FAF6EE", base: 150, amp: 34, wave: 158, pp: 4, seed: 11, rows: 2 },
   { cls: "oc-band-b", roll: "oc-roll-b", color: "#C9DEE1", edge: "#E6F1F2", base: 150, amp: 38, wave: 132, pp: 5, seed: 23, rows: 2 },
   { cls: "oc-band-c", roll: "oc-roll-c", color: "#ABCFD3", edge: "#CFE4E6", base: 150, amp: 38, wave: 116, pp: 5, seed: 41, rows: 2 },
-  { cls: "oc-band-front", roll: "oc-roll-d", color: "url(#oc-deep-water)", edge: "#AFD3D6", base: 142, amp: 38, wave: 102, pp: 6, seed: 67, rows: 4, grad: true },
+  { cls: "oc-band-front", roll: "oc-roll-d", color: "url(#oc-deep-water)", edge: "#AFD3D6", base: 138, amp: 9, wave: 102, pp: 6, seed: 67, rows: 4, grad: true },
 ];
 
 function BandLayer({ b }: { b: Band }) {
@@ -142,21 +142,25 @@ const BOAT_SIL = "M14 48 L72 56 L100 8 L128 56 L186 48 L100 98 Z";
 function BoatFacets() {
   return (
     <>
-      {/* baked waterline contact shadow (moves with the boat, zero filter) */}
-      <ellipse cx="100" cy="100" rx="72" ry="7" fill="rgba(17,37,42,0.15)" />
+      {/* deep waterline contact shadow (moves with the boat, zero filter) */}
+      <ellipse cx="100" cy="102" rx="82" ry="9" fill="rgba(17,37,42,0.22)" />
       {/* die-cut white margin: silhouette stroked white, facets paint over it */}
       <path d={BOAT_SIL} fill="#FFFFFF" stroke="#FFFFFF" strokeWidth={6} strokeLinejoin="round" style={{ paintOrder: "stroke" }} />
-      {/* hull — lit left / shadow right, folded at the centre */}
-      <path d="M14 48 L72 56 L100 56 L100 98 Z" fill="#D9762F" />
-      <path d="M100 56 L128 56 L186 48 L100 98 Z" fill="#C25C29" />
-      {/* central peak — lit left / shadow right */}
-      <path d="M100 8 L72 56 L100 56 Z" fill="#E0833D" />
-      <path d="M100 8 L100 56 L128 56 Z" fill="#C25C29" />
+      {/* hull — HARD lit-left / shadow-right split */}
+      <path d="M14 48 L72 56 L100 56 L100 98 Z" fill="#DD7C34" />
+      <path d="M100 56 L128 56 L186 48 L100 98 Z" fill="#B0501E" />
+      {/* darker keel facet along the hull bottom */}
+      <path d="M46 82 L154 82 L100 98 Z" fill="#9C441A" />
+      {/* central peak — bright lit-left / dark shadow-right */}
+      <path d="M100 8 L72 56 L100 56 Z" fill="#EEA057" />
+      <path d="M100 8 L100 56 L128 56 Z" fill="#B85422" />
+      {/* interior fold — the dark inside of the fold between peak and hull */}
+      <path d="M90 56 L110 56 L100 76 Z" fill="#8F3813" />
       {/* fold creases */}
-      <path d="M100 8 L100 98" stroke="#A2481D" strokeWidth={1} opacity={0.4} strokeLinecap="round" />
-      <path d="M72 56 L128 56" stroke="#A2481D" strokeWidth={0.8} opacity={0.28} />
-      <path d="M14 48 L72 56" stroke="#A2481D" strokeWidth={0.8} opacity={0.24} />
-      <path d="M128 56 L186 48" stroke="#A2481D" strokeWidth={0.8} opacity={0.24} />
+      <path d="M100 8 L100 98" stroke="#77300F" strokeWidth={1.1} opacity={0.5} strokeLinecap="round" />
+      <path d="M72 56 L128 56" stroke="#77300F" strokeWidth={0.9} opacity={0.4} />
+      <path d="M14 48 L72 56" stroke="#77300F" strokeWidth={0.9} opacity={0.32} />
+      <path d="M128 56 L186 48" stroke="#77300F" strokeWidth={0.9} opacity={0.32} />
     </>
   );
 }

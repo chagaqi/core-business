@@ -728,8 +728,8 @@ details[open] .faq-answer {
 .oc-boat {
   position: absolute;
   left: 58%;
-  bottom: 22svh;
-  width: clamp(88px, 11vw, 158px);
+  bottom: 13svh;
+  width: clamp(140px, 17vw, 250px);
   z-index: 3;
   will-change: transform;
   animation: oc-traverse 52s linear -16s infinite;
@@ -758,7 +758,7 @@ details[open] .faq-answer {
 }
 @keyframes oc-bob {
   0%, 100% { transform: translate3d(0, 0, 0); }
-  50% { transform: translate3d(0, -6px, 0); }
+  50% { transform: translate3d(0, -4px, 0); }
 }
 @keyframes oc-pitch {
   0%, 100% { transform: rotate(-3deg); }
