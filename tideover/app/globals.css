@@ -48,6 +48,14 @@
   }
   body {
     background: var(--sand);
+    /* Crumpled-paper page sheet (locked 52°/0.010/2.2, baked once by
+       PaperTexture.tsx into --paper-crumple-soft). The tile is a white-lit
+       relief, so multiply-blending it with the base color crumples the sand
+       behind ALL content while text painted on top stays crisp. Until the
+       client bake sets the var, background-image is invalid and the plain
+       sand renders — progressive, zero CLS. */
+    background-image: var(--paper-crumple-soft);
+    background-blend-mode: multiply;
     color: var(--ink);
     font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 17px;
@@ -98,6 +106,9 @@
   /* generic card surface */
   .panel {
     background: var(--paper);
+    /* Soft crumple on card sheets (see body note) — behind content, text crisp. */
+    background-image: var(--paper-crumple-soft);
+    background-blend-mode: multiply;
     border: 1px solid var(--border);
     border-radius: 14px;
     box-shadow: 0 1px 2px rgba(17, 37, 42, 0.04), 0 8px 24px -16px rgba(17, 37, 42, 0.18);
@@ -701,17 +712,39 @@ details[open] .faq-answer {
   width: 100%;
   height: 100%;
 }
-/* Sky crumple — a static, lighter-touch crease layer behind the copy. */
-.oc-sky {
+/* Hero sky — the FULL-strength crumpled paper (locked 52°/0.010/2.2), laid as a
+   static overlay that multiplies over the hero's sky color. Static layer: it
+   never animates, so the one-time baked raster costs nothing per frame. */
+.oc-sky-paper {
   position: absolute;
   left: 0;
   right: 0;
   top: 0;
-  width: 100%;
   height: 58svh;
   z-index: 0;
-  display: block;
+  background: var(--paper-crumple);
+  mix-blend-mode: multiply;
   pointer-events: none;
+}
+
+/* Baked-crumple overlays for the MOVING sky objects (sun disc, clouds): the
+   raster rides INSIDE the animated element (composited with it — zero per-frame
+   cost, per the no-live-filters-on-movers rule), masked to the object's shape. */
+.oc-crumple {
+  position: absolute;
+  inset: 0;
+  background: var(--paper-crumple-soft);
+  mix-blend-mode: multiply;
+  opacity: 0.85;
+  pointer-events: none;
+}
+.oc-crumple-disc {
+  -webkit-mask: radial-gradient(circle at 50% 50%, #000 29%, transparent 30.5%);
+  mask: radial-gradient(circle at 50% 50%, #000 29%, transparent 30.5%);
+}
+.oc-crumple-cloud {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 74'%3E%3Ccircle cx='44' cy='46' r='22'/%3E%3Ccircle cx='76' cy='34' r='28'/%3E%3Ccircle cx='110' cy='46' r='20'/%3E%3Crect x='42' y='46' width='70' height='22' rx='11'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 74'%3E%3Ccircle cx='44' cy='46' r='22'/%3E%3Ccircle cx='76' cy='34' r='28'/%3E%3Ccircle cx='110' cy='46' r='20'/%3E%3Crect x='42' y='46' width='70' height='22' rx='11'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat;
 }
 /* Band wrappers: height + z + the vertical swell carry (CSS px, own duration NOT
    a multiple of the band's roll duration, stepped delay so the swell travels). */
@@ -751,7 +784,7 @@ details[open] .faq-answer {
   position: absolute;
   left: 58%;
   bottom: 11svh;
-  width: clamp(280px, 34vw, 500px);
+  width: clamp(286px, 34vw, 506px);
   z-index: 3;
   will-change: transform;
   --carry: -9px;
@@ -805,6 +838,12 @@ details[open] .faq-answer {
   width: clamp(58px, 6vw, 96px);
   z-index: 1;
   pointer-events: none;
+}
+.oc-sun svg,
+.oc-cloud svg {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 .oc-sun-rays {
   transform-box: fill-box;
@@ -889,6 +928,6 @@ details[open] .faq-answer {
   .oc-band-front { height: 25svh; }
   .oc-boat-carry {
     bottom: 13svh;
-    width: clamp(150px, 36vw, 210px);
+    width: clamp(156px, 36vw, 216px);
   }
 }

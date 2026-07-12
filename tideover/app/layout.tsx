@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { PaperTexture } from "@/components/marketing/paper/PaperTexture";
 import "./globals.css";
 
 /**
@@ -51,7 +52,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* bakes the crumpled-paper tiles once and sets the --paper-crumple
+            CSS vars every surface reads; renders nothing itself */}
+        <PaperTexture />
+        {children}
+      </body>
     </html>
   );
 }

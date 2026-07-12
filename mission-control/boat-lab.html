@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>⛵ Boat Lab — crinkled paper</title>
+<style>
+  :root { --sand:#FBF8F2; --teal:#0E5366; --ink:#11252A; }
+  body { margin:0; background:#F2EFE9; color:var(--ink);
+         font:15px/1.5 -apple-system,Segoe UI,Roboto,sans-serif; }
+
+  /* ── The crumpled-paper page surface (one filtered layer behind everything) ── */
+  #pagePaper { position:fixed; inset:0; z-index:-1; background:#F3F0EA; filter:url(#fx-paper); }
+
+  /* Any element with .paper gets its own sheet of crumpled paper behind it. */
+  .paper { position:relative; isolation:isolate; }
+  .paper::before { content:""; position:absolute; inset:0; z-index:0;
+                   background:var(--sheet,#FDFCF9); filter:url(#fx-paper); pointer-events:none; }
+  .paper > * { position:relative; z-index:1; }
+
+  header { padding:18px 26px 6px; }
+  h1 { margin:0; font-size:22px; } .hint { color:#5A6B70; font-size:13px; margin-top:4px; }
+
+  .controls { display:flex; gap:20px; flex-wrap:wrap; align-items:center; padding:12px 26px 14px;
+              margin:0 26px; border-radius:12px; border:1px solid #E4DDCC; --sheet:#FDFCF9; }
+  .controls label { font-size:13px; font-weight:600; display:flex; gap:8px; align-items:center; }
+  .controls .val { font-weight:400; color:#5A6B70; min-width:46px; }
+
+  /* ── Main stage: crumpled-paper sky, real water bands, the site boat ── */
+  .sea { position:relative; height:360px; overflow:hidden; margin:18px 26px; border-radius:12px;
+         border:1px solid #E4DDCC; --sheet:#FAF8F3; }
+  .band { position:absolute; left:-4%; right:-4%; }
+  .band svg { display:block; width:100%; }
+  .b-back  { bottom:96px; } .b-mid { bottom:52px; } .b-front { bottom:-6px; z-index:5; }
+  .boat-wrap { position:absolute; bottom:118px; left:50%; transform:translateX(-50%); z-index:4; }
+  .boat-wrap svg { display:block; overflow:visible; }
+
+  .bob   { animation:bob 4.6s ease-in-out infinite; }
+  .pitch { animation:pitch 4.6s ease-in-out infinite; animation-delay:-1.15s; transform-origin:50% 85%; }
+  @keyframes bob   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+  @keyframes pitch { 0%,100%{transform:rotate(-3deg)} 50%{transform:rotate(3deg)} }
+  .paused .bob,.paused .pitch { animation-play-state:paused; }
+
+  .variants { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:18px; padding:6px 26px 60px; }
+  .card { border:1px solid #E4DDCC; border-radius:14px; padding:14px; --sheet:#FDFCF9; }
+  .card h3 { margin:0 0 2px; font-size:15px; } .card p { margin:0 0 10px; font-size:12.5px; color:#5A6B70; min-height:32px; }
+  .stage { border-radius:10px; padding:18px 10px 6px; position:relative; overflow:hidden;
+           border:1px solid #EDE6D8; --sheet:#FAF8F3; }
+  .stage svg.boat { display:block; margin:0 auto; width:74%; overflow:visible; }
+  .stage .mini-wave { position:absolute; left:-4%; right:-4%; bottom:-4px; z-index:2; }
+  input[type=range]{ accent-color:#D9762F; }
+
+  /* Global toggles */
+  body.crinkle-boats .auto-crinkle { filter:url(#fx-boat); }
+  body.crinkle-waves .band svg,
+  body.crinkle-waves .mini-wave { filter:url(#fx-wave); }
+</style>
+</head>
+<body class="crinkle-boats">
+
+<div id="pagePaper"></div>
+
+<!-- ══════════ FILTERS — the crumpled-paper engine (live-tunable) ══════════
+     feTurbulence(fractalNoise) makes an irregular height-field; feDiffuseLighting
+     turns it into lit ridges + shaded valleys; feComposite arithmetic k1=1
+     MULTIPLIES that shading over whatever it's applied to — so the same filter
+     crumples a white page, a teal wave, or a terracotta boat, and because the
+     source alpha is preserved it is automatically clipped to the shape.        -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <!-- LOW baseFrequency + few octaves = the reference's big sweeping ridges.
+         High frequency / many octaves just gives sandpaper grain. -->
+    <filter id="fx-paper">
+      <feTurbulence class="t" type="fractalNoise" baseFrequency="0.010" numOctaves="4" seed="7" result="n"/>
+      <feDiffuseLighting class="d" in="n" lighting-color="#ffffff" surfaceScale="2.2" result="l">
+        <feDistantLight class="s" azimuth="52" elevation="60"/>
+      </feDiffuseLighting>
+      <feComposite in="l" in2="SourceGraphic" operator="arithmetic" k1="1" k2="0" k3="0" k4="0"/>
+    </filter>
+
+    <filter id="fx-boat">
+      <feTurbulence class="t" data-fmul="6" type="fractalNoise" baseFrequency="0.054" numOctaves="4" seed="3" result="n"/>
+      <feDiffuseLighting class="d" data-smul="0.8" in="n" lighting-color="#ffffff" surfaceScale="2.4" result="l">
+        <feDistantLight class="s" azimuth="52" elevation="60"/>
+      </feDiffuseLighting>
+      <feComposite in="l" in2="SourceGraphic" operator="arithmetic" k1="1" k2="0" k3="0" k4="0"/>
+    </filter>
+
+    <filter id="fx-boat-heavy">
+      <feTurbulence class="t" data-fmul="4" type="fractalNoise" baseFrequency="0.036" numOctaves="5" seed="12" result="n"/>
+      <feDiffuseLighting class="d" data-smul="1.8" in="n" lighting-color="#ffffff" surfaceScale="5.4" result="l">
+        <feDistantLight class="s" azimuth="52" elevation="55"/>
+      </feDiffuseLighting>
+      <feComposite in="l" in2="SourceGraphic" operator="arithmetic" k1="1" k2="0" k3="0" k4="0"/>
+    </filter>
+
+    <!-- crushed sheet: warp the silhouette a little, THEN crumple it -->
+    <filter id="fx-boat-warp">
+      <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="21" result="wn"/>
+      <feDisplacementMap in="SourceGraphic" in2="wn" scale="4" xChannelSelector="R" yChannelSelector="G" result="warped"/>
+      <feTurbulence class="t" data-fmul="5" type="fractalNoise" baseFrequency="0.045" numOctaves="5" seed="9" result="n"/>
+      <feDiffuseLighting class="d" data-smul="1.6" in="n" lighting-color="#ffffff" surfaceScale="4.8" result="l">
+        <feDistantLight class="s" azimuth="52" elevation="55"/>
+      </feDiffuseLighting>
+      <feComposite in="l" in2="warped" operator="arithmetic" k1="1" k2="0" k3="0" k4="0"/>
+    </filter>
+
+    <filter id="fx-wave">
+      <feTurbulence class="t" data-fmul="2" type="fractalNoise" baseFrequency="0.018" numOctaves="3" seed="5" result="n"/>
+      <feDiffuseLighting class="d" data-smul="0.6" in="n" lighting-color="#ffffff" surfaceScale="1.8" result="l">
+        <feDistantLight class="s" azimuth="52" elevation="60"/>
+      </feDiffuseLighting>
+      <feComposite in="l" in2="SourceGraphic" operator="arithmetic" k1="1" k2="0" k3="0" k4="0"/>
+    </filter>
+  </defs>
+</svg>
+
+<header>
+  <h1>⛵ Boat Lab — crinkled paper</h1>
+  <div class="hint">Tell Claude what to change, then refresh (F5). Nothing here touches the live site.
+    Dial the paper with the three knobs — they drive every surface at once (page, cards, stages, boats, waves).</div>
+</header>
+
+<div class="controls paper">
+  <label>Boat size <input id="scale" type="range" min="120" max="720" value="400"> <span class="val" id="scaleVal">400px</span></label>
+  <label>Crinkle intensity <input id="amt" type="range" min="0" max="70" value="22"> <span class="val" id="amtVal">2.2</span></label>
+  <label>Crease scale <input id="freq" type="range" min="3" max="50" value="10"> <span class="val" id="freqVal">.010</span></label>
+  <label>Light angle <input id="ang" type="range" min="0" max="360" value="52"> <span class="val" id="angVal">52°</span></label>
+  <label><input id="anim" type="checkbox" checked> animate</label>
+  <label><input id="cboats" type="checkbox" checked> crinkle boats</label>
+  <label><input id="cwaves" type="checkbox"> crinkle waves</label>
+</div>
+
+<!-- ══════════ MAIN STAGE — the site boat, on water, on crumpled paper ══════════ -->
+<div class="sea paper" id="sea">
+  <div class="band b-back"><svg viewBox="0 0 1200 90" preserveAspectRatio="none"><path d="M0 40 L60 22 L130 44 L200 18 L270 42 L340 24 L410 46 L480 20 L550 42 L620 26 L690 44 L760 18 L830 40 L900 24 L970 44 L1040 20 L1110 42 L1200 28 L1200 90 L0 90 Z" fill="#CFE0DE"/></svg></div>
+  <div class="band b-mid"><svg viewBox="0 0 1200 100" preserveAspectRatio="none"><path d="M0 46 L70 26 L150 50 L230 24 L310 48 L390 28 L470 52 L550 26 L630 48 L710 30 L790 52 L870 24 L950 46 L1030 28 L1110 50 L1200 32 L1200 100 L0 100 Z" fill="#8FB7BC"/></svg></div>
+  <div class="boat-wrap" id="boatWrap">
+    <svg class="boat" id="mainBoat" viewBox="0 0 200 110" width="400">
+      <g class="bob"><g class="pitch auto-crinkle" id="mainFacets"></g></g>
+    </svg>
+  </div>
+  <div class="band b-front"><svg viewBox="0 0 1200 110" preserveAspectRatio="none"><path d="M0 40 L80 24 L170 46 L260 22 L350 44 L440 26 L530 48 L620 24 L710 44 L800 28 L890 48 L980 22 L1070 44 L1200 30 L1200 110 L0 110 Z" fill="#3E7E8C"/><path d="M0 40 L80 24 L170 46 L260 22 L350 44 L440 26 L530 48 L620 24 L710 44 L800 28 L890 48 L980 22 L1070 44 L1200 30" fill="none" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" opacity="0.9"/></svg></div>
+</div>
+
+<div class="variants" id="variants"></div>
+
+<script>
+/* ── The CURRENT site boat (exact geometry from OrigamiScene.tsx) ── */
+const SIL = "M14 48 L72 56 L100 8 L128 56 L186 48 L100 98 Z";
+function currentBoat(p) {
+  return `
+    <ellipse cx="100" cy="102" rx="82" ry="9" fill="rgba(17,37,42,0.22)"/>
+    <path d="${SIL}" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" style="paint-order:stroke"/>
+    <path d="M14 48 L72 56 L100 56 L100 98 Z" fill="${p.litHull}"/>
+    <path d="M100 56 L128 56 L186 48 L100 98 Z" fill="${p.shadowHull}"/>
+    <path d="M46 82 L154 82 L100 98 Z" fill="${p.keel}"/>
+    <path d="M100 8 L72 56 L100 56 Z" fill="${p.litPeak}"/>
+    <path d="M100 8 L100 56 L128 56 Z" fill="${p.shadowPeak}"/>
+    <path d="M90 56 L110 56 L100 76 Z" fill="${p.fold}"/>
+    <path d="M100 8 L100 98" stroke="${p.crease}" stroke-width="1.1" opacity="0.5" stroke-linecap="round"/>
+    <path d="M72 56 L128 56" stroke="${p.crease}" stroke-width="0.9" opacity="0.4"/>
+    <path d="M14 48 L72 56" stroke="${p.crease}" stroke-width="0.9" opacity="0.32"/>
+    <path d="M128 56 L186 48" stroke="${p.crease}" stroke-width="0.9" opacity="0.32"/>`;
+}
+const TERRA = { litHull:"#DD7C34", shadowHull:"#B0501E", keel:"#9C441A", litPeak:"#EEA057", shadowPeak:"#B85422", fold:"#8F3813", crease:"#77300F" };
+/* enough facet contrast that a white-on-white boat still reads once the
+   crumple multiply flattens it */
+const PAPER = { litHull:"#FCFAF5", shadowHull:"#D6CCB8", keel:"#BFB39C", litPeak:"#FFFFFF", shadowPeak:"#E0D7C5", fold:"#A99D85", crease:"#8B8171" };
+
+/* the boat split so a filter can hit ONLY the shadow side */
+function splitBoat(p, shadowFilter) {
+  return `
+    <ellipse cx="100" cy="102" rx="82" ry="9" fill="rgba(17,37,42,0.22)"/>
+    <path d="${SIL}" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" style="paint-order:stroke"/>
+    <g>
+      <path d="M14 48 L72 56 L100 56 L100 98 Z" fill="${p.litHull}"/>
+      <path d="M100 8 L72 56 L100 56 Z" fill="${p.litPeak}"/>
+    </g>
+    <g filter="url(#${shadowFilter})">
+      <path d="M100 56 L128 56 L186 48 L100 98 Z" fill="${p.shadowHull}"/>
+      <path d="M46 82 L154 82 L100 98 Z" fill="${p.keel}"/>
+      <path d="M100 8 L100 56 L128 56 Z" fill="${p.shadowPeak}"/>
+      <path d="M90 56 L110 56 L100 76 Z" fill="${p.fold}"/>
+    </g>
+    <path d="M100 8 L100 98" stroke="${p.crease}" stroke-width="1.1" opacity="0.5" stroke-linecap="round"/>
+    <path d="M72 56 L128 56" stroke="${p.crease}" stroke-width="0.9" opacity="0.4"/>`;
+}
+
+/* a hand-drawn crease-scar network — vector fold lines, on top of any boat */
+const SCARS = `
+  <g fill="none" stroke-linecap="round" opacity="0.55">
+    <path d="M34 52 L58 68 L48 78" stroke="rgba(255,255,255,0.55)" stroke-width="1.1"/>
+    <path d="M62 60 L80 74 L70 84" stroke="rgba(17,37,42,0.30)" stroke-width="1"/>
+    <path d="M118 60 L140 70 L130 82" stroke="rgba(255,255,255,0.45)" stroke-width="1.1"/>
+    <path d="M146 54 L168 60 L156 68" stroke="rgba(17,37,42,0.26)" stroke-width="1"/>
+    <path d="M84 20 L92 40 L84 50" stroke="rgba(255,255,255,0.55)" stroke-width="1"/>
+    <path d="M108 24 L118 44 L108 52" stroke="rgba(17,37,42,0.28)" stroke-width="1"/>
+    <path d="M56 84 L96 90" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+    <path d="M104 88 L146 84" stroke="rgba(17,37,42,0.22)" stroke-width="1"/>
+  </g>`;
+
+/* ── Variants — A–F unchanged, G–J are the crinkle experiments ── */
+const variants = [
+  { name:"A · Current (site today)", desc:"Terracotta, hard lit/shadow facets, die-cut margin.",
+    vb:"0 0 200 110", body: currentBoat(TERRA) },
+
+  { name:"B · Taller peak + pennant", desc:"More dramatic silhouette; tiny flag adds motion at the tip.",
+    vb:"0 -18 200 128", body: `
+    <ellipse cx="100" cy="102" rx="82" ry="9" fill="rgba(17,37,42,0.22)"/>
+    <path d="M14 48 L72 56 L100 -12 L128 56 L186 48 L100 98 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" style="paint-order:stroke"/>
+    <path d="M14 48 L72 56 L100 56 L100 98 Z" fill="#DD7C34"/>
+    <path d="M100 56 L128 56 L186 48 L100 98 Z" fill="#B0501E"/>
+    <path d="M46 82 L154 82 L100 98 Z" fill="#9C441A"/>
+    <path d="M100 -12 L72 56 L100 56 Z" fill="#EEA057"/>
+    <path d="M100 -12 L100 56 L128 56 Z" fill="#B85422"/>
+    <path d="M90 56 L110 56 L100 76 Z" fill="#8F3813"/>
+    <path d="M100 -12 L100 -26 L126 -19 L100 -12" fill="#0E5366"/>
+    <path d="M100 -12 L100 98" stroke="#77300F" stroke-width="1.1" opacity="0.5"/>` },
+
+  { name:"C · Newspaper print", desc:"Pale newsprint + faint type lines, terracotta accent stripe.",
+    vb:"0 0 200 110", body: `
+    <ellipse cx="100" cy="102" rx="82" ry="9" fill="rgba(17,37,42,0.22)"/>
+    <path d="${SIL}" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" style="paint-order:stroke"/>
+    <path d="M14 48 L72 56 L100 56 L100 98 Z" fill="#F4EFE4"/>
+    <path d="M100 56 L128 56 L186 48 L100 98 Z" fill="#E3DBC8"/>
+    <path d="M46 82 L154 82 L100 98 Z" fill="#D4C9B0"/>
+    <path d="M100 8 L72 56 L100 56 Z" fill="#FAF6EC"/>
+    <path d="M100 8 L100 56 L128 56 Z" fill="#EBE3D0"/>
+    <path d="M90 56 L110 56 L100 76 Z" fill="#C9BCA0"/>
+    <g stroke="#9AA0A6" stroke-width="1" opacity="0.45">
+      <path d="M80 30 L96 30"/><path d="M78 36 L96 36"/><path d="M104 24 L118 24"/><path d="M104 30 L122 30"/>
+      <path d="M30 52 L64 55"/><path d="M34 58 L70 62"/><path d="M120 60 L166 54"/><path d="M116 66 L156 61"/>
+    </g>
+    <path d="M40 74 L160 74 L152 80 L48 80 Z" fill="#D9762F"/>
+    <path d="M100 8 L100 98" stroke="#8A8478" stroke-width="1.1" opacity="0.5"/>` },
+
+  { name:"D · Twin-sail sloop", desc:"Separate hull + two sails — reads 'sailboat', not 'folded hat'.",
+    vb:"0 -14 200 124", body: `
+    <ellipse cx="100" cy="102" rx="78" ry="9" fill="rgba(17,37,42,0.22)"/>
+    <path d="M20 62 L180 62 L150 96 L50 96 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round" style="paint-order:stroke"/>
+    <path d="M20 62 L100 62 L100 96 L50 96 Z" fill="#DD7C34"/>
+    <path d="M100 62 L180 62 L150 96 L100 96 Z" fill="#B0501E"/>
+    <path d="M50 90 L150 90 L143 96 L57 96 Z" fill="#9C441A"/>
+    <path d="M96 -10 L96 56 L38 56 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round" style="paint-order:stroke"/>
+    <path d="M96 -10 L96 56 L38 56 Z" fill="#F0E9DA"/>
+    <path d="M96 -10 L70 56 L96 56 Z" fill="#FAF6EC"/>
+    <path d="M106 6 L106 56 L156 56 Z" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="5" stroke-linejoin="round" style="paint-order:stroke"/>
+    <path d="M106 6 L106 56 L156 56 Z" fill="#B85422"/>
+    <path d="M106 6 L106 56 L130 56 Z" fill="#DD7C34"/>
+    <path d="M100 -10 L100 62" stroke="#77300F" stroke-width="1.2" opacity="0.4"/>` },
+
+  { name:"E · Teal boat, terracotta sail", desc:"Inverted palette — hull joins the sea, sail carries the accent.",
+    vb:"0 0 200 110", body: currentBoat({ litHull:"#2E7486", shadowHull:"#0E5366", keel:"#0A3E4D", litPeak:"#EEA057", shadowPeak:"#D9762F", fold:"#8F3813", crease:"#08303C" }) },
+
+  { name:"F · Baked crumple facets", desc:"Hand-placed highlight/shadow shards (the vector approach, no filter).",
+    vb:"0 0 200 110", body: currentBoat(TERRA) + `
+    <g opacity="0.5">
+      <path d="M30 52 L52 66 L38 60 Z" fill="rgba(255,255,255,0.28)"/>
+      <path d="M60 62 L84 76 L66 72 Z" fill="rgba(17,37,42,0.16)"/>
+      <path d="M120 64 L146 74 L128 78 Z" fill="rgba(255,255,255,0.22)"/>
+      <path d="M150 56 L170 62 L156 66 Z" fill="rgba(17,37,42,0.14)"/>
+      <path d="M84 22 L94 40 L86 34 Z" fill="rgba(255,255,255,0.30)"/>
+      <path d="M106 26 L118 44 L108 40 Z" fill="rgba(17,37,42,0.18)"/>
+    </g>` },
+
+  /* ───────── NEW: crinkle experiments ───────── */
+  { name:"G · Crinkle masked to the boat", desc:"The page's crumple filter, clipped to the silhouette by its own alpha. Same paper as the background.",
+    vb:"0 0 200 110", body: currentBoat(TERRA), filter:"fx-boat", noAuto:true },
+
+  { name:"H · Shadow-facets only", desc:"Lit facets stay clean and crisp; only the shadow side is crumpled. Keeps the origami edges sharp.",
+    vb:"0 0 200 110", body: splitBoat(TERRA, "fx-boat-heavy"), noAuto:true },
+
+  { name:"I · Crushed sheet (warp + crumple)", desc:"Displacement warps the silhouette, then a heavy crumple lands on top — folded from an already-crushed sheet.",
+    vb:"0 0 200 110", body: currentBoat(TERRA), filter:"fx-boat-warp", noAuto:true },
+
+  { name:"J · White paper boat + terracotta peak", desc:"MY PICK. The boat IS the reference paper — soft near-white crumple, tone-on-tone with the page; one terracotta facet carries the accent.",
+    vb:"0 0 200 110", body: currentBoat({ ...PAPER, litPeak:"#EEA057", shadowPeak:"#C25C29", fold:"#9C441A" }), filter:"fx-boat", noAuto:true },
+
+  { name:"K · Crumple + crease scars", desc:"Filter crumple PLUS vector fold-scars, so the creases read at any size (filters go soft when scaled down).",
+    vb:"0 0 200 110", body: currentBoat(TERRA) + SCARS, filter:"fx-boat", noAuto:true },
+];
+
+/* render */
+document.getElementById("mainFacets").innerHTML = currentBoat(TERRA);
+const grid = document.getElementById("variants");
+for (const v of variants) {
+  const cls = v.noAuto ? "pitch" : "pitch auto-crinkle";
+  const f   = v.filter ? ` filter="url(#${v.filter})"` : "";
+  const card = document.createElement("div");
+  card.className = "card paper";
+  card.innerHTML = `<h3>${v.name}</h3><p>${v.desc}</p>
+    <div class="stage paper">
+      <svg class="boat" viewBox="${v.vb}"><g class="bob"><g class="${cls}"${f}>${v.body}</g></g></svg>
+      <svg class="mini-wave" viewBox="0 0 600 46" preserveAspectRatio="none"><path d="M0 20 L50 8 L105 22 L160 6 L215 20 L270 10 L325 24 L380 8 L435 22 L490 10 L545 24 L600 12 L600 46 L0 46 Z" fill="#3E7E8C"/><path d="M0 20 L50 8 L105 22 L160 6 L215 20 L270 10 L325 24 L380 8 L435 22 L490 10 L545 24 L600 12" fill="none" stroke="#fff" stroke-width="3.5" stroke-linejoin="round" opacity="0.9"/></svg>
+    </div>`;
+  grid.appendChild(card);
+}
+
+/* ── controls: the three knobs drive EVERY filter at once (each primitive
+      carries a data-fmul / data-smul multiplier so small things get finer,
+      denser creases than the big page sheet) ── */
+const $ = (id) => document.getElementById(id);
+function retune() {
+  const amt  = +$("amt").value / 10;      // surfaceScale
+  const freq = +$("freq").value / 1000;   // baseFrequency
+  const ang  = +$("ang").value;           // azimuth
+  document.querySelectorAll("filter feTurbulence.t").forEach(t => {
+    const m = +(t.dataset.fmul || 1);
+    t.setAttribute("baseFrequency", (freq * m).toFixed(4));
+  });
+  document.querySelectorAll("filter feDiffuseLighting.d").forEach(d => {
+    const m = +(d.dataset.smul || 1);
+    d.setAttribute("surfaceScale", (amt * m).toFixed(2));
+  });
+  document.querySelectorAll("filter feDistantLight.s").forEach(s => s.setAttribute("azimuth", ang));
+  $("amtVal").textContent  = amt.toFixed(1);
+  $("freqVal").textContent = "." + String(Math.round(freq * 1000)).padStart(3, "0");
+  $("angVal").textContent  = ang + "°";
+}
+["amt","freq","ang"].forEach(id => $(id).oninput = retune);
+retune();
+
+const mainBoat = $("mainBoat");
+$("scale").oninput = (e) => { mainBoat.setAttribute("width", e.target.value); $("scaleVal").textContent = e.target.value + "px"; };
+$("anim").onchange   = (e) => document.body.classList.toggle("paused", !e.target.checked);
+$("cboats").onchange = (e) => document.body.classList.toggle("crinkle-boats", e.target.checked);
+$("cwaves").onchange = (e) => document.body.classList.toggle("crinkle-waves", e.target.checked);
+</script>
+</body>
+</html>

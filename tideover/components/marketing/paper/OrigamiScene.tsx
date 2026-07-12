@@ -155,10 +155,8 @@ const BOAT_SIL = "M14 48 L72 56 L100 8 L128 56 L186 48 L100 98 Z";
 function BoatFacets() {
   return (
     <>
-      {/* deep waterline contact shadow (moves with the boat, zero filter) */}
-      <ellipse cx="100" cy="102" rx="82" ry="9" fill="rgba(17,37,42,0.22)" />
-      {/* die-cut white margin: silhouette stroked white, facets paint over it */}
-      <path d={BOAT_SIL} fill="#FFFFFF" stroke="#FFFFFF" strokeWidth={6} strokeLinejoin="round" style={{ paintOrder: "stroke" }} />
+      {/* No contact shadow, no die-cut white margin — the crumpled-paper world
+          reads them as unnecessary; the facets tile the silhouette exactly. */}
       {/* hull — HARD lit-left / shadow-right split */}
       <path d="M14 48 L72 56 L100 56 L100 98 Z" fill="#DD7C34" />
       <path d="M100 56 L128 56 L186 48 L100 98 Z" fill="#B0501E" />
@@ -192,48 +190,48 @@ function Sun() {
   }
   d += "Z";
   return (
-    <svg className="oc-sun" aria-hidden viewBox="0 0 100 100">
-      <g className="oc-sun-rays">
-        <path d={d} fill="#E4B44C" />
-      </g>
-      <circle cx="50" cy="50" r="30" fill="#F0CA66" />
-      <circle cx="43" cy="43" r="18" fill="#F5D77F" opacity="0.7" />
-    </svg>
+    <div className="oc-sun" aria-hidden>
+      <svg viewBox="0 0 100 100">
+        <g className="oc-sun-rays">
+          <path d={d} fill="#E4B44C" />
+        </g>
+        <circle cx="50" cy="50" r="30" fill="#F0CA66" />
+        <circle cx="43" cy="43" r="18" fill="#F5D77F" opacity="0.7" />
+      </svg>
+      {/* baked crumple, masked to the disc — rides the element, no live filter */}
+      <span className="oc-crumple oc-crumple-disc" />
+    </div>
   );
 }
 
 // Puffy cut-paper cloud — a white rounded cluster with a faint tonal underside.
 function Cloud({ className }: { className: string }) {
   return (
-    <svg className={`oc-cloud ${className}`} aria-hidden viewBox="0 0 150 74">
-      <g fill="#FFFFFF">
-        <circle cx="44" cy="46" r="22" />
-        <circle cx="76" cy="34" r="28" />
-        <circle cx="110" cy="46" r="20" />
-        <rect x="42" y="46" width="70" height="22" rx="11" />
-      </g>
-      <path d="M26 66 Q75 76 124 66" fill="none" stroke="rgba(17,37,42,0.05)" strokeWidth="3" strokeLinecap="round" />
-    </svg>
+    <div className={`oc-cloud ${className}`} aria-hidden>
+      <svg viewBox="0 0 150 74">
+        <g fill="#FFFFFF">
+          <circle cx="44" cy="46" r="22" />
+          <circle cx="76" cy="34" r="28" />
+          <circle cx="110" cy="46" r="20" />
+          <rect x="42" y="46" width="70" height="22" rx="11" />
+        </g>
+        <path d="M26 66 Q75 76 124 66" fill="none" stroke="rgba(17,37,42,0.05)" strokeWidth="3" strokeLinecap="round" />
+      </svg>
+      {/* baked crumple, masked to the cloud silhouette (same geometry, in CSS) */}
+      <span className="oc-crumple oc-crumple-cloud" />
+    </div>
   );
 }
 
 export function OrigamiScene() {
-  const sky = crumpleTiled(3, 0, 1200, 40, 240, 5, 3, 0.028, 0.05);
   const backAndMid = BANDS.slice(0, 3);
   const front = BANDS[3];
 
   return (
     <>
-      {/* Sky — a lighter-touch static crumple behind the copy (AA preserved). */}
-      <svg className="oc-sky" aria-hidden preserveAspectRatio="none" viewBox="0 0 1200 500">
-        {sky.facets.map((f, k) => (
-          <path key={`sf${k}`} d={f.d} fill={f.fill} />
-        ))}
-        {sky.creases.map((c, k) => (
-          <path key={`sc${k}`} d={c.d} fill="none" stroke={c.light ? sky.ch : sky.cs} strokeWidth={0.8} strokeLinecap="round" />
-        ))}
-      </svg>
-
+      {/* Hero sky — the full-strength crumpled photographic paper, laid as a
+          static multiply layer (baked once by PaperTexture; never animates). */}
+      <div className="oc-sky-paper" aria-hidden />
       {/* sky objects — rayed sun + drifting cut-paper clouds, clear of the copy */}
       <Sun />
       <Cloud className="oc-cloud-1" />
@@ -248,7 +246,7 @@ export function OrigamiScene() {
       <svg className="oc-dist" aria-hidden viewBox="0 0 200 110">
         <g className="oc-dist-bob">
           <g className="oc-dist-pitch">
-            <path d={BOAT_SIL} fill="#ECE4D6" stroke="#FFFFFF" strokeWidth={5} strokeLinejoin="round" style={{ paintOrder: "stroke" }} />
+            <path d={BOAT_SIL} fill="#ECE4D6" />
             <path d="M100 56 L128 56 L186 48 L100 98 Z" fill="#DBCDB8" />
             <path d="M100 8 L100 56 L128 56 Z" fill="#D3C4AD" />
           </g>
