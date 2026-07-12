@@ -82,10 +82,22 @@ export function PaperTexture() {
         // colored surface. Light angle + crease scale stay exactly as locked.
         const full = await bake(bakeSvg(SURFACE * 2.27, 0.35)); // ≈5.0 — reads as paper
         const soft = await bake(bakeSvg(SURFACE * 1.45, 0.6)); // ≈3.2 — the sprinkle
+        // The boat is saturated terracotta and small on screen: a gentle relief
+        // vanishes on it (verified). Harder, barely-whitened relief so the paper
+        // it's folded from is unmistakable without dulling the color.
+        const object = await bake(bakeSvg(SURFACE * 3.4, 0.12)); // ≈7.5
         if (cancelled) return;
         const root = document.documentElement.style;
         root.setProperty("--paper-crumple", `url("${full}")`);
         root.setProperty("--paper-crumple-soft", `url("${soft}")`);
+
+        // SVG can't read a CSS var as an <image href>, so the baked tile is
+        // handed to any <image data-crumple> in the tree (the boat patterns).
+        // Parent effects run after children mount, so the nodes exist here.
+        const tiles: Record<string, string> = { full, soft, object };
+        document.querySelectorAll<SVGImageElement>("image[data-crumple]").forEach((el) => {
+          el.setAttribute("href", tiles[el.dataset.crumple ?? "full"] ?? full);
+        });
       } catch {
         /* leave base colors; texture is a progressive enhancement */
       }

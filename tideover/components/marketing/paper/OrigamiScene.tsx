@@ -152,6 +152,24 @@ function BandLayer({ b }: { b: Band }) {
 // in our palette — the single warm terracotta accent object on the teal sea.
 const BOAT_SIL = "M14 48 L72 56 L100 8 L128 56 L186 48 L100 98 Z";
 
+/**
+ * The baked crumple, painted INSIDE a moving object as an SVG pattern and
+ * clipped to its silhouette. The boat traverses/bobs/pitches, so a live filter
+ * is banned (it would re-evaluate every frame) — a pattern fill composites with
+ * the object for free. PaperTexture sets the <image href> after its one-time
+ * bake; until then the image is empty and the boat renders flat (progressive).
+ * `id` must be unique per pattern instance (the distant boat has its own).
+ */
+function CrumplePattern({ id, tile, kind = "object" }: { id: string; tile: number; kind?: string }) {
+  return (
+    <defs>
+      <pattern id={id} patternUnits="userSpaceOnUse" x="0" y="0" width={tile} height={tile}>
+        <image data-crumple={kind} width={tile} height={tile} preserveAspectRatio="none" />
+      </pattern>
+    </defs>
+  );
+}
+
 function BoatFacets() {
   return (
     <>
@@ -167,6 +185,11 @@ function BoatFacets() {
       <path d="M100 8 L100 56 L128 56 Z" fill="#B85422" />
       {/* interior fold — the dark inside of the fold between peak and hull */}
       <path d="M90 56 L110 56 L100 76 Z" fill="#8F3813" />
+      {/* the paper the boat is folded FROM: crumple over every facet, clipped to
+          the silhouette, multiplied so it shades the creases without dulling the
+          terracotta. Sits under the fold creases so those stay the crisp folds. */}
+      <CrumplePattern id="oc-boat-pat" tile={112} />
+      <path d={BOAT_SIL} fill="url(#oc-boat-pat)" opacity={0.82} style={{ mixBlendMode: "multiply" }} />
       {/* fold creases */}
       <path d="M100 8 L100 98" stroke="#77300F" strokeWidth={1.1} opacity={0.5} strokeLinecap="round" />
       <path d="M72 56 L128 56" stroke="#77300F" strokeWidth={0.9} opacity={0.4} />
@@ -249,6 +272,9 @@ export function OrigamiScene() {
             <path d={BOAT_SIL} fill="#ECE4D6" />
             <path d="M100 56 L128 56 L186 48 L100 98 Z" fill="#DBCDB8" />
             <path d="M100 8 L100 56 L128 56 Z" fill="#D3C4AD" />
+            {/* same paper, lighter hand — it's far away */}
+            <CrumplePattern id="oc-dist-pat" tile={112} />
+            <path d={BOAT_SIL} fill="url(#oc-dist-pat)" opacity={0.55} style={{ mixBlendMode: "multiply" }} />
           </g>
         </g>
       </svg>
