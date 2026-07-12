@@ -15,9 +15,13 @@ import { getSendAdapter } from "@/lib/channel-adapters/registry";
 import { computeDisputeExposure, type DisputeExposure } from "@/lib/dispute-exposure";
 import { computeSlaAttainment, ticketSlaState, type SlaAttainment } from "@/lib/sla";
 import { formatEscalationTag, isEscalationTag, isFlagged } from "@/lib/escalation";
-import { isBaselineMeasured } from "@/lib/baseline";
+import { isBaselineMeasured, measureCohort } from "@/lib/baseline";
 import { containsHardDate } from "@/lib/proof";
 import { computeSetupChecklist, type SetupChecklist } from "@/lib/setup";
+import { measureQueue, rankQueue, type QueueDistribution, type RowRanking } from "@/lib/queue-rank";
+import { deflectionGap, measureDeflection, type DeflectionMeasure } from "@/lib/deflection";
+import { currentBoard, formatWeeksBand, scopeApplies } from "@/lib/status-board";
+import type { BaselineCohort, ProductionStatusEntry } from "@/lib/types";
 import {
   embeddedBandPhrase,
   generateAlternates,
@@ -518,9 +522,12 @@ export async function ingestTicket(
       opts?.draftTimeoutMs !== undefined ? { timeoutMs: opts.draftTimeoutMs } : undefined,
     );
     // subject/body ride along so the LLM drafter (ADR-0018) can ground the reply
-    // in what the buyer actually wrote; the deterministic drafter ignores them.
+    // in what the buyer actually wrote. `type` rides along because the floor is
+    // TYPE-AWARE now (lib/drafting/safe-floor.ts): the reassurance engine answers
+    // "where is my order" and nothing else, so a refund/deposit/other ticket must
+    // not be answered with a production blurb that ignores what was asked.
     const drafted = await drafter.draft({
-      ticket: { sentiment: n.sentiment, subject: n.subject, body: n.body } as Ticket,
+      ticket: { sentiment: n.sentiment, subject: n.subject, body: n.body, type: n.type } as Ticket,
       order,
       customer,
       merchant,
@@ -841,8 +848,27 @@ export async function escalateTicket(
   return { ticket: updated, escalated: true };
 }
 
-/** Operator queue: every open/drafted ticket with computed risk, sorted. */
-export interface QueueRow {
+/**
+ * Operator queue: every ticket with a resolvable order, carrying its risk AND its
+ * position in the merchant's OWN live distribution (lib/queue-rank).
+ *
+ * TWO RANKS, TWO NAMES, ON PURPOSE.
+ *  - `priorityRank` is the ENGINE's absolute rank, unchanged and unmoved (the eval
+ *    invariants pin its formula). It is kept on the row so an export, an evidence
+ *    pack and this queue can never disagree about what the engine said.
+ *  - `queueRank` is the row's PLACE IN THIS QUEUE (1 = top), which is a fact about
+ *    the cohort, not about the ticket. It is what the rows are sorted by.
+ *
+ * They are different quantities and they now have different names. The queue is no
+ * longer ordered on the engine's absolute rank alone, because an absolute bar is
+ * the wrong instrument for a queue: on p10's crisis desk every ticket scored high
+ * (zero `standard` tickets, a risk floor of 56), so "sort by risk" ranked his THIRD
+ * chargeback threat — the one who wrote "I am building a case" — 5th of 8. The
+ * order is now: intent class (a stated chargeback outranks everything), then risk,
+ * then the declared tiebreak; and every row carries `rankReason`, the answer to
+ * "why is this on top?".
+ */
+export interface QueueRow extends RowRanking {
   ticket: Ticket;
   customer: Customer;
   order: Order;
@@ -850,13 +876,27 @@ export interface QueueRow {
   band: string;
   color: string;
   daysInWait: number;
+  /** the REFUND-RISK ENGINE's own absolute priority rank. Unchanged meaning. */
   priorityRank: number;
 }
 
+/** The queue plus the live distribution its ranking was measured against. */
+export interface RankedQueueView {
+  rows: QueueRow[];
+  distribution: QueueDistribution;
+}
+
 export async function getQueue(merchantId: string, now: Date = new Date()): Promise<QueueRow[]> {
+  return (await getRankedQueue(merchantId, now)).rows;
+}
+
+export async function getRankedQueue(
+  merchantId: string,
+  now: Date = new Date(),
+): Promise<RankedQueueView> {
   const repos = getRepositories();
   const merchant = await repos.merchants.findById(merchantId);
-  if (!merchant) return [];
+  if (!merchant) return { rows: [], distribution: measureQueue([]) };
   const tickets = await repos.tickets.list({ merchantId });
 
   // EN-08 — batch the per-ticket joins instead of 1+3N serial round-trips. The old
@@ -889,7 +929,10 @@ export async function getQueue(merchantId: string, now: Date = new Date()): Prom
     }
   }
 
-  const rows: QueueRow[] = [];
+  // The engine's per-ticket facts. Ranking happens AFTER the whole cohort exists —
+  // a row's place is a fact about the queue, not about the ticket alone.
+  type BaseRow = Omit<QueueRow, keyof RowRanking> & { topDriverRaw: string };
+  const base: BaseRow[] = [];
   for (const ticket of tickets) {
     // An order-less (unmatched) ticket resolves to no order and is skipped — the
     // exact drop the original findById("") → null produced, now with no round-trip.
@@ -907,7 +950,7 @@ export async function getQueue(merchantId: string, now: Date = new Date()): Prom
       sentiment: ticket.sentiment,
       ticketsLast7d,
     });
-    rows.push({
+    base.push({
       ticket,
       customer,
       order,
@@ -915,14 +958,32 @@ export async function getQueue(merchantId: string, now: Date = new Date()): Prom
       band: risk.band,
       color: risk.color,
       daysInWait: timeline.daysInWait,
+      // The engine's own absolute rank, carried through unchanged — the exports and
+      // the cockpit must never disagree about what the engine said.
       priorityRank: risk.priorityRank,
+      // The engine computed this and the queue used to throw it away, which is why
+      // an operator could never answer "why is this one on top?".
+      topDriverRaw: risk.topDriver,
     });
   }
-  return rows.sort(
-    (a, b) =>
-      a.priorityRank - b.priorityRank ||
-      new Date(a.ticket.createdAt).getTime() - new Date(b.ticket.createdAt).getTime(),
-  );
+
+  const ranked = rankQueue(base, (r) => ({
+    ticketId: r.ticket.id,
+    createdAt: r.ticket.createdAt,
+    sentiment: r.ticket.sentiment,
+    // "Live" = still the operator's work. An answered ticket must not dilute the
+    // distribution its unanswered siblings are ranked against.
+    live: r.ticket.status !== "sent",
+    riskScore: r.riskScore,
+    daysInWait: r.daysInWait,
+    orderValueCents: r.order.orderValueCents,
+    topDriver: r.topDriverRaw,
+  }));
+
+  return {
+    rows: ranked.rows.map(({ topDriverRaw: _drop, ...row }) => row),
+    distribution: ranked.distribution,
+  };
 }
 
 /** Merchant refund-risk dashboard view model — all proof-only (deltas vs baseline). */
@@ -939,15 +1000,41 @@ export interface DashboardView {
     medianFrtSec: number | null;
     wismoPer100Orders: number | null;
   };
+  /**
+   * The day-0 cohort MEASURED from the merchant's own order file, and the SAME
+   * measurement taken today. This is the only before/after on the dashboard where
+   * both ends are counted rather than reported — so it is the only place a delta
+   * can be stated as a fact. Null until an import has landed (no day-0 picture).
+   */
+  cohort: { day0: BaselineCohort; today: BaselineCohort } | null;
   live: {
     medianFrtSec: number | null;
+    /** WISMO tickets per 100 orders, to one decimal — it used to round to 0 for
+     *  every merchant above ~3,000 orders, i.e. the five biggest in the run. */
     wismoPer100Orders: number;
     sentCount: number;
-    savesCount: number;
-    deflectionPct: number | null;
+    /**
+     * Replies sent to tickets that threatened a chargeback. An ACTIVITY count.
+     * It was called `savesCount` and displayed as "Saves logged", which asserts an
+     * outcome — that the customer was saved — that nothing in the product measures.
+     * A reply is a reply.
+     */
+    disputeRiskReplies: number;
+    /** gifts authorized. Also activity: nothing here proves one was received. */
+    giftsAuthorized: number;
   };
+  /**
+   * DEFLECTION, measured or absent. Never `resolved / tickets` again — see
+   * lib/deflection. `gap` is the sentence the tile shows when there is no rate,
+   * and it names what would make it real.
+   */
+  deflection: DeflectionMeasure & { gap: string | null };
   riskCurve: Array<{ label: string; risk: number; color: string }>;
   atRisk: QueueRow[];
+  /** the live queue's own risk distribution — what its ranking was measured against. */
+  queueDistribution: QueueDistribution;
+  /** the merchant's current production status + who it reaches. */
+  statusBoard: StatusBoardSummary;
   ordersInWindow: number;
   /**
    * UX-09 live status strip: counts of the operator's OPEN work (status !==
@@ -986,28 +1073,41 @@ export async function getDashboard(merchantId: string, now: Date = new Date()): 
   const merchant = await repos.merchants.findById(merchantId);
   if (!merchant) return null;
 
-  const [tickets, orders, queue] = await Promise.all([
+  const [tickets, orders, ranked, statuses] = await Promise.all([
     repos.tickets.list({ merchantId }),
     repos.orders.listByMerchant(merchantId),
-    getQueue(merchantId, now),
+    getRankedQueue(merchantId, now),
+    repos.productionStatuses.listByMerchant(merchantId),
   ]);
+  const queue = ranked.rows;
 
   const sent = tickets.filter((t) => t.status === "sent" && t.firstResponseSec != null);
   const medianFrtSec = median(sent.map((t) => t.firstResponseSec as number));
   const wismo = tickets.filter((t) => t.type === "wismo").length;
-  const wismoPer100Orders = orders.length ? Math.round((wismo / orders.length) * 100) : 0;
+  // One decimal: at 3,000+ orders the old whole-number rounding read 0 for every
+  // large merchant, so the tile said "0 WISMO per 100 orders" next to a queue full
+  // of them.
+  const wismoPer100Orders = orders.length ? Math.round((wismo / orders.length) * 1000) / 10 : 0;
 
-  // a "save": a dispute-risk ticket that got an approved reply, or a gift sent.
-  const savesCount = tickets.filter(
-    (t) =>
-      (t.tags.includes("presale:dispute-risk") && t.status === "sent") ||
-      t.tags.some((x) => x.startsWith("gift-sent:")),
+  // ACTIVITY, named as activity. A reply to someone who threatened a chargeback is
+  // a reply; a gift authorized is a tag. Neither is a proven save, and the tile no
+  // longer says it is.
+  const disputeRiskReplies = tickets.filter(
+    (t) => t.tags.includes("presale:dispute-risk") && t.status === "sent",
+  ).length;
+  const giftsAuthorized = tickets.filter((t) =>
+    t.tags.some((x) => x.startsWith("gift-sent:")),
   ).length;
 
-  const resolved = tickets.filter((t) => t.status === "sent" || t.status === "resolved").length;
-  const deflectionPct = tickets.length ? Math.round((resolved / tickets.length) * 100) : null;
+  // DEFLECTION — the real one. Views that were followed by silence from that order.
+  const views = await readStatusViews(repos, merchantId, orders);
+  const deflectionMeasure = measureDeflection(views, tickets, now);
+  const deflection = { ...deflectionMeasure, gap: deflectionGap(deflectionMeasure) };
 
+  // The curve is the LIVE queue's shape — plotting customers you already answered
+  // is not "this period", it's a scrapbook.
   const riskCurve = queue
+    .filter((r) => r.ticket.status !== "sent")
     .slice(0, 24)
     .map((r) => ({ label: r.customer.firstName, risk: r.riskScore, color: r.color }))
     .sort((a, b) => b.risk - a.risk);
@@ -1033,6 +1133,12 @@ export async function getDashboard(merchantId: string, now: Date = new Date()): 
   // "baseline 0s" sublabel/delta. A measured (e.g. demo) baseline is unchanged.
   const baselineMeasured = isBaselineMeasured(merchant.baseline);
 
+  // The day-0 cohort we counted from their own file, re-measured against today.
+  // Both ends are counts, so the delta between them is a fact — the only honest
+  // before/after this product can currently put in front of a renewal.
+  const day0 = merchant.baseline.cohort ?? null;
+  const cohort = day0 ? { day0, today: measureCohort(orders, now) } : null;
+
   return {
     merchant,
     baseline: {
@@ -1040,15 +1146,19 @@ export async function getDashboard(merchantId: string, now: Date = new Date()): 
       medianFrtSec: baselineMeasured ? merchant.baseline.medianFrtSec : null,
       wismoPer100Orders: baselineMeasured ? merchant.baseline.wismoPer100Orders : null,
     },
+    cohort,
     live: {
       medianFrtSec,
       wismoPer100Orders,
       sentCount: sent.length,
-      savesCount,
-      deflectionPct,
+      disputeRiskReplies,
+      giftsAuthorized,
     },
+    deflection,
     riskCurve,
     atRisk: openRows.filter((r) => r.band !== "standard"),
+    queueDistribution: ranked.distribution,
+    statusBoard: summarizeStatusBoard(statuses, orders),
     ordersInWindow: orders.length,
     queueStatus: { waiting: openRows.length, overdue, dueSoon, flagged },
     // M3: reuse the orders already loaded above — no extra I/O. Pure rollup.
@@ -1056,6 +1166,118 @@ export async function getDashboard(merchantId: string, now: Date = new Date()): 
     // C5: fold SLA attainment from the tickets already loaded — pure, no extra I/O.
     slaAttainment: computeSlaAttainment(tickets, merchant.slaWindows),
   };
+}
+
+// ─── the status board, as the dashboard + /app/status read it ────────────────
+
+/**
+ * One scoped status, plus the thing the merchant actually needs to know before
+ * they post: HOW MANY of their customers this sentence speaks for. A status with
+ * no cohort attached to it is a note to self.
+ */
+export interface StatusBoardScopeRow {
+  entry: ProductionStatusEntry;
+  /** orders this status is the resolved, most-specific status for. */
+  ordersCovered: number;
+  /** the band rendered exactly as a reply will quote it. Never a date. */
+  bandPhrase: string;
+}
+
+export interface StatusBoardSummary {
+  /** the newest status per distinct scope — the board an operator manages. */
+  scopes: StatusBoardScopeRow[];
+  /** total entries in the append-only history (the evidence trail). */
+  historyCount: number;
+  /** the newest entry of any scope, or null if the board is empty. */
+  lastUpdatedAt: string | null;
+  /** orders that ANY status on the board speaks for. */
+  ordersCovered: number;
+  /** orders no status reaches — the bands are all they have. */
+  ordersUncovered: number;
+  totalOrders: number;
+}
+
+/**
+ * Fold the append-only history into the board an operator manages, and attach the
+ * cohort each line actually reaches. Pure — takes the entries and the orders.
+ *
+ * "ordersCovered" is per-order RESOLVED coverage, not per-scope matching: an order
+ * is counted for the ONE status that speaks for it (the most specific), exactly as
+ * the drafting layer will resolve it. Otherwise a merchant-wide status would claim
+ * to cover backers whose campaign-scoped status actually overrides it, and the "the
+ * next N replies will say this" line — the whole point of the surface — would be a
+ * number nobody could reconcile.
+ */
+export function summarizeStatusBoard(
+  entries: ProductionStatusEntry[],
+  orders: Order[],
+): StatusBoardSummary {
+  const board = currentBoard(entries);
+  const coveredByEntry = new Map<string, number>();
+  let ordersCovered = 0;
+
+  for (const order of orders) {
+    // The most specific board entry that applies — the same rule
+    // lib/status-board.resolveStatusFor applies for a draft, so the count on the
+    // screen is the count of replies that will carry that sentence.
+    let best: ProductionStatusEntry | null = null;
+    let bestScore = -1;
+    for (const e of board) {
+      if (!scopeApplies(e.scope, order)) continue;
+      const score =
+        (e.scope?.campaignName ? 4 : 0) + (e.scope?.wave ? 2 : 0) + (e.scope?.region ? 1 : 0);
+      if (score > bestScore) {
+        best = e;
+        bestScore = score;
+      }
+    }
+    if (best) {
+      coveredByEntry.set(best.id, (coveredByEntry.get(best.id) ?? 0) + 1);
+      ordersCovered += 1;
+    }
+  }
+
+  let lastUpdatedAt: string | null = null;
+  for (const e of entries) {
+    if (!lastUpdatedAt || e.updatedAt > lastUpdatedAt) lastUpdatedAt = e.updatedAt;
+  }
+
+  return {
+    scopes: board.map((entry) => ({
+      entry,
+      ordersCovered: coveredByEntry.get(entry.id) ?? 0,
+      bandPhrase: formatWeeksBand(entry.confidenceBand),
+    })),
+    historyCount: entries.length,
+    lastUpdatedAt,
+    ordersCovered,
+    ordersUncovered: Math.max(0, orders.length - ordersCovered),
+    totalOrders: orders.length,
+  };
+}
+
+/**
+ * The merchant's status-view ledger.
+ *
+ * The repository seam exposes views per ORDER (StatusViewRepository.listByOrder),
+ * so a merchant-wide read is currently a fan-out — the same shape lib/export.ts and
+ * getSetupChecklist already use. It is bounded by the order count and every driver
+ * resolves it, but on a large merchant it is N reads for one dashboard, so this
+ * prefers a merchant-scoped `listByMerchant` the moment the repository seam grows
+ * one (owned by the repositories lane) and falls back until then. Kept in ONE place
+ * so that swap is a single-line change.
+ */
+async function readStatusViews(
+  repos: Repositories,
+  merchantId: string,
+  orders: Order[],
+): Promise<Array<{ orderId: string; viewedAt: string }>> {
+  const seam = repos.statusViews as typeof repos.statusViews & {
+    listByMerchant?: (id: string) => Promise<Array<{ orderId: string; viewedAt: string }>>;
+  };
+  if (typeof seam.listByMerchant === "function") return seam.listByMerchant(merchantId);
+  const perOrder = await Promise.all(orders.map((o) => repos.statusViews.listByOrder(o.id)));
+  return perOrder.flat();
 }
 
 /**

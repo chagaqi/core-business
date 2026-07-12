@@ -4,7 +4,9 @@ import type {
   CustomerGroup,
   Order,
   OutcomeEvent,
-  ProductionStageKey,
+  ProductionStatusEntry,
+  ResolvedStageKey,
+  StageSource,
   StatusView,
   Ticket,
 } from "@/lib/types";
@@ -231,6 +233,33 @@ export function extractCsat(events: OutcomeEvent[], orderId: string): CsatAcknow
   return null;
 }
 
+/**
+ * One row of "what we told this customer about their order, and when" — the
+ * append-only production-status history, filtered to the statuses whose scope
+ * actually reached THIS order (lib/status-board.ts statusHistoryForOrder).
+ *
+ * This is the exhibit the pack could not produce for a single customer across
+ * fourteen packs pulled on live chargeback threats, because nothing in the
+ * product remembered what it had said. It is also the answer to the worst thing
+ * in the run: two p10 customers with identical 186-day waits were told two
+ * different stages, six weeks apart, and they are in the same forum. A merchant
+ * who can show what they said, to whom, and on what day, can defend that. A
+ * merchant who cannot is defending a screenshot.
+ */
+export interface StatusDisclosureEntry {
+  at: string;
+  stageKey: ResolvedStageKey;
+  headline: string;
+  detail?: string;
+  /** the confidence band as it was told, rendered — never a date. */
+  band: string;
+  updatedBy: string;
+  /** "manual" = a human typed it; anything else names the source it was pulled from. */
+  source: string;
+  /** the cohort it was scoped to, as human text ("EU", "Deepwater · Wave 2"), or "all backers". */
+  scope: string;
+}
+
 export interface EvidencePack {
   generatedAt: string;
   /** merchant.isDemo — drives the "SAMPLE DATA" watermark (screenshot-leak guard). */
@@ -241,7 +270,15 @@ export interface EvidencePack {
     valueCents: number;
     group: CustomerGroup;
     region: string;
-    productionStage: ProductionStageKey;
+    productionStage: ResolvedStageKey;
+    /**
+     * WHERE the stage above came from. A dispute pack that asserts a production
+     * stage must be able to say why it believes it: the merchant said so
+     * ("status-board"), their own day-bands say so ("band"), or the order is past
+     * every band they authored and we are claiming nothing ("overrun"). The old
+     * pack printed a stage frozen at import and could not tell you which.
+     */
+    stageSource?: StageSource;
     createdAt: string;
     campaignName?: string;
     wave?: string;
@@ -252,10 +289,41 @@ export interface EvidencePack {
   disputeWindow?: DisputeWindowOrientation;
   commLog: CommLogEntry[];
   statusViews: StatusView[];
+  /**
+   * Every production status this order was ever under, oldest first — the
+   * re-disclosure trail. Empty when the merchant has never posted a status.
+   */
+  statusDisclosures: StatusDisclosureEntry[];
   /** the customer's one-tap rating of a sent reply, or null if none is on file. */
   csat: CsatAcknowledgment | null;
   /** gift gestures logged against the order's tickets (`gift-sent:*` tags). */
   giftGestures: GiftGestureEntry[];
+}
+
+/** Human text for a status's scope, for the pack. Pure. */
+export function describeScope(entry: ProductionStatusEntry): string {
+  const parts: string[] = [];
+  if (entry.scope?.campaignName) parts.push(entry.scope.campaignName);
+  if (entry.scope?.wave) parts.push(entry.scope.wave);
+  if (entry.scope?.region) parts.push(entry.scope.region);
+  return parts.length > 0 ? parts.join(" · ") : "all backers";
+}
+
+/** Shape the order's status history into pack rows. Pure. */
+export function buildStatusDisclosures(
+  entries: ProductionStatusEntry[],
+  formatBand: (b: ProductionStatusEntry["confidenceBand"]) => string,
+): StatusDisclosureEntry[] {
+  return entries.map((e) => ({
+    at: e.updatedAt,
+    stageKey: e.stageKey,
+    headline: e.headline,
+    ...(e.detail ? { detail: e.detail } : {}),
+    band: formatBand(e.confidenceBand),
+    updatedBy: e.updatedBy,
+    source: e.source,
+    scope: describeScope(e),
+  }));
 }
 
 /**
@@ -270,17 +338,19 @@ export async function assembleEvidencePack(
   now: Date = new Date(),
 ): Promise<EvidencePack | null> {
   const { getRepositories } = await import("@/lib/repositories");
+  const { formatWeeksBand, statusHistoryForOrder } = await import("@/lib/status-board");
   const repos = getRepositories();
 
   const order = await repos.orders.findById(orderId);
   if (!order) return null;
 
-  const [merchant, customer, tickets, statusViews, outcomeEvents] = await Promise.all([
+  const [merchant, customer, tickets, statusViews, outcomeEvents, statuses] = await Promise.all([
     repos.merchants.findById(order.merchantId),
     repos.customers.findById(order.customerId),
     repos.tickets.list({ orderId: order.id }),
     repos.statusViews.listByOrder(order.id),
     repos.outcomeEvents.listByMerchant(order.merchantId),
+    repos.productionStatuses.listByMerchant(order.merchantId),
   ]);
   if (!merchant || !customer) return null;
 
@@ -293,16 +363,23 @@ export async function assembleEvidencePack(
       valueCents: order.orderValueCents,
       group: order.group,
       region: order.region,
+      // The LIVE stage (the repository resolved it on the way out), plus the
+      // provenance of the claim.
       productionStage: order.productionStage,
       createdAt: order.createdAt,
     },
     customer: { firstName: customer.firstName, email: customer.email },
     commLog: buildCommLog(tickets, customer.firstName),
     statusViews,
+    statusDisclosures: buildStatusDisclosures(
+      statusHistoryForOrder(statuses, order),
+      formatWeeksBand,
+    ),
     csat: extractCsat(outcomeEvents, order.id),
     giftGestures: extractGiftGestures(tickets),
   };
 
+  if (order.stageSource) pack.order.stageSource = order.stageSource;
   if (order.campaignName) pack.order.campaignName = order.campaignName;
   if (order.wave) pack.order.wave = order.wave;
 

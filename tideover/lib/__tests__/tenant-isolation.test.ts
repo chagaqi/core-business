@@ -151,9 +151,16 @@ test("DENIED scope (operator marker without a session) reads nothing and writes 
   }
 });
 
-test("demo/password stays untouched: without AUTH0_* vars getRepositories() is the bare driver", () => {
+test("demo/password stays untouched: without AUTH0_* vars getRepositories() applies NO tenant scope", () => {
   for (const k of AUTH0_ENV_VARS) assert.equal(process.env[k], undefined, `${k} leaked into test env`);
-  assert.equal(getRepositories(), jsonRepositories, "password mode must not wrap the repositories");
+  // The merchants repository is the tenant seam. In password mode it must be the
+  // driver's own object, unwrapped — that is what "no scoping" means. (`orders`
+  // IS wrapped, unconditionally and in every mode, because it resolves the live
+  // production stage on read; that is not a tenancy concern.)
+  const repos = getRepositories();
+  assert.equal(repos.merchants, jsonRepositories.merchants, "password mode must not scope the merchants seam");
+  assert.equal(repos.tickets, jsonRepositories.tickets);
+  assert.equal(repos.customers, jsonRepositories.customers);
 });
 
 // ─── service-layer isolation: the tickets repo is NOT tenant-scoped, so every

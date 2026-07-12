@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { approveSend, getQueue, ingestTicket } from "@/lib/service";
+import { compareRows } from "@/lib/queue-rank";
 import { getRepositories } from "@/lib/repositories";
 import type { NormalizedTicket } from "@/lib/channel-adapters/ChannelAdapter";
 
@@ -108,17 +109,33 @@ test("getQueue rows join the correct order+customer and stay priority-sorted (EN
     assert.equal(r.customer.id, r.ticket.customerId, "row customer matches the ticket's customerId");
     assert.equal(r.order.merchantId, LUMEN, "joined order belongs to the merchant (no cross-merchant leak)");
   }
-  // Documented contract order: priorityRank asc, then createdAt asc.
+  // Documented contract order (lib/queue-rank): intent class, then risk, then the
+  // declared tiebreak — with queueRank stamped as the row's place in that order.
+  // The ENGINE's priorityRank is still carried on every row with its original
+  // meaning, so an export can never disagree with the cockpit about what the
+  // engine said; it is simply no longer the sort key.
   for (let i = 1; i < queue.length; i += 1) {
     const a = queue[i - 1];
     const b = queue[i];
-    const ordered =
-      a.priorityRank < b.priorityRank ||
-      (a.priorityRank === b.priorityRank &&
-        new Date(a.ticket.createdAt).getTime() <= new Date(b.ticket.createdAt).getTime());
-    assert.ok(ordered, "queue stays sorted by priorityRank then createdAt");
+    assert.equal(a.queueRank, i, "queueRank is the row's 1-based place in the queue");
+    assert.ok(compareRows(rankableOf(a), rankableOf(b)) <= 0, "queue stays in compareRows order");
+    assert.equal(typeof a.priorityRank, "number", "the engine's own rank is still carried");
   }
 });
+
+/** Project a QueueRow onto the shape lib/queue-rank orders it by. */
+function rankableOf(r: Awaited<ReturnType<typeof getQueue>>[number]) {
+  return {
+    ticketId: r.ticket.id,
+    createdAt: r.ticket.createdAt,
+    sentiment: r.ticket.sentiment,
+    live: r.ticket.status !== "sent",
+    riskScore: r.riskScore,
+    daysInWait: r.daysInWait,
+    orderValueCents: r.order.orderValueCents,
+    topDriver: r.topDriver,
+  };
+}
 
 // ── EN-13 · a failed reply_sent ledger write is retried + surfaced, not swallowed ──
 

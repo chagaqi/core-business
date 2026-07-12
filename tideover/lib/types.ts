@@ -26,6 +26,40 @@ export type ProductionStageKey =
   | "freight"
   | "dispatch";
 
+/**
+ * The stage an order is ACTUALLY in, resolved at READ time (lib/time.ts
+ * resolveStageFromBands + lib/repositories/live-stage.ts). It is the merchant's
+ * authored stages PLUS one terminal state they never author:
+ *
+ *   "overrun" — the order is past EVERY band the merchant authored. The plan has
+ *   run out. We do NOT know what is physically happening, and the old behavior
+ *   (clamp to the highest band = "dispatch") is what told ~4,758 backers their
+ *   unbuilt machine had left the warehouse. Past the last band means OVERDUE and
+ *   UNKNOWN — never "dispatched". The only thing that can speak for an overrun
+ *   order is the merchant's own current status (lib/status-board.ts).
+ *
+ * `Order.productionStage` carries this type because the read seam resolves it.
+ * `StageDef.key` and `ScriptVariant.productionStage` stay ProductionStageKey —
+ * a merchant authors real stages, never the overrun sentinel.
+ */
+export type ResolvedStageKey = ProductionStageKey | "overrun";
+
+/** The terminal, out-of-plan stage. See ResolvedStageKey. */
+export const OVERRUN_STAGE = "overrun" as const;
+
+/**
+ * Where a read-time-resolved `Order.productionStage` came from. Projected onto
+ * the order by the read seam, NEVER persisted (the wrapper strips it on write) —
+ * so a surface can say WHY it is claiming a stage, and the evidence pack can
+ * prove the claim was not invented.
+ *
+ *   "status-board" — the merchant's own current status said so (most specific
+ *                    scoped status wins). The strongest source: a human typed it.
+ *   "band"         — derived from days-in-wait against the merchant's own bands.
+ *   "overrun"      — past every band, with no status on file. We claim nothing.
+ */
+export type StageSource = "status-board" | "band" | "overrun";
+
 export type CustomerGroup = "ks-backer" | "late-pledge" | "new-preorder";
 
 export type Sentiment = "calm" | "anxious" | "hostile" | "chargeback-threat";
@@ -68,8 +102,9 @@ export interface StageDef {
 }
 
 export interface PlaybookStage {
-  /** stage-specific override copy, keyed by production stage */
-  byStage: Partial<Record<ProductionStageKey, string>>;
+  /** stage-specific override copy, keyed by the RESOLVED production stage (so a
+   *  merchant can author dedicated copy for the "overrun" case if they want to). */
+  byStage: Partial<Record<ResolvedStageKey, string>>;
   /** fallback used when no stage-specific copy exists */
   base: string;
 }
@@ -89,6 +124,134 @@ export interface MerchantBrand {
 export interface TeamInvite {
   email: string;
   invitedAt: string;
+}
+
+// ─── the production status board ────────────────────────────────────────────
+/**
+ * The cohort a merchant-authored fact applies to. EVERY field is optional and
+ * every present field must MATCH the order for the fact to apply. An empty scope
+ * ({} or absent) is merchant-wide and always applies.
+ *
+ * This is the object p04 (48% EU, one rolled container), p08 (one kiln cohort of
+ * three) and p09 (two campaigns, 640 shared backers) needed and did not have: a
+ * way to say a true thing to exactly the people it is true for.
+ */
+export interface StatusScope {
+  /** matches Order.campaignName exactly (case-insensitive). */
+  campaignName?: string;
+  /** matches Order.wave exactly (case-insensitive). */
+  wave?: string;
+  /** matches Order.region exactly (case-insensitive), e.g. "EU". */
+  region?: string;
+}
+
+/**
+ * A confidence band in WEEKS. Never a date, never a single number presented as a
+ * commitment — the proof-only doctrine in its narrowest form (ADR-0002). The
+ * merchant types two integers; every surface renders them as a relative window.
+ */
+export interface WeeksBand {
+  minWeeks: number;
+  maxWeeks: number;
+}
+
+/**
+ * THE MERCHANT'S CURRENT PRODUCTION STATUS — the one place the founder/ops lead
+ * says what is physically happening right now, and the thing every reply reads.
+ *
+ * Why this exists: production stage used to be a snapshot frozen at CSV import,
+ * so by day 30 a third of replies stated the wrong physical fact about the
+ * customer's own order, in the merchant's voice, over their signature. Deriving
+ * the stage from the wait (lib/time.ts) fixes the arithmetic. THIS fixes the
+ * truth: the bands are a plan, and the plan is exactly what these merchants blew.
+ * When a human says "the tooling re-cut is done, we're loading the first run",
+ * that sentence outranks every band in the system.
+ *
+ * Append-only: each update is a new ProductionStatusEntry. The history is the
+ * evidence — "what did you tell this backer, and when" is the exhibit a card
+ * network asks for, and it is the exhibit we could not produce for anyone.
+ */
+export interface ProductionStatus {
+  /** which of the merchant's stages this status corresponds to (or "overrun"). */
+  stageKey: ResolvedStageKey;
+  /** what is physically happening now, in the merchant's own words. Customer-facing. */
+  headline: string;
+  /** optional longer detail (the "why", the mechanism). Customer-facing. */
+  detail?: string;
+  /** the current confidence band, in weeks. NEVER a date. */
+  confidenceBand: WeeksBand;
+  /** who this status applies to. Absent/empty = every waiting order. */
+  scope?: StatusScope;
+  updatedAt: string;
+  /** the operator who posted it (session email / name) — accountability, not PII-in-public. */
+  updatedBy: string;
+}
+
+/**
+ * An append-only row in the status board's history. `merchantId` + everything in
+ * ProductionStatus. Never edited, never deleted: the newest entry FOR A GIVEN
+ * SCOPE is that scope's current status (lib/status-board.ts).
+ */
+export interface ProductionStatusEntry extends ProductionStatus {
+  id: string;
+  merchantId: string;
+  /**
+   * How this status arrived. "manual" = a human typed it in the app. The rest are
+   * the import seam (lib/status-board.ts IMPORT SEAM): a status pulled from a
+   * source the ops team ALREADY maintains, so keeping the board current is not
+   * additional work. Nothing but "manual" is wired yet — the seam is the point.
+   */
+  source: ProductionStatusSource;
+  /** free-form provenance for a non-manual source (sheet id, message id, board card url). */
+  sourceRef?: string;
+}
+
+export type ProductionStatusSource =
+  | "manual"
+  | "sheet"
+  | "email-digest"
+  | "board"
+  | "shipping-feed"
+  | "api";
+
+/**
+ * The delivery window the merchant PROMISED — the disclosure that makes the
+ * strongest chargeback exhibit there is ("we told you weeks 9–11 on the day you
+ * paid, and you accepted it"). No export in this market carries a delivery-date
+ * column, so this can never come from the CSV for most merchants: the merchant's
+ * own promised window IS the disclosure, and it lives here. Import stamps it onto
+ * every order (Order.disclosedEta); the status board's history records every
+ * later re-disclosure.
+ */
+export interface MerchantDisclosedEta {
+  /** the human band shown to the buyer, e.g. "weeks 9–11". NEVER a date. */
+  value: string;
+  source: "campaign-page" | "checkout" | "update";
+  /** who it was promised to. Absent = the merchant's default, applies to everyone. */
+  scope?: StatusScope;
+}
+
+/**
+ * MEASURED day-0 facts about the merchant's own imported cohort. Unlike the four
+ * support metrics (which only the merchant can report — we were not there before
+ * we arrived), every number here is computed from their real order file at
+ * capture time. It is the "before" picture that actually exists on day 0, and it
+ * is what a renewal conversation is argued against.
+ */
+export interface BaselineCohort {
+  /** orders on file at capture. */
+  orders: number;
+  /** orders still inside their fulfillment window at capture. */
+  ordersInWait: number;
+  /** orders already PAST their fulfillment window at capture. */
+  ordersOverdue: number;
+  /** median days-in-wait across the cohort at capture. */
+  medianWaitDays: number;
+  /** longest wait in the cohort at capture. */
+  maxWaitDays: number;
+  /** total order value on file, in cents. */
+  grossCents: number;
+  measuredAt: string;
 }
 
 export interface Merchant {
@@ -157,7 +320,34 @@ export interface Merchant {
     wismoPer100Orders: number;
     ticketsPerWeek: number;
     repeatWismoPct: number;
+    /**
+     * Provenance of the four numbers above. They describe the merchant's support
+     * desk BEFORE Tideover existed, so the merchant is the only possible source —
+     * we cannot measure a period we were not present for, and a fabricated zero
+     * would be a proof-only lie. Absent on legacy records (which are all-zero and
+     * therefore "not captured"; see lib/baseline.ts isBaselineMeasured).
+     */
+    source?: "merchant-reported";
+    /** MEASURED from the merchant's own order file at capture (lib/baseline.ts). */
+    cohort?: BaselineCohort;
   };
+  /**
+   * The merchant's CURRENT merchant-wide production status — the newest UNSCOPED
+   * status-board entry, denormalized here so any surface holding a Merchant can
+   * render it without a second read. Scoped statuses (campaign / wave / region)
+   * live ONLY in the append-only history and are resolved per-order by
+   * lib/status-board.ts getCurrentStatus(). Absent = the merchant has not posted
+   * a status yet, and the bands are all we have.
+   */
+  productionStatus?: ProductionStatus;
+  /**
+   * The delivery windows this merchant promised, most-specific-scope wins. Import
+   * stamps the resolved value onto every order as `disclosedEta` so the evidence
+   * pack can produce its best exhibit for EVERY order, not zero of them. Seeded at
+   * onboarding from the merchant's own fulfillment window, so it costs the
+   * merchant no extra work; a per-campaign/wave override is an extra row here.
+   */
+  disclosedEtas?: MerchantDisclosedEta[];
   createdAt: string;
 }
 
@@ -171,7 +361,38 @@ export interface Order {
   createdAt: string;
   fulfillmentStart: string;
   fulfillmentEnd: string;
-  productionStage: ProductionStageKey;
+  /**
+   * THE ORDER'S PRODUCTION STAGE — DERIVED, NOT FROZEN.
+   *
+   * What is PERSISTED is a snapshot taken at import: a hint, useful for
+   * provenance and for a source that genuinely knows a per-order stage. It is
+   * NOT the truth, because it goes stale the day after it is written.
+   *
+   * What every READER gets is the LIVE stage, resolved on the way out of the
+   * repository (lib/repositories/live-stage.ts) from, in order:
+   *   1. the merchant's current status board, if a status scopes to this order;
+   *   2. the merchant's own day-bands vs this order's real days-in-wait
+   *      (INCLUSIVE bounds — merchants author 0-20, 21-62, and a wait landing
+   *      exactly on a boundary used to match nothing and fall through to
+   *      stages[0], telling 28 of p01's long-waiting backers "paper sourced");
+   *   3. "overrun" when the wait is past every band — NEVER a clamp to the last
+   *      stage, which is what told half of p10's file their machine had shipped.
+   *
+   * So: write the snapshot, read the truth. `stageSource` says which rule fired.
+   */
+  productionStage: ResolvedStageKey;
+  /**
+   * PROJECTED ONLY — set by the read seam, never persisted (the seam strips it
+   * from every write). Says where the live `productionStage` above came from.
+   */
+  stageSource?: StageSource;
+  /**
+   * Shipping region, from the source row's own country column (KS, Gamefound and
+   * Shopify exports all carry one; we used to read it and hardcode "US" anyway,
+   * which is why p04 — 48% EU, one rolled EU container — could not say the one
+   * true thing she needed to say). "unknown" when the export carried no country:
+   * a missing fact, never a fabricated "US".
+   */
   region: string;
   /** signed, opaque, unique per order — powers /status/[token] */
   statusToken: string;
@@ -187,9 +408,14 @@ export interface Order {
     source: "campaign-page" | "checkout" | "update";
     disclosedAt: string;
   };
-  /** native crowdfunding label, pure display (e.g. "Aurora Lantern — Kickstarter"). */
+  /**
+   * The campaign this order belongs to (e.g. "Deepwater"). Set at import from the
+   * source row, or from the merchant's campaign name when the export carries one
+   * campaign. A COHORT KEY, not decoration: it is what scopes a status, a
+   * disclosed ETA and (next lane) an announcement to the people it is true for.
+   */
   campaignName?: string;
-  /** native fulfillment-wave label, pure display (e.g. "Wave 2 — EU hub"). */
+  /** the fulfillment wave / batch / kiln-load this order is in (e.g. "Wave 2 — EU hub"). A cohort key. */
   wave?: string;
   /** CSV-import provenance (ADR-0010): the source row's own id, namespaced by
    *  merchant. Set only on imported orders; lets a re-import dedupe orders so a
@@ -242,9 +468,16 @@ export interface OrderTimeline {
   daysInWait: number;
   confidenceBand: string;
   daysRemainingUpper: number;
-  productionStage: ProductionStageKey;
+  productionStage: ResolvedStageKey;
   overdue: boolean;
-  stages: Array<StageDef & { state: "done" | "active" | "upcoming" }>;
+  /**
+   * "unknown" is the OVERRUN case: the wait is past every band the merchant
+   * authored, so their plan can no longer say which stages are finished. We show
+   * the ladder without claiming a position on it — because the alternative
+   * (marking every stage done, up to and including Dispatch) is a written
+   * statement that an unbuilt order has shipped.
+   */
+  stages: Array<StageDef & { state: "done" | "active" | "upcoming" | "unknown" }>;
 }
 
 // ─── customer ───────────────────────────────────────────────────────────

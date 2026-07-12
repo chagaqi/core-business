@@ -8,6 +8,7 @@ import { MetricTile } from "@/components/product/MetricTile";
 import { RiskCurve } from "@/components/product/RiskCurve";
 import { RiskBadge, Tag } from "@/components/ui/Badge";
 import { ATTAINMENT_MIN_N } from "@/lib/sla";
+import { timeAgo } from "@/lib/time";
 import type { RiskColor } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -64,8 +65,19 @@ export default async function DashboardPage({
     return <div className="p-8 text-ink-mute">No dashboard data for this merchant.</div>;
   }
 
-  const { baseline, live, disputeExposure: exp, slaAttainment: sla, queueStatus: q } = data;
+  const {
+    baseline,
+    live,
+    deflection: def,
+    cohort,
+    statusBoard: sb,
+    queueDistribution: dist,
+    disputeExposure: exp,
+    slaAttainment: sla,
+    queueStatus: q,
+  } = data;
   const inboxHref = `/app/inbox?merchant=${merchantId}`;
+  const statusHref = `/app/status?merchant=${merchantId}`;
   // C5 proof-only: show the % only above the small-n floor; below it, surface the
   // raw denominator and keep collecting (mirrors the Script Performance surface).
   const slaHasRate = sla.rate != null;
@@ -158,20 +170,34 @@ export default async function DashboardPage({
           value={live.wismoPer100Orders}
           delta={lowerIsBetterDelta(live.wismoPer100Orders, baseline.wismoPer100Orders)}
           sublabel={
-            baseline.wismoPer100Orders != null ? `baseline ${baseline.wismoPer100Orders}` : "no baseline yet"
+            baseline.wismoPer100Orders != null
+              ? `baseline ${baseline.wismoPer100Orders}`
+              : "no baseline yet — only you can report the desk we weren't here for"
           }
         />
+        {/* Was "Saves logged". A reply to someone who threatened a chargeback is a
+            reply; a gift is a tag. Neither is a measured save, so neither is called
+            one. Activity, labelled as activity. */}
         <MetricTile
           proof
-          label="Saves logged"
-          value={live.savesCount}
-          sublabel="dispute-risk replies + gifts"
+          label="Dispute-risk replies"
+          info="Replies sent to customers who threatened a chargeback. An activity count — nothing here proves a dispute was prevented."
+          value={live.disputeRiskReplies}
+          sublabel={`${live.giftsAuthorized} ${live.giftsAuthorized === 1 ? "gift" : "gifts"} authorized`}
         />
+        {/* Was `resolved / tickets` — a reply-completion rate labelled "Deflection",
+            reading 100% for all ten merchants in the run. Now it is the real thing
+            (status-page views followed by silence from that order) or it is nothing. */}
         <MetricTile
           proof
           label="Deflection"
-          value={live.deflectionPct != null ? `${live.deflectionPct}%` : "—"}
-          sublabel="tickets resolved"
+          info="Status-page views that were NOT followed by a ticket from that order within 7 days — a question the page answered so it never reached you."
+          value={def.rate != null ? `${Math.round(def.rate * 100)}%` : "—"}
+          unmeasured={def.rate == null}
+          sublabel={
+            def.gap ??
+            `${def.quietViews} of ${def.evaluatedViews} status-page views raised no ticket`
+          }
         />
         <MetricTile
           proof
@@ -180,6 +206,110 @@ export default async function DashboardPage({
           sublabel={`${live.sentCount} replies sent`}
         />
       </section>
+
+      {/* THE STATUS BOARD, on the dashboard, because a stale board is the single
+          highest-frequency way this product tells a customer something false. It is
+          not a nag: it is the one input the operator owns and everything else reads. */}
+      <section className="panel p-5">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="font-serif text-[20px] text-ink">What your replies are saying</h2>
+            <p className="text-[12px] text-ink-mute">
+              Every draft reads your production status before it reads your day-bands.
+            </p>
+          </div>
+          <Link href={statusHref} className="btn btn-ghost no-underline">
+            {sb.scopes.length === 0 ? "Post your first status" : "Update status"}
+          </Link>
+        </div>
+
+        {sb.scopes.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-border bg-sand px-4 py-3 text-[12.5px] leading-relaxed text-ink-mute">
+            No status posted. All {sb.totalOrders.toLocaleString("en-US")} orders are being described
+            from your day-bands alone — which is your plan, not your workshop. If the plan has
+            slipped, every reply is confidently describing a stage the order is not in.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {sb.scopes.slice(0, 3).map((s) => (
+              <div
+                key={s.entry.id}
+                className="flex flex-wrap items-baseline justify-between gap-2 rounded-xl border border-border bg-sand px-4 py-3"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13.5px] text-ink">{s.entry.headline}</p>
+                  <p className="text-[12px] text-ink-mute">
+                    {s.bandPhrase} · updated {timeAgo(s.entry.updatedAt)} by {s.entry.updatedBy}
+                  </p>
+                </div>
+                <span className="whitespace-nowrap text-[12.5px] font-semibold tabular-nums text-ink">
+                  {s.ordersCovered.toLocaleString("en-US")}{" "}
+                  <span className="font-normal text-ink-mute">
+                    {s.ordersCovered === 1 ? "customer" : "customers"}
+                  </span>
+                </span>
+              </div>
+            ))}
+            {sb.ordersUncovered > 0 ? (
+              <p className="text-[12px] text-ink-mute">
+                {sb.ordersUncovered.toLocaleString("en-US")} of{" "}
+                {sb.totalOrders.toLocaleString("en-US")} orders have no status — their replies fall
+                back to your day-bands.
+              </p>
+            ) : null}
+          </div>
+        )}
+      </section>
+
+      {/* SINCE DAY 0 — the only before/after on this screen where BOTH ends are
+          counted from the merchant's own file rather than reported. So it is the
+          only place a delta can be stated as a fact. */}
+      {cohort ? (
+        <section className="panel p-5">
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="font-serif text-[20px] text-ink">Since day 0</h2>
+              <p className="text-[12px] text-ink-mute">
+                Counted from your own order file the day it landed, and counted again today.
+                Measured on both ends — no projection.
+              </p>
+            </div>
+            <Link href={`/app/baseline?merchant=${merchantId}`} className="link-quiet text-[13px]">
+              Baseline report
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            <CohortDelta
+              label="Orders past your window"
+              day0={cohort.day0.ordersOverdue}
+              today={cohort.today.ordersOverdue}
+              lowerIsBetter
+            />
+            <CohortDelta
+              label="Still inside the window"
+              day0={cohort.day0.ordersInWait}
+              today={cohort.today.ordersInWait}
+            />
+            <CohortDelta
+              label="Median wait (days)"
+              day0={cohort.day0.medianWaitDays}
+              today={cohort.today.medianWaitDays}
+              lowerIsBetter
+            />
+            <CohortDelta
+              label="Longest wait (days)"
+              day0={cohort.day0.maxWaitDays}
+              today={cohort.today.maxWaitDays}
+              lowerIsBetter
+            />
+          </div>
+          <p className="mt-3 text-[12px] leading-relaxed text-ink-mute">
+            These are counts of your cohort, not a Tideover result: a wait gets longer whether or not
+            anyone replies. They are here because they are the true before-picture a renewal argument
+            is made against — and because on day 0 they are the only numbers that exist.
+          </p>
+        </section>
+      ) : null}
 
       <section className="panel p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
@@ -266,8 +396,20 @@ export default async function DashboardPage({
       </section>
 
       <section className="panel overflow-hidden">
-        <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
-          <h2 className="font-serif text-[20px] text-ink">At-risk queue</h2>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-5 py-3.5">
+          <div>
+            <h2 className="font-serif text-[20px] text-ink">At-risk queue</h2>
+            {/* The queue SAYS what it ordered on. When every ticket scores the same —
+                p08's fourteen tickets landed in one band — "sorted by risk" is not an
+                explanation, it is a shrug. */}
+            <p className="text-[12px] text-ink-mute">
+              {dist.cohortSize === 0
+                ? "Nothing open right now."
+                : dist.basis === "risk"
+                  ? `Ordered on a stated chargeback first, then risk — your live queue scores ${dist.min}–${dist.max}.`
+                  : `Every live ticket scores ${dist.min}–${dist.max}, so risk can't order them. Ordered on longest wait, then order value.`}
+            </p>
+          </div>
           <Link href={inboxHref} className="link-quiet text-[13px]">
             Open inbox
           </Link>
@@ -276,13 +418,13 @@ export default async function DashboardPage({
           <div className="proof-placeholder m-5">No at-risk customers right now.</div>
         ) : (
           <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-[14px]">
+          <table className="w-full min-w-[760px] text-left text-[14px]">
             <thead>
               <tr className="border-b border-border text-[11px] uppercase tracking-wider text-ink-mute">
                 <th className="px-5 py-2.5 font-semibold">Customer</th>
                 <th className="px-5 py-2.5 font-semibold">Group</th>
                 <th className="px-5 py-2.5 font-semibold">Waiting</th>
-                <th className="px-5 py-2.5 font-semibold">Subject</th>
+                <th className="px-5 py-2.5 font-semibold">Why it&rsquo;s here</th>
                 <th className="px-5 py-2.5 text-right font-semibold">Risk</th>
               </tr>
             </thead>
@@ -304,15 +446,22 @@ export default async function DashboardPage({
                     <Tag>{GROUP_LABEL[r.order.group] ?? r.order.group}</Tag>
                   </td>
                   <td className="px-5 py-3 text-slate">{r.daysInWait}d</td>
-                  <td className="max-w-[280px] truncate px-5 py-3 text-slate">
-                    {r.ticket.subject}
+                  {/* The engine computed the top driver on every ticket and the queue
+                      used to throw it away, so nobody could answer "why is this on
+                      top?" — the question an operator asks first, every time. */}
+                  <td className="max-w-[320px] px-5 py-3 text-[13px] leading-snug text-slate">
+                    {r.rankReason}
                   </td>
                   <td className="px-5 py-3 text-right">
                     <RiskBadge
                       color={r.color as RiskColor}
                       title={`${
                         r.color === "red" ? "High refund-risk" : r.color === "amber" ? "Watch" : "Standard"
-                      } (${r.riskScore})`}
+                      } (${r.riskScore})${
+                        r.riskPercentile != null
+                          ? ` — above ${r.riskPercentile}% of your live queue`
+                          : ""
+                      }`}
                     >
                       {r.riskScore}
                     </RiskBadge>
@@ -325,11 +474,53 @@ export default async function DashboardPage({
         )}
       </section>
 
-      <p className="rounded-xl border border-dashed border-border bg-sand px-4 py-3 text-[12px] text-ink-mute">
-        Proof-only: every number above is measured against {data.merchant.name}&rsquo;s own
-        baseline, captured {baselineDate}. Deltas compare the live period to that baseline —
-        no refund-reduction figure is invented.
+      <p className="rounded-xl border border-dashed border-border bg-sand px-4 py-3 text-[12px] leading-relaxed text-ink-mute">
+        Proof-only: every number above is either measured from {data.merchant.name}&rsquo;s own data
+        or it says it is not measured and names what would make it real. Nothing on this screen is a
+        projection, and no refund-reduction figure is invented.{" "}
+        {baseline.medianFrtSec != null || baseline.wismoPer100Orders != null
+          ? `The support baseline was reported by ${data.merchant.name} and captured ${baselineDate}; deltas compare the live period to it.`
+          : `The support baseline (first-response time, WISMO rate) is still unreported — those four numbers describe the desk before Tideover arrived, so only ${data.merchant.name} can supply them, and until they do we show no delta rather than a zero.`}
       </p>
+    </div>
+  );
+}
+
+/**
+ * One day-0 → today figure. BOTH ends are counts taken from the merchant's own order
+ * file (lib/baseline.measureCohort), so the arrow is a fact, not a claim — and the
+ * copy never attributes the movement to Tideover, because a wait clock moves on its
+ * own. Zero-to-zero renders as "flat", never as a green win.
+ */
+function CohortDelta({
+  label,
+  day0,
+  today,
+  lowerIsBetter = false,
+}: {
+  label: string;
+  day0: number;
+  today: number;
+  lowerIsBetter?: boolean;
+}) {
+  const diff = today - day0;
+  const better = lowerIsBetter ? diff < 0 : diff > 0;
+  const tone = diff === 0 ? "text-ink-mute" : better ? "text-risk-green" : "text-risk-red";
+  const arrow = diff === 0 ? "" : diff > 0 ? "↑" : "↓";
+  return (
+    <div className="flex flex-col gap-1 rounded-xl border border-border bg-sand p-4">
+      <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-mute">
+        {label}
+      </span>
+      <span className="font-serif text-[28px] leading-none text-ink tabular-nums">
+        {today.toLocaleString("en-US")}
+      </span>
+      <span className="mt-1 text-[12px] text-ink-mute">
+        <span className={`font-semibold ${tone}`}>
+          {diff === 0 ? "flat" : `${arrow} ${Math.abs(diff).toLocaleString("en-US")}`}
+        </span>{" "}
+        vs {day0.toLocaleString("en-US")} on day 0
+      </span>
     </div>
   );
 }

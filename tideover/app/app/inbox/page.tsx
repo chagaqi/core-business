@@ -44,6 +44,10 @@ const STAGE_LABEL: Record<string, string> = {
   qc: "QC",
   freight: "Freight",
   dispatch: "Dispatch",
+  // Past every band the merchant planned. The operator must see this as a state,
+  // not as the raw enum — and it is the cue to post a status-board update, since
+  // an overrun order has no stage left to speak for it.
+  overrun: "Past the plan",
 };
 
 const SENTIMENT_LABEL: Record<Sentiment, string> = {
@@ -99,6 +103,8 @@ export default async function InboxPage({
     // and the merchant's configured support windows (ADR-0016). Open queue rows
     // are unanswered, so this is a live countdown/breach state.
     sla: slaChip(ticketSlaState(r.ticket, merchant.slaWindows, now)),
+    // The queue's own explanation of this row's position (lib/queue-rank.ts).
+    rankReason: r.rankReason,
   }));
 
   // A deep-linked ticket (even an already-sent one) resolves against the full

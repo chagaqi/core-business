@@ -58,14 +58,23 @@ export default async function ForecastPage({
 
   const orders = await repos.orders.listByMerchant(merchantId);
   const baseline = merchant.baseline.wismoPer100Orders;
-  const f = computeCohortForecast(orders, baseline, new Date(), horizonDays);
-  const calibrated = f.expectedMid != null;
+  // The window is the MERCHANT'S OWN promised window, not a hardcoded 60–89: nine of
+  // the ten merchants in the run forecast an empty cohort because their backers cross
+  // day 60 months before anyone expects a parcel.
+  const f = computeCohortForecast(
+    orders,
+    baseline,
+    merchant.fulfillmentWindowDays,
+    new Date(),
+    horizonDays,
+  );
+  const calibrated = f.calibrated;
 
   const ordersById = new Map(orders.map((o) => [o.id, o]));
   const cohort = f.cohortOrderIds
     .map((id) => ordersById.get(id))
     .filter((o): o is NonNullable<typeof o> => Boolean(o))
-    .map((o) => ({ order: o, crossesInDays: daysUntilWindow(o, new Date()) }))
+    .map((o) => ({ order: o, crossesInDays: daysUntilWindow(o, f.windowEnterDay, new Date()) }))
     .sort((a, b) => a.crossesInDays - b.crossesInDays);
 
   const rangeLabel = calibrated
@@ -96,13 +105,30 @@ export default async function ForecastPage({
         <p className="kicker">Cohort WISMO forecast</p>
         <h1 className="ev-doc-title mt-1 text-ink">Staff for the wave, not the average</h1>
         <p className="mt-3 max-w-[66ch] text-[13.5px] leading-relaxed text-slate">
-          On a 60–120 day wait, &ldquo;where is my order?&rdquo; tickets don&rsquo;t arrive evenly —
-          they spike as a cohort crosses into the anxious day&nbsp;{f.windowEnterDay}–
-          {f.windowExitDay} window. This sizes that incoming load from two of{" "}
-          {merchant.name}&rsquo;s own measured numbers: the order dates and the day-0 baseline WISMO
-          rate. It projects expected inbound volume so you can staff — it is not a Tideover result
-          and sets no delivery date.
+          &ldquo;Where is my order?&rdquo; tickets don&rsquo;t arrive evenly — they spike as a cohort
+          crosses into the window <strong className="font-semibold">you promised</strong>, because
+          that is the week a buyer starts expecting a parcel. For {merchant.name} that is day&nbsp;
+          {f.windowEnterDay}–{f.windowExitDay}
+          {f.windowSource === "default"
+            ? " (our default — you have no fulfillment window on file yet)"
+            : ", from your own fulfillment window"}
+          . This sizes the incoming load from {merchant.name}&rsquo;s own measured numbers: the order
+          dates, that window, and the day-0 baseline WISMO rate. It projects expected inbound volume
+          so you can staff — it is not a Tideover result and sets no delivery date.
         </p>
+
+        {f.overdueOrders > 0 ? (
+          <p className="mt-3 max-w-[66ch] rounded-lg border border-dashed border-border bg-sand px-4 py-2.5 text-[13px] leading-relaxed text-ink">
+            <strong className="font-semibold">
+              {f.overdueOrders.toLocaleString("en-US")}{" "}
+              {f.overdueOrders === 1 ? "order is" : "orders are"} already past your window
+            </strong>{" "}
+            and are <em>not</em> in this forecast. They are not a wave that is coming — they are a
+            queue that is here. A forecast that quietly dropped them is how a merchant whose plan
+            has blown reads &ldquo;0 expected&rdquo; and concludes the product has nothing to say to
+            them.
+          </p>
+        ) : null}
       </header>
 
       {/* Horizon selector */}
@@ -164,9 +190,7 @@ export default async function ForecastPage({
                 </span>
               </p>
               <p className="mt-2 max-w-[62ch] text-[13.5px] leading-relaxed text-slate">
-                Your baseline WISMO rate isn&rsquo;t set yet, so we can&rsquo;t size the ticket load —
-                showing the cohort only. Once the day-0 baseline is captured, this panel sizes the
-                expected inbound volume from it.
+                {f.uncalibratedReason}
               </p>
             </>
           )}

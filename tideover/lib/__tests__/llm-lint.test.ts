@@ -82,7 +82,11 @@ test("extended lint: each injection-shaped promise is blocked with its reason", 
     ["You'll have tracking by the 3rd.", "ordinal-date"],
     // day-first month dates the shared month-first regex misses
     ["Delivery is set for 3 March.", "day-month-date"],
-    ["Everything lands 14th of June.", "day-month-date"],
+    // Day-first ORDINAL dates ("14th of June") are now caught by the shared
+    // hard-date gate (lib/proof.ts) — the mirror of "June 14" it used to miss —
+    // so they fail earlier and harder than the LLM-only lexicon. Bare day-first
+    // without an ordinal ("3 March") still belongs to the extended lint below.
+    ["Everything lands 14th of June.", "hard-date"],
     // spelled quantities + week/month windows (recheck probes)
     ["It will arrive in two weeks, guaranteed.", "days-window-guarantee"],
     ["We ship within three weeks.", "days-window-guarantee"],

@@ -33,6 +33,10 @@ const COLLECTIONS = [
   "script_variants",
   "outcome_events",
   "merchant_updates",
+  // The production status board — append-only, and it is the record of WHAT WE
+  // TOLD A CUSTOMER AND WHEN. Losing it loses the merchant's chargeback exhibit,
+  // so it is backed up like any other ledger.
+  "production_statuses",
 ];
 
 const uri = process.env.MONGODB_URI;

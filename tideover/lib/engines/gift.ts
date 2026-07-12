@@ -38,6 +38,23 @@ const CROWDFUNDING_GROUPS: ReadonlySet<Order["group"]> = new Set([
  */
 export const DEEP_WAIT_DAYS = 45;
 
+/**
+ * The deep-wait threshold for a SPECIFIC merchant: the point at which a wait is
+ * long enough, BY THEIR OWN PLAN, to warrant a gesture. Two-thirds of the window
+ * they promised, floored at the global DEEP_WAIT_DAYS so a merchant with a very
+ * short window never becomes trigger-happy.
+ *
+ * Why it is relative: the fixed 45 days was set against a 60-day window, and this
+ * ICP runs 60-240. On a 200-day campaign, "45 days in" is a customer who is
+ * exactly where they were told they would be — the gate is permanently open, and
+ * a gate that is always open is not a gate. Callers that pass nothing keep the
+ * old constant, so no existing engine output moves.
+ */
+export function deepWaitDaysFor(fulfillmentWindowMaxDays: number): number {
+  const relative = Math.round(Math.max(0, fulfillmentWindowMaxDays) * (2 / 3));
+  return Math.max(DEEP_WAIT_DAYS, relative);
+}
+
 /** Tiers unlocked for a customer at this refund-risk score + escalation state. */
 export function unlockedTiers(riskScore: number, escalated: boolean): GiftTier[] {
   const band = bandForScore(riskScore);
@@ -113,6 +130,12 @@ export interface GiftInput {
    * long wait warrant a PROACTIVE recommendation on an otherwise calm ticket.
    */
   daysInWait: number;
+  /**
+   * The deep-wait threshold to use. Omit for the global DEEP_WAIT_DAYS (existing
+   * callers are byte-stable); pass deepWaitDaysFor(merchant.fulfillmentWindowDays.max)
+   * to make it relative to the window the merchant actually promised.
+   */
+  deepWaitDays?: number;
 }
 
 export interface GiftResult {
@@ -135,9 +158,17 @@ export interface GiftResult {
  * though the base tier is still available to send). When warranted, ranking is
  * unchanged: highest perceived value, then lowest cost, then ROI. Also null when
  * nothing is unlocked at all (empty catalog / no unlocked tier).
+ *
+ * NOTHING HERE LOOKS AT WHAT THE BUYER IS WORTH. The warrant is risk and wait;
+ * the ranking is perceived value and cost-to-merchant. That matters because the
+ * median pledge in this market is $38: a ladder gated on a $500 lifetime-value
+ * threshold can never fire for the customers a solo creator most needs to hold,
+ * and the base tier is deliberately free to send so the gesture is always
+ * affordable (see lib/onboarding.ts ZERO_COST_BASE_GIFTS).
  */
 export function recommendGift(input: GiftInput): GiftResult {
   const { riskScore, escalated, catalog, daysInWait } = input;
+  const deepWait = input.deepWaitDays ?? DEEP_WAIT_DAYS;
   const unlocked = new Set(unlockedTiers(riskScore, escalated));
   const eligible = catalog.filter((g) => unlocked.has(g.tier));
 
@@ -153,7 +184,7 @@ export function recommendGift(input: GiftInput): GiftResult {
   }
 
   const band = bandForScore(riskScore);
-  const warranted = escalated || band !== "standard" || daysInWait >= DEEP_WAIT_DAYS;
+  const warranted = escalated || band !== "standard" || daysInWait >= deepWait;
   if (!warranted) {
     return {
       gift: null,

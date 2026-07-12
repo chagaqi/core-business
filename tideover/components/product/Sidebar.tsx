@@ -24,6 +24,9 @@ const NAV_GROUPS: Array<{
     items: [
       { href: "/app", label: "Dashboard", hint: "Refund-risk overview" },
       { href: "/app/inbox", label: "Inbox", hint: "Operator inbox" },
+      // Daily, and deliberately next to the inbox: every reply drafted below reads
+      // this board first. A stale board is a confidently wrong reply.
+      { href: "/app/status", label: "Status", hint: "What every reply will say" },
     ],
   },
   {

@@ -109,15 +109,47 @@ test("createMerchantFromIntake falls back to the suggested catalog when gifts ar
   const { merchant } = await createMerchantFromIntake(intake()); // no gifts field
   const repos = getRepositories();
   const catalog = await repos.gifts.listByMerchant(merchant.id);
-  assert.equal(catalog.length, 5, "the 5 suggested gifts");
-  assert.equal(merchant.giftCatalogIds.length, 5);
-  assert.ok(catalog.some((g) => g.tier === "base"), "default catalog carries a base gift");
+  assert.equal(catalog.length, 8, "the suggested gifts: 5 free base + 2 mid + 1 full");
+  assert.equal(merchant.giftCatalogIds.length, 8);
+
+  // THE BASE TIER IS FREE TO SEND, AND IT IS THE WHOLE POINT. Availability is
+  // tier-vs-risk-band: a calm, standard-band customer unlocks base and nothing
+  // else. The median pledge in this market is $38, so a ladder that only opens
+  // for a "high-value" buyer never opens at all — p01's whole file is single $38
+  // pledges, and p08's 210 backers produced ONE risk band across all 14 tickets.
+  // A digital art book costs a press nothing and is worth something real to the
+  // person holding a 92-day wait.
+  const base = catalog.filter((g) => g.tier === "base");
+  assert.ok(base.length >= 3, "a real base ladder, not a token gesture");
+  assert.ok(base.every((g) => g.costCents === 0), "every base gift is free to send");
+  assert.ok(base.every((g) => g.perceivedValueCents > 0), "and worth something to the customer");
+  assert.ok(base.every((g) => g.eligibility.minLtvCents === 0), "no LTV gate anywhere on the ladder");
 });
 
 test("createMerchantFromIntake treats an empty gift array like an omitted one (fallback)", async () => {
   const { merchant } = await createMerchantFromIntake(intake({ gifts: [] }));
   const repos = getRepositories();
-  assert.equal((await repos.gifts.listByMerchant(merchant.id)).length, 5);
+  assert.equal((await repos.gifts.listByMerchant(merchant.id)).length, 8);
+});
+
+test("a merchant catalog with NO base gift still leaves onboarding with a free base ladder", async () => {
+  // ensureBaseLadder: a catalog whose cheapest tier is "mid" can never fire for a
+  // calm, standard-band customer — which is every customer p08 has. Whatever the
+  // merchant picks, they leave with something they can give a $38 backer.
+  const { merchant } = await createMerchantFromIntake(
+    intake({
+      gifts: [
+        { name: "Priority dispatch", kind: "priority-dispatch", tier: "mid", costCents: 1200, perceivedValueCents: 6000 },
+        { name: "$25 credit", kind: "next-order-credit", tier: "full", costCents: 2500, perceivedValueCents: 2500 },
+      ],
+    }),
+  );
+  const repos = getRepositories();
+  const catalog = await repos.gifts.listByMerchant(merchant.id);
+  const base = catalog.filter((g) => g.tier === "base");
+  assert.ok(base.length > 0, "a base ladder was appended");
+  assert.ok(base.every((g) => g.costCents === 0));
+  assert.ok(catalog.some((g) => g.tier === "mid"), "the merchant's own picks survive");
 });
 
 // ── atomic create + import (D-onboarding revamp) ─────────────────────────────

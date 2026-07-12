@@ -39,6 +39,11 @@ const COLLECTIONS = [
   "script_variants",
   "outcome_events",
   "merchant_updates",
+  // The production status board (lib/status-board.ts). Append-only, read on
+  // EVERY order fetch (lib/repositories/live-stage.ts resolves the live stage
+  // through it), so the merchantId index below is load-bearing, not hygiene —
+  // without it every draft in the product full-scans this collection.
+  "production_statuses",
 ] as const;
 
 async function ensureIndexes(db: Db): Promise<void> {
@@ -117,7 +122,13 @@ async function ensureIndexes(db: Db): Promise<void> {
       }
       // Append-only view log (ADR-0005): non-unique — a customer may view a
       // status page many times; listByOrder reads by order in viewedAt order.
-      if (name === "status_views") await col.createIndex({ orderId: 1, viewedAt: 1 });
+      if (name === "status_views") {
+        await col.createIndex({ orderId: 1, viewedAt: 1 });
+        // Real deflection (lib/deflection.ts) asks a MERCHANT-wide question of
+        // this ledger on every dashboard load; the orderId index can't serve it,
+        // so without this a 48k-order cohort full-scans the view log.
+        await col.createIndex({ merchantId: 1, viewedAt: 1 });
+      }
       // Outcome ledger (ADR-0007). Variant id is the unique key (covered by the
       // generic {id:1} unique index above). Outcome events are append-only, so
       // index each read access pattern non-uniquely (EN-10): merchant rollup,

@@ -7,6 +7,7 @@ import type {
   MerchantUpdate,
   Order,
   OutcomeEvent,
+  ProductionStatusEntry,
   ScriptVariant,
   SocialSignal,
   StatusView,
@@ -22,6 +23,7 @@ import type {
   MerchantUpdateRepository,
   OrderRepository,
   OutcomeEventRepository,
+  ProductionStatusRepository,
   Repositories,
   ScriptVariantRepository,
   SocialSignalRepository,
@@ -276,6 +278,15 @@ const statusViews: StatusViewRepository = {
       .sort({ viewedAt: 1, id: 1 })
       .toArray()) as StatusView[];
   },
+  async listByMerchant(merchantId) {
+    // Served by the {merchantId, viewedAt} index (mongo/client.ts) — without it
+    // this full-scans the view ledger on every dashboard load for a big cohort.
+    const c = await col<StatusView>("status_views");
+    return (await c
+      .find({ merchantId } as Filter<StatusView>, noId)
+      .sort({ viewedAt: 1, id: 1 })
+      .toArray()) as StatusView[];
+  },
 };
 
 const scriptVariants: ScriptVariantRepository = {
@@ -362,6 +373,24 @@ const merchantUpdates: MerchantUpdateRepository = {
   },
 };
 
+const productionStatuses: ProductionStatusRepository = {
+  async record(entry: ProductionStatusEntry) {
+    // Append-only: the caller (lib/status-board.ts) has already validated the
+    // entry and minted its id. Same _id-stripping insert as every other write.
+    return insert("production_statuses", entry);
+  },
+  async listByMerchant(merchantId) {
+    // Oldest first (updatedAt asc, id asc) — matches the JSON driver exactly.
+    // These rows carry no createdAt, so findWhere's default sort would not order
+    // them; sort explicitly.
+    const c = await col<ProductionStatusEntry>("production_statuses");
+    return (await c
+      .find({ merchantId } as Filter<ProductionStatusEntry>, noId)
+      .sort({ updatedAt: 1, id: 1 })
+      .toArray()) as ProductionStatusEntry[];
+  },
+};
+
 const leads: LeadRepository = {
   async create(l) {
     // Same _id-stripping insert as every other collection; the "leads"
@@ -382,5 +411,6 @@ export const mongoRepositories: Repositories = {
   scriptVariants,
   outcomeEvents,
   merchantUpdates,
+  productionStatuses,
   leads,
 };

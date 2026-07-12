@@ -2,10 +2,15 @@ import { clsx } from "clsx";
 import { relativeLuminance } from "@/lib/color";
 
 /**
- * The timeline dot for a single production stage. Three states:
+ * The timeline dot for a single production stage. Four states:
  *  - done: filled teal with a check
  *  - active: terracotta with a soft pulse (current stage)
  *  - upcoming: hollow, muted
+ *  - unknown: hollow, muted — the order is past every band the merchant authored,
+ *             so their plan cannot say whether this stage is finished. Renders
+ *             exactly like "upcoming" (claims nothing) rather than marking every
+ *             stage done through Dispatch, which would tell a customer whose
+ *             order does not exist yet that it has shipped.
  * `accent` lets the merchant's primary color tint the active state so the page
  * still feels like the merchant's own.
  */
@@ -13,7 +18,7 @@ export function StageDot({
   state,
   accent,
 }: {
-  state: "done" | "active" | "upcoming";
+  state: "done" | "active" | "upcoming" | "unknown";
   accent?: string;
 }) {
   if (state === "done") {

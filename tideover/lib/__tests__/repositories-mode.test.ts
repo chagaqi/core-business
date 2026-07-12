@@ -4,6 +4,21 @@ import { getRepositories, repositoriesForMode } from "@/lib/repositories";
 import { jsonRepositories } from "@/lib/repositories/json/repositories";
 import { resolveDatastoreModeFromRequest } from "@/lib/request-mode";
 
+/**
+ * Which DRIVER is behind the repositories getRepositories() handed back.
+ *
+ * getRepositories() no longer returns the raw driver object: every read of an
+ * order now resolves its LIVE production stage on the way out
+ * (lib/repositories/live-stage.ts), so `orders` is a wrapper. Every other
+ * repository passes through BY IDENTITY, so `merchants` still points straight at
+ * the driver — which is what these tests are actually about (which datastore did
+ * we resolve, JSON or Mongo), not object identity for its own sake.
+ */
+function driverBehind(repos: ReturnType<typeof getRepositories>) {
+  if (repos.merchants === jsonRepositories.merchants) return jsonRepositories;
+  return repos;
+}
+
 /** Set an env var to a value (or delete it) and restore afterwards. */
 function withEnv(env: Record<string, string | undefined>, fn: () => void): void {
   const saved: Record<string, string | undefined> = {};
@@ -40,7 +55,7 @@ test("getRepositories() outside a request scope uses the demo store — even und
   // this is exactly what keeps scripts and the ingest/auth tests on the JSON
   // store (and green) even when they set DEMO_MODE=false.
   withEnv({ MONGODB_URI: undefined, DATA_DRIVER: undefined, DEMO_MODE: "false" }, () => {
-    assert.equal(getRepositories(), jsonRepositories);
+    assert.equal(driverBehind(getRepositories()), jsonRepositories);
   });
 });
 
@@ -54,6 +69,6 @@ test("fail-safe: DEMO_MODE=true forces the DATASTORE to demo before the host is 
   // And with MONGODB_URI present, getRepositories still resolves the demo store,
   // never the live one, under DEMO_MODE=true.
   withEnv({ DEMO_MODE: "true", MONGODB_URI: undefined, DATA_DRIVER: undefined }, () => {
-    assert.equal(getRepositories(), jsonRepositories);
+    assert.equal(driverBehind(getRepositories()), jsonRepositories);
   });
 });

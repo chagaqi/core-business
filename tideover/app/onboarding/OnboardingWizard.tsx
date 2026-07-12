@@ -18,7 +18,7 @@ import {
   type GiftKind,
   type GiftTier,
 } from "@/app/onboarding/GiftCatalogEditor";
-import type { HelpdeskSetup } from "@/lib/ingest-templates";
+import type { ConnectKit } from "@/lib/ingest-templates";
 import type { ImportFormat, MappedRow } from "@/lib/csv";
 
 /**
@@ -62,7 +62,7 @@ interface ImportCounts {
 type OnboardingResult = {
   merchantId: string;
   slug: string;
-  connect?: { gorgias: HelpdeskSetup; zendesk: HelpdeskSetup };
+  connect?: ConnectKit;
   imported?: ImportCounts | null;
   previews: Preview[];
 };
@@ -555,11 +555,11 @@ export function OnboardingWizard() {
               {result.connect ? (
                 <div>
                   <p className="mb-2 text-[13.5px] leading-relaxed text-ink-mute">
-                    <strong className="text-ink">Optional.</strong> On Gorgias or Zendesk? Route presale
-                    tickets straight in with one rule &mdash; now, or anytime from your setup
-                    checklist.
+                    <strong className="text-ink">Optional.</strong> On Gorgias, Zendesk or Help
+                    Scout? Route presale tickets straight in with one rule, then send a test event
+                    to prove it works &mdash; now, or anytime from your setup checklist.
                   </p>
-                  <ConnectPanel gorgias={result.connect.gorgias} zendesk={result.connect.zendesk} />
+                  <ConnectPanel {...result.connect} />
                 </div>
               ) : null}
 

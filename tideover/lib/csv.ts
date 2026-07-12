@@ -36,6 +36,30 @@ export interface MappedRow {
   /** where the disclosed ETA came from, per source: a KS export is the campaign
    *  page, a BackerKit export is the pledge-manager checkout. */
   etaSource?: "campaign-page" | "checkout";
+  /**
+   * The campaign / project this row belongs to. A COHORT KEY, not decoration:
+   * `Order.campaignName` has existed in the types (and been read by the evidence
+   * module) since day one, and NO WRITER EVER SET IT — so p09, running Deepwater
+   * and Saltmarsh out of one merchant record, could not tell one campaign's
+   * backers a thing without telling the other's. Undefined when the export
+   * carries no campaign column (the single-campaign case, where the importer
+   * falls back to the merchant's own campaign name).
+   */
+  campaignName?: string;
+  /**
+   * The fulfillment wave / batch / kiln-load. The other cohort key, same story:
+   * p08's kiln failed on cohort 2 of 3 and she had to panic all three or none.
+   */
+  wave?: string;
+  /**
+   * Shipping region, normalized from the source row's OWN country column. Every
+   * export in this market carries one (KS "Shipping Country", Gamefound,
+   * BackerKit, Shopify) — we read it and hardcoded "US" anyway, which is exactly
+   * why p04 (48% EU, one rolled EU container) could not scope the one
+   * announcement she needed. Undefined when the row carried no country: the
+   * importer records "unknown", and never a fabricated "US".
+   */
+  region?: string;
   /** the order/pledge DATE the source row carried, normalized to an ISO instant
    *  (UTC midnight of the parsed day). Drives the imported order's real
    *  `fulfillmentStart`/`createdAt` so day-in-wait, stage, confidence, overdue,
@@ -139,7 +163,55 @@ interface AliasSet {
   id: string[];
   /** the order/pledge DATE column (distinct from `eta`, the delivery estimate). */
   date: string[];
+  /** the campaign/project column — a cohort key (see MappedRow.campaignName). */
+  campaign: string[];
+  /** the wave/batch column — a cohort key (see MappedRow.wave). */
+  wave: string[];
+  /** the shipping-COUNTRY column, normalized to a region (see MappedRow.region). */
+  country: string[];
 }
+
+/**
+ * Campaign / project column aliases (case-insensitive). Shared by both formats —
+ * every platform names it differently and none of them name it the same thing
+ * twice.
+ */
+const CAMPAIGN_ALIASES = [
+  "campaign",
+  "campaign name",
+  "project",
+  "project name",
+  "project title",
+  "campaign title",
+];
+
+/** Fulfillment wave / batch / group column aliases (case-insensitive). */
+const WAVE_ALIASES = [
+  "wave",
+  "fulfillment wave",
+  "fulfilment wave",
+  "batch",
+  "batch name",
+  "shipping wave",
+  "ship wave",
+  "group",
+  "cohort",
+];
+
+/**
+ * Shipping-country column aliases (case-insensitive). KS backer reports carry
+ * "Shipping Country"; Gamefound and BackerKit carry "Country"; Shopify carries
+ * "Shipping Country Code".
+ */
+const COUNTRY_ALIASES = [
+  "shipping country",
+  "shipping country code",
+  "country",
+  "country code",
+  "ship to country",
+  "delivery country",
+  "backer country",
+];
 
 /**
  * Order/pledge-DATE column aliases (case-insensitive), shared by both formats.
@@ -194,6 +266,9 @@ const KS_ALIASES: AliasSet = {
   ],
   id: ["backer number", "backer uid", "backer id", "backer #", "order id", "order number"],
   date: DATE_ALIASES,
+  campaign: CAMPAIGN_ALIASES,
+  wave: WAVE_ALIASES,
+  country: COUNTRY_ALIASES,
 };
 
 /** BackerKit export column aliases (case-insensitive). */
@@ -205,6 +280,9 @@ const BK_ALIASES: AliasSet = {
   eta: ["estimated delivery", "estimated ship date", "estimated shipping", "eta"],
   id: ["order id", "order number", "backer id", "external id", "backerkit id"],
   date: DATE_ALIASES,
+  campaign: CAMPAIGN_ALIASES,
+  wave: WAVE_ALIASES,
+  country: COUNTRY_ALIASES,
 };
 
 /** Header fingerprints unique-ish to each format, used for auto-detection. */
@@ -392,6 +470,62 @@ export function parseDate(raw?: string): string | undefined {
 }
 
 /**
+ * ISO-3166 alpha-2 codes for the EU/EEA + the countries a crowdfunding creator
+ * actually ships to as a bloc. Used ONLY to fold a country into a shipping
+ * region — the unit a merchant announces to ("the EU container rolled"), which is
+ * the granularity every persona asked for and none of them could get.
+ */
+const EU_CODES = new Set([
+  "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE",
+  "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE",
+  // EEA/EFTA — they clear customs with the EU container, not the US one.
+  "IS", "LI", "NO", "CH",
+]);
+
+/** Country NAME → alpha-2, for the exports that spell it out. Only the ones that
+ *  actually show up in these files; an unrecognized name is kept verbatim rather
+ *  than guessed into a bloc. */
+const COUNTRY_CODES: Record<string, string> = {
+  "united states": "US", "united states of america": "US", usa: "US", "u.s.": "US", "u.s.a.": "US", america: "US",
+  "united kingdom": "GB", uk: "GB", "great britain": "GB", england: "GB", scotland: "GB", wales: "GB",
+  canada: "CA", australia: "AU", "new zealand": "NZ", japan: "JP", singapore: "SG",
+  germany: "DE", deutschland: "DE", france: "FR", spain: "ES", españa: "ES", italy: "IT", italia: "IT",
+  netherlands: "NL", "the netherlands": "NL", holland: "NL", belgium: "BE", austria: "AT",
+  ireland: "IE", poland: "PL", portugal: "PT", sweden: "SE", denmark: "DK", finland: "FI",
+  norway: "NO", switzerland: "CH", "czech republic": "CZ", czechia: "CZ", greece: "GR",
+  hungary: "HU", romania: "RO", bulgaria: "BG", croatia: "HR", slovakia: "SK", slovenia: "SI",
+  estonia: "EE", latvia: "LV", lithuania: "LT", luxembourg: "LU", malta: "MT", cyprus: "CY", iceland: "IS",
+};
+
+/**
+ * Normalize a source row's country cell into the REGION a merchant announces to.
+ *
+ * The rule is deliberately coarse and deliberately conservative:
+ *   - an EU/EEA country folds to "EU" — the bloc that shares a container and a
+ *     customs clearance, which is the thing that actually goes wrong together;
+ *   - everything else we can recognize keeps its own alpha-2 code ("US", "GB",
+ *     "CA", "AU"), because those ship separately;
+ *   - anything we cannot recognize is UPPERCASED AND KEPT VERBATIM. It is the
+ *     merchant's own data and a region we have never seen is still a real region.
+ *     We never round an unknown country to "US".
+ *
+ * Returns undefined for an empty cell — the caller records "unknown", never a
+ * fabricated default. That fabricated default is the whole bug: `region` was
+ * hardcoded "US" at import even when the CSV carried the country, so p04's 48% EU
+ * file looked entirely domestic and the one announcement she needed was the one
+ * announcement the data model could not express.
+ */
+export function normalizeRegion(raw?: string): string | undefined {
+  const s = raw?.trim();
+  if (!s) return undefined;
+  const lower = s.toLowerCase();
+  const code = COUNTRY_CODES[lower] ?? (/^[a-z]{2}$/.test(lower) ? lower.toUpperCase() : undefined);
+  if (code) return EU_CODES.has(code) ? "EU" : code;
+  // Unrecognized: keep the merchant's own word for it rather than invent one.
+  return s.toUpperCase();
+}
+
+/**
  * Coarse group hint from a reward/tier label. Only returns a group when the
  * label clearly indicates one; otherwise undefined so the importer applies its
  * format default (ks-backer for a Kickstarter import). Never invents a group.
@@ -418,6 +552,9 @@ function mapWith(
   const disclosedEtaValue = pick(keyed, a.eta);
   const sourceKey = (pick(keyed, a.id) ?? "").trim();
   const orderDate = parseDate(pick(keyed, a.date));
+  const campaignName = pick(keyed, a.campaign);
+  const wave = pick(keyed, a.wave);
+  const region = normalizeRegion(pick(keyed, a.country));
 
   const mapped: MappedRow = { firstName, email };
   if (group) mapped.group = group;
@@ -428,6 +565,9 @@ function mapWith(
   }
   if (sourceKey) mapped.sourceKey = sourceKey;
   if (orderDate) mapped.orderDate = orderDate;
+  if (campaignName) mapped.campaignName = campaignName;
+  if (wave) mapped.wave = wave;
+  if (region) mapped.region = region;
   return mapped;
 }
 

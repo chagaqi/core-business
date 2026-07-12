@@ -7,6 +7,7 @@ import type {
   Order,
   OutcomeEvent,
   ProductionStageKey,
+  ProductionStatusEntry,
   ScriptVariant,
   SocialSignal,
   StatusView,
@@ -151,6 +152,15 @@ export interface StatusViewRepository {
   record(v: Omit<StatusView, "id">): Promise<StatusView>;
   /** all views for an order, sorted deterministically by viewedAt (then id). */
   listByOrder(orderId: string): Promise<StatusView[]>;
+  /**
+   * Every view a merchant's buyers logged, same deterministic order. Real
+   * deflection (lib/deflection.ts) is a MERCHANT-wide question — "how many
+   * people looked at their status page and then never wrote in" — and without
+   * this the dashboard fans out one read per order across the whole cohort
+   * (48k orders in the ten-merchant run). Mongo serves it from the
+   * {merchantId, viewedAt} index added alongside this method.
+   */
+  listByMerchant(merchantId: string): Promise<StatusView[]>;
 }
 
 /**
@@ -223,6 +233,19 @@ export interface LeadRepository {
   create(lead: Omit<Lead, "id">): Promise<Lead>;
 }
 
+/**
+ * The production status board (lib/status-board.ts) — append-only. `record`
+ * persists an entry the caller has already validated and id'd; entries are never
+ * edited and never deleted, because the history IS the evidence ("what did you
+ * tell this backer, and when"). `listByMerchant` returns the WHOLE history,
+ * oldest first (updatedAt asc, id asc), so both drivers agree and the pure
+ * resolvers in lib/status-board.ts can fold it.
+ */
+export interface ProductionStatusRepository {
+  record(entry: ProductionStatusEntry): Promise<ProductionStatusEntry>;
+  listByMerchant(merchantId: string): Promise<ProductionStatusEntry[]>;
+}
+
 export interface Repositories {
   merchants: MerchantRepository;
   orders: OrderRepository;
@@ -234,5 +257,6 @@ export interface Repositories {
   scriptVariants: ScriptVariantRepository;
   outcomeEvents: OutcomeEventRepository;
   merchantUpdates: MerchantUpdateRepository;
+  productionStatuses: ProductionStatusRepository;
   leads: LeadRepository;
 }

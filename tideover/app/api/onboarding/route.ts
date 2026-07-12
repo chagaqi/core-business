@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { AlreadyOnboardedError, createMerchantFromIntake } from "@/lib/onboarding";
 import { OnboardingBodySchema } from "@/lib/onboarding-schema";
-import { gorgiasHttpIntegration, zendeskTrigger } from "@/lib/ingest-templates";
+import { helpdeskSetups } from "@/lib/ingest-templates";
 import { withApiErrorHandling } from "@/lib/api-handler";
 import { resolveModeFromRequest } from "@/lib/request-mode";
 import { authMode, TENANT_HINT_COOKIE, tenantHintCookieOptions } from "@/lib/auth-mode";
@@ -53,13 +53,12 @@ async function handlePOST(req: Request) {
   const res = NextResponse.json({
     merchantId: merchant.id,
     slug: merchant.slug,
-    // Per-merchant helpdesk webhook setup (ADR-0011) — the derived signing secret
-    // is computed server-side here (WEBHOOK_ROOT_SECRET is server-only) and passed
-    // to the ConnectPanel for display on the success screen (optional path).
-    connect: {
-      gorgias: gorgiasHttpIntegration(merchant),
-      zendesk: zendeskTrigger(merchant),
-    },
+    // Per-merchant helpdesk webhook setup (ADR-0011, ADR-0021) — every vendor's
+    // derived credential is computed server-side here (WEBHOOK_ROOT_SECRET is
+    // server-only) and passed to the ConnectPanel for the success screen. All
+    // four vendors ship, because a Help Scout or Zendesk merchant who is only
+    // shown Gorgias/generic instructions cannot connect at all.
+    connect: helpdeskSetups(merchant),
     // Real counts from the atomic import (null when no rows were staged) — the
     // success screen leads with "{N} backers imported" from this.
     imported,

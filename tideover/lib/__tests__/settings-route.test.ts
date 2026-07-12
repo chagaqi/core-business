@@ -91,13 +91,13 @@ test("owner round-trip: signoff + window + gift add/edit/retire all persist", as
 
     // ── gifts: keep 3 (edit one), retire 2, add 1 new ────────────────────
     const before = await activeGiftsOf(merchant.id);
-    assert.equal(before.length, 5, "default catalog arrives with 5 gifts");
+    assert.equal(before.length, 8, "default catalog: 5 free base gifts + 2 mid + 1 full");
     const keepBase = before.find((g) => g.tier === "base")!;
     const keepOthers = before.filter((g) => g.id !== keepBase.id).slice(0, 2);
     const retired = before.filter(
       (g) => g.id !== keepBase.id && !keepOthers.some((k) => k.id === g.id),
     );
-    assert.equal(retired.length, 2);
+    assert.equal(retired.length, before.length - 3, "everything not kept is retired");
 
     const giftsRes = await handleSettingsPATCH(
       patch({

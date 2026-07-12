@@ -5,6 +5,7 @@ import type {
   MerchantUpdate,
   Order,
   OutcomeEvent,
+  ProductionStatusEntry,
   ScriptVariant,
   SocialSignal,
   StatusView,
@@ -40,6 +41,14 @@ export interface SeedData {
   scriptVariants: ScriptVariant[];
   outcomeEvents: OutcomeEvent[];
   merchantUpdates: MerchantUpdate[];
+  /**
+   * The production status board (lib/status-board.ts). Seeded EMPTY on purpose:
+   * a status is a human being's live statement about what is physically
+   * happening, and a fabricated one in demo data is exactly the class of claim
+   * the proof-only doctrine forbids. The demo merchants fall back to their day
+   * bands, which is the honest behavior for a merchant who has not posted.
+   */
+  productionStatuses: ProductionStatusEntry[];
 }
 
 export function buildSeed(): SeedData {
@@ -54,5 +63,6 @@ export function buildSeed(): SeedData {
     scriptVariants: clone(scriptVariantsJson as unknown as ScriptVariant[]),
     outcomeEvents: clone(outcomeEventsJson as unknown as OutcomeEvent[]),
     merchantUpdates: clone(merchantUpdatesJson as unknown as MerchantUpdate[]),
+    productionStatuses: [],
   };
 }

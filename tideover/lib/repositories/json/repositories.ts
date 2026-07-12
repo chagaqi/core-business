@@ -18,6 +18,7 @@ import type {
   MerchantUpdateRepository,
   OrderRepository,
   OutcomeEventRepository,
+  ProductionStatusRepository,
   Repositories,
   ScriptVariantRepository,
   SocialSignalRepository,
@@ -293,6 +294,9 @@ const statusViews: StatusViewRepository = {
   async listByOrder(orderId) {
     return store.statusViews.filter((s) => s.orderId === orderId).sort(byViewedAt);
   },
+  async listByMerchant(merchantId) {
+    return store.statusViews.filter((s) => s.merchantId === merchantId).sort(byViewedAt);
+  },
 };
 
 const scriptVariants: ScriptVariantRepository = {
@@ -361,6 +365,29 @@ const merchantUpdates: MerchantUpdateRepository = {
   },
 };
 
+const productionStatuses: ProductionStatusRepository = {
+  async record(entry) {
+    store.productionStatuses.push({ ...entry });
+    return entry;
+  },
+  async listByMerchant(merchantId) {
+    // Oldest first (updatedAt asc, id asc) — matches the Mongo driver exactly.
+    return store.productionStatuses
+      .filter((e) => e.merchantId === merchantId)
+      .sort((a, b) =>
+        a.updatedAt !== b.updatedAt
+          ? a.updatedAt < b.updatedAt
+            ? -1
+            : 1
+          : a.id < b.id
+            ? -1
+            : a.id > b.id
+              ? 1
+              : 0,
+      );
+  },
+};
+
 /**
  * Marketing leads live OUTSIDE the seeded store (lib/data/seed carries no
  * leads — they are visitor input, not demo data). Module-level array: writes
@@ -388,5 +415,6 @@ export const jsonRepositories: Repositories = {
   scriptVariants,
   outcomeEvents,
   merchantUpdates,
+  productionStatuses,
   leads,
 };

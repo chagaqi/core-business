@@ -1,5 +1,6 @@
 import { jsonRepositories } from "@/lib/repositories/json/repositories";
 import { mongoRepositories } from "@/lib/repositories/mongo/repositories";
+import { withLiveStage } from "@/lib/repositories/live-stage";
 import { withTenantScope } from "@/lib/repositories/tenant-scope";
 import { resolveDatastoreModeFromRequest } from "@/lib/request-mode";
 import { authMode } from "@/lib/auth-mode";
@@ -54,7 +55,15 @@ export function repositoriesForMode(mode: Mode): Repositories {
 }
 
 export function getRepositories(): Repositories {
-  const repos = repositoriesForMode(resolveDatastoreModeFromRequest());
+  const driver = repositoriesForMode(resolveDatastoreModeFromRequest());
+  // EVERY read of an order resolves its LIVE production stage on the way out
+  // (lib/repositories/live-stage.ts). The stored stage is an import-time
+  // snapshot — a hint, not truth — and reading it as truth is what told a third
+  // of the customers we replied to the wrong physical fact about their own order.
+  // This wraps the DRIVER (not the tenant-scoped view) so the derivation's own
+  // merchant lookup always resolves; tenant isolation stays where it has always
+  // been, on the merchants repository the caller reaches through.
+  const repos = withLiveStage(driver);
   // ADR-0020: with Auth0 accounts configured, every repo access runs through
   // the tenant-scope wrapper. The wrapper re-resolves the request's scope per
   // call and passes through UNSCOPED everywhere except marked operator

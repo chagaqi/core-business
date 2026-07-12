@@ -132,6 +132,28 @@ export function byPriority<T extends { priorityRank: number; createdAt: string }
   return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
 }
 
+/**
+ * The day the order's current stage is planned to END — the anchor `stagePressure`
+ * measures overrun against.
+ *
+ * The stage key may be "overrun" (lib/types ResolvedStageKey): the order is past
+ * EVERY band the merchant authored, so no band owns it. Stage pressure is then
+ * measured from the LAST band's ceiling — how far past the merchant's own plan
+ * this customer is — which grows smoothly the longer they wait.
+ *
+ * The old `?? 0` fallback would have measured them from day zero, pinning the
+ * factor at its maximum the instant an order crossed the final band. That is a
+ * cliff, not a measurement, and it would have flattened exactly the population
+ * Tideover exists for: our ICP is merchants who blew their window, so the MODAL
+ * customer is past the last band, and a factor that reads 1.0 for all of them
+ * discriminates between none of them. (p10 already saw this: zero `standard`
+ * tickets, a risk floor of 56, and his third chargeback threat ranked 5th of 8.)
+ *
+ * Unchanged for every authored stage, so no engine output moves.
+ */
 export function stageCeilDayFor(stages: { key: string; dayBand: { to: number } }[], stageKey: string): number {
-  return stages.find((s) => s.key === stageKey)?.dayBand.to ?? 0;
+  const hit = stages.find((s) => s.key === stageKey);
+  if (hit) return hit.dayBand.to;
+  if (stages.length === 0) return 0;
+  return stages.reduce((a, b) => (b.dayBand.to > a.dayBand.to ? b : a)).dayBand.to;
 }

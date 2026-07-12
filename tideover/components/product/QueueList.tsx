@@ -21,6 +21,15 @@ export interface QueueItem {
   flagged: boolean;
   /** C5 — the ticket's computed first-response SLA chip (countdown + basis). */
   sla: SlaChipView;
+  /**
+   * Why this ticket is where it is, in plain words — e.g. "said they will
+   * dispute the charge — risk 74 · long time already waiting · above 62% of
+   * your live queue" (lib/queue-rank.ts). The ten-merchant run found an operator
+   * cannot act on an order they cannot explain: in a crisis every ticket scores
+   * high, the ranking looks arbitrary, and trust in the queue dies. The rank is
+   * only useful if it can answer "why is this on top?" without asking anyone.
+   */
+  rankReason?: string;
 }
 
 const GROUP_LABEL: Record<string, string> = {
@@ -94,6 +103,12 @@ export function QueueList({
                 </span>
               </div>
               <p className="mt-1 truncate text-[12px] text-slate">{r.subject}</p>
+              {r.rankReason ? (
+                // "Why is this on top?" — answered on the row, not buried.
+                <p className="mt-1 line-clamp-2 text-[11.5px] leading-snug text-ink-mute" title={r.rankReason}>
+                  {r.rankReason}
+                </p>
+              ) : null}
               <div className="mt-1.5 flex items-center justify-between gap-2">
                 <span className="flex items-center gap-2">
                   <Tag>{GROUP_LABEL[r.group] ?? r.group}</Tag>

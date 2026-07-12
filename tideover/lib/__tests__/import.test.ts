@@ -3,6 +3,7 @@ import { test } from "node:test";
 import { importBackerRows } from "@/lib/import";
 import { createMerchantFromIntake } from "@/lib/onboarding";
 import { getRepositories } from "@/lib/repositories";
+import { setLiveStageClock } from "@/lib/repositories/live-stage";
 import type { MappedRow } from "@/lib/csv";
 
 /** A fresh, real merchant to import against (exercises the full repo seam). */
@@ -45,7 +46,16 @@ test("importBackerRows dedupes a repeated email and creates the right counts", a
   const annOrders = await repos.orders.listByCustomer(ann.id);
   assert.equal(annOrders.length, 2);
   assert.ok(annOrders.every((o) => o.group === "ks-backer")); // KS import default
-  assert.ok(annOrders.every((o) => o.disclosedEta === undefined)); // never synthesized
+  // The row carried no delivery estimate — no export in this market does — so the
+  // MERCHANT'S OWN promised window (90–120 days, from onboarding) is the
+  // disclosure. Still nothing synthesized: it is the band they published, and it
+  // is the exhibit the evidence pack could not produce for a single order before.
+  assert.ok(
+    annOrders.every((o) => o.disclosedEta?.value === "weeks 13–17"),
+    "the merchant's promised window is stamped as the disclosure",
+  );
+  assert.ok(annOrders.every((o) => o.disclosedEta?.source === "campaign-page"));
+  assert.equal(result.disclosedEtaStamped, 3, "every imported order carries a disclosure");
 
   // Ben's order captured the disclosed ETA (source present), nothing invented.
   const ben = await repos.customers.findByEmail(merchant.id, "ben@example.com");
@@ -138,7 +148,7 @@ test("imported order anchors dates to the parsed pledge date, not import time", 
   assert.equal(o.disclosedEta?.disclosedAt, pledged);
 });
 
-test("productionStage is seeded from real elapsed wait vs the merchant day-bands", async () => {
+test("productionStage is DERIVED LIVE from the wait vs the merchant's own bands — inclusive, and never clamped to dispatch", async () => {
   const merchant = await freshMerchant();
   const now = new Date("2026-06-01T00:00:00.000Z");
   const iso = (daysAgo: number) => new Date(now.getTime() - daysAgo * DAY).toISOString();
@@ -146,25 +156,80 @@ test("productionStage is seeded from real elapsed wait vs the merchant day-bands
   await importBackerRows(
     merchant.id,
     [
-      { firstName: "S", email: "s@x.com", orderDate: iso(5) }, // sourcing [0,12)
-      { firstName: "P", email: "p@x.com", orderDate: iso(50) }, // production [32,72)
-      { firstName: "F", email: "f@x.com", orderDate: iso(92) }, // freight [84,104)
-      { firstName: "D", email: "d@x.com", orderDate: iso(110) }, // dispatch [104,118)
+      { firstName: "S", email: "s@x.com", orderDate: iso(5) }, //   sourcing   [0,12]
+      { firstName: "B", email: "b@x.com", orderDate: iso(32) }, //  BOUNDARY day — tooling [12,32]
+      { firstName: "P", email: "p@x.com", orderDate: iso(50) }, //  production [32,72]
+      { firstName: "F", email: "f@x.com", orderDate: iso(92) }, //  freight    [84,104]
+      { firstName: "D", email: "d@x.com", orderDate: iso(110) }, // dispatch   [104,118]
+      { firstName: "O", email: "o@x.com", orderDate: iso(240) }, // PAST EVERY BAND
     ],
     now,
   );
 
   const repos = getRepositories();
-  const stageOf = async (email: string) => {
-    const c = await repos.customers.findByEmail(merchant.id, email);
-    assert.ok(c);
-    const [o] = await repos.orders.listByCustomer(c.id);
-    return o.productionStage;
+  // Reads resolve the stage against the CLOCK, not against import time — that is
+  // the whole point. Pin it to the import instant so the assertions are about the
+  // band math and not about how long this test file took to run.
+  setLiveStageClock(() => now);
+  try {
+    const orderOf = async (email: string) => {
+      const c = await repos.customers.findByEmail(merchant.id, email);
+      assert.ok(c);
+      const [o] = await repos.orders.listByCustomer(c.id);
+      return o;
+    };
+    assert.equal((await orderOf("s@x.com")).productionStage, "sourcing");
+    // The boundary bug: merchants author bands inclusively (12-32), the old read
+    // was half-open, so a wait landing exactly on `to` matched nothing and fell
+    // through to stages[0]. 28 of p01's backers, 52-82 days in, were told the
+    // paper for their book was still being sourced.
+    assert.equal((await orderOf("b@x.com")).productionStage, "tooling", "boundary day does NOT fall through to stage[0]");
+    assert.equal((await orderOf("p@x.com")).productionStage, "production");
+    assert.equal((await orderOf("f@x.com")).productionStage, "freight");
+    assert.equal((await orderOf("d@x.com")).productionStage, "dispatch");
+
+    // The overrun clamp: past every band, the old code jumped to the stage with
+    // the highest ceiling — always dispatch, always "it shipped". ~4,758 of p10's
+    // 9,000 backers were told their unbuilt CNC machine had left the warehouse.
+    const overrun = await orderOf("o@x.com");
+    assert.equal(overrun.productionStage, "overrun", "past every band is OVERDUE + UNKNOWN, never dispatch");
+    assert.equal(overrun.stageSource, "overrun");
+    assert.notEqual(overrun.productionStage, "dispatch");
+  } finally {
+    setLiveStageClock(null);
+  }
+});
+
+test("the stage MOVES as the customer waits — the frozen snapshot is a hint, never the truth", async () => {
+  const merchant = await freshMerchant();
+  const pledged = new Date("2026-01-01T00:00:00.000Z");
+  await importBackerRows(
+    merchant.id,
+    [{ firstName: "Mo", email: "mo@x.com", orderDate: pledged.toISOString() }],
+    // Imported on day 3 of their wait: the snapshot stamped on disk says "sourcing".
+    new Date("2026-01-04T00:00:00.000Z"),
+  );
+
+  const repos = getRepositories();
+  const stageAt = async (iso: string) => {
+    setLiveStageClock(() => new Date(iso));
+    try {
+      const c = await repos.customers.findByEmail(merchant.id, "mo@x.com");
+      assert.ok(c);
+      const [o] = await repos.orders.listByCustomer(c.id);
+      return o.productionStage;
+    } finally {
+      setLiveStageClock(null);
+    }
   };
-  assert.equal(await stageOf("s@x.com"), "sourcing");
-  assert.equal(await stageOf("p@x.com"), "production");
-  assert.equal(await stageOf("f@x.com"), "freight");
-  assert.equal(await stageOf("d@x.com"), "dispatch");
+
+  // Same order, same stored row. The stage the customer is TOLD advances with
+  // their actual wait. Before this, every draft and every status page described
+  // where the order was on the day the merchant uploaded a CSV, forever.
+  assert.equal(await stageAt("2026-01-04T00:00:00.000Z"), "sourcing"); // day 3
+  assert.equal(await stageAt("2026-02-01T00:00:00.000Z"), "tooling"); //  day 31
+  assert.equal(await stageAt("2026-03-01T00:00:00.000Z"), "production"); // day 59
+  assert.equal(await stageAt("2026-04-15T00:00:00.000Z"), "freight"); //  day 104 → dispatch band opens at 104
 });
 
 test("a row with no parseable date falls back to import time and is counted", async () => {
