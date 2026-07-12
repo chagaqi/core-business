@@ -720,11 +720,16 @@ details[open] .faq-answer {
   left: 0;
   right: 0;
   top: 0;
-  height: 58svh;
+  height: 72svh;
   z-index: 0;
   background: var(--paper-crumple);
   mix-blend-mode: multiply;
   pointer-events: none;
+  /* Fade the sheet out before it reaches the water — a hard-edged rectangle of
+     texture ending mid-sky reads as a seam (it did). The fade also keeps the
+     creases lightest exactly where the headline sits. */
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.85) 46%, rgba(0, 0, 0, 0.35) 78%, transparent 100%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.85) 46%, rgba(0, 0, 0, 0.35) 78%, transparent 100%);
 }
 
 /* Baked-crumple overlays for the MOVING sky objects (sun disc, clouds): the
@@ -733,9 +738,9 @@ details[open] .faq-answer {
 .oc-crumple {
   position: absolute;
   inset: 0;
-  background: var(--paper-crumple-soft);
+  background: var(--paper-crumple);
   mix-blend-mode: multiply;
-  opacity: 0.85;
+  opacity: 0.55;
   pointer-events: none;
 }
 .oc-crumple-disc {

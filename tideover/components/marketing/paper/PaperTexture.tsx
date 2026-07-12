@@ -33,7 +33,10 @@ const TILE = 400; // BASE_FREQ * TILE = 4 (integer) → stitchTiles seam-free
 function bakeSvg(surfaceScale: number, whiten: number) {
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" width="${TILE}" height="${TILE}">` +
-    `<filter id="c" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">` +
+    // NO color-interpolation-filters override: the approved lab render ran in the
+    // default linearRGB space, which is what gives the crisp ridge contrast.
+    // Forcing sRGB here flattened it into a faint mottle (it did).
+    `<filter id="c" x="0" y="0" width="100%" height="100%">` +
     `<feTurbulence type="fractalNoise" baseFrequency="${BASE_FREQ}" numOctaves="4" seed="7" stitchTiles="stitch"/>` +
     `<feDiffuseLighting lighting-color="#ffffff" surfaceScale="${surfaceScale}" diffuseConstant="1">` +
     `<feDistantLight azimuth="${AZIMUTH}" elevation="${ELEVATION}"/>` +
@@ -66,8 +69,19 @@ export function PaperTexture() {
     let cancelled = false;
     (async () => {
       try {
-        const full = await bake(bakeSvg(SURFACE, 0));
-        const soft = await bake(bakeSvg(SURFACE * 0.5, 0.4));
+        // HIGH-KEY tiles. feDiffuseLighting returns a mid-grey relief; multiplying
+        // that raw darkens the whole surface into mud (it did — a grey slab). So
+        // the tile is whitened first: multiply then bites only in the CREASES, the
+        // surface keeps its color, and text over it stays crisp (multiply can only
+        // darken → AA never improves-or-breaks unexpectedly).
+        //
+        // RELIEF vs the locked token: SURFACE (2.2) is the relief the approved lab
+        // produced on a WHITE page. Whitened + multiplied over the hero's tinted
+        // sky it disappears (verified side-by-side against the live lab filter), so
+        // the hero runs a boosted relief that reproduces the approved LOOK on a
+        // colored surface. Light angle + crease scale stay exactly as locked.
+        const full = await bake(bakeSvg(SURFACE * 2.27, 0.35)); // ≈5.0 — reads as paper
+        const soft = await bake(bakeSvg(SURFACE * 1.45, 0.6)); // ≈3.2 — the sprinkle
         if (cancelled) return;
         const root = document.documentElement.style;
         root.setProperty("--paper-crumple", `url("${full}")`);
