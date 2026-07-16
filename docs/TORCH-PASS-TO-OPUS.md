@@ -491,6 +491,46 @@ Build the thing that never lies. It is the only defensible position in a market 
 
 ---
 
+## 9. ADDENDUM 2026-07-16 — THE LEARNING LOOP, THE DECISION LAYER, AND THE AGENT SURFACE
+
+Dylan's directive: everything in this document gets built before go-live, so no re-ranking. These are **additions** to the list, from his 2026-07-16 session. Three blocks: the product must collect the data that improves it, the reply must become an explicit decision instead of a prompt side-effect, and the value must be consumable by an agent, not only a person.
+
+### 9A. The learning loop — the product that improves itself
+
+The principle: we do not know yet what merchants want, and we never will by asking. The product must be built so that **using it produces the evidence that improves it.** Every item here is a data-collection surface first and a feature second.
+
+- **LEARN-1 — Edit-distance capture.** On every approve, persist the draft-as-generated against the text-as-approved. The diff is the merchant rewriting the product to what they wanted, harvested automatically. Store it on the outcome ledger event; aggregate per merchant: most-deleted phrases, most-added phrases, `editedRatio` distribution. This upgrades Step 3's "log `editedRatio`" from a number to a corpus, and it is the single highest-leverage learning surface in the product.
+- **LEARN-2 — Rejection telemetry.** `llm_lint_reject` currently dies in a console.warn. Persist every lint block (with its reason code), every operator discard, every deterministic-floor fallback, per merchant. A merchant whose drafts keep falling to the floor is a merchant about to churn silently — today we cannot see it.
+- **LEARN-3 — The learned voice memo.** Distill each merchant's accumulated edits into a short, versioned style memo appended to the drafting prompt. **The merchant approves each revision** — self-improvement rides the same human-approval doctrine as everything else; the prompt never mutates silently. This is also moat: a competitor can copy the behavior, not six months of one merchant's corrections. Per-tenant, never pooled.
+- **LEARN-4 — Outcome-fed ranking.** Refund/chargeback/save outcomes recalibrate the risk weights per merchant, bounded and explainable — `rankReason` must still answer "why is this on top?" in plain words after the weights move.
+- **LEARN-5 — Status-page content gaps.** The deflection failure set — tickets that arrive *after* a status view — is a list of questions the status page failed to answer. Cluster them; suggest the missing status-board field or FAQ entry to the merchant. The status page gets better because it failed, measurably.
+- **LEARN-6 — Phrase-level measurement inside the rails.** Two lint-cleared phrasings of the same reassurance, measured on re-contact rate and reply sentiment; promote the winner. The experiment varies wording, never facts — every variant passes the same gate. Proof-only applies to the measurement too: n<20 stays unreported (ADR-0007).
+- **LEARN-7 — The weekly learning digest.** Per merchant: most-edited phrase, deflection delta, stage-correctness, floor-fallback count. Measured numbers only. This is a retention surface wearing a telemetry feature's clothes — it is the renewal email writing itself.
+
+Hygiene, non-negotiable: first-party telemetry only, per-tenant isolation (learned voice never crosses merchants), customer text never leaves the tenant, and nothing in the digest that `lib/deflection.ts`-grade measurement cannot back.
+
+### 9B. The reply decision layer — how we decide what to say and how to say it
+
+Today the reply strategy is implicit in one system prompt. Make it an explicit, logged, testable decision.
+
+- **DECIDE-1 — The strategy step.** Before drafting: classify intent × sentiment × wait-stage × contact history × risk → choose a named strategy: `reassure-with-band`, `point-to-status`, `acknowledge-overrun-no-guess`, `escalate-to-human`, `offer-gift`, `merge-duplicate`. Persist `replyStrategy` + reason on the ticket. The eval harness can then test the *choice* separately from the *wording* — today a wrong strategy in good prose is invisible.
+- **DECIDE-2 — The promises ledger (conversation memory).** Track every claim made to each customer. The second reply must never contradict or repeat the first — thirteen-of-fifteen-identical-sentences (§8, the failure mode) is a decision-layer bug, not a drafting bug. Cohort-aware phrasing variation so a shared comment wall never receives mail-merge evidence.
+- **DECIDE-3 — Register controls.** Per-merchant formality/warmth/brevity plus the preferred/banned phrase lists (extends ScriptVariants). `docs/VOICE-ENGINE-SPEC.md` is the north star for *what calm sounds like*; LEARN-1's corpus is the evidence for *what this merchant actually wants*. Build the decision layer first, feed it the voice spec, then refine both from real edit data — in that order, because the spec is theory until a real operator edits a real draft.
+
+### 9C. The agent surface — Tideover as MCP
+
+Full recon and design: `docs/recon-2026-07-16/MCP-AGENT-RECON.md`. The compressed version:
+
+The market moved: Gorgias, Intercom, Plain, Pylon, Zendesk, HubSpot and Shopify all ship MCP servers so a customer's own AI agent can use the product directly. Every one of them converges on the same shape — read tools free, write tools gated, draft-then-approve, **no vendor anywhere lets an external agent send customer-facing replies or move money autonomously.** That is our doctrine, independently rediscovered by the whole market. The difference: their guardrails are prompt instructions the agent carries; ours are the capability lint, the hard-date gate, and band masking, enforced **server-side on every draft regardless of who is asking.** An agent connected to the Tideover MCP physically cannot promise a ship date through our tools. That is the distilled value and the positioning line.
+
+- **MCP-1 — The endpoint.** `app/[transport]/route.ts` in the tideover app: `mcp-handler` + `@modelcontextprotocol/sdk@^1.26`, `statelessMode: true`, `withMcpAuth` verifying an Auth0 JWT against a **new, dedicated Auth0 resource server** whose identifier is the canonical MCP URI. Map `user_id`/`org_id` to the merchant account inside verifyToken and ride the existing ADR-0020 scoped repo seam. Never forward the client's token downstream. **Timing: the 2026-07-28 spec revision deletes protocol sessions and SDK v2 ships the same day — design now, build stateless, target that revision, never the current one.**
+- **MCP-2 — The tool surface (v1).** Read, ungated: `get_order_context` (the moat object: wait-day, derived stage, band, disclosedEta, history, risk + rankReason), `get_current_status` (status board), `get_status_link`, `get_queue`, `get_deflection_stats`. Write, gated: `draft_reply` (runs the full server gate, returns draft + strategy + why, never sends), `queue_for_approval` (lands in the existing approval queue, returns a pending id), `check_approval` (poll — the serverless-safe HITL pattern), `escalate_to_human`, `log_outcome`. **No `send_reply` in v1** — the MCP inherits the human-approval doctrine, it does not bypass it.
+- **MCP-3 — Access + packaging.** Permission inherits the connecting user's Tideover role plus an explicit per-user MCP-access toggle. Bundled in plan, no extra charge (the universal market pattern). Scopes `mcp:read` / `mcp:draft` / `mcp:queue`; plan-gating server-side in the tool handlers, never client-trusted. An `/agents` marketing page states the positioning: every helpdesk MCP lets your agent answer; ours is the only one where it can't be talked into promising a date.
+
+Strategic note: this quietly reopens the automation-first segment §5 walks away from. A merchant who runs their own support agent can point it at our MCP — their agent does the labor, our server enforces the truth, their human still approves. The doctrine stops being a handicap in that market and becomes the reason to buy. One correction for the record: getswan.com has **not** shipped an MCP (they are GTM automation, not retention); the wave is real, the named example was wrong.
+
+---
+
 **Pointers, in order of usefulness:**
 
 - `docs/sim-2026-07-12/` — the two simulation reads and `results.json`. Start here.

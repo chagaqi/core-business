@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TORCH PASS — Tideover (for Opus)</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">TORCH PASS — Tideover (for Opus)</span>
+    <a class="back" href="../tideover-hq.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>TORCH PASS — TIDEOVER</h1>
+<p><strong>To:</strong> the engineer-operator taking this over.<br>
+<strong>From:</strong> the sprint that ran 10 merchants and 136 tickets through the real product and then spent itself fixing what that exposed.<br>
+<strong>Date:</strong> 2026-07-12. <strong>Branch:</strong> <code>sprint/tideover-finalization</code>.</p>
+<p>Read this once, top to bottom. It is the only document you need to run this company. Everything else it points at.</p>
+<p>Three rules before you touch anything:</p>
+<ol>
+<li><strong>Proof-only.</strong> A number the product cannot measure must never be displayed as if it were measured. A customer is told a confidence band, never a date. This is not a style preference; it is the entire reason the product is allowed to exist.</li>
+<li><strong>Derive, never freeze.</strong> Anything that is a function of elapsed time must be computed at read time. The single worst bug in this product's history was one stamped value.</li>
+<li><strong>The gate is <code>cd tideover &amp;&amp; npm run verify &amp;&amp; npm test</code>.</strong> Green or it does not ship.</li>
+</ol>
+<hr>
+<h2>1. THE MISSION IN ONE PAGE</h2>
+<h3>What it is</h3>
+<p>Tideover is the workflow layer for the <strong>60 to 120 days between the charge and the shipping label</strong>.</p>
+<p>Every adjacent product's data model is blind to that window. A helpdesk's core object is a ticket. A tracking app's core object is a carrier scan. A pledge manager's core object is a survey. None of them can express "this customer is on day 73 of a 90-day wait, has written twice, and is about to charge back." That sentence is Tideover's core object.</p>
+<p>Inside the window, the product does four things:</p>
+<ul>
+<li><strong>Ranks</strong> the inbox by refund risk, not arrival time.</li>
+<li><strong>Drafts</strong> a reply in the merchant's own voice that states what is physically happening and refuses to invent a date.</li>
+<li><strong>Publishes</strong> a customer-facing status page with a confidence band instead of a promise.</li>
+<li><strong>Proves</strong> it worked, using only events it actually recorded.</li>
+</ul>
+<h3>Who it is for</h3>
+<p>The <strong>distressed mid-size campaign</strong>. A founder in fulfillment, doing 20+ hours a week of support, watching a comment wall turn on them. Crowdfunding creators (Kickstarter / BackerKit / Gamefound CSV) and Shopify preorder brands with long lead times.</p>
+<p>Not the pre-pain merchant comparing us to a $60 Gorgias plan. If a merchant's monthly update cadence is working and their inbox is calm, they are not our customer and we should say so.</p>
+<p>Market size is small and real: roughly 800 to 1,500 campaigns a year globally raise $100K+. This is a wedge, not a land grab. See <code>docs/recon-2026-07-10/MARKET-RECON.md</code>.</p>
+<h3>Why it wins</h3>
+<p>Not because any single piece is unique. Status pages exist ($9/mo, StatusPro). Hard-date-free drafting is a system-prompt rule anyone can copy. The win is the <strong>combination nobody offers</strong>, aimed at a window nobody's data model can see, sold to a buyer who is findable at a public moment of pain.</p>
+<p>And underneath the combination, one thing that is genuinely hard to copy: <strong>the discipline</strong>. A product that will say "I don't have that" is the only kind that survives two backers comparing screenshots in a Discord. Every competitor's incentive is to answer. Ours is to be right.</p>
+<h3>"The Swan of presale support" — what that means as a standard</h3>
+<p>getswan.com is the model, and it is a standard, not an aesthetic:</p>
+<ul>
+<li><strong>Surgical copy.</strong> What it is, who it is for, and the objection handled — in as few words as will carry it. Every sentence earns its place. No padding, no volume, no em-dash filler.</li>
+<li><strong>Crafted design.</strong> Made, not templated. The paper/tide system in this repo is original and load-bearing. Design is a truth claim: a product that looks assembled will be assumed to be assembled.</li>
+<li><strong>No invented proof.</strong> No borrowed logos, no fabricated testimonials, no metric we did not measure. <code>[CASE STUDY PLACEHOLDER]</code> stays a literal token until a real one exists.</li>
+</ul>
+<p>Swan grew extremely fast on those three. We copy the mechanics, never the copy.</p>
+<h3>The one sentence that must never be violated</h3>
+<blockquote><p><strong>Tideover never states a fact it cannot verify, never quotes a metric it did not measure, and never commits the merchant to an action the system cannot perform.</strong></p></blockquote>
+<p>That is ADR-0002 (<code>tideover/docs/adr/ADR-0002-repository-seam-and-proof-doctrine.md</code>), and it is enforced in code by <code>proof-lint</code>, the eval harness, <code>lib/proof.ts</code> (<code>assertNoHardDate</code>), <code>lib/drafting/llm-lint.ts</code>, and <code>lib/drafting/capabilities.ts</code>. If you find yourself arguing for an exception, you have found the thing that kills the company.</p>
+<hr>
+<h2>2. THE STATE OF THE UNION</h2>
+<h3>The stack</h3>
+<p>One Next.js 14 App Router app (<code>tideover/</code>), TypeScript strict, Tailwind. Marketing site + operator cockpit + API in one deployment on Vercel, backed by MongoDB Atlas. Architecture: <strong>ADR-0001</strong>. Disciplines: <strong>ADR-0002</strong>. Full decision log: <code>tideover/docs/adr/README.md</code> (21 ADRs, all current).</p>
+<h3>What is live</h3>
+<table>
+<thead>
+<tr><th>Surface</th><th>State</th></tr>
+</thead>
+<tbody>
+<tr><td><code>www.tideover.app</code></td><td>Marketing + public demo. Demo mode: seeded JSON, every surface watermarked SAMPLE DATA.</td></tr>
+<tr><td><code>app.tideover.app</code></td><td>The real cockpit. Login-gated, live Mongo.</td></tr>
+<tr><td><strong>Mode</strong></td><td>Derived from the request <strong>host</strong> (ADR-0017). <code>REAL_APP_HOST</code> runs real; everything else runs demo. <code>DEMO_MODE</code> overrides per-env.</td></tr>
+<tr><td><strong>Auth</strong></td><td><strong>Auth0</strong> per-user accounts + per-merchant tenancy (ADR-0020). Each user owns at most one merchant (<code>ownerSub</code>). Five env vars, all-or-nothing: a partial set returns an explicit 500, never a silent fallback to the old shared password, never an open gate.</td></tr>
+<tr><td><strong>Datastore</strong></td><td>Mongo Atlas (ADR-0003). Real mode <strong>refuses to boot</strong> without <code>MONGODB_URI</code> rather than fall back to the in-memory JSON store, because that fallback would be silent pilot data loss. Live DB (<code>tideover_live</code>) is strictly separate from the demo DB.</td></tr>
+<tr><td><strong>LLM</strong></td><td><strong>DeepSeek</strong> (ADR-0018), behind the QA gate. Unset key = deterministic drafting, never a crash.</td></tr>
+<tr><td><strong>Ingest</strong></td><td>Resend <strong>inbound</strong> email (ADR-0008): merchant forwards their support alias to <code>&lt;inboxToken&gt;@in.tideover.app</code>. Plus per-merchant helpdesk webhooks (ADR-0011 + <strong>ADR-0021</strong>).</td></tr>
+<tr><td><strong>Cron</strong></td><td>Vercel Cron, daily outcome sweep (ADR-0013). Fails closed in production.</td></tr>
+</tbody>
+</table>
+<h3>What is built and real (with pointers)</h3>
+<p>The engine room, all of it exercised by the eval harness:</p>
+<ul>
+<li><code>lib/engines/reassurance.ts</code> — <strong>UNTOUCHABLE.</strong> The reply engine.</li>
+<li><code>lib/engines/refund-risk.ts</code>, <code>lib/engines/gift.ts</code> — scoring and the goodwill gate.</li>
+<li><code>evals/</code> — <strong>57,614 invariant assertions over 3,760 combos, 0 violations</strong> + 55 golden fixtures (ADR-0006). The invariant sweep is property-based and authoritative. It is the thing that makes doctrine violations impossible to merge by accident.</li>
+<li><code>lib/repositories/</code> — the seam (ADR-0002/0003). Nothing reads a driver directly. JSON driver for demo/test, Mongo for production, identical shapes.</li>
+<li><code>lib/repositories/tenant-scope.ts</code>, <code>lib/tenant.ts</code>, <code>middleware.ts</code> — tenant isolation.</li>
+<li><code>lib/import.ts</code> + <code>lib/csv.ts</code> — CSV import (ADR-0010). 50k rows, chunked. Kickstarter / BackerKit / Gamefound / Shopify shapes.</li>
+<li><code>lib/ingest-route.ts</code> + <code>lib/ingest-auth.ts</code> + <code>lib/channel-adapters/ingest-vendors.ts</code> — per-vendor webhook auth (ADR-0021).</li>
+<li><code>lib/status.ts</code> + <code>app/status/[token]</code> — customer status pages, HMAC-signed tokens, append-only view ledger.</li>
+<li><code>lib/evidence.ts</code> — the chargeback evidence pack.</li>
+<li><code>lib/service.ts</code> — the application seam. Routes stay thin (a Next route imports <code>next/server</code>, which breaks the node test runner).</li>
+</ul>
+<p><strong>Gate status, verified by me on the current tree just now:</strong></p>
+<pre><code>tsc --noEmit          clean
+npm run lint          clean
+npm test              480 / 480 pass
+npm run seed-check    pass
+npm run proof-lint    pass
+npm run eval          57,614 invariant assertions, 0 violations
+                      55 / 55 goldens byte-identical</code></pre>
+<h3>What is simulated</h3>
+<p><strong><code>docs/sim-2026-07-12/</code>.</strong> Ten synthetic merchant personas (p01–p10), built from real Reddit / Kickstarter-comment / Shopify-Community voices, run through the <strong>real code</strong> for 30 simulated days each: real importer, real ingest, real engines, real DeepSeek drafter behind the real QA gate.</p>
+<p>48,180 orders. 136 tickets. 135 LLM drafts. 0 crashes.</p>
+<p><strong>Every number in those reports is SIMULATED.</strong> Not a customer result, not a testimonial, not a measured outcome. The economic tables are formulas with their assumptions labeled inline. Two independent analyses were run against the same 136 tickets (<code>TEN-CUSTOMER-SIMULATION.md</code> and <code>SIMULATION-SECOND-READ.md</code>); they disagree on some rates and converge on every structural finding. Read both. They are the most valuable documents in this repo.</p>
+<h3>What is fake-but-looks-real</h3>
+<p>This category is supposed to be empty. It is not. <strong>There is exactly one item, and it is serious.</strong></p>
+<blockquote><h3>"Send this gift" sends nothing.</h3>
+<p><code>components/product/GiftSuggestion.tsx</code> renders <strong>"Send this gift"</strong> → <strong>"Confirm"</strong> → <strong>"Gift logged — {name} sent."</strong></p>
+<p><code>lib/gift-send.ts:authorizeGiftSend</code> re-authorizes the tier server-side (correctly, and it refuses locked or cross-merchant gifts) and then <strong>writes a <code>gift-sent:*</code> tag</strong>. Nothing is fulfilled. There is no budget, no cap, no cost rollup, no delivery. In the simulation, 15 to 17 gifts were "sent" across ten merchants. Zero customers received anything.</p>
+<p>And it compounds: <code>lib/evidence.ts:379</code> puts <code>giftGestures</code> into the <strong>chargeback evidence pack</strong>. A rebuttal document submitted to a card network reports goodwill gestures the customer never received.</p>
+<p><strong>Fix it in your first hour.</strong> The cheap, correct fix is a rename: the button becomes "Log a goodwill gesture," the confirmation becomes "Logged. Send it yourself and it stays on the record," and the evidence pack labels the field as an internal log entry, not a delivered gesture. That is 30 minutes and it makes the product truthful. Delivering gifts properly is a later, larger decision (see §6).</p></blockquote>
+<p>Nothing else in the product claims an outcome it did not produce. The deterministic drafter's <code>ManualAdapter</code> is scrupulous about this and should be your model: it returns <code>externalId: null</code> and a real <code>sentAt</code>, because "the operator pasted this" is a real human action and no vendor stamped an id on it. It never fabricates one.</p>
+<hr>
+<h2>3. THE TRUTH ABOUT QUALITY</h2>
+<h3>The verdict from the 10-customer simulation</h3>
+<p>The drafting layer held. The layer underneath it did not.</p>
+<p><strong>What held:</strong></p>
+<ul>
+<li>135 of 136 drafts written by the model, in the merchant's voice, p50 2.6s / p90 3.6s.</li>
+<li><strong>136 of 136 carried a confidence band and the merchant's signoff. Zero hard dates shipped.</strong> The proof-only doctrine survived 136 live generations.</li>
+<li>18,400 rows imported in 37 chunks with zero skips.</li>
+<li>13 of 14 chargeback threats landed in the top 2 of the live queue.</li>
+<li>Security seams held: cross-merchant order attachment refused at ingest, gift authorization re-derived server-side, unmatched tickets refused to borrow a stranger's order.</li>
+</ul>
+<p><strong>What did not:</strong></p>
+<p><strong>Send-as-is rate: 24% on the strict read, 44% on the lenient read.</strong> Take the strict one. The two analyses used different bars; the pessimistic bar is the one your customers use.</p>
+<p><strong>The classes of failure:</strong></p>
+<ol>
+<li><strong>Wrong physical fact.</strong> 36% of sent replies stated the wrong production stage for the customer's own order, in the merchant's voice, over their signature. Root cause: the stage was stamped at CSV import and nothing advanced it. Every reply described where the order was on the day the merchant uploaded their file.</li>
+<li><strong>Invented actions.</strong> Five replies promised an address update against a domain model with no address field. One went to a customer moving a parcel away from her ex. The old QA gate was a date lexicon; it had no concept of a capability we do not have.</li>
+<li><strong>Incoherent bands across a cohort.</strong> Because the band derived from the frozen stage, a 61-day waiter was told "weeks 13-15" and a 96-day waiter "weeks 1-4." They are in the same Discord.</li>
+<li><strong>The overrun clamp.</strong> Past the last band, the code clamped to the latest stage, which is always Dispatch. ~4,758 of one merchant's 9,000 backers were told their CNC machine was "out of your regional warehouse." Not one had been built. One of them had already written "I am building a case."</li>
+<li><strong>The floor was a trapdoor.</strong> When the QA gate blocked a draft, the deterministic fallback shipped something worse: it fabricated "Your tracking is generating" (the product holds no tracking data at all), fired a refund-save script at a calm customer, and never answered the question.</li>
+<li><strong>Metrics that lie.</strong> The dashboard read "deflection 100%" (it was <code>resolved / tickets</code>, a reply-completion rate), "$0 at risk / 100% unknown," "0 at-risk customers," and "Not yet measured" on all four baseline metrics. On 10 of 10. The product could not show its own value to the person paying for it.</li>
+<li><strong>Silent connector death.</strong> Gorgias cannot compute the HMAC our ingest demanded. Help Scout signs with its own scheme. Zendesk had no path. Four of ten merchants, 17,450 orders, would have run a full month on a calm empty queue that looked exactly like a quiet week.</li>
+</ol>
+<p><strong>The most important sentence in the whole simulation:</strong> <em>the bad drafts do not read as bad.</em> They are fluent, calm, in-voice and confidently wrong, and the UI offers one-click approve on all of them. The operator approved 136 of 136.</p>
+<h3>What this sprint fixed</h3>
+<p>All of it is in the working tree right now: 46 files modified, ~20 new, 3,524 insertions, 480 tests green. Each new module carries a header comment naming the exact simulation finding it kills. Read those headers; they are the best documentation in the repo.</p>
+<table>
+<thead>
+<tr><th>Finding</th><th>Fix</th><th>Where</th></tr>
+</thead>
+<tbody>
+<tr><td>Frozen stage / half-open bands / overrun clamp</td><td><strong>Derive the stage from the wait at READ time.</strong> Inclusive band boundaries. A real overrun stage instead of clamping to Dispatch.</td><td><code>lib/repositories/live-stage.ts</code></td></tr>
+<tr><td>No merchant "current word" on production</td><td><strong>The production status board.</strong> The merchant's own current statement, scoped, and every reply reads it.</td><td><code>lib/status-board.ts</code>, <code>app/api/status-board/</code>, <code>app/app/status/</code>, <code>components/product/StatusBoardComposer.tsx</code></td></tr>
+<tr><td>The model invented <strong>actions</strong></td><td><strong>The capability registry.</strong> A list of what Tideover cannot do and the language that would commit the merchant to it anyway. The gate now blocks the promise, not just the date.</td><td><code>lib/drafting/capabilities.ts</code> (489 lines, read the header)</td></tr>
+<tr><td>The floor was worse than the block</td><td><strong>The safe floor.</strong> Claims nothing. Names the gap. Offers a human.</td><td><code>lib/drafting/safe-floor.ts</code></td></tr>
+<tr><td>Banned phrases were prompt-only</td><td>Enforced <strong>post-generation</strong>, with word boundaries.</td><td><code>lib/drafting/llm-lint.ts</code></td></tr>
+<tr><td>Gorgias/Help Scout/Zendesk cannot connect</td><td><strong>Per-vendor ingest auth.</strong> Bearer for Gorgias and Zendesk, HMAC-SHA1 for Help Scout, HMAC-SHA256 generic. Every credential derived from <code>(WEBHOOK_ROOT_SECRET, inboxToken)</code>, so no new stored field and rotating the token rotates everything. Still fails closed.</td><td><code>lib/ingest-auth.ts</code>, <code>lib/channel-adapters/ingest-vendors.ts</code>, <strong>ADR-0021</strong></td></tr>
+<tr><td>A broken connector looked like a quiet week</td><td><strong>Silence is the alarm.</strong> The old check returned <code>quiet: false</code> when nothing had ever arrived. Polarity inverted, counters added, reasons surfaced on <code>/app/setup</code>.</td><td><code>lib/ingest-health.ts</code>, <code>lib/setup-status.ts</code></td></tr>
+<tr><td>"Deflection 100%"</td><td><strong>Measured, or not claimed.</strong> A status-page view with no ticket from that order inside the window. Both halves are recorded facts.</td><td><code>lib/deflection.ts</code></td></tr>
+<tr><td>Queue degenerated in a crisis</td><td><strong>Rank relative to the merchant's own live distribution</strong>, not an absolute bar.</td><td><code>lib/queue-rank.ts</code></td></tr>
+<tr><td><code>disclosedEta</code> empty on 48,180/48,180 orders</td><td>Captured at import, counted when absent.</td><td><code>lib/import.ts</code>, <code>lib/csv.ts</code></td></tr>
+<tr><td>Region hardcoded "US"; no campaign/wave</td><td>Written from the file. <code>regionlessRows</code> counted so the merchant knows what they cannot scope.</td><td><code>lib/import.ts</code></td></tr>
+<tr><td>Baseline unwritable; no ScriptVariants seeded</td><td>Both given a write path at onboarding. This resurrects the outcome ledger, Script Performance, CSAT attribution and the forecast.</td><td><code>lib/onboarding.ts</code>, <code>lib/baseline.ts</code>, <code>lib/forecast.ts</code></td></tr>
+<tr><td>Gift "warrant" gate permanently open</td><td>Deep-wait threshold now relative to the merchant's own window.</td><td><code>lib/engines/gift.ts</code></td></tr>
+</tbody>
+</table>
+<p>New test files, each pinning a class of failure so it cannot return: <code>stage-derivation</code>, <code>drafting-safety</code>, <code>ingest-vendor-auth</code>, <code>deflection</code>, <code>dashboard-truth</code>, <code>metric-truth</code>, <code>queue-rank</code>, <code>status-board</code>.</p>
+<h3>What is STILL broken</h3>
+<p>Do not launder this list. It is the real one.</p>
+<ol>
+<li><strong>Nothing sends.</strong> Every <code>ChannelAdapter.sendReply</code> throws <code>NotImplementedError</code> except <code>ManualAdapter</code>, which records the human paste. <code>package.json</code> has no outbound email dependency. Resend is wired for <strong>inbound only</strong>. Approve = copy to clipboard. <strong>This is the #1 gap in the product.</strong></li>
+<li><strong>The status board reaches nobody.</strong> It writes a row and renders a page. There is no broadcast, no cohort email, no push of the status link at import. The status link still only rides on a reply footer, which means <strong>you have to complain to be handed the link to the page that would have prevented your complaint.</strong> Deflection is now <em>measurable</em> and will read approximately zero, because almost nobody ever gets a link.</li>
+<li><strong>"Send this gift" sends nothing.</strong> See §2. Rename it today.</li>
+<li><strong>No helpdesk write-back.</strong> Tickets can now get <em>in</em> from Gorgias, Zendesk and Help Scout. The reply still leaves via the operator's clipboard. Help Scout's <code>draft: true</code> is the fix and it is queued (INT1).</li>
+<li><strong>No address field.</strong> The capability gate now correctly refuses to promise an address change. The pain is still unserved. 10 of 10 personas hit it.</li>
+<li><strong>The public comment wall is invisible.</strong> Eight pile-on events in the simulation (300+ comments in 12 hours; 400 forum posts in 24 hours). The loudest hour in every persona, and the product cannot see it.</li>
+<li><strong><code>editedRatio</code> has never been observed.</strong> Zero times. The simulation harness structurally could not emit "approve-edited." It is the load-bearing input to the entire value model and the whole 10x spread between the floor and ceiling economics. <strong>It is fixable in one afternoon with five real merchants.</strong></li>
+<li><strong>The 55 goldens are a regression tripwire, not verified-correct.</strong> The eval prints it every run: <code>55/55 goldens still pending human review (D9)</code>. They freeze current behavior; they do not bless it. Dylan owes a 30-minute review.</li>
+<li><strong>Seats are sold; ticket assignment does not exist.</strong> Three agents open the queue and draft the same reply.</li>
+<li><strong>Pricing is on the wrong axis.</strong> The ladder prices on order count. Value scales with tickets-in-window × refund risk. One persona has no tier at all (18,400 orders).</li>
+</ol>
+<hr>
+<h2>4. THE OPERATING CHARTER</h2>
+<h3>The gate</h3>
+<pre><code>cd tideover &amp;&amp; npm run verify &amp;&amp; npm test</code></pre>
+<p><code>verify</code> = seed-check → proof-lint → <strong>eval</strong> → lint → build. This is exactly what CI runs (Node 22). Green or it does not ship. <code>CONTRIBUTING.md</code> is the entry point.</p>
+<blockquote><p><strong>Local caveat:</strong> a dev server owns <code>:3000</code> and <code>.next</code> on this machine. Do not run <code>npm run dev</code> or <code>npm run build</code>. Run the other four stages individually plus <code>npx tsc --noEmit</code>; let CI run the build.</p></blockquote>
+<h3>The golden / invariant contract</h3>
+<ul>
+<li>The <strong>invariant sweep is authoritative.</strong> It is property-based: 57,614 assertions over 3,760 combos of seed shape × wait-day × stage × sentiment × velocity. A real fix keeps it green. <strong>If it goes red, you broke a doctrine invariant. Stop. Do not regenerate anything. Report.</strong></li>
+<li>The <strong>55 goldens are a tripwire.</strong> If you legitimately change engine output, run <code>npm run gen-goldens</code>, then read the diff line by line and report a summary of the drift. A golden diff you cannot explain is a bug you have not found yet.</li>
+<li><code>lib/engines/reassurance.ts</code> and <code>evals/</code> are <strong>untouchable</strong> without an explicit decision.</li>
+</ul>
+<h3>Hot files (serialized — one in-flight change at a time)</h3>
+<pre><code>app/app/inbox/page.tsx
+app/app/page.tsx
+components/product/DraftRail.tsx
+components/product/ApprovalBar.tsx
+lib/engines/reassurance.ts</code></pre>
+<p>Two agents in these files at once will silently clobber each other. Own them or do not touch them.</p>
+<h3>ADR discipline</h3>
+<p>An ADR <strong>first</strong> for: a new dependency, an engine change, an integration, a pricing decision, or a data-exposure decision. <code>tideover/docs/adr/TEMPLATE.md</code>. Twenty-one exist; they are short, current, and they are the reason this codebase can be handed to a stranger.</p>
+<h3>Tenant isolation</h3>
+<ul>
+<li>Everything goes through <code>lib/repositories</code>. Nothing reads a driver directly.</li>
+<li>Every query is merchant-scoped (<code>lib/repositories/tenant-scope.ts</code>). A cross-merchant read is a security bug, not a logic bug.</li>
+<li>Auth0 <code>ownerSub</code> → one merchant. Operator surfaces only ever see the signed-in user's merchant.</li>
+<li>Ingest re-derives merchant identity from the URL token, never from a request parameter. Gift sends re-authorize server-side. A trusting client is never taken at its word.</li>
+<li><code>lib/__tests__/tenant-isolation.test.ts</code> is load-bearing. If you touch the seam, it must stay green.</li>
+</ul>
+<h3>What must never be improvised</h3>
+<p><strong>Auth. Billing. Migrations. Customer-facing promises.</strong></p>
+<p>In those four, ambiguity stops and surfaces to Dylan. No agent improvises. The reasons are specific:</p>
+<ul>
+<li><strong>Auth</strong> fails open the moment someone gets clever. The Auth0 five-var rule is deliberately all-or-nothing.</li>
+<li><strong>Billing</strong> is not built. Do not build it on a guess about the tier ladder.</li>
+<li><strong>Migrations</strong> touch a live pilot store with no undo. <code>npm run backup</code> first (<code>docs/ops-backup.md</code>).</li>
+<li><strong>Customer-facing promises</strong> are the whole product. A sentence that commits the merchant to something the system cannot do is a lawsuit-shaped risk, not a churn-shaped one.</li>
+</ul>
+<h3>Copy rules</h3>
+<ul>
+<li>Never the word "honest" in user-facing text. (The model once used it <em>and then narrated the rule about not using it</em>, in a reply to a journalist with a 90,000-subscriber audience.)</li>
+<li>No em-dash padding, no volume, no slop. <code>gtm-assets/copy-standard.md</code>.</li>
+<li>Never claim nobody else offers status pages. StatusPro sells them at $9/mo.</li>
+<li>Never quote deflection, first-response time, refunds prevented, disputes won, or CSAT until measured. The simulation produced no defensible number for any of them.</li>
+</ul>
+<hr>
+<h2>5. THE ROADMAP THAT WINS</h2>
+<p>Sequenced. The order is the argument.</p>
+<h3>Step 0 — This week. Land the sprint.</h3>
+<p>Merge the working tree, deploy, smoke. <strong>Rename the gift button before you deploy anything else</strong> (§2). Get the D9 golden review off Dylan's desk (30 minutes; the eval nags on every run until it is done).</p>
+<h3>Step 1 — The send seam and the status-link push. <em>This is the win.</em></h3>
+<p>Every hour of value in every economic model in this repo comes from <strong>reducing the cost of a ticket</strong>. Not one comes from <strong>reducing the number of tickets</strong>. The status page is the only mechanism in the product that can do the second thing, and today it reaches 0.3% of backers, exclusively the ones who already complained.</p>
+<p>Build:</p>
+<ul>
+<li><strong>One <code>Deliverer</code> seam</strong> behind the existing <code>ChannelAdapter</code> contract. <code>EmailDeliverer</code> (Resend, already a subprocessor, already wired inbound) and <code>NoopDeliverer</code> (today's manual paste).</li>
+<li><strong>Push the status link at import</strong>, not as a reply footer.</li>
+<li><strong>On a status-board post, enqueue a cohort send</strong>: the merchant's update plus each backer's own status link.</li>
+<li><strong>Never fabricate a delivery receipt.</strong> A manual paste stays "Copied," never "Delivered." The existing UX copy is already scrupulous here. Keep it exactly.</li>
+<li>Ship unsubscribe/preferences with it. CAN-SPAM and GDPR arrive with the first email.</li>
+</ul>
+<p>When this lands, four things turn on at once: the status page becomes a deflection surface, the announcement stops being a database row, the WISMO forecast has a cohort to forecast against, and <strong>deflection becomes a number we measured instead of a number we asserted.</strong> That last one is the renewal argument.</p>
+<h3>Step 2 — Help Scout. The one integration that matters.</h3>
+<p><code>draft: true</code> on a reply thread is <strong>the only native draft-back in the market</strong> (verified at the primary source). Approve in Tideover, the draft lands in the merchant's own composer, they hit send. It deletes the worst objection in the demo ("how do replies actually reach my backers?") with zero UX compromise and <strong>without Tideover owning deliverability</strong>.</p>
+<p>And it serves both segments with one adapter: Help Scout ships a documented Kickstarter email relay, so a creator with no helpdesk gets onboarded onto Help Scout Free/$25, their KS messages and BackerKit forwards arrive as tickets, and the approved reply relays back inside Kickstarter.</p>
+<p>It is on the board as <strong>INT1</strong>. Size it at 2 to 4 weeks solo, not the 1 to 2 the research lanes guessed.</p>
+<p>Zendesk is a fast clone of the same seam. Build it when two prospects are on it, not before.</p>
+<h3>Step 3 — Five free merchants, instrumented.</h3>
+<p><strong>One goal: log <code>editedRatio</code>.</strong> It is the input the entire value model swings on and we have zero observations of it. Also log deflection (now that it is real) and stage-correctness.</p>
+<p>Do not take paid money before this. The economics are formulas until a real operator edits a real draft.</p>
+<h3>Step 4 — Then take money.</h3>
+<h3>What NOT to build, and why</h3>
+<ul>
+<li><strong>Own email send/receive infrastructure. NEVER.</strong> SPF/DKIM/DMARC, bounces, threading, spam liability. It is a mini-helpdesk build competing with $10 to $60/mo products, at 10 to 30x the cost. Ride the helpdesk relays. Use Resend as a vendor, never as infrastructure.</li>
+<li><strong>Social / comment monitoring. NO.</strong> Kickstarter comments are not capturable as tickets. Social DMs are shrinking. The status page is the comment-storm answer. Name it as a known gap and do not let it grow the bet.</li>
+<li><strong>Automation-first. Auto-send. Auto-refund. NO.</strong> Human approval is the product's legal and trust design (Moffatt v. Air Canada, 2024: the merchant eats the liability for what the bot invents). Full automation is every competitor's game and it is the game where our doctrine is a handicap instead of a moat.</li>
+<li><strong>Intercom / Front / Richpanel.</strong> ICP mismatch, Fin overlap, pricing drift.</li>
+<li><strong>Post-delivery returns and exchanges.</strong> Different job. Loop and the helpdesks own it.</li>
+<li><strong>Competing as a status-page app.</strong> StatusPro sells that at $9/mo. We sell the bundle.</li>
+<li><strong>Shopify App Store, yet.</strong> Zero organic installs before you have reviews. After 3 to 5 reviewable customers.</li>
+</ul>
+<h3>The first-10-customers plan</h3>
+<p><strong>Symptom-led outbound to campaigns already in trouble.</strong> Not category search; nobody searches "presale support." Search the pain: late Kickstarter campaigns with a turning comment wall, preorder brands with a "where is my order" thread, Head-Fi and BoardGameGeek and Discord going quiet.</p>
+<p>Qualify on: orders in the wait window, AOV, <strong>visible distress</strong>. If their update cadence is working, walk away.</p>
+<p>Lead the demo with <strong>triage + the status page</strong>. Do not lead with send until step 1 lands. That is the most exposed moment in the demo and you must script it.</p>
+<p>Sell <strong>retention through the wait</strong> (prevented refunds, prevented chargebacks, founder hours), never per-ticket cost savings. We lose the per-ticket spreadsheet against a $300/mo part-time VA, and we should concede that point instead of arguing it.</p>
+<p>The founder story is the only credibility we have and it is real: <code>docs/founder-story.md</code>. A $2M gym-equipment company through COVID, $200K in week one, 60+ day waits for two years. He built what he needed. Sign it "— Dylan."</p>
+<h3>How to know it is working — the metrics that are real</h3>
+<table>
+<thead>
+<tr><th>Real. Track these.</th><th>Why</th></tr>
+</thead>
+<tbody>
+<tr><td><strong><code>editedRatio</code> / send-as-is rate</strong></td><td>The only measure of whether the drafts are good. Currently unobserved.</td></tr>
+<tr><td><strong>Deflection</strong> (<code>lib/deflection.ts</code>)</td><td>A status view with no ticket from that order in the window. Both halves are recorded facts.</td></tr>
+<tr><td><strong>Stage correctness</strong></td><td>Derived from the wait, so the band is now monotonic in the wait. Two backers comparing screenshots must find a coherent story.</td></tr>
+<tr><td><strong>Ingest health</strong></td><td>Has a real inbound ever landed? Silence is an alarm.</td></tr>
+<tr><td><strong>Chargeback outcomes with <code>disclosedEta</code> present</strong></td><td>The evidence pack's strongest exhibit only exists if the ETA was captured.</td></tr>
+<tr><td><strong>Time to <em>customer</strong></em></td><td>Not time to clipboard.</td></tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr><th>Flatters. Do not ship these.</th><th>Why</th></tr>
+</thead>
+<tbody>
+<tr><td>Deflection as <code>resolved / tickets</code></td><td>A reply-completion rate. Killed this sprint. Never bring it back.</td></tr>
+<tr><td>"Saves"</td><td>An activity count wearing an outcome's name.</td></tr>
+<tr><td>Gifts sent</td><td>Nothing is sent.</td></tr>
+<tr><td>SLA met</td><td>Never fired once in 136 tickets.</td></tr>
+<tr><td><code>firstResponseSec</code></td><td>Time to clipboard.</td></tr>
+<tr><td><code>wismoPer100Orders</code></td><td>Rounds to 0 for every merchant above ~3,000 orders.</td></tr>
+<tr><td>CSAT with n &lt; 20</td><td>Small-N humility is in ADR-0007 for a reason.</td></tr>
+</tbody>
+</table>
+<hr>
+<h2>6. THE OPEN DECISIONS ONLY DYLAN CAN MAKE</h2>
+<p>Each one: my recommendation, and the cost of being wrong.</p>
+<h3>D1 — Ship or hold. Do we put a paying merchant on this now?</h3>
+<p><strong>Recommend: hold on paid. Pilot free with five merchants immediately, instrumented to log <code>editedRatio</code>.</strong> Take money once the send seam and Help Scout land.</p>
+<p><strong>Cost of being wrong:</strong> holding costs weeks and revenue inside a 90-day window. But shipping now costs the five merchants who would have been the references, and their backers assemble the evidence in public, in a comment thread, using screenshots of replies we wrote. One of those is recoverable.</p>
+<h3>D2 — Price. Hold $749, or collapse to one tier?</h3>
+<p><strong>Recommend: one tier, $299, until the send seam and the proof layer ship.</strong> At $749, on the pre-sprint build, exactly two of ten personas could both connect <em>and</em> clear the price. Add a tier above 15,000 orders (one line of config; the 18,400-backer campaign is a signature logo with no price). Decouple seats from order caps. <strong>Hold the flat fee</strong> — one persona named usage-based support pricing as the reason he rejected the entire category, because the bill spikes in the exact week a delay blows the inbox up. Flat pricing is not a concession. It is the pitch.</p>
+<p><strong>Cost of being wrong:</strong> anchoring low and re-pricing a live base is painful. Holding $749 and closing nobody, while burning the four best-economics logos on a broken install, is worse and is not fixable.</p>
+<h3>D3 — ICP for the next 30 days.</h3>
+<p><strong>Recommend: crowdfunding CSV first, helpdesk merchants second — but the gap has narrowed.</strong> Before this sprint, four of ten personas physically could not connect. ADR-0021 fixed that. The remaining asymmetry is write-back: a helpdesk merchant still leaves via the clipboard. So take helpdesk merchants, but only with the clipboard demoed as the flow, not hidden.</p>
+<p><strong>Cost of being wrong:</strong> the helpdesk personas are the higher ARPU and the real chargeback exposure. Deferring them defers the best revenue. Taking them and hiding the clipboard is the worst first impression there is.</p>
+<h3>D4 — Outbound delivery. Do we become a comms layer?</h3>
+<p><strong>Recommend: yes. Build it. It is the quarter's one large bet.</strong> Every persona's playbook ends in "push the link to the cohort," and that half does not exist. Without it we are a faster way to type, and typing is not what they are afraid of.</p>
+<p><strong>Cost of being wrong:</strong> it drags in CAN-SPAM, GDPR, unsubscribe, and deliverability. If you skip it, the merchant keeps posting on Kickstarter by hand, which is what they did before they paid us, and the renewal question answers itself.</p>
+<h3>D5 — The gift feature. Rename, deliver, or cut?</h3>
+<p><strong>Recommend: rename today ("Log a goodwill gesture"), decide later.</strong> The engine behind it is genuinely good — a working risk/wait gate that refuses to hand an expensive gift to a calm day-30 customer. The delivery is a fiction. Fulfilling gifts means a budget, a cap, a cost rollup, and a fulfillment partner.</p>
+<p><strong>Cost of being wrong:</strong> leaving it as-is puts phantom gestures inside a chargeback rebuttal submitted to a card network. That is not a churn risk.</p>
+<h3>D6 — The 55 goldens (board item D9).</h3>
+<p><strong>Recommend: 30 minutes, this week.</strong> They are a regression tripwire that has never been blessed. Until they are, every engine change is guarded by a fence nobody has inspected.</p>
+<p><strong>Cost of being wrong:</strong> you freeze a wrong behavior into the contract and then defend it.</p>
+<h3>D7 — The address-change capability.</h3>
+<p><strong>Recommend: guardrail now (shipped this sprint — the gate refuses to promise), feature later.</strong> The real fix is an address field plus a packing-list export. Do not build it before the delivery seam.</p>
+<p><strong>Cost of being wrong:</strong> 10 of 10 personas hit this. It is the biggest concrete unserved pain and a competitor could take the segment with it.</p>
+<h3>D8 — Campaign-shaped LTV. Do we package a fulfillment-window pass?</h3>
+<p><strong>Recommend: yes, and treat it as survival arithmetic, not packaging.</strong> A 3-to-4-month customer at ~$1,000–1,750 LTV means $20K/mo requires 40 to 65 concurrent payers, continuously replenished. The Shopify preorder segment (recurring waits) is the structural answer; the window pass is the near-term one. This ICP already pays BackerKit a percent of raise per campaign, so the shape is familiar to them.</p>
+<p><strong>Cost of being wrong:</strong> you build a perfect product and the business dies of arithmetic.</p>
+<hr>
+<h2>7. THE TRAPS</h2>
+<p>Everything a new operator gets wrong here.</p>
+<p><strong>1. The frozen-stage class of bug.</strong> Any value that is really a function of elapsed time, but gets stamped once and stored, will rot silently and then lie to a customer in the merchant's voice. <code>productionStage</code> did exactly this and it cost 36% of the replies. <code>lib/repositories/live-stage.ts</code> is now the pattern: derive at the read seam. <strong>Before you persist anything, ask whether it is a fact or a function of <code>now</code>.</strong></p>
+<p><strong>2. Off-by-one on band boundaries.</strong> The merchant authors bands inclusively (0-20, 21-62). The old code read them half-open. A wait landing exactly on a boundary matched nothing and fell through to <code>stages[0]</code>, so 28 backers who had waited 52 to 82 days were told the paper for their book was still being sourced. Inclusive in, inclusive out.</p>
+<p><strong>3. The overrun case.</strong> Our ICP is merchants who blew their window, so <strong>the modal customer is past the last band.</strong> Any code that clamps past-the-end to "the latest stage" will tell the modal customer their order shipped. Overrun needs its own stage, always.</p>
+<p><strong>4. Metrics that lie.</strong> <code>resolved / tickets</code> is not deflection. A reply is not a save. A logged gift is not a sent gift. Time-to-clipboard is not first response. A rate over n=3 is not a rate. <strong>In a proof-only product, one mislabeled number destroys trust in every true number beside it.</strong></p>
+<p><strong>5. Connectors that fail silently.</strong> A 401ing webhook produces a calm, empty queue that is indistinguishable from a quiet week. Four merchants ran a simulated month that way. The rule now: <strong>once a merchant says they have a helpdesk, silence is the alarm.</strong> Never let a health check return "fine" because nothing has ever arrived. Never green-check "connected" on the presence of a config value the merchant set before a single ticket existed.</p>
+<p><strong>6. Models that promise things.</strong> The gate was a date lexicon. It caught 0 hard dates in 136 drafts (a real achievement) and let through "We'll send a confirmation when your address is updated in our system." <strong>Inventing an ACTION is worse than inventing a FACT</strong>, because the merchant's signature is on it and it becomes the customer's exhibit. <code>lib/drafting/capabilities.ts</code> is the registry of what we cannot do. Add to it every time you decline to build something.</p>
+<p><strong>7. Fluency reads as correctness.</strong> The bad drafts are calm, in-voice, and confidently wrong, and the operator waved through 136 of 136. Any UI you build must make the <em>uncertain</em> draft look uncertain. A blank draft is safe; a plausible one is not.</p>
+<p><strong>8. Goldens that drift.</strong> <code>npm run gen-goldens</code> regenerates them and it is easy to run reflexively when a test goes red. <strong>The invariant sweep is the authority.</strong> If the sweep is green and a golden moved, read the diff and explain it. If the sweep is red, you broke doctrine. Never regenerate to make red go green.</p>
+<p><strong>9. The worktree-cuts-from-main gotcha.</strong> Agent worktrees in this repo base on <strong><code>main</code></strong>, not on <code>sprint/tideover-finalization</code>. An agent will silently build on months-old code and hand you a diff that looks fine and reverts the sprint. <strong>Verify the base, or do not use worktrees for branch work.</strong></p>
+<p><strong>10. The Auth0 / env split.</strong> Five Auth0 vars, all-or-nothing: any subset flips the deployment into Auth0 mode, and a partial set returns an explicit 500 rather than falling back to the shared password. That is deliberate and correct — a silent fallback is an open gate. Also: <code>DEMO_MODE</code> and <code>NEXT_PUBLIC_DEMO_MODE</code> must <strong>match</strong> on every deploy, or the marketing mega-menu deep-links into <code>/app/*</code> and dead-ends at <code>/login</code>. Real mode refuses to boot without <code>MONGODB_URI</code>. A missing <code>WEBHOOK_ROOT_SECRET</code> outside demo rejects every ticket (now loudly, on <code>/app/setup</code>). Read <code>tideover/.env.example</code> end to end before any deploy; it is unusually good and it explains what breaks for every variable.</p>
+<p><strong>11. Do not run <code>npm run dev</code> or <code>npm run build</code> on this machine.</strong> A dev server owns <code>:3000</code> and <code>.next</code>.</p>
+<p><strong>12. Do not open <code>.env.local</code>. Ever.</strong></p>
+<p><strong>13. Hot files.</strong> Five of them (§4). One in-flight change each.</p>
+<p><strong>14. <code>ingestTicket</code> cannot take a <code>now</code>.</strong> There is no backfill, no replay, no deterministic test of the product's core arithmetic. The simulation harness had to monkeypatch <code>Date</code>. Thread a clock through it early; every hour you delay makes the next test harder to write.</p>
+<hr>
+<h2>8. WHAT WOULD MAKE THIS COMPANY WIN</h2>
+<p>This is the section that matters. Everything above is inventory.</p>
+<h3>The highest-leverage work</h3>
+<p><strong>Ship the send seam and push the status link to every backer at import.</strong></p>
+<p>Here is the argument, and it is arithmetic, not taste. Read every economic model in this repo — the ten-persona tables, the hours-saved formulas, the ROI sentences. <strong>Every single hour of value comes from reducing the cost of a ticket. Not one comes from reducing the number of tickets.</strong></p>
+<p>A product that reduces cost-per-ticket is a faster typewriter. It gets compared to a $300/mo VA and it loses, because the VA does not require the founder to review 40 drafts. A product that reduces the <em>number</em> of tickets is a different category and cannot be compared to a VA at all.</p>
+<p>The only mechanism in Tideover that can reduce tickets is the status page. It currently reaches 0.3% of backers, and only the ones who already complained. Fixing that turns four things on simultaneously: the status page becomes a deflection surface, the announcement stops being a database insert, the forecast gets a cohort, and deflection becomes <strong>measured</strong>, which is the only sentence that can survive a renewal conversation in a proof-only product.</p>
+<p>Do this before Help Scout. Do this before pricing. Do this before anything.</p>
+<h3>The moat</h3>
+<p>It is not the drafting. Hard-date-free replies are a system-prompt rule; anyone can copy the behavior in an afternoon. Say that out loud in every pitch, because a moat you oversell is a moat a prospect disproves in front of you.</p>
+<p>The moat is three things that compound:</p>
+<p><strong>1. The wait-window data model.</strong> An order's stage as a <em>derived function of elapsed time against merchant-authored production bands</em>. No competitor's core object can express "day 73 of 90, in tooling, band moved twice, this customer has written three times." A helpdesk would have to rebuild its ticket model. A tracking app would have to invent events that do not exist. This is the thing that is expensive to copy, and it is now correct (<code>lib/repositories/live-stage.ts</code>).</p>
+<p><strong>2. Reply quality under a refusal discipline.</strong> The willingness to say "I do not have that." Competitors are all incentivized to answer, because deflection rate is their unit of value. Ours is not. That asymmetry is structural, and it is the only thing that survives the moment two backers paste our replies side by side in a Discord.</p>
+<p><strong>3. The evidence pack.</strong> It converts calm into dollars at the card network — "we told you weeks 9-11 on the day you paid, here are the four times we updated you, here is when you opened the status page." It is the one artifact a merchant can hold up and value in cash. <strong>It only works if <code>disclosedEta</code> is populated</strong>, which this sprint just fixed, and it must stop reporting gifts nobody received.</p>
+<p>Reply quality gets you in. The data model makes you hard to leave. The evidence pack makes you cheap at any price.</p>
+<h3>The failure mode most likely to kill it</h3>
+<p><strong>A plausible, fluent, confidently wrong reply, sent at cohort scale, into a community that shares one comment thread.</strong></p>
+<p>This is not a hypothetical. It is the thing that actually happened across ten simulated merchants. A 61-day waiter is told "weeks 13-15." A 96-day waiter is told "weeks 1-4." They are in the same Discord. Thirteen of fifteen replies from one merchant contain the identical sentence, sent to an 18,400-person cohort with a shared comment wall. Fifty-three percent of a hardware merchant's file is told a machine that does not exist has left the warehouse, and one of those customers has already written "I am building a case."</p>
+<p>The moment two customers compare screenshots, our core promise — <em>this reads like a person who is actually there</em> — becomes public evidence that the creator is lying. That is not churn. That is an execution, performed in the exact small, loud community we sell into, and it travels further than anything good we do.</p>
+<p><strong>This is why the derive-don't-freeze fix was the right first move, and why the capability gate matters more than draft coverage.</strong> Take the lower coverage. A blank draft is safe. A confident one is not. <strong>Never trade truth for coverage. It is the only trade in this business that cannot be undone.</strong></p>
+<p>The second-most-likely killer is quieter and you should watch it: <strong>campaign-shaped demand.</strong> Three-to-four-month customers mean $20K/mo needs 40 to 65 concurrent payers, replenished forever. A perfect product can still die of that arithmetic. The Shopify preorder segment and the window pass are the answers; do not let them stay "nice to have."</p>
+<h3>The one thing to hold onto</h3>
+<p>Tideover is not a support tool. It is the thing that lets a founder who is late, and frightened, and looking at 400 angry posts, <strong>behave the way they would if they had time.</strong></p>
+<p>Every decision should be read against that. The product's job is to make the merchant look like the person they actually are: someone who is in the workshop, who knows what is happening, who will not lie to you about when it ships.</p>
+<p>The day it makes them look like someone running a mail-merge, we are finished. Everything in §7 is a way that day arrives.</p>
+<p>Build the thing that never lies. It is the only defensible position in a market where everyone else's incentive is to answer fast.</p>
+<hr>
+<h2>9. ADDENDUM 2026-07-16 — THE LEARNING LOOP, THE DECISION LAYER, AND THE AGENT SURFACE</h2>
+<p>Dylan's directive: everything in this document gets built before go-live, so no re-ranking. These are <strong>additions</strong> to the list, from his 2026-07-16 session. Three blocks: the product must collect the data that improves it, the reply must become an explicit decision instead of a prompt side-effect, and the value must be consumable by an agent, not only a person.</p>
+<h3>9A. The learning loop — the product that improves itself</h3>
+<p>The principle: we do not know yet what merchants want, and we never will by asking. The product must be built so that <strong>using it produces the evidence that improves it.</strong> Every item here is a data-collection surface first and a feature second.</p>
+<ul>
+<li><strong>LEARN-1 — Edit-distance capture.</strong> On every approve, persist the draft-as-generated against the text-as-approved. The diff is the merchant rewriting the product to what they wanted, harvested automatically. Store it on the outcome ledger event; aggregate per merchant: most-deleted phrases, most-added phrases, <code>editedRatio</code> distribution. This upgrades Step 3's "log <code>editedRatio</code>" from a number to a corpus, and it is the single highest-leverage learning surface in the product.</li>
+<li><strong>LEARN-2 — Rejection telemetry.</strong> <code>llm_lint_reject</code> currently dies in a console.warn. Persist every lint block (with its reason code), every operator discard, every deterministic-floor fallback, per merchant. A merchant whose drafts keep falling to the floor is a merchant about to churn silently — today we cannot see it.</li>
+<li><strong>LEARN-3 — The learned voice memo.</strong> Distill each merchant's accumulated edits into a short, versioned style memo appended to the drafting prompt. <strong>The merchant approves each revision</strong> — self-improvement rides the same human-approval doctrine as everything else; the prompt never mutates silently. This is also moat: a competitor can copy the behavior, not six months of one merchant's corrections. Per-tenant, never pooled.</li>
+<li><strong>LEARN-4 — Outcome-fed ranking.</strong> Refund/chargeback/save outcomes recalibrate the risk weights per merchant, bounded and explainable — <code>rankReason</code> must still answer "why is this on top?" in plain words after the weights move.</li>
+<li><strong>LEARN-5 — Status-page content gaps.</strong> The deflection failure set — tickets that arrive <em>after</em> a status view — is a list of questions the status page failed to answer. Cluster them; suggest the missing status-board field or FAQ entry to the merchant. The status page gets better because it failed, measurably.</li>
+<li><strong>LEARN-6 — Phrase-level measurement inside the rails.</strong> Two lint-cleared phrasings of the same reassurance, measured on re-contact rate and reply sentiment; promote the winner. The experiment varies wording, never facts — every variant passes the same gate. Proof-only applies to the measurement too: n&lt;20 stays unreported (ADR-0007).</li>
+<li><strong>LEARN-7 — The weekly learning digest.</strong> Per merchant: most-edited phrase, deflection delta, stage-correctness, floor-fallback count. Measured numbers only. This is a retention surface wearing a telemetry feature's clothes — it is the renewal email writing itself.</li>
+</ul>
+<p>Hygiene, non-negotiable: first-party telemetry only, per-tenant isolation (learned voice never crosses merchants), customer text never leaves the tenant, and nothing in the digest that <code>lib/deflection.ts</code>-grade measurement cannot back.</p>
+<h3>9B. The reply decision layer — how we decide what to say and how to say it</h3>
+<p>Today the reply strategy is implicit in one system prompt. Make it an explicit, logged, testable decision.</p>
+<ul>
+<li><strong>DECIDE-1 — The strategy step.</strong> Before drafting: classify intent × sentiment × wait-stage × contact history × risk → choose a named strategy: <code>reassure-with-band</code>, <code>point-to-status</code>, <code>acknowledge-overrun-no-guess</code>, <code>escalate-to-human</code>, <code>offer-gift</code>, <code>merge-duplicate</code>. Persist <code>replyStrategy</code> + reason on the ticket. The eval harness can then test the <em>choice</em> separately from the <em>wording</em> — today a wrong strategy in good prose is invisible.</li>
+<li><strong>DECIDE-2 — The promises ledger (conversation memory).</strong> Track every claim made to each customer. The second reply must never contradict or repeat the first — thirteen-of-fifteen-identical-sentences (§8, the failure mode) is a decision-layer bug, not a drafting bug. Cohort-aware phrasing variation so a shared comment wall never receives mail-merge evidence.</li>
+<li><strong>DECIDE-3 — Register controls.</strong> Per-merchant formality/warmth/brevity plus the preferred/banned phrase lists (extends ScriptVariants). <code>docs/VOICE-ENGINE-SPEC.md</code> is the north star for <em>what calm sounds like</em>; LEARN-1's corpus is the evidence for <em>what this merchant actually wants</em>. Build the decision layer first, feed it the voice spec, then refine both from real edit data — in that order, because the spec is theory until a real operator edits a real draft.</li>
+</ul>
+<h3>9C. The agent surface — Tideover as MCP</h3>
+<p>Full recon and design: <code>docs/recon-2026-07-16/MCP-AGENT-RECON.md</code>. The compressed version:</p>
+<p>The market moved: Gorgias, Intercom, Plain, Pylon, Zendesk, HubSpot and Shopify all ship MCP servers so a customer's own AI agent can use the product directly. Every one of them converges on the same shape — read tools free, write tools gated, draft-then-approve, <strong>no vendor anywhere lets an external agent send customer-facing replies or move money autonomously.</strong> That is our doctrine, independently rediscovered by the whole market. The difference: their guardrails are prompt instructions the agent carries; ours are the capability lint, the hard-date gate, and band masking, enforced <strong>server-side on every draft regardless of who is asking.</strong> An agent connected to the Tideover MCP physically cannot promise a ship date through our tools. That is the distilled value and the positioning line.</p>
+<ul>
+<li><strong>MCP-1 — The endpoint.</strong> <code>app/[transport]/route.ts</code> in the tideover app: <code>mcp-handler</code> + <code>@modelcontextprotocol/sdk@^1.26</code>, <code>statelessMode: true</code>, <code>withMcpAuth</code> verifying an Auth0 JWT against a <strong>new, dedicated Auth0 resource server</strong> whose identifier is the canonical MCP URI. Map <code>user_id</code>/<code>org_id</code> to the merchant account inside verifyToken and ride the existing ADR-0020 scoped repo seam. Never forward the client's token downstream. <strong>Timing: the 2026-07-28 spec revision deletes protocol sessions and SDK v2 ships the same day — design now, build stateless, target that revision, never the current one.</strong></li>
+<li><strong>MCP-2 — The tool surface (v1).</strong> Read, ungated: <code>get_order_context</code> (the moat object: wait-day, derived stage, band, disclosedEta, history, risk + rankReason), <code>get_current_status</code> (status board), <code>get_status_link</code>, <code>get_queue</code>, <code>get_deflection_stats</code>. Write, gated: <code>draft_reply</code> (runs the full server gate, returns draft + strategy + why, never sends), <code>queue_for_approval</code> (lands in the existing approval queue, returns a pending id), <code>check_approval</code> (poll — the serverless-safe HITL pattern), <code>escalate_to_human</code>, <code>log_outcome</code>. <strong>No <code>send_reply</code> in v1</strong> — the MCP inherits the human-approval doctrine, it does not bypass it.</li>
+<li><strong>MCP-3 — Access + packaging.</strong> Permission inherits the connecting user's Tideover role plus an explicit per-user MCP-access toggle. Bundled in plan, no extra charge (the universal market pattern). Scopes <code>mcp:read</code> / <code>mcp:draft</code> / <code>mcp:queue</code>; plan-gating server-side in the tool handlers, never client-trusted. An <code>/agents</code> marketing page states the positioning: every helpdesk MCP lets your agent answer; ours is the only one where it can't be talked into promising a date.</li>
+</ul>
+<p>Strategic note: this quietly reopens the automation-first segment §5 walks away from. A merchant who runs their own support agent can point it at our MCP — their agent does the labor, our server enforces the truth, their human still approves. The doctrine stops being a handicap in that market and becomes the reason to buy. One correction for the record: getswan.com has <strong>not</strong> shipped an MCP (they are GTM automation, not retention); the wave is real, the named example was wrong.</p>
+<hr>
+<p><strong>Pointers, in order of usefulness:</strong></p>
+<ul>
+<li><code>docs/sim-2026-07-12/</code> — the two simulation reads and <code>results.json</code>. Start here.</li>
+<li><code>docs/recon-2026-07-10/MARKET-RECON.md</code> — landscape, integration order, positioning, pricing, the bear case.</li>
+<li><code>CLAUDE.md</code> — the orchestration charter (who does what, token discipline).</li>
+<li><code>tideover/CONTRIBUTING.md</code> — the gate, the hot files, the branch model.</li>
+<li><code>tideover/docs/adr/README.md</code> — 21 ADRs. ADR-0001 (shape), ADR-0002 (doctrine), ADR-0021 (the connectors).</li>
+<li><code>mission-control/tideover-hq.html</code> — the live board. TASKS + the Dylan list.</li>
+<li><code>docs/PILOT-READINESS-HANDOFF.md</code> — the go-live env checklist. Read before any deploy.</li>
+<li><code>docs/founder-story.md</code> — the only credibility we have, and it is real.</li>
+</ul>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>
