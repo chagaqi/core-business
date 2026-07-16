@@ -1,0 +1,93 @@
+{
+ "items": [
+  {
+   "name": "Weekly production loop (the deliverable)",
+   "what": "A 1-pillar-per-week hub-and-spoke loop: Dylan writes one 500-800 word pillar piece, Claude derives 4 spokes from it via a saved repurposing prompt, Dylan does one edit/approval pass, then scheduling + reactive replies carry the rest of the week.",
+   "how": "Mon (~30 min): Dylan writes/dictates the pillar — draw from existing assets already built (WISMO teardown template, Presale Anxiety Playbook chapters, founder-story installments, build-log notes) so this isn't new topic research. Mon/Tue (~15-20 min): paste pillar into Claude with a fixed repurposing prompt that outputs draft X thread (5-8 tweets), draft LinkedIn post (check the 40-post bank first for a fit before drafting new), draft Reddit value post (reframed, zero pitch), draft newsletter blurb (3-5 sentences + link to /resources). Tue (~10-15 min): one human pass — cut anything implying a hard date (proof-only rule), run the anti-slop copy-standard pass, approve. Tue-Wed: load thread + LinkedIn post into Typefully, staggered (not same-day-dumped); post the Reddit value post manually/natively; load the newsletter blurb into Resend Broadcasts. Thu-Fri (~5-10 min/day): reply to comments/replies across X, LinkedIn, Reddit — this is the actual engagement work and it's reactive, not creative. Total: ~60-70 min/week for authored + approval steps, fitting inside a 20-30 min/day envelope that's mostly already committed to outreach/X/Reddit.",
+   "evidence": "The 'create once, derive many' shape matches both the generic pillar-spoke framework (one pillar piece becomes 6-12 short posts a week) and Justin Welsh's own documented practice of repurposing a single pillar into roughly six spokes and staggering them over six weeks rather than posting them all at once, tweaking wording per platform. Solo-founder cadence research converges on 2-3 posts/week as the minimum effective dose and explicitly favors consistency over volume ('3 posts/week for 6 months outperforms 10 posts/week for 3 weeks'), which argues for 1 pillar/week over 3 pillars/week given Dylan's real time budget.",
+   "sources": [
+    "https://growthinreverse.com/justin-welsh/",
+    "https://podcast.creatorscience.com/justin-welsh/",
+    "https://60minuteapps.com/blog/content-repurposing/",
+    "https://www.westowls.com/post/linkedin-content-strategy-for-founders-what-to-post-every-week",
+    "https://ravah.app/blog/founder-content-strategy/"
+   ]
+  },
+  {
+   "name": "Reddit value-post formula (grounded in observed practice)",
+   "what": "Self-text post (never a link post), one subreddit at a time, structured as: specific-number/finding title → 1-2 sentence method statement → 3-6 concrete numbered findings → one honest caveat/mistake → genuine open question. No link in the body. 150-400 words. Post every 1-2 weeks, not weekly, to protect account credibility.",
+   "how": "For Tideover specifically, the WISMO teardown template and founder-story lessons are the two pillar types that map straight onto this formula without fabricating anything: e.g. 'I pulled the shipping-status pages of N Kickstarter/preorder brands — here's what's actually driving support tickets' (data-based), or 'ran 60+ day waits through COVID at a $2M gym-equipment company — here's what actually calmed backers down' (experience-based). Rotate target subreddit weekly (r/ecommerce, r/Entrepreneur, r/smallbusiness, r/crowdfunding) rather than cross-posting the identical text to all of them same-day, which reads as spam. Post and reply manually/natively — do not schedule Reddit posts through a third-party tool; subs actively penalize bot-scheduled promotional-adjacent content, and replying to comments in the first hour is what actually drives the post.",
+   "evidence": "The one concretely-named example found: 'Analyzed 100 SaaS pricing pages — here's what converts,' posted (cross-posted, notably) to r/SaaS, r/Entrepreneur, and r/startups, cited specifically as a first-week strategy post with no direct promotion. Consistent secondary-source pattern across multiple 2026 Reddit-marketing guides: 'Redditors reward specificity: real numbers, screenshots, lessons learned, and tradeoffs (not hype)' and posts about 'lessons learned, growth strategies, and honest startup journeys perform well in r/Entrepreneur.' Reddit's formal 90/10 self-promotion rule was retired during 2026 in favor of moderators judging overall genuine-participant behavior rather than a fixed ratio — meaning the discipline now has to be organic, not mechanically enforced.",
+   "sources": [
+    "https://www.subredditsignals.com/blog/how-to-use-reddit-for-business-promotion-without-sounding-like-a-marketer-the-2026-playbook-for-saas-founders",
+    "https://gleam.io/faq/marketing-and-growth-strategies/promotion/reddit-90-10-rule-explained",
+    "https://redship.io/blog/reddit-self-promotion-rules",
+    "https://ogtool.com/blog/best-subreddits-saas-founders-2025-ogtool-guide"
+   ]
+  },
+  {
+   "name": "Scheduling tool: Typefully, on the free tier initially",
+   "what": "Typefully bundles X + LinkedIn (+Threads/Bluesky) for one person into a single billable 'Social Set.' Free plan = 1 Social Set but capped at 15 posts/month. Pro is ~$8/mo per Social Set billed yearly (~$15-19/mo billed monthly) for unlimited posts, AI writing assist, and analytics.",
+   "how": "At 1 thread + 1 LinkedIn post/week (~8-9 posts/month), start on the free tier — it covers the core loop without spending any of the ~$150/mo tool budget. Upgrade to Pro only when volume from replies/extra posts pushes past 15/month. Reddit is deliberately NOT scheduled through Typefully (or anything else) — post natively.",
+   "evidence": "Typefully fully supports LinkedIn scheduling (text, images, video, any account you have access to) alongside X. A Social Set is explicitly defined as one person's/brand's full multi-platform footprint (X + LinkedIn + Threads together count as ONE set), confirming the original assumption that a single Typefully subscription covers both X and LinkedIn scheduling for one founder. Buffer's free tier (3 channels, 10 queued posts/channel, lifetime cap of 8 unique channel connections) is a viable fallback but is built for multi-channel agency-style queuing, not the thread-plus-LinkedIn-post shape this loop needs.",
+   "sources": [
+    "https://typefully.com/pricing",
+    "https://support.typefully.com/en/articles/8717684-social-sets-and-accounts",
+    "https://typefully.com/linkedin",
+    "https://boomp.net/blog/buffer-pricing-free-plan-limits-2026",
+    "https://support.buffer.com/article/595-features-available-on-each-buffer-plan"
+   ]
+  },
+  {
+   "name": "Newsletter tool: Resend Broadcasts, no new vendor",
+   "what": "Resend runs Broadcasts (marketing/newsletter sending) as a separate billing track from its transactional email plans, priced by contacts not emails-sent. Free marketing tier = 1,000 contacts, unlimited broadcast sends, 1 audience, 1 domain — $0.",
+   "how": "Since Tideover already pays for Resend for transactional/auth email and Dylan's newsletter list is tiny (well under 1,000 subscribers), the newsletter blurb goes out via Resend's free Broadcasts tier at zero incremental cost and zero new tool to learn — write in Markdown, schedule up to 30 days out.",
+   "evidence": "Resend's pricing page confirms the Marketing Email track is billed separately from transactional sending and the free tier covers 1,000 contacts with unlimited broadcast sends. By contrast, MailerLite's free tier was just cut from 500 to 250 subscribers (June 2026); Beehiiv's free Launch plan covers 2,500 subscribers but is built around a full creator-publication feature set Dylan won't use; Buttondown's free tier is 100 subscribers with paid tiers starting at $9/mo for 1,000. All three would be a net-new vendor for capability Resend already provides for free.",
+   "sources": [
+    "https://resend.com/pricing",
+    "https://resend.com/features/broadcasts",
+    "https://www.mailerlite.com/pricing",
+    "https://www.beehiiv.com/pricing",
+    "https://buttondown.com/pricing"
+   ]
+  },
+  {
+   "name": "Skip dedicated AI-repurposing tools; use Claude directly",
+   "what": "Tools marketed as 'AI content repurposing' (Repurpose.io and similar) are video/audio clip-distribution automation built for podcasters and YouTubers pushing content across 15+ platforms — not text-to-text B2B repurposing, and they don't generate copy at all.",
+   "how": "Use Claude (already the working tool) with one saved repurposing prompt that takes the pillar text and outputs the four spoke drafts in one pass. No new subscription needed for the drafting step.",
+   "evidence": "Repurpose.io's Starter plan is ~$29/mo and its own review summary states plainly it 'moves, resizes, watermark-removes, and publishes content you have already created elsewhere. It does not generate scripts, create AI videos, add captions, or clip long videos' and has 'no AI writing since it moves content between platforms but doesn't generate captions or copy variations.' That's the wrong shape of tool for a text pillar → text spokes workflow.",
+   "sources": [
+    "https://repurpose.io/",
+    "https://bestfreeaitools.io/ai-tools/repurpose-ai-review/",
+    "https://www.tooljunction.io/ai-tools/repurpose-io"
+   ]
+  }
+ ],
+ "load_bearing_claims": [
+  {
+   "claim": "Typefully bundles X + LinkedIn (+Threads/Bluesky) into one billable 'Social Set' for a single founder; Free = 1 set/15 posts-month, Pro ≈ $8/mo (annual) or $15-19/mo (monthly) per set for unlimited posts.",
+   "source": "https://support.typefully.com/en/articles/8717684-social-sets-and-accounts and https://typefully.com/pricing"
+  },
+  {
+   "claim": "Resend Broadcasts (marketing/newsletter sending) is a separate billing track from Resend's transactional plans, free up to 1,000 contacts with unlimited broadcast sends.",
+   "source": "https://resend.com/pricing"
+  },
+  {
+   "claim": "Reddit's formal 90/10 self-promotion rule was retired in 2026 in favor of moderators judging accounts on overall genuine-participant behavior rather than a fixed value/promo ratio.",
+   "source": "https://gleam.io/faq/marketing-and-growth-strategies/promotion/reddit-90-10-rule-explained"
+  },
+  {
+   "claim": "A named, cross-posted example of a Reddit value post that worked with zero direct promotion: 'Analyzed 100 SaaS pricing pages—here's what converts,' posted to r/SaaS, r/Entrepreneur, and r/startups.",
+   "source": "https://www.subredditsignals.com/blog/how-to-use-reddit-for-business-promotion-without-sounding-like-a-marketer-the-2026-playbook-for-saas-founders"
+  },
+  {
+   "claim": "Justin Welsh's documented repurposing practice: takes one pillar's derived spokes and staggers roughly six of them over six weeks (not same-day dumping), adjusting wording per platform.",
+   "source": "https://growthinreverse.com/justin-welsh/"
+  },
+  {
+   "claim": "Repurpose.io and comparable 'AI repurposing' tools are video/audio distribution automation (podcast/YouTube clips to 15+ platforms) that do not generate copy — wrong tool category for text-to-text B2B repurposing.",
+   "source": "https://bestfreeaitools.io/ai-tools/repurpose-ai-review/"
+  }
+ ],
+ "summary": "One pillar per week beats three: solo-founder cadence evidence (and the practitioner precedent of Justin Welsh, who staggers ~6 derived spokes over 6 weeks from one pillar rather than dumping them same-day) converges on 1-2 posts/week as the minimum effective dose, and Dylan's real time budget only supports one pillar. The concrete loop: Dylan writes one 500-800 word pillar Monday (drawn from already-built assets — WISMO teardown, Presale Anxiety Playbook, founder story), Claude derives an X thread, LinkedIn post, Reddit value post, and newsletter blurb from a saved prompt, Dylan does one edit/approval pass (~15 min), then Typefully schedules the X+LinkedIn spokes (staggered) while the Reddit post goes out manually and the newsletter blurb goes through Resend Broadcasts — total ~60-70 min of authored/approval work per week plus 5-10 min/day of reactive replies, fitting the 20-30 min/day envelope. No new paid tools are required: Typefully's free tier (1 bundled X+LinkedIn \"Social Set,\" 15 posts/month) covers the volume; Resend already covers the newsletter via its separate Broadcasts/marketing track, free up to 1,000 contacts, so MailerLite/Beehiiv/Buttondown are unnecessary new vendors. The Reddit value-post formula that actually survives business subs — grounded in one concretely named cross-posted example (\"Analyzed 100 SaaS pricing pages\") plus consistent 2026 practitioner guidance — is: self-text only, one sub at a time, a title stating a specific finding, 1-2 sentences on method, 3-6 concrete bulleted findings, one honest caveat, a genuine closing question, and no link in the body; post it every 1-2 weeks, not weekly, and never through a scheduler. Dedicated \"AI repurposing\" tools (Repurpose.io etc.) turned out to be video/audio distribution automation for podcasters, not text-to-text tools, so Claude directly is the right (and already-paid-for) drafting engine."
+}

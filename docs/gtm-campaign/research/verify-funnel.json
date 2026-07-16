@@ -1,0 +1,36 @@
+{
+ "verdicts": [
+  {
+   "claim": "MailerLite free plan cut to 250 subscribers / 2,500 emails/month (from 500/12,000) effective July 2026, capped at 3 automations, 3 forms, 1 landing page.",
+   "verdict": "CONFIRMED",
+   "evidence": "mailerlite.com/help/free-plan-update-faq and corroborating third-party coverage (EmailOctopus, EmailToolTester, etc.) confirm the numeric drop: 500→250 subscribers, 12,000→2,500 monthly emails, plus new caps of 3 automations, 3 forms, 1 landing page, 1 website, 1 digital product.",
+   "corrected": "Date detail: subscriber/email limits took effect June 16, 2026 for new signups (existing free accounts moved over July 1, 2026 — this is likely the 'July 2026' the claim means). The feature caps (3 automations/3 forms/1 landing page) are a separate rollout, enforced starting August 13, 2026, not July. The claim bundles both under one 'effective July 2026' date, which is imprecise for the feature-cap portion."
+  },
+  {
+   "claim": "Beehiiv's free Launch plan allows up to 2,500 active subscribers with unlimited sends.",
+   "verdict": "CONFIRMED",
+   "evidence": "beehiiv.com/pricing states the Launch plan covers up to 2,500 subscribers, and beehiiv's own FAQ text confirms 'All beehiiv plans, including the free Launch plan, include unlimited email sends.'"
+  },
+  {
+   "claim": "Buttondown is free only to the first 100 subscribers; automation is a separate $29/month add-on, not included free.",
+   "verdict": "CONFIRMED",
+   "evidence": "buttondown.com/pricing states the free tier is 'Absolutely nothing for your first 100 subscribers,' and automation is listed as a paid add-on at $29/month, not bundled into the free tier."
+  },
+  {
+   "claim": "Resend's free plan includes 1,000 contacts for Audiences/marketing, 3,000 emails/month (100/day cap), one sending domain; Resend Automations (event/API-triggered, with time-delay and branching steps) shipped April 2026.",
+   "verdict": "CONFIRMED",
+   "evidence": "resend.com/pricing confirms 1,000 marketing contacts, 3,000 emails/month capped at 100/day, and 1 sending domain on the free tier (independently corroborated by multiple third-party pricing trackers). resend.com/blog/introducing-automations and independent coverage (Resend Launch Week 6, April 2026) confirm Automations shipped April 13, 2026, supporting event triggers, time delays, and conditional branching."
+  },
+  {
+   "claim": "CASL requires express (opt-in) consent before commercial email on the clean list; implied consent applies for existing business relationship (2 years), recent inquiry (6 months), or conspicuously published business-relevant contact info; unsubscribe requests must be honored within 10 business days.",
+   "verdict": "CONFIRMED",
+   "evidence": "crtc.gc.ca/eng/com500/guide.htm confirms express consent requires clear opt-in; implied consent covers existing business relationships (2-year window from last transaction), inquiries/applications (6-month window), and conspicuously published contact info (conditional on no opt-out statement and relevance to the recipient's role); unsubscribe requests must be honored within 10 business days regardless of consent type."
+  },
+  {
+   "claim": "Templates/checklists outconvert generic long-form ebooks on opt-in rate and consumption; qualitative direction corroborated by an Indie Hackers 'checklist-to-200-leads' account (at the stated URL) and a SaaS founder's ~100-signup template-magnet account.",
+   "verdict": "REFUTED",
+   "evidence": "The stated source (indiehackers.com/article/how-to-create-viral-lead-magnets-1acfe9b5e3) does not describe a checklist or 200 leads at all — it describes a different lead magnet (an in-depth, long-form LinkedIn guide) that generated 2,083 email signups over 18 months, and the article's actual thesis argues FOR deep, long-form lead magnets ('go deep,' 'teach it all') rather than for checklists beating ebooks. A 'checklist made in 15 minutes → 200 leads' anecdote does exist in the wild, but it traces to a HubSpot blog post, not Indie Hackers, and is unrelated to the cited URL. The 'SaaS founder's ~100-signup' figure could not be independently located; searches surfaced a different, unrelated founder stat (~5% of template signups became paying customers). The broader qualitative direction (checklists/templates often outconvert long ebooks) does have loose, low-confidence support scattered across several SEO-listicle sources — consistent with the claim's own caveat about weak sourcing in this space — but the two specific 'independent practitioner accounts' cited to back that direction are not supported by the stated source and could not be verified elsewhere.",
+   "corrected": "The general direction (checklists/templates often convert better than long ebooks) is weakly, indirectly plausible per multiple low-quality listicle sources, but the specific Indie Hackers URL given does not support a 'checklist-to-200-leads' account — it's a mismatched/fabricated citation, and its content actually argues the opposite (in favor of long-form depth). The second practitioner account (~100-signup SaaS founder) is unverifiable — no source located."
+  }
+ ]
+}

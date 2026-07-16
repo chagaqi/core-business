@@ -43,7 +43,7 @@ All external stats verified by an independent second agent against primary sourc
 | 6 Google Workspace Starter mailboxes (2/domain) | ~$43–59/mo | Gmail-backed deliverability; 15–20 sends/box/day ceiling |
 | Smartlead Base | $39/mo | Sending + warmup + rotation; unlimited mailboxes/warmup confirmed on live pricing (beats Instantly's $47 at this tier) |
 | X Premium Basic | $3/mo | Non-Premium reach is now near-zero for link posts (verified: Buffer's 18.8M-post analysis — free accounts <100 impressions/post, Premium ~600). Includes native scheduling |
-| Typefully Creator (optional) | $19/mo | AI drafting + queue; free tier (15 posts/mo) as fallback |
+| Typefully (start free) | $0, Pro $10/mo later | One "Social Set" bundles X + LinkedIn scheduling; free tier = 15 posts/mo which covers the §9 loop; Pro ($10/mo monthly, $8 annual — verified live) only when volume demands. Earlier $19 figure was stale — corrected |
 | Apify (KS discover actor $20/1k results + $9.99 email actor) | ~$15–35/mo usage | The automated prospect engine |
 | Hunter.io free (50 credits/mo) + F5Bot free | $0 | Contact verification + Reddit/HN keyword alerts. **GummySearch is DEAD (closed 11/30/2025, confirmed on their homepage) — do not budget it** |
 | Google Postmaster Tools + mail-tester.com | $0 | The deliverability dead-man switch |
@@ -137,4 +137,59 @@ CASL applies to anything sent from Canada regardless of recipient location. The 
 
 The AI layer in §4 is an Opus work order: the prospect engine (scrape→score→enrich→log), the drafting pipelines (outreach, X, Reddit), and the morning digest are all buildable as scheduled automations. Board card **GTM2** tracks the campaign; the daily calendar starts the day Dylan says go on the domain purchases (the 2-week warmup clock is the critical path — G5 called this in June and it's still true). Everything customer-facing that ships through this campaign passes the same copy standard and proof-only gate as the product.
 
-**Sources:** every price/rule/stat above carries its verification in `docs/gtm-campaign/research/` (the 12 raw agent reports, JSON). Refuted-claim record is in the lane files — kept deliberately, so the next reader knows what was checked and what fell.
+---
+
+## 9. THE ORGANIC ENGINE — content, SEO, lead magnet, funnel (added 2026-07-16, second research wave: 4 lanes + 4 independent fact-checkers; the corrections are marked)
+
+**The framing:** this is the slow layer. Corrected time-to-rank reality for a ~6-week-old domain is **6–12 months** for anything contested (Ahrefs' own data: only 1.74% of new pages reach top-10 within a year — the widely-circulated "2025, 2M pages" version of that stat is a conflation; the real figure is their Sept 2023 1M-URL cohort). Plant now, harvest in Q4 — nothing here competes with outreach for this month's pipeline. Everything below runs off **one production loop**, so the marginal cost of each surface is a rewrite, not a rewrite of Dylan's week.
+
+### 9.1 SEO — the observed low-hanging fruit (every SERP below was actually searched, not tool-guessed)
+
+The head terms are dead on arrival: WISMO and generic shipping-delay content is owned by funded vendors (Shopify, Salesforce, AfterShip, parcelLab), and PreProduct.io — the one real content competitor found — already runs the preorder-template playbook for the *setup* stage. The wedge that is genuinely open: **the already-late campaign.** Publish order, weakest SERP first:
+
+| # | Pillar | Target queries | Why it's beatable (observed) |
+|---|---|---|---|
+| 1 | Crowdfunding chargeback/dispute evidence guide | "kickstarter chargeback dispute evidence" + satellites | Weakest SERP in the sweep: KS's generic page, a Quora thread, a Medium listicle. No structured guide exists. Mirrors the evidence-pack feature |
+| 2 | **Fulfillment-update template library** (the flagship — see §9.2, it's also the lead magnet) | "kickstarter fulfillment delay update template", "backer update examples", Gamefound variants | KS's own post gives a framework but zero paste-ready text; Gamefound has literally no third-party editorial content |
+| 3 | "How late is too late" — delay stats, 2026 edition | "kickstarter late delivery statistics" | The #1 result is a CNN article from 2012 (verified still ranking today). Cite KS's own 25%-on-time study + the UPenn 75%-late research |
+| 4 | Angry-backer response playbook | "how to respond to angry kickstarter backers" | Only single-creator anecdote blogs rank; nobody organizes replies by severity tier (mirrors the risk-scored inbox) |
+| 5 | What the research says keeps backers calm | "why backers forgive delays" | SERP is 100% academic PDFs; zero practitioner translation exists |
+| 6 | KS vs BackerKit vs Gamefound: post-funding comms | "backerkit vs kickstarter fulfillment" | All existing comparisons are pre-campaign fee tables; the post-funding angle is empty. Commercial intent |
+| 7 | WISMO for 90-day waits | "wismo preorder", long-tail only | Every ranking WISMO fix assumes a tracking number exists. Ours is the no-tracking-number case. Never target the head term |
+| 8–10 | Already-late preorder angle · self-serve status pages · preorder chargebacks | long-tail | Sequenced after domain authority exists; #10 folds into #1 |
+
+Tooling: Google Search Console + Keyword Planner (free) + manual SERP checks (which is what produced this table). Ahrefs' *free* product is owner-verified-sites only; the $29/mo Starter does SERP research — optional, later. Data hygiene per proof-only: the 5.4% preorder-cancellation stat is real but belongs to **PreProduct's own 1M-preorder dataset** (cite them, not the miscited aggregator); the "WISMO = 25–40% of tickets" figure is uncited industry lore — never publish it as measured.
+
+### 9.2 The lead magnet + funnel (built on what exists — no new pages, no new vendors)
+
+**The magnet: a paste-ready Fulfillment Update Template Pack** (5–8 templates: delay announcement, missed-EDD notice, gone-quiet re-engagement, refund-request response, proof-of-life update), seeded from Dylan's real COVID-era comms and the WISMO teardown. A founder drowning in angry backers wants text to paste *today*, not a PDF to read — the templates-beat-ebooks folklore is directionally supported but poorly sourced (one "case study" the research cited turned out to be a mismatched citation; flagged, not repeated), so this choice rests on the buyer logic, not the folklore. The Presale Anxiety Playbook stays live as the nurture companion. **The same asset is SEO pillar #2**: the ungated library page (15–20 templates with per-template anchors and reasoning) ranks and links; the gated pack (the best 5–8, formatted) captures. One build, two jobs.
+
+**Capture:** the existing Playbook form and list — a second delivery block, not a second funnel.
+
+**Nurture: 6 emails over ~14 days, then monthly.** The buyer is a flow, not a stock — their pain has an end date, so the sequence resolves fast: deliver + use-it-today (day 0) → the silence-is-the-wound insight (day 2) → the founder story as proof (day 5) → objection handler: never promises a hard date (day 8) → the private pilot ask, "reply and I'll set it up with you personally" (day 11) → last nudge for non-clickers (day 14) → monthly check-in. A pilot-CTA click exits to a booked call. The terminal CTA is the **private pilot, never self-serve signup** — matches the buyer and the bandwidth.
+
+**Tooling — Resend, which we already pay for (verified live):** Broadcasts free to 1,000 contacts with unlimited sends, and **Automations (shipped April 2026)** does event-triggered sequences with delays and branching. MailerLite just cut its free tier to 250 subs, Buttondown gates automation behind $29/mo, Beehiiv is a publishing platform — all would be new vendors for capability Resend gives us at $0.
+
+**The two-lists rule (CASL, non-negotiable):** List A = opt-in (express consent, documented per contact) on a dedicated Resend marketing subdomain. List B = cold outreach (implied consent, §7) on its own purchased domains and tool. Three sending lanes total (transactional / marketing / cold), never crossed — and a cold reply never auto-joins List A.
+
+### 9.3 The weekly production loop (~60–70 min authored, inside the existing daily budget)
+
+**Monday (~30 min, Dylan):** one 500–800-word pillar, drawn from what exists — the template library, playbook chapters, founder-story installments, build-log notes. **AI (same day):** one saved repurposing prompt derives the four spokes: an X thread + an X single-post variant (checked against the 40-post bank first — four weeks of fuel is already written, converted X-native per §9.4), an optional LinkedIn mirror, a Reddit value post, a newsletter blurb. **Tuesday (~15 min, Dylan):** one edit/approval pass — kill anything hard-date-shaped, run the copy standard. **Then:** X + LinkedIn spokes staggered through Typefully (the Welsh precedent, confirmed: 6–8 spokes over 4–6 weeks, never same-day dumped); the newsletter blurb through Resend; **Reddit posted manually, never scheduled** — native posting + first-hour replies are what carry it. The Reddit value-post shape (from consistent guidance; the one named "case study" the research offered was fabricated and is not repeated here): self-text, a specific finding in the title, method in two sentences, 3–6 concrete findings, one honest caveat, a real question, **no link in the body**, one sub at a time, every 1–2 weeks. The 90/10 discipline stands — the claim that Reddit retired it was checked and is false.
+
+### 9.4 The channel verdict — X-primary (Dylan's call, 2026-07-16), LinkedIn optional mirror
+
+**X is the feed channel; the 40-post LinkedIn bank gets repurposed to X-native form.** Dylan's read — founders and ecom operators are easier to find on X — matches the one channel-location finding that survived verification: "DTC Twitter" is a real, documented genre (curated founder-follow lists, build-in-public norms) with no LinkedIn equivalent surfaced. Meanwhile the strongest pro-LinkedIn statistic in circulation (a "Sprout Social Q1 2026 Index of 52M posts") **turned out not to exist** — Sprout's own archive has no such report. So the evidence tolerates either channel; the founder's conviction picks X, and conviction is worth real minutes in a 2-hour day.
+
+Execution: the AI layer converts the banked posts X-native — tighter first line, METHOD posts become short threads, war-story and contrarian posts become single posts, all through the same approval pass. That's 4+ weeks of X fuel already written. Cadence rides the existing §4 X block (post daily from the bank + the weekly pillar spokes; reply-first engagement unchanged — replies are what the ranking rewards, and X Premium at $3/mo is already in the stack because free-account link reach is near-zero). Keep the magnet link in the bio/pinned post, not in post bodies.
+
+**LinkedIn: don't remake it, don't delete anything — and don't invest either.** The account question dissolves once X is primary: no source supports purging history or connections for a vertical pivot, so the account stays as-is at zero effort. Since the engine drafts every spoke anyway, mirroring the LinkedIn-format version there costs ~5 minutes a week through the same Typefully Social Set — do it if it's free-feeling, skip it without guilt. If it ever gets promoted back to a real channel, the playbook is on file: headline/About rewrite around the real story, 2–5 posts/week (the Buffer 2M-post frequency finding was the one LinkedIn claim that verified cleanly), carousels for teardowns.
+
+The caveat that outranks the whole channel debate: **neither X nor LinkedIn reaches tabletop/crowdfunding creators** — BackerKit's own creator roadmap names BGG, Discord, Reddit, and Facebook and omits both. That half of the ICP is carried by outreach, BGG forums, and Reddit, which the plan already covers. The feed channel is for the Shopify/DTC half and for credibility-when-googled.
+
+### 9.5 What this adds to the stack and the calendar
+
+Stack delta: **$0.** Typefully free tier, Resend free tier, GSC free. (Typefully Pro $10/mo and Ahrefs Starter $29/mo are the only likely future adds.) Calendar delta: the Monday pillar block (~30 min) + Tuesday approval (~15 min) — funded by the flex block on those days; X/Reddit/reply time is already budgeted in §4. The AI layer gains three jobs: the repurposing prompt run, the nurture-sequence maintenance, and a monthly SEO check (GSC queries → which pillar to write next).
+
+---
+
+**Sources:** every price/rule/stat above carries its verification in `docs/gtm-campaign/research/` (the 12 raw agent reports from wave 1, plus the 8 organic-engine reports from wave 2, JSON). Refuted-claim records are kept deliberately in the lane files — including two fabricated case studies and one nonexistent analytics report caught in wave 2 — so the next reader knows what was checked and what fell.

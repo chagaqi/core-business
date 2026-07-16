@@ -1,0 +1,40 @@
+{
+ "verdicts": [
+  {
+   "claim": "1. Time-to-rank 3-6mo (low-competition) / 6-18mo (moderate-high competition) for new/low-authority domains; only 1.74% of newly published pages reach top-10 within first year (Ahrefs 2025 analysis of 2M+ pages), per peaklora.com",
+   "verdict": "REFUTED",
+   "evidence": "Fetched peaklora.com/blog/how-long-to-rank-in-google-search/ directly: it does NOT contain the 1.74% statistic at all — it only links out to an Ahrefs article without quoting the figure. Its own stated ranges are 'established site: 3-6 months' vs 'new site: 6-12 months' (not broken out by keyword-competition tier as the claim states). The 1.74% figure IS real (confirmed on ahrefs.com/blog/how-long-does-it-take-to-rank-in-google-and-how-old-are-top-ranking-pages/), but it's tied to a 1M-URL sample observed Sept 2023, not a '2025 analysis of 2M+ pages' — the 2M-URL sample in that same Ahrefs study produced a different figure (6.11%). The claim conflates two different Ahrefs sub-analyses and cites a source (peaklora.com) that doesn't contain the number it's credited with.",
+   "corrected": "The 1.74%-within-a-year statistic is real but comes from Ahrefs' own blog post (1M URLs, Sept 2023 cohort), not from peaklora.com, and not from a 2M+ page 2025 sample — that larger 2M sample yielded 6.11%, a different number. peaklora.com's own time-to-rank breakdown is established-vs-new-site (3-6mo / 6-12mo), not by keyword competition tier for new domains."
+  },
+  {
+   "claim": "2. Ahrefs' free tier is restricted to sites you can verify ownership of and cannot be used for competitor/SERP research, per help.ahrefs.com Starter-plan article",
+   "verdict": "REFUTED",
+   "evidence": "Fetched help.ahrefs.com/en/articles/9419051-about-ahrefs-starter-plan directly: the Starter plan is a PAID plan (~$29/mo, confirmed via separate pricing sources), not Ahrefs' free tier. That article explicitly contradicts the claim — Starter includes 1 unverified project and 'SERPs with SEO Metrics per month: up to 800' via the SEO Toolbar, i.e. it explicitly supports SERP/competitor research. The verified-ownership-only restriction actually applies to a different, free product (Ahrefs Webmaster Tools), confirmed via independent web search, but that product is not the one cited.",
+   "corrected": "It's Ahrefs Webmaster Tools (the actual free product) that restricts analysis to verified-ownership sites and blocks competitor lookups — not the paid Starter plan cited, whose own docs describe SERP research as an included feature."
+  },
+  {
+   "claim": "3. Only 25% of Kickstarter projects deliver by stated EDD (Kickstarter's own research); 2012 CNN investigation found 84% of top-50 funded projects shipped late; that CNN piece still ranks page-one for delay-statistics queries in 2026",
+   "verdict": "CONFIRMED",
+   "evidence": "Multiple independent search results corroborate the Kickstarter blog post 'Is lateness failure?' at the exact cited URL (kickstarter.com/blog/is-lateness-failure) states research found only 25% of surveyed projects delivered by their Estimated Delivery Date (direct WebFetch of the URL returned HTTP 403, but title/content match confirmed via search snippets). CNN's Dec 2012 money.cnn.com investigation of the top-50 funded projects finding 84% missed target dates is independently confirmed by multiple outlets (SlashGear, Stonemaier Games, etc.) referencing the same CNNMoney piece. Freshly run searches today ('kickstarter projects delivery delay statistics late shipping' and 'how often do kickstarter projects ship late percentage') both return the 2012 CNNMoney piece as the #1 organic result, confirming it still ranks page-one for these queries in 2026.",
+   "corrected": "n/a — claim confirmed as stated, though note direct fetch of the Kickstarter URL was blocked by a 403 and had to be corroborated via independent search snippets rather than firsthand page read."
+  },
+  {
+   "claim": "4. WISMO tickets = ~25-40% of ecommerce support volume normally, 50-70% at peak; the entire ranking WISMO content ecosystem (Shopify, Salesforce, AfterShip, parcelLab, WISMOlabs) assumes a 3-10 day shipping window not a 60-120 day presale wait — per wismolabs.com/what-is-wismo/",
+   "verdict": "REFUTED",
+   "evidence": "Direct fetch of the cited wismolabs.com/what-is-wismo/ page (searched for every percentage on the page) found no 25-40%/50-70%-of-total-support-volume statistic. The page instead discusses a different metric (WISMO inquiries per shipment 'rate'), a 40% support-team-burnout threshold, and a 3x-5x peak-season surge multiplier — none of which match the cited figures. Broader web search shows similar but inconsistent ranges scattered across other third-party WISMO articles (20-40%, 30-50% normal; 50%+ peak), so the ballpark is plausible industry lore, but it is not sourced to the page cited. The 'entire content ecosystem assumes 3-10 day windows' claim is an interpretive/analytical assertion about multiple vendors' content strategy that cannot be verified as a discrete fact via search.",
+   "corrected": "The rough percentage range appears in scattered industry commentary generally but not on the specific wismolabs.com page cited, which discusses different metrics (per-shipment inquiry rate, 40% burnout threshold, 3x-5x peak surge)."
+  },
+  {
+   "claim": "5. Average preorder cancellation rate ~5.4% vs ~19-20% general ecommerce returns, per opensend.com/post/return-refund-rate-ecommerce",
+   "verdict": "REFUTED",
+   "evidence": "Direct fetch of the cited opensend.com/post/return-refund-rate-ecommerce page found ZERO mention of preorders or preorder cancellation rates anywhere in the article — it covers only general return/refund statistics (16.9% of 2024 orders returned, 20-30% typical range, category breakdowns). Checked a second, more relevant opensend page (order-cancellation-rate-statistics) — also no preorder-specific data. The 5.4% average pre-order cancellation figure IS real, but it comes from PreProduct.io's 'One Million Pre-orders' page (preproduct.io/one-million-pre-orders/), a completely different source from the one cited, and that page does not make the 19-20%-general-returns comparison either.",
+   "corrected": "5.4% average preorder cancellation is a real, verifiable figure — but sourced to PreProduct.io's own 1M-preorder dataset, not opensend.com. The stated opensend URL is the wrong citation and doesn't support either half of the claim (neither the 5.4% figure nor a 19-20% general-return comparison)."
+  },
+  {
+   "claim": "6. PreProduct.io is a real, already-ranking competitor for preorder-policy-template content, meaning Tideover's wedge must be the distressed/already-late-campaign angle, not general preorder setup",
+   "verdict": "CONFIRMED",
+   "evidence": "Direct fetch of preproduct.io/shopify-pre-order-policy-guide-templates/ confirms it's a real, live page titled 'How to Write a Shopify Pre-order Policy (+ Free Templates),' covering FTC compliance, policy components, payment models, and an interactive policy generator — i.e. general/setup-stage preorder guidance, not remediation for already-delayed or distressed campaigns. This directly supports the claim's underlying strategic conclusion.",
+   "corrected": "n/a — claim confirmed as stated."
+  }
+ ]
+}
