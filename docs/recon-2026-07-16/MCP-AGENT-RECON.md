@@ -6,11 +6,13 @@ Three independent web sweeps (positioning, engineering, agent-consumption patter
 
 ---
 
-## 1. Correction first: Swan has no MCP
+## 1. Swan: shipped July 9 — and the first sweep missed it
 
-getswan.com is an "AI GTM Engineer" — signal-based outbound, pipeline, win-back agents (Owly, Doggo, Zebro). Homepage plus eight blog posts (Feb–Apr 2026) fetched directly: zero MCP, protocol, or agent-interop mentions. No announcement anywhere on the web. Either the launch belongs to a different company or it has not happened. (A separate Shopify app "Swan AI" by Loyalytics also shows no MCP evidence.)
+**Dylan was right.** Swan (the "AI GTM Engineer" — signal-based outbound, pipeline, win-back) launched its MCP server on **2026-07-09**, announced on their changelog. The first sweep read the homepage and blog, found nothing, and this doc originally reported "no MCP" — Dylan caught the miss same day with the changelog URL. Lesson recorded: a sweep that skips `/changelog` cannot support a negative claim.
 
-The instinct was still right — the wave is real, it just isn't Swan riding it. Sources: https://www.getswan.com · https://www.getswan.com/blog
+Facts from the announcement: agents connect at `agent.getswan.com/settings/mcp` — "nothing new to set up"; named clients **Claude, Comet, and others**; exposed capabilities: "research accounts, draft outreach, or update your CRM," inbox triage, **email sending**, Sales Navigator list pulls, website-visitor data. Positioning verbatim: "Swan doing more of the work itself," a "shift from Swan running on a schedule to Swan running on events." No separate price — bundled, per the universal pattern. Source: https://www.getswan.com/changelog/connect-swan-to-your-other-ai-agents
+
+What it adds to the analysis: Swan slots into patterns #1 (bundled) and #2 (connect the AI you already use) below, and contributes one data point the support vendors don't — **it grants agents send-capable outbound tools.** That is coherent for GTM: cold outreach sent on the merchant's behalf carries a different liability profile than replying to an existing paying customer about a late order. It sharpens our conclusion instead of weakening it: even in a category where autonomy IS granted, the vendor decides where the line sits. In presale support the entire market refuses autonomous sends — and Tideover is the only one whose refusal is architectural rather than configured.
 
 ## 2. How the market is positioning MCP servers
 
