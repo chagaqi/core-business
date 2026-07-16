@@ -83,7 +83,7 @@ Ramp toward 15/mailbox/day (~90/day) only if spam <0.1% and bounces <2%. First w
 | Flex / demos | 20 | Early: directory submissions, BGG forum reading, IndieHackers milestone post. Later: demo calls (each demo displaces everything except replies) |
 
 **The AI layer (runs before Dylan wakes up — this is the Opus automation spec):**
-1. Pull/refresh prospect sources (webrobots monthly dump deltas; Apify discover run 2x/week) → distress-score = comments_count / max(updates_count,1) + days-past-estimate → ranked shortlist.
+1. Pull/refresh prospect sources (webrobots monthly dump deltas; Apify discover run 2x/week; the §5b store-side scan — SERP-dork discovery → `/products.json` + plugin-footprint qualification) → distress-score = comments_count / max(updates_count,1) + days-past-estimate for crowdfunding, ship-window-weeks × AOV for stores → ranked shortlist.
 2. Contact discovery (Hunter + Apify email actor) with **source-URL logged per address** (the CASL due-diligence record).
 3. Draft the day's outreach batch from the sequence library, each with the prospect's specific trigger cited.
 4. F5Bot digest triage → candidate threads + drafted value-first replies.
@@ -99,6 +99,24 @@ Ramp toward 15/mailbox/day (~90/day) only if spam <0.1% and bounces <2%. First w
 - **Cold email numbers to plan on:** 2–4% reply (not the 5–8% the first sweep claimed — its own source didn't support it), 14-day minimum warmup, ~30–40 daily sends per domain ceiling, spam <0.30% or Google rejects outright (their published rule at 5k/day scale; the discipline applies at any volume).
 - **X without Premium is pointless in 2026** (link-post reach for free accounts has collapsed to near-zero — worse than the "50–90% penalty" the first sweep reported). $3/mo solves it. The 150x reply-weight figure is 2023 leaked-code vintage (current weights are redacted) — directionally right: reply-first, link-averse.
 - **Product Hunt is a badge, not a channel.** Ranking mechanics are unverifiable (accounts contradict each other on early-velocity weighting), links are rel=ugc (zero SEO), and the "PH screens out 70% of founders" stat is actually a launch agency's client intake, not PH. Launch it once, post-pilot, for the credibility line, and go back to outreach.
+
+---
+
+## 5b. THE STORE-SIDE ENGINE — Shopify + WooCommerce detection (added same day; Dylan's push, mechanics proven live before writing)
+
+The first sweep leaned on StoreLeads ($75–250/mo) for the Shopify lane and skipped WooCommerce entirely. Dylan's instinct — scrape the stores themselves for preorder apps and preorder language — is better, cheaper, and fresher. The mechanics, each verified live on 2026-07-16:
+
+**Shopify: the `/products.json` scan.** Every Shopify store publicly serves `GET /<domain>/products.json?limit=250` (paginated) — full product titles, tags, descriptions, and prices as machine-readable JSON. Proven live on a real preorder brand's store: 250 products per call, no auth, no scraping gymnastics. The scanner regexes title + body_html + tags for `pre-order / presale / ships in N weeks / estimated ship` and qualifies **AOV from the price fields in the same call**. Second probe, also proven necessary: the store's preorder *policy page* (`/pages/pre-order*`, discoverable via `/sitemap.xml`) — the test store had the policy page but **zero currently-flagged products**, which surfaces the qualification rule this engine runs on: **preorder infrastructure ≠ an active long-wait preorder.** Only live products carrying ship-window language of ~6+ weeks are ICP; a store between drops goes on a re-check list, not the outreach list.
+
+**Discovery of candidate domains** (what feeds the scanner):
+1. **SERP dorks via a real SERP API** — `inurl:/products/ "pre-order" "ships in"` and month/week-window variants. Verified caveat: generic search wrappers mangle exact-phrase + `inurl:` operators; this requires a Serper.dev-class API that passes operators verbatim (~$10–30/mo at our volumes, replaces most of what StoreLeads charged $75+ for).
+2. **App footprints in page HTML** — preorder apps inject identifiable script/CSS assets; fingerprint candidate lists cheaply.
+3. **App-vendor case-study pages** (already in §2 — Purple Dot/PreProduct client logos are a free pre-qualified shortlist).
+4. **Cross-lane**: Kickstarter campaigns' linked stores (a KS graduate with a live Shopify preorder is the double-signal, highest-intent row in the whole system).
+
+**WooCommerce: the plugin-footprint lane (new segment — the first sweep missed it).** Woo sites leak installed plugins in page source as `/wp-content/plugins/<slug>/` asset URLs, so a SERP dork like `inurl:"wp-content/plugins/preorders-for-woocommerce"` enumerates installs directly. Scale check (fetched from wordpress.org today): **Pre-Orders for WooCommerce alone reports 7,000+ active installations** — before counting YITH Pre-Order, the official WooCommerce Pre-Orders extension, and the other majors. Product pages use the `/product/` URL pattern for the text-dork variant. Caveat: Woo skews smaller/DIY than Shopify Plus, so filter harder on AOV and traffic — but the product is platform-agnostic (CSV import + email works anywhere), so Woo is real pipeline, likely at a lower tier mix.
+
+**Rules of the road:** public pages, polite rates, a real User-Agent, respect robots.txt where present — the same tolerated-not-sanctioned posture as the Kickstarter rules in §5. Contact discovery unchanged from §7: business-context addresses only, source URL logged per row. Net effect on the stack: StoreLeads deferral hardens (the scan sees what a store is selling **today**, which beats an install-date database for our trigger), and the Shopify/Woo lane becomes self-serve at SERP-API + Apify prices.
 
 ---
 
