@@ -15,7 +15,7 @@
     "resign:status-tokens": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/resign-status-tokens.mjs",
     "backup": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/backup.mjs",
     "smoke:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/mongo-smoke.mjs",
-    "smoke": "node scripts/smoke.mjs",
+    "smoke": "node --env-file-if-exists=.env.local scripts/smoke.mjs",
     "proof-lint": "node scripts/proof-lint.mjs",
     "eval": "node evals/eval.mjs",
     "gen-goldens": "node --experimental-strip-types --import ./scripts/register-hooks.mjs evals/gen-goldens.mjs",

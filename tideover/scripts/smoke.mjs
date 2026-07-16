@@ -12,6 +12,7 @@
  * Run: npm run smoke   (or SMOKE_URL=https://staging... node scripts/smoke.mjs)
  * Exits non-zero on the first failure so CI / the release ritual can gate on it.
  */
+import { createHmac } from "crypto";
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
@@ -22,10 +23,24 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // A valid signed status token from the seed (first order). Reading it keeps the
 // smoke test correct across reseeds instead of pinning a literal token.
 const orders = JSON.parse(readFileSync(join(__dirname, "..", "lib", "data", "orders.json"), "utf8"));
-const token = orders.find((o) => o.statusToken)?.statusToken;
-if (!token) {
+const seedToken = orders.find((o) => o.statusToken)?.statusToken;
+if (!seedToken) {
   console.error("smoke: no statusToken in seed — cannot test /status");
   process.exit(1);
+}
+
+// The committed seed is signed with the DEV fallback secret; a deployed
+// environment verifies with its own STATUS_TOKEN_SECRET (and seed-mongo.mjs
+// re-signs at import to match). So the smoke must re-sign its test token the
+// same way or every /status check false-fails against prod (exactly what
+// hid the dead demo status links from 07-12 to 07-16). Under the fallback
+// secret this is a byte-identical no-op. Requires the target environment's
+// STATUS_TOKEN_SECRET in the env — the npm script loads .env.local.
+const tokenSecret = process.env.STATUS_TOKEN_SECRET || "dev-only-change-me";
+const raw = seedToken.split(".")[0];
+const token = `${raw}.${createHmac("sha256", tokenSecret).update(raw).digest("hex").slice(0, 10)}`;
+if (!process.env.STATUS_TOKEN_SECRET) {
+  console.warn("smoke: STATUS_TOKEN_SECRET not in env — using the dev-fallback signature (only valid against a local/dev target)");
 }
 
 // Calendar-date shapes that must NEVER appear in a customer-facing status page
