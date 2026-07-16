@@ -30,6 +30,7 @@
  * only ever finds the seed's own ids already in place, so neither condition
  * trips and no new flag is required.
  */
+import { createHmac } from "crypto";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
@@ -72,6 +73,37 @@ try {
     file,
     docs: JSON.parse(readFileSync(join(DATA, file), "utf8")),
   }));
+
+  // Status tokens are HMAC-signed (lib/ids.ts): `<raw>.<sig>`, sig = first 10
+  // hex chars of HMAC-SHA256(raw, STATUS_TOKEN_SECRET || dev fallback). The
+  // committed seed is signed with the DEV fallback so local dev/tests verify
+  // with no env. A deployed environment holds its own STATUS_TOKEN_SECRET, so
+  // tokens must be RE-SIGNED at import time or every seeded /status link 404s
+  // there (found 2026-07-16: prod demo status links dead since the go-live
+  // secrets landed 07-11). With the fallback secret this is a byte-identical
+  // no-op, so local seeding and seed-check are unaffected.
+  const SIGNED_TOKEN_FIELDS = { orders: "statusToken", status_views: "token" };
+  const tokenSecret = process.env.STATUS_TOKEN_SECRET || "dev-only-change-me";
+  const resign = (token) => {
+    const raw = String(token).split(".")[0];
+    return `${raw}.${createHmac("sha256", tokenSecret).update(raw).digest("hex").slice(0, 10)}`;
+  };
+  let resigned = 0;
+  for (const { name, docs } of seeded) {
+    const field = SIGNED_TOKEN_FIELDS[name];
+    if (!field) continue;
+    for (const doc of docs) {
+      if (typeof doc[field] !== "string" || !doc[field].includes(".")) continue;
+      const next = resign(doc[field]);
+      if (next !== doc[field]) resigned++;
+      doc[field] = next;
+    }
+  }
+  console.log(
+    resigned > 0
+      ? `  tokens: re-signed ${resigned} status token(s) for this environment's STATUS_TOKEN_SECRET`
+      : "  tokens: signatures already match this environment (no re-sign needed)",
+  );
 
   if (!force) {
     let existing = 0;
