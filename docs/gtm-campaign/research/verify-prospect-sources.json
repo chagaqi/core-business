@@ -1,0 +1,35 @@
+{
+ "verdicts": [
+  {
+   "claim": "Kickstarter has no official public API and its ToS explicitly forbid bulk harvesting/scraping ('access or copy in bulk, retrieve, harvest, or index any portion of the Services'); Kickstarter also actively blocks automated bots.",
+   "verdict": "REFUTED",
+   "evidence": "The 'no official public API' part checks out (confirmed by scrapingbee.com/blog/how-to-scrape-kickstarter/: 'There is no official public Kickstarter API'). But the specific quoted ToS language does NOT exist. I read Kickstarter's actual Terms of Use in full (primary source PDF at d3mlfyygrfdi2i.cloudfront.net, Kickstarter's own document host, section 3 'Things You Definitely Shouldn't Do'). The real clause reads: \"Don't use any kind of software or device (whether it's manual or automated) to 'crawl' or 'spider' any part of the Site.\" There is no defined term 'Scrape' and no phrase 'access or copy in bulk, retrieve, harvest, or index' anywhere in the document. This was corroborated by ToS;DR case 150 and by Zuva.ai's independent ToS survey, both of which quote the same short 'crawl/spider' clause for Kickstarter. The elaborate quoted phrase in the claim actually resembles other sites' ToS (e.g. Yelp: 'access, retrieve, copy, scrape, or index'), suggesting cross-contamination/fabrication, not a real Kickstarter quote. The 'actively blocks automated bots' claim is only weakly supported (scrapingbee notes 'rate limits and anti-bot systems' informally, not an explicit platform statement).",
+   "corrected": "Kickstarter has no official public API (true) and its Terms of Use do prohibit automated crawling/spidering ('Don't use any kind of software or device, manual or automated, to \"crawl\" or \"spider\" any part of the Site'), but the specific elaborate quote in this claim ('access or copy in bulk, retrieve, harvest, or index any portion of the Services') is not in Kickstarter's actual Terms of Use and appears to be a fabricated/misattributed quote."
+  },
+  {
+   "claim": "webrobots.io publishes a free full monthly re-scrape of all Kickstarter projects in JSON/CSV, run continuously on a monthly cadence since March 2016.",
+   "verdict": "CONFIRMED",
+   "evidence": "Directly fetched https://webrobots.io/kickstarter-datasets/: 'From March 2016 we run this data crawl once a month,' with datasets available in CSV and JSON formats going up through the current month. A follow-up web search independently corroborated: 'Webrobots.io has a scraper robot which crawls all Kickstarter projects... From March 2016 they run this data crawl once a month... data is free to download in both CSV and JSON formats.'"
+  },
+  {
+   "claim": "The Apify actor xtracto/kickstarter-projects charges $20.00 per 1,000 results and supports a Discover mode filtering by categoryIds/state/sort with optional enrichment returning updates_count and comments_count.",
+   "verdict": "CONFIRMED",
+   "evidence": "Directly fetched https://apify.com/xtracto/kickstarter-projects/api: pricing is 'from $20.00 / 1,000 results'; Discover mode allows sweeping 'by category and state' using categoryIds and state parameters with sort options; optional enrichment adds 'rewards..., tags, add_ons, comments_count, updates_count' — matching the claim's specifics exactly."
+  },
+  {
+   "claim": "StoreLeads tracks installed-app data across 2.9M Shopify stores; Premium tier is $75/mo (browse only), CSV/API export requires the $250/mo Pro tier.",
+   "verdict": "CONFIRMED",
+   "evidence": "Directly fetched storeleads.app (official site): Premium $75/mo = 'Interactive UI access' only (2,000 searches, no export); Pro $250/mo adds 'CSV export capability' and 'API access included.' Store count listed as 2,871,604 active Shopify stores (rounds to ~2.9M). Independently corroborated via a fresh WebSearch (separate from the cited syncgtm.com secondary source) pointing to storeleads.app as the official pricing page: 'CSV export and API access require the Pro plan ($250/month) and are not available in the Premium tier.'"
+  },
+  {
+   "claim": "Hunter.io's free plan in 2026 provides 50 credits/month, with paid plans starting at $34/mo (Starter).",
+   "verdict": "CONFIRMED",
+   "evidence": "Directly fetched help.hunter.io article: free plan = '50 credits/month.' Directly fetched hunter.io/pricing: Starter plan is displayed at '$49 $34 /month' — $34/mo is the plan's advertised default price on the pricing page (effective rate under annual billing, $408/yr), with $49/mo shown as the reference monthly-billed price. Note: $34/mo specifically applies to annual billing, not month-to-month ($49/mo) — the claim doesn't specify billing term, but $34 is indeed the headline number Hunter's own pricing page shows for Starter."
+  },
+  {
+   "claim": "A 534,514-store Shopify scan found Notify Me! on 3,535 stores, PreOrder Globo on 2,391, PreProduct on 132, and Purple Dot on 65, with the study noting Purple Dot's enterprise/custom-integration clients are likely undercounted by public detection.",
+   "verdict": "CONFIRMED",
+   "evidence": "Directly fetched storeinspect.com/blog/best-shopify-preorder-apps: 'We analyzed 534,514 Shopify storefront snapshots... Notify Me! at 3,535 stores... PreOrder Globo at 2,391, PreProduct at 132, and Purple Dot at 65.' Article explicitly states the undercounting caveat: 'Purple Dot's own docs describe store-specific install links and custom integration paths, which is one reason large-brand preorder tooling can be underrepresented in public scans.' All figures and the caveat match exactly."
+  }
+ ]
+}

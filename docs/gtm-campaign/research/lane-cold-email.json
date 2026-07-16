@@ -1,0 +1,160 @@
+{
+ "summary": "Verdict: 50-100 sends/day is achievable on ~$75-105/mo of infrastructure plus $0 in software licensing risk, but only if Dylan treats CASL as the binding constraint, not CAN-SPAM — he's a Canadian sender, so CASL's stricter \"conspicuous publication\" consent test governs every contact, regardless of where the recipient sits. The 2026 deliverability floor is non-negotiable now (Google/Yahoo reject non-compliant bulk mail outright rather than folder it): SPF+DKIM+DMARC, spam rate under 0.30% (target under 0.10%), one-click unsubscribe headers. The realistic build is 3 secondary domains (never tideover.app itself), 2 mailboxes each, 3+ weeks of pure warmup before any cold send, then a slow ramp from 5/mailbox/day to 15-17/mailbox/day over ~4 weeks. Smartlead's Base plan ($39/mo, unlimited mailboxes/warmup) beats Instantly on price at the same feature tier — both now bundle unlimited warmup at every tier, contradicting older per-mailbox-fee blog claims, confirmed by fetching their live pricing pages directly. Target reply rate is 4-7% once the sequence is dialed in (niche B2B like this benchmarks above the 2-3% SaaS average, well below inflated 15-20% marketing-page numbers) — reply-rate benchmarks are the softest sourcing in this research (aggregator blogs citing each other), everything else traces to Google's own support page or the CRTC directly.",
+ "items": [
+  {
+   "name": "3x secondary sending domains",
+   "what": "Throwaway .com domains for cold outbound, kept fully separate from tideover.app so a spam complaint never touches the product domain.",
+   "how": "Register via Porkbun (flat pricing, no renewal shock). Something adjacent to the brand, e.g. tideoverhq.com / gettideover.com / tideoverstatus.com. Point DNS only at mail records + a minimal redirect/landing page, nothing else.",
+   "cost": "$11/yr each = $33/yr (~$2.75/mo) at Porkbun's flat $10.99-11.08/yr rate",
+   "risk": "Low if kept isolated from the main domain. Never send from or link to tideover.app in cold sequences.",
+   "sources": [
+    "https://porkbun.com/products/domains"
+   ]
+  },
+  {
+   "name": "6x Google Workspace Business Starter mailboxes (2 per domain)",
+   "what": "Real Gmail-backed inboxes — the deliverability gold standard vs raw SMTP-only providers — used for warmup + cold sending.",
+   "how": "Sign up directly at workspace.google.com per domain, 2 users each. Set custom From name = Dylan's real name, not 'Tideover Team'. Configure SPF/DKIM/DMARC (p=none is enough to satisfy Google's 'have a DMARC record' rule) via each domain's DNS panel + Workspace admin.",
+   "cost": "~$7.20 USD/user/mo list (~CA$9.79/mo w/ FX+tax) x 6 = ~$43-59 USD/mo (~CA$59-80/mo)",
+   "risk": "Google can suspend Workspace accounts for spam-like sending behavior. Mitigate by never exceeding 15-25 sends/mailbox/day and running native warmup first.",
+   "sources": [
+    "https://stacktidy.com/tools/google-workspace/pricing/canada",
+    "https://workspace.google.com/pricing"
+   ]
+  },
+  {
+   "name": "Managed-mailbox alternative: SmartSenders / Maildoso-style provisioning",
+   "what": "Pre-configured cold-email mailboxes (SPF/DKIM/DMARC done for you, often on Microsoft/Outlook infra) — trades a few extra $/mailbox for zero DNS setup time, relevant given Dylan's ~2hrs/day GTM budget.",
+   "how": "Order 6 mailboxes through Smartlead's SmartSenders add-on or a small Maildoso SMTP/combo plan at signup.",
+   "cost": "~$3.99-9/mailbox/mo (SmartSenders) or Maildoso SMTP ~$2.25-3.10/mailbox/mo at small tiers — roughly $24-54/mo for 6 mailboxes",
+   "risk": "Slightly less control than DIY Workspace; verify the provider actually gives distinct domains/IPs, not a shared pool that inherits other tenants' bad reputation.",
+   "sources": [
+    "https://www.inboxkit.com/learn/maildoso-pricing",
+    "https://maildoso.ai/blog/tools/mailforge"
+   ]
+  },
+  {
+   "name": "Smartlead Base plan (sending/warmup/rotation platform)",
+   "what": "The engine: connects all mailboxes, runs native warmup, rotates sends across inboxes, tracks opens/replies/bounces, builds the multi-step sequence.",
+   "how": "Sign up at smartlead.ai, connect all 6 mailboxes, turn on native warmup pool day 1 (before any cold send), build the 4-5 step sequence inside it.",
+   "cost": "$39/mo ($32.50/mo billed annually) — unlimited mailbox connections + unlimited warmup, 6,000 sends/mo cap (covers 100/day x 30 comfortably)",
+   "risk": "Low — standard SaaS ToS, must stay under their own fair-use spam thresholds or risk platform-level suspension.",
+   "sources": [
+    "https://www.smartlead.ai/pricing"
+   ]
+  },
+  {
+   "name": "Instantly Growth plan (alternative to Smartlead)",
+   "what": "Same category tool, slightly pricier at this tier, similar unlimited-mailbox/warmup model plus a lead database add-on Dylan doesn't need.",
+   "how": "Sign up at instantly.ai if Smartlead's UI or deliverability network doesn't fit after a trial.",
+   "cost": "$47/mo — 5,000 emails/mo, unlimited mailboxes/warmup",
+   "risk": "Low, same category as Smartlead. Don't run both — pick one to avoid double warmup traffic confusing reputation signals.",
+   "sources": [
+    "https://instantly.ai/pricing"
+   ]
+  },
+  {
+   "name": "Google Postmaster Tools",
+   "what": "Free dashboard showing per-domain spam rate, IP/domain reputation, and authentication pass rates directly from Google — the authoritative signal for whether you're about to get cut off.",
+   "how": "Register all 3 sending domains at postmaster.google.com via DNS TXT verification. Check 2x/week.",
+   "cost": "free",
+   "risk": "None. Hard-stop rule: any domain crossing 0.30% spam rate gets paused immediately, not just throttled.",
+   "sources": [
+    "https://support.google.com/mail/answer/81126"
+   ]
+  },
+  {
+   "name": "mail-tester.com pre-flight check",
+   "what": "One-off deliverability sanity check (SPF/DKIM/DMARC alignment, spam-trigger words, blacklist status) before the first real send from any new domain.",
+   "how": "Send a test email to the address mail-tester.com generates, read the score before Week 4 launch.",
+   "cost": "free (paid tiers exist but unnecessary here)",
+   "risk": "None.",
+   "sources": [
+    "https://support.google.com/mail/answer/81126"
+   ]
+  },
+  {
+   "name": "Contact sourcing: campaign/business-context emails only",
+   "what": "Business emails 'conspicuously published' on Kickstarter/BackerKit/Gamefound campaign pages or Shopify store Contact/About pages — the only category CASL's implied-consent exemption covers for cold B2B outreach.",
+   "how": "Use GooseWorks (already in this workspace) to scrape campaign update pages and Shopify 'Contact us' footers. Log the source URL for every address pulled — that log is the CASL due-diligence record if a complaint ever comes in.",
+   "cost": "free (existing tool access)",
+   "risk": "CASL penalties run up to $10M/violation. Do not use guessed/pattern-generated addresses or personal Gmail addresses scraped outside a business context — only addresses visibly posted for business purposes, with no 'no unsolicited email' disclaimer nearby.",
+   "sources": [
+    "https://crtc.gc.ca/eng/com500/guide.htm"
+   ]
+  },
+  {
+   "name": "One-time CASL applicability spot-check",
+   "what": "A short consult with a Canadian small-business/privacy-adjacent lawyer to confirm the conspicuous-publication exemption covers Dylan's specific sourcing method before he scales past pilot volume.",
+   "how": "Book a 1-hour consult once the pilot list (first ~200-300 contacts) is assembled; bring the sourcing log from the item above.",
+   "cost": "~CA$150-300 one-time, not recurring",
+   "risk": "Skipping this is the single largest legal exposure in this lane given the $10M CASL ceiling — cheap insurance relative to the downside.",
+   "sources": [
+    "https://crtc.gc.ca/eng/com500/faq500.htm"
+   ]
+  }
+ ],
+ "daily_actions": [
+  {
+   "action": "Review and approve AI-drafted personalization hooks (specific late-shipment/campaign facts) before that day's batch goes out — no full AI-written email ships unedited",
+   "minutes": 15,
+   "who": "ai-then-dylan-approves"
+  },
+  {
+   "action": "Check Google Postmaster Tools spam-rate and reputation across the 3 sending domains",
+   "minutes": 5,
+   "who": "dylan"
+  },
+  {
+   "action": "Check Smartlead campaign analytics: opens, replies, bounces, unsubscribes per mailbox",
+   "minutes": 5,
+   "who": "dylan"
+  },
+  {
+   "action": "Personally reply to any positive/inbound response from a prospect",
+   "minutes": 15,
+   "who": "dylan"
+  },
+  {
+   "action": "Source new campaign/business-context contact emails via GooseWorks, log source URL for each",
+   "minutes": 20,
+   "who": "ai"
+  },
+  {
+   "action": "Adjust send-volume ramp per schedule; pause any mailbox showing rising bounce/spam signal",
+   "minutes": 5,
+   "who": "dylan"
+  },
+  {
+   "action": "Weekly: audit processed unsubscribes and spot-check CAN-SPAM/CASL footer compliance on live sends",
+   "minutes": 10,
+   "who": "dylan"
+  }
+ ],
+ "load_bearing_claims": [
+  {
+   "claim": "Google's bulk sender rules apply at 5,000 msgs/day to Gmail; require SPF+DKIM+DMARC; spam rate must stay below 0.30% (target below 0.10%); marketing/subscribed messages need one-click unsubscribe (RFC 8058, List-Unsubscribe + List-Unsubscribe-Post headers).",
+   "source": "https://support.google.com/mail/answer/81126"
+  },
+  {
+   "claim": "CASL applies to commercial electronic messages sent from a computer system in Canada regardless of recipient location, and requires consent (express or implied); the 'conspicuous publication' exemption gives implied consent when the recipient's address was publicly posted in a business context without a no-unsolicited-mail notice AND the message is relevant to their business role.",
+   "source": "https://crtc.gc.ca/eng/com500/guide.htm"
+  },
+  {
+   "claim": "CASL penalties run up to $10 million per violation for organizations, with directors/officers personally liable; CAN-SPAM penalties run up to $53,088 per non-compliant individual email as of the FTC's 2026 inflation adjustment.",
+   "source": "https://crtc.gc.ca/eng/com500/faq500.htm"
+  },
+  {
+   "claim": "2026 consensus safe sending pattern is 2-3 mailboxes per domain at 15-25 sends/inbox/day, requiring roughly one domain per 100-150 daily sends; new domains need minimum ~3 weeks of warmup before any real cold send.",
+   "source": "https://www.scaledmail.com/blogs/inboxes-per-domain-cold-email"
+  },
+  {
+   "claim": "Smartlead Base is $39/mo (6,000 sends/mo, unlimited mailboxes and warmup on all tiers); Instantly Growth is $47/mo (5,000 emails/mo, unlimited mailboxes/warmup) — both confirmed directly from their live pricing pages, contradicting older aggregator claims of per-mailbox surcharges.",
+   "source": "https://www.smartlead.ai/pricing"
+  },
+  {
+   "claim": "B2B SaaS cold email reply rates in 2026 average 2-3%, with well-targeted niche campaigns reaching 5-8% and top-decile 10%+; this is the softest-sourced claim in the research, coming from cold-email-tool marketing/comparison blogs rather than a single primary study.",
+   "source": "https://puzzleinbox.com/blog/cold-email-reply-rate-benchmarks-2026-by-segment"
+  }
+ ]
+}

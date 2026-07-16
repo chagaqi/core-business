@@ -531,6 +531,12 @@ Strategic note: this quietly reopens the automation-first segment §5 walks away
 
 ---
 
+### 9D. The GTM campaign layer (added 2026-07-16, after §9A–C)
+
+`docs/gtm-campaign/GTM-CAMPAIGN-2026-07.md` is the daily operating plan: Dylan runs ~2 hrs/day (approvals, replies, engagement, distress-verification), and **the AI layer in its §4 is your work order** — the prospect engine (webrobots dump + Apify discover + distress scoring + contact discovery with a CASL source log), the drafting pipelines (outreach, X, Reddit), and the morning digest, all as scheduled automations. Twelve agents built it; every load-bearing claim was independently re-fetched and seven fell (the corrections are in the doc — including that reply benchmarks are 2–4%, not the 5–8% folklore). Respect its two structural truths: crowdfunding demand is a flow, not a stock (the pipeline re-sources weekly forever), and **cold outbound alone models to 1–5 customers by day 90** — the $20K/mo target needs Dylan's recalibration call (decision D9-GTM). The warmup clock (G5 purchases) is the critical path; nothing customer-facing ships outside the copy standard and proof-only gate.
+
+---
+
 **Pointers, in order of usefulness:**
 
 - `docs/sim-2026-07-12/` — the two simulation reads and `results.json`. Start here.

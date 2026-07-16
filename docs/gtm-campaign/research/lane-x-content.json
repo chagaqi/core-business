@@ -1,0 +1,134 @@
+{
+ "summary": "X is worth ~30 min/day for Tideover, but treat the hype skeptically: most \"build in public\" and \"X algorithm 2026\" content surfacing in search is SEO-blogspam citing each other's numbers, not primary evidence — the real, verifiable build-in-public wins (Pieter Levels, Arvid Kahl, Jon Yongfook/Bannerbear) are consumer/indie tools built over years, not a 90-day niche-B2B analog. Two durable signals are worth building the system on: X's own ranking code has historically weighted replies far above likes (a reply the author replies back to is worth ~150x a like) and penalizes off-platform links 50-90%, so the daily system should be reply-first, not link-first. Separately, the tabletop/crowdfunding creator discovery layer (Rahdo Runs Through, BoardGameGeek, Discord, TikTok) lives mostly off X, so X functions here as a founder-to-founder and hardware/indie-hacker channel, not a backer-acquisition channel — calibrate expectations down accordingly. Realistic 90-day outcome for a no-audience solo founder at this cadence is a few hundred followers and pipeline arriving as DMs/replies from a handful of crowdfunding-creator peers, not a viral break. WISMO teardowns naming a specific struggling public campaign are a bad look — those creators are Tideover's exact customer segment — so default to anonymized/composite patterns, never named mockery. Cadence: one flagship post/day plus 15-20 minutes of reply engagement into hub threads, drafted by AI from Dylan's real daily notes and approved in under 10 minutes.",
+ "items": [
+  {
+   "name": "Typefully (Creator plan)",
+   "what": "Drafting + scheduling tool with AI-assisted compose, works across X/LinkedIn/Bluesky.",
+   "how": "Connect X account via OAuth; each morning paste Dylan's 2-3 sentence raw note into Typefully's AI compose, generate 3 variants in one of the 5 recurring formats, edit to voice, queue for a fixed daily time slot. Free tier (15 posts/mo, no AI) is a fallback if budget is cut.",
+   "cost": "$19/mo Creator plan for AI writing + scheduling; $8/mo Starter has scheduling only; $0 Free tier capped at 15 posts/mo, no AI",
+   "risk": "low — OAuth token scope only, no ban risk from scheduling itself",
+   "sources": [
+    "https://typefully.com/pricing",
+    "https://aiproductivity.ai/pricing/typefully/"
+   ]
+  },
+  {
+   "name": "X Premium Basic",
+   "what": "Cheapest paid tier; unlocks reply-priority ranking and a documented reach floor above free accounts.",
+   "how": "Subscribe the Tideover account at x.com/i/premium_sign_up ($3/mo tier); skip the $8 tier unless the long-form (25k char) post format gets used regularly.",
+   "cost": "$3/mo Basic (no long-form posts); $8/mo Premium for long-form + fuller boost",
+   "risk": "low spend, but reported reach multipliers (6-10x impressions) come from third-party impression-scraping analyses, not disclosed X data — treat as directional, not guaranteed",
+   "sources": [
+    "https://www.unfollr.com/blog/is-x-premium-worth-it"
+   ]
+  },
+  {
+   "name": "Format: anonymized before/after support reply",
+   "what": "Show a real (details-changed) risk-scored ticket next to the generic canned reply vs. the Tideover-drafted no-hard-date, confidence-band reply.",
+   "how": "Pull from Dylan's own product output only (not a competitor's real customer without consent); strip identifying details; post as a 2-tweet before/after image or quote-style text.",
+   "cost": "free",
+   "risk": "low — it's Tideover's own generated content; still confirm no real backer-identifying detail survives the anonymization pass"
+  },
+  {
+   "name": "Format: founder story thread",
+   "what": "The $2M gym-equipment company's COVID-era 60+ day waits, told in pieces over months rather than one dump.",
+   "how": "Break docs/founder-story.md into ~10 story beats; post one every 1-2 weeks as a standalone post, always signed \"— Dylan\"; no fabricated numbers beyond what's already verified in the story doc.",
+   "cost": "free",
+   "risk": "low — story already resolved as the credibility anchor per project memory"
+  },
+  {
+   "name": "Format: behind-the-product build log",
+   "what": "Short, specific updates on what shipped/broke this week in Tideover (mirrors the pattern behind Levels/Kahl/Yongfook's traction, adapted to vertical SaaS).",
+   "how": "One line from Dylan on what changed (a feature, a bug fix, a customer reaction), no revenue-number fabrication — proof-only rule applies here same as customer-facing copy.",
+   "cost": "free",
+   "risk": "low, bounded by the same proof-only doctrine as the rest of the product"
+  },
+  {
+   "name": "Format: composite WISMO pattern post (not named-campaign teardown)",
+   "what": "Describes a support/comms pattern seen across late campaigns generally, never a single identifiable named creator.",
+   "how": "Draft as \"saw this exact comment-wall pattern three times this month\" rather than screenshotting/linking one specific Kickstarter/BackerKit page; if a real campaign is referenced, only ones already extremely public/viral and framed sympathetically, never mocking.",
+   "cost": "free",
+   "risk": "MEDIUM-HIGH if done wrong — naming a specific struggling creator reads as ambulance-chasing against Tideover's own target customer segment and can permanently burn that relationship; default to the anonymized/composite version",
+   "sources": [
+    "https://hbr.org/2021/04/why-you-shouldnt-engage-with-customer-complaints-on-twitter",
+    "https://time.com/4894182/twitter-company-complaints/"
+   ]
+  },
+  {
+   "name": "Reply-first engagement into hub threads",
+   "what": "15-20 min/day replying into BackerKit's official account, Kickstarter Games discovery threads, #buildinpublic, and crowdfunding-creator hashtag activity.",
+   "how": "Dylan keeps a running list of 10-15 accounts (BackerKit, active tabletop/hardware campaign creators, indie-hacker build-in-public accounts) and replies with real, specific input before or instead of posting; algorithm rewards author-replied-to replies far more than original posts with no discussion.",
+   "cost": "free (time only)",
+   "risk": "low — but note the tabletop reviewer/influencer discovery layer (Rahdo Runs Through, BoardGameGeek, Discord, TikTok) is mostly off-X, so this channel reaches campaign creators and hardware/SaaS peers, not backer audiences directly",
+   "sources": [
+    "https://boardgamedesigncourse.com/finding-the-right-board-game-reviewers-and-influencers-for-your-game/",
+    "https://x.com/BackerKit"
+   ]
+  },
+  {
+   "name": "Native X scheduler (Grok compose / X Pro) as fallback",
+   "what": "Free built-in scheduling if the Typefully subscription gets cut for budget reasons.",
+   "how": "Use X's native compose scheduling (available to Premium subscribers) instead of Typefully; loses AI-assisted drafting, so Dylan writes from the same raw-note pipeline manually.",
+   "cost": "free with X Premium Basic ($3/mo) already budgeted above",
+   "risk": "low"
+  }
+ ],
+ "daily_actions": [
+  {
+   "action": "Dylan voice-notes or types 2-3 raw sentences on what happened today (a ticket, a build note, a comment-wall pattern) into the swipe file",
+   "minutes": 3,
+   "who": "dylan"
+  },
+  {
+   "action": "AI drafts 3 post variants from the raw note, rotating through the 5 recurring formats, and queues them in Typefully",
+   "minutes": 0,
+   "who": "ai"
+  },
+  {
+   "action": "Dylan reviews the 3 drafts, edits one to voice, kills fabricated-sounding claims, approves for the daily slot",
+   "minutes": 7,
+   "who": "ai-then-dylan-approves"
+  },
+  {
+   "action": "Dylan spends the first block replying with real, specific input into 5-8 hub/community threads (BackerKit, crowdfunding creators, build-in-public accounts) before posting",
+   "minutes": 12,
+   "who": "dylan"
+  },
+  {
+   "action": "Dylan replies to comments/replies on yesterday's post to trigger the author-reply-back ranking signal",
+   "minutes": 6,
+   "who": "dylan"
+  },
+  {
+   "action": "Weekly (amortized daily): pull one more real anonymized support exchange into the swipe file so the format doesn't run dry",
+   "minutes": 2,
+   "who": "dylan"
+  }
+ ],
+ "load_bearing_claims": [
+  {
+   "claim": "X's ranking algorithm weights replies far above likes (a reply the author replies back to is worth roughly 150x a like), and posts with off-platform links see reach cut 50-90% — so a reply-first, link-averse posting habit is favored by the mechanics, not just etiquette.",
+   "source": "https://opentweet.io/blog/x-algorithm-open-source-github-2026"
+  },
+  {
+   "claim": "X Premium subscribers see a substantially higher reach floor than free accounts (one impressions analysis of ~18.5M posts found free accounts averaging under 95 impressions/post vs. ~640 for Premium), though this is third-party analysis, not X's own disclosed methodology.",
+   "source": "https://www.unfollr.com/blog/is-x-premium-worth-it"
+  },
+  {
+   "claim": "The tabletop/board-game creator discovery and influence layer runs mainly through YouTube reviewers (e.g. Rahdo Runs Through), TikTok, and BoardGameGeek/Discord communities rather than X, meaning X reaches campaign creators and hardware/indie-hacker peers more than backer audiences.",
+   "source": "https://boardgamedesigncourse.com/finding-the-right-board-game-reviewers-and-influencers-for-your-game/"
+  },
+  {
+   "claim": "Research on brands publicly engaging with negative complaints found companies that responded publicly to negative tweets saw a drop in stock price and brand-image reduction, because it draws more attention to the complaint — supporting an anonymized/composite approach over named public teardowns.",
+   "source": "https://hbr.org/2021/04/why-you-shouldnt-engage-with-customer-complaints-on-twitter"
+  },
+  {
+   "claim": "The clearest evidenced build-in-public-to-customers pipeline (Pieter Levels' Photo AI: $5.4K in week one, $132K MRR by month 18) converted an audience built over roughly a decade of daily posting, not a 90-day cold start — this caps how aggressively 90-day pipeline expectations should be set.",
+   "source": "https://levelup.gitconnected.com/how-pieter-levels-manufactures-trust-at-scale-before-the-product-is-even-finished-ce5ceb675a62"
+  },
+  {
+   "claim": "Typefully's paid tiers ($8 Starter / $19 Creator with AI writing / $39 Team) and Hypefury's tiers (from $29, sweet spot $65) both fit inside the founder's $100-150/mo total tool budget individually, but Typefully Creator is the cheaper way to get AI-assisted drafting.",
+   "source": "https://typefully.com/pricing"
+  }
+ ]
+}

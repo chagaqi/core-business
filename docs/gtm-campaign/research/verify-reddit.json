@@ -1,0 +1,35 @@
+{
+ "verdicts": [
+  {
+   "claim": "GummySearch shut down permanently on 11/30/2025 after failing to secure a commercial license for Reddit's Data API — confirmed on GummySearch's own homepage, which now reads 'GummySearch is closed as of 11/30/2025.' Do not budget for it.",
+   "verdict": "CONFIRMED",
+   "evidence": "gummysearch.com homepage (fetched live) literally reads 'GummySearch is closed as of 11/30/2025.' The company's own closure post (gummysearch.com/closing-time/) states it is shutting down 'to comply with Reddit's API policies, which forbid commercial applications' — i.e. it could not reach a commercial API licensing agreement with Reddit, matching the stated reason. One nuance worth flagging: it is not a hard permanent shutdown for everyone on that date — paid subscribers keep access until their billing period ends and lifetime purchasers keep access through 11/30/2026, with full data deletion then. The actionable point ('closed to new business, don't budget for it going forward') is accurate; 'shut down permanently on 11/30/2025' slightly overstates how abrupt/total the cutoff was for existing paying customers.",
+   "corrected": "GummySearch stopped accepting new signups/payments on 11/30/2025 and is winding down (citing failure to reach a commercial Reddit Data API license), but existing paid/lifetime customers retain access into late 2026 before full closure — treat it as dead for planning purposes either way."
+  },
+  {
+   "claim": "F5Bot is free for keyword alerts across Reddit/HN/Lobsters; optional paid tiers are Silver ($9.99/mo, 20 keywords) and Gold ($49.99/mo, 200 keywords + integrations) — confirmed directly on f5bot.com.",
+   "verdict": "CONFIRMED",
+   "evidence": "Live fetch of f5bot.com shows: Free tier ($0, unlimited keyword alerts across Reddit/HN/Lobsters); Silver tier at $9.99/month for 20 keywords with advanced filtering/full post text/ad-free emails; Gold tier at $49.99/month for 200 keywords plus RSS/JSON feeds, AI filtering, and Slack & Discord integrations. Numbers match exactly."
+  },
+  {
+   "claim": "r/Crowdfunding's own Reddit-supplied description states it is a forum for crowdfunding discussion with 'no promotion' — this is a listening-only sub, not a channel.",
+   "verdict": "CONFIRMED",
+   "evidence": "Navigated live to reddit.com/r/Crowdfunding/ (via browser, since reddit.com blocks the WebFetch tool). The page title/community description reads verbatim: 'Crowdfunding: Forum for crowdfunding discussion (no promotion)'. Matches the claim exactly."
+  },
+  {
+   "claim": "r/smallbusiness and r/Entrepreneur both restrict self-promotion to a single sanctioned weekly thread and prohibit it in regular posts — the only compliant lane for a direct Tideover mention in either sub.",
+   "verdict": "CONFIRMED",
+   "evidence": "Checked Reddit's own live rules (not the cited third-party reddit-radar-marketing.com page) via browser. r/smallbusiness sidebar rule, verbatim: 'No business promotion posts are allowed. Promote your business in the weekly Promote-your-business thread.' r/Entrepreneur Rule 1 ('No promotion, sales, or solicitation'), verbatim: 'Do not use this community to sell, promote, recruit, hire, job-seek, solicit investment, or drive traffic... Free offers and promotions belong only in the designated weekly threads.' (Entrepreneur's weekly promo slot is the 'Thank You Thursday' sticky.) Both subs confirmed to gate self-promotion to a weekly thread and prohibit it elsewhere, via the primary source rather than the secondary one cited."
+  },
+  {
+   "claim": "UNVERIFIED but decision-critical: one subreddit-stats tool flagged r/Kickstarter as quarantined. Could not independently confirm (Reddit itself blocks automated fetch). Must be manually checked on reddit.com before any time is spent there.",
+   "verdict": "REFUTED",
+   "evidence": "Manually navigated live to reddit.com/r/Kickstarter/ via browser (the check the claim itself called for). The subreddit loaded normal post content directly with no quarantine interstitial/opt-in warning of any kind (Reddit's own quarantine policy, per support.reddithelp.com, requires an explicit warning page users must opt into before any content shows). r/Kickstarter is NOT currently quarantined — the subredditstats.com flag cited as the source for this concern does not hold up. The claim's hedge and call for manual verification were appropriate; the underlying quarantine flag itself is false."
+  },
+  {
+   "claim": "No sitewide Reddit karma/account-age minimum exists; individual subreddits set thresholds via AutoModerator, commonly 7-30 day account age and 10-200 comment karma for mid-size business communities.",
+   "verdict": "CONFIRMED",
+   "evidence": "subredditanalyzer.com states verbatim: 'Reddit has no sitewide karma floor. Every subreddit sets its own thresholds via AutoModerator.' This core claim is exact. The specific numeric range ('7-30 days / 10-200 karma for mid-size business communities') is a loose paraphrase rather than a direct quote — the source's actual table has no distinct 'business' category; its closest analogs are 'General Entertainment' (50K-500K members: 50-100 karma, 7-30 days) and 'Major Discussion' (500K-5M, e.g. r/Entrepreneur given as an example: 100-500 karma, 14-30 days). The stated 10-200/7-30 range is a reasonable, hedged ('commonly') synthesis spanning those tiers, not a false stat, but it isn't a verbatim figure from the source."
+  }
+ ]
+}

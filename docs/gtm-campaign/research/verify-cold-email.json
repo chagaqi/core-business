@@ -1,0 +1,34 @@
+{
+ "verdicts": [
+  {
+   "claim": "Google's bulk sender rules apply at 5,000 msgs/day to Gmail; require SPF+DKIM+DMARC; spam rate must stay below 0.30% (target below 0.10%); marketing/subscribed messages need one-click unsubscribe (RFC 8058, List-Unsubscribe + List-Unsubscribe-Post headers).",
+   "verdict": "CONFIRMED",
+   "evidence": "Fresh fetch of https://support.google.com/mail/answer/81126 confirms every element: enhanced requirements trigger above 5,000 msgs/day to Gmail; bulk senders must have SPF, DKIM, and DMARC; spam rate must stay below 0.3% with a below-0.10% target monitored via Postmaster Tools; marketing/subscribed mail must support one-click unsubscribe per RFC 8058 with List-Unsubscribe and List-Unsubscribe-Post headers."
+  },
+  {
+   "claim": "CASL applies to commercial electronic messages sent from a computer system in Canada regardless of recipient location, and requires consent (express or implied); the 'conspicuous publication' exemption gives implied consent when the recipient's address was publicly posted in a business context without a no-unsolicited-mail notice AND the message is relevant to their business role.",
+   "verdict": "CONFIRMED",
+   "evidence": "Direct fetch of https://crtc.gc.ca/eng/com500/guide.htm confirms the express/implied consent requirement and the two-part conspicuous-publication test verbatim (address publicly posted with no opt-out notice, AND content relevant to the recipient's business/role/duties, with the COO-vs-marketing-officer example). The extraterritorial 'computer system in Canada regardless of recipient location' scope isn't spelled out on that specific guide page but is corroborated consistently by multiple independent legal/compliance sources (Gowling WLG, Mailchimp, sendcheckit, Listrak) as a well-established feature of the Act (S.C. 2010, c. 23)."
+  },
+  {
+   "claim": "CASL penalties run up to $10 million per violation for organizations, with directors/officers personally liable; CAN-SPAM penalties run up to $53,088 per non-compliant individual email as of the FTC's 2026 inflation adjustment.",
+   "verdict": "CONFIRMED",
+   "evidence": "CASL half confirmed verbatim on https://crtc.gc.ca/eng/com500/faq500.htm: 'The maximum amount of an AMP, per violation, for an individual is $1 million. For a business, it is $10 million,' plus explicit director/officer personal liability language. CAN-SPAM half confirmed via FTC's own press release (ftc.gov/news-events/news/press-releases/2025/02/ftc-publishes-inflation-adjusted-civil-penalty-amounts-2025) and Federal Register doc 2025-01361: max civil penalty raised to $53,088 per violation effective Jan 17 2025; a further Federal Register notice (2026-07-07, 'No Adjustment to Civil Monetary Penalty Amounts') confirms no 2026 increase, so $53,088 still holds. Note: the stated source (crtc.gc.ca/eng/com500/faq500.htm) covers only the CASL figure — it does not itself discuss CAN-SPAM/FTC; the CAN-SPAM figure is independently correct but mis-attributed to that source."
+  },
+  {
+   "claim": "2026 consensus safe sending pattern is 2-3 mailboxes per domain at 15-25 sends/inbox/day, requiring roughly one domain per 100-150 daily sends; new domains need minimum ~3 weeks of warmup before any real cold send.",
+   "verdict": "REFUTED",
+   "evidence": "Fresh fetch of the cited https://www.scaledmail.com/blogs/inboxes-per-domain-cold-email contradicts the domain ratio and warmup period. The page states warmup must run '1:1 ratio... for 14 days minimum before any cold send' (14 days = 2 weeks, not ~3 weeks). Its own worked example (500 sends/day ÷ 20 per inbox = 25 inboxes ÷ 2 per domain = 13 domains, +20-30% buffer = 16-18 domains) implies roughly 1 domain per ~30-38 daily sends, not 'one domain per 100-150 daily sends' — the claim overstates domain economy by roughly 3-5x. Mailboxes-per-domain is also more nuanced than a flat '2-3': the page gives 2/domain for Google Workspace, 2-3 for self-managed M365/SMTP, and up to 25/domain for ScaledMail-provisioned M365. Corrected: ~14 days minimum warmup, and closer to 1 domain per 30-40 daily sends (so ~3-5 domains, not ~1, for a 100-150/day campaign)."
+  },
+  {
+   "claim": "Smartlead Base is $39/mo (6,000 sends/mo, unlimited mailboxes and warmup on all tiers); Instantly Growth is $47/mo (5,000 emails/mo, unlimited mailboxes/warmup) — both confirmed directly from their live pricing pages, contradicting older aggregator claims of per-mailbox surcharges.",
+   "verdict": "CONFIRMED",
+   "evidence": "Live fetch of https://www.smartlead.ai/pricing confirms Base = $39/mo, 6,000 email sends/mo, and 'All Smartlead plans include unlimited email accounts at no extra cost' (FAQ). Unlimited warmup on all tiers (including Base) is confirmed by cross-checking multiple current 2026 pricing breakdowns (Landbase, Astra GTM, Enrich, Miniloop) which consistently state unlimited warmup is standard on every tier, with an optional 'Ultra Premium Warmup Pool' as an eligibility-gated upgrade for higher tiers only — not a base-tier restriction. Live fetch of https://instantly.ai/pricing confirms Growth = $47/mo, 5,000 emails/month, 'Unlimited Email Accounts,' 'Unlimited Email Warmup.'"
+  },
+  {
+   "claim": "B2B SaaS cold email reply rates in 2026 average 2-3%, with well-targeted niche campaigns reaching 5-8% and top-decile 10%+; this is the softest-sourced claim in the research, coming from cold-email-tool marketing/comparison blogs rather than a single primary study.",
+   "verdict": "REFUTED",
+   "evidence": "Fresh fetch of the cited https://puzzleinbox.com/blog/cold-email-reply-rate-benchmarks-2026-by-segment gives materially different numbers: overall 2026 benchmark is '2-3% for an average campaign, 4-6% for a top-decile campaign' (not 10%+); B2B SaaS specifically is listed at '2-4%' reply rate with '1-2%' positive reply rate; the page's closest equivalent to 'well-targeted niche' is 'Tight ICP (precise role, company size, trigger event): 3-5% reply rate' — not the 5-8% figure asserted. The claim's own hedge about weak sourcing is fair, but the specific numbers it reports do not match its own cited source."
+  }
+ ]
+}

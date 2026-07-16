@@ -1,0 +1,222 @@
+{
+ "daily_actions": [
+  {
+   "action": "Pull latest webrobots.io monthly Kickstarter dump, filter locally for state=successful, category in [Tabletop Games, Hardware, Design], pledged>=$100K, deadline 60-120 days ago -> shortlist CSV",
+   "minutes": 30,
+   "who": "ai"
+  },
+  {
+   "action": "Run Apify xtracto/kickstarter-projects discover-mode actor on target categories with enrichment on; compute distress_score = comments_count / updates_count and days_since_deadline",
+   "minutes": 15,
+   "who": "ai"
+  },
+  {
+   "action": "Skim BackerLens sourcing-ready list, Indiegogo InDemand explore page, and BoardGameGeek fulfillment threads for qualitative distress signals a script can't judge (tone, named creators melting down)",
+   "minutes": 15,
+   "who": "dylan"
+  },
+  {
+   "action": "Merge Kickstarter + Indiegogo + Shopify (StoreLeads) rows into one ~200-row prospect sheet; spot-check 20 random rows for sanity before outreach starts",
+   "minutes": 20,
+   "who": "ai-then-dylan-approves"
+  },
+  {
+   "action": "Run Hunter.io domain search + Apify Kickstarter Email Scraper against that day's shortlist to attach and verify contact emails",
+   "minutes": 20,
+   "who": "ai"
+  },
+  {
+   "action": "Manually open the day's top 10 highest-distress-score campaigns, read latest 3 updates + comment section, tag genuine hard-late vs just-slow",
+   "minutes": 15,
+   "who": "dylan"
+  },
+  {
+   "action": "Weekly: pull StoreLeads export for PreProduct/Purple Dot install lists, dedupe against existing CRM/prospect sheet",
+   "minutes": 10,
+   "who": "ai"
+  },
+  {
+   "action": "Approve or reject that day's outreach batch before any message sends",
+   "minutes": 10,
+   "who": "dylan"
+  }
+ ],
+ "items": [
+  {
+   "name": "webrobots.io monthly Kickstarter dataset",
+   "what": "Free full monthly re-scrape of every Kickstarter project (live + ended), JSON/CSV, running since 2014-2016 to present.",
+   "how": "Go to webrobots.io/kickstarter-datasets/, download the latest month's CSV.zip (~30 files, ~100MB), concat locally, filter for state=successful AND category in [Tabletop Games, Hardware, Design/Product Design] AND pledged>=$100K AND deadline 60-120 days ago. No scraping required, it's a pre-built export.",
+   "cost": "free",
+   "risk": "Third-party recompiled Kickstarter data; Kickstarter's ToS forbids bulk harvesting but webrobots.io has run openly since 2014 without apparent takedown. Use only for lead gen, never republish/resell the raw dataset.",
+   "sources": [
+    "https://webrobots.io/kickstarter-datasets/"
+   ]
+  },
+  {
+   "name": "Apify: xtracto/kickstarter-projects (Discover mode)",
+   "what": "Paid Kickstarter scraper actor mirroring KS's own discover filters (categoryIds, state, sort), with optional enrichment returning updates_count/comments_count/rewards - your best programmatic proxy for 'funded and going quiet while backers get loud.'",
+   "how": "Run via Apify console with categoryIds=[Tabletop Games, Hardware, Design], state=successful, sort=end_date, maxItems=500-1000, enrichment=true; export CSV; compute distress_score = comments_count / max(updates_count,1).",
+   "cost": "$20.00 per 1,000 results, pay-per-event, plus Apify platform usage (Free plan = $5/mo credit, Starter = $29/mo)",
+   "risk": "Scraping Kickstarter has no official sanction and violates KS's ToS on bulk harvesting; Apify's proxy handling makes it harder to block, not compliant. Keep volume modest (hundreds/week), use for lead gen only.",
+   "sources": [
+    "https://apify.com/xtracto/kickstarter-projects/api",
+    "https://www.scrapingbee.com/blog/how-to-scrape-kickstarter/"
+   ]
+  },
+  {
+   "name": "BackerLens (sourcing-ready)",
+   "what": "Free purpose-built directory of campaigns already in Indiegogo InDemand or Kickstarter Late Pledge - i.e. funded and still actively selling post-deadline. Shows funding total, % funded, category, 24h momentum, and a proprietary 'LENS' score. ~1,473 campaigns tracked (1,431 Indiegogo / 42 Kickstarter) as of this check.",
+   "how": "Create a free account at backerlens.com/sourcing-ready, filter by category/funding range, list campaign names+links, then open each to check delivery-date-vs-today gap and comment tone.",
+   "cost": "free",
+   "risk": "low - first-party public directory, no scraping involved",
+   "sources": [
+    "https://backerlens.com/sourcing-ready"
+   ]
+  },
+  {
+   "name": "StoreLeads",
+   "what": "Ecommerce store intelligence DB covering 2.9M Shopify stores with installed-app + install-date data; filter for stores running preorder/deposit apps (PreProduct, Purple Dot, Notify Me!, PreOrder Globo) as a proxy for brands currently selling on a wait.",
+   "how": "Sign up Premium to browse/filter by app=PreProduct OR Purple Dot; upgrade to Pro only the month you need bulk CSV/API export, then downgrade. Cross-reference the resulting stores against Shopify's public estimated-revenue field to prioritize mid-size brands.",
+   "cost": "$75/mo (Premium, browse-only) or $250/mo (Pro, adds CSV/API export)",
+   "risk": "low - first-party paid data product",
+   "sources": [
+    "https://syncgtm.com/blog/store-leads-review-2026",
+    "https://storeleads.app/"
+   ]
+  },
+  {
+   "name": "Indiegogo InDemand direct browse",
+   "what": "Indiegogo's own ongoing marketplace of funded campaigns still accepting late pledges - every campaign here is, by definition, still fulfilling.",
+   "how": "Browse indiegogo.com/explore and BackerLens's larger Indiegogo-side pool (1,431 campaigns) side by side; sort by category/funding size, open each to check latest update date vs today.",
+   "cost": "free",
+   "risk": "low, manual browsing of public pages",
+   "sources": [
+    "https://support.indiegogo.com/hc/en-us/articles/204092046-InDemand-FAQ",
+    "https://backerlens.com/sourcing-ready"
+   ]
+  },
+  {
+   "name": "Kicktraq",
+   "what": "Long-running (since 2012) third-party Kickstarter analytics/discovery site plus browser extension; Hot List and per-project pledge-history graphs let you visually spot campaigns that spiked then went quiet - a fulfillment-risk tell.",
+   "how": "Browse kicktraq.com/projects (Active Projects) and the Hot List; install the free Chrome extension so pledge-history overlays show while browsing Kickstarter itself.",
+   "cost": "free",
+   "risk": "low, manual browsing",
+   "sources": [
+    "https://www.kicktraq.com/",
+    "https://www.kicktraq.com/tools/"
+   ]
+  },
+  {
+   "name": "Kickstarter Advanced Search / Discover (native)",
+   "what": "Kickstarter's own filter UI - project state, category/subcategory, amount-pledged ranges, sort by end date - the fastest zero-cost way to hand-pick campaigns that ended 60-120 days ago in target categories.",
+   "how": "Use kickstarter.com/discover/advanced with state=successful, category=Tabletop Games or Design/Technology, sort=end_date; open results manually. Direct bot/script fetches to this page return 403, so this lane is human browsing (Dylan, or a real browser session), not a script target.",
+   "cost": "free",
+   "risk": "low for manual browsing; confirmed Kickstarter blocks non-browser automated fetches (403), don't try to script it directly",
+   "sources": [
+    "https://www.kickstarter.com/blog/introducing-advanced-search"
+   ]
+  },
+  {
+   "name": "BoardGameGeek fulfillment threads",
+   "what": "Tabletop backers self-organize public 'Kickstarter Update' and shipping-delay threads per game, naming the exact publisher and describing exactly how late/how angry - highest-signal, zero-tooling qualitative source for 'who is melting down right now' in tabletop.",
+   "how": "Search boardgamegeek.com for '[category] kickstarter delay' or browse the community delay-analysis threads and their comments for named campaigns; also check a specific game's own forum for 'fulfillment update' threads.",
+   "cost": "free",
+   "risk": "low, public forum reading",
+   "sources": [
+    "https://boardgamegeek.com/thread/2916056/kickstarter-boardgames-are-late-by-35-months-on-av"
+   ]
+  },
+  {
+   "name": "Gamefound (search page + public API)",
+   "what": "Dominant tabletop-crowdfunding platform after Kickstarter; official public API exposes creator lookup and active-project listing but has no category/funding filter, so pair it with manual search-page browsing.",
+   "how": "Browse gamefound.com/en/projects/search manually for funded, past-deadline tabletop campaigns; use the public API to pull creator metadata once you have a shortlist of URL slugs.",
+   "cost": "free",
+   "risk": "low - official, ToS-sanctioned API",
+   "sources": [
+    "https://help.gamefound.com/article/425-gamefound-public-api",
+    "https://gamefound.com/en/projects/search"
+   ]
+  },
+  {
+   "name": "Apify: Kickstarter Email Scraper (contactminerlabs)",
+   "what": "Actor that searches Kickstarter by keyword and extracts publicly-listed emails + creator/project links tied to the search - cheapest at-scale contact-discovery tool in this stack.",
+   "how": "Run with KEYWORD=target category term, MAX_ITEMS=200-500, optional DOMAIN_EMAIL filter to strip @kickstarter.com noise. Treat output as unverified - run every email through a verifier before sending.",
+   "cost": "$9.99/month + Apify platform usage",
+   "risk": "Coverage/accuracy unverified (third-party actor). Scraping public emails for cold outreach still needs CAN-SPAM/GDPR-compliant sending (real sender ID, unsubscribe). Mitigate: verify before send, keep daily volume small.",
+   "sources": [
+    "https://apify.com/contactminerlabs/kickstarter-email-scraper---advanced-cheapest-reliable"
+   ]
+  },
+  {
+   "name": "Hunter.io domain search",
+   "what": "Once you have a creator's own website (usually linked from their KS bio or campaign story), Hunter finds/verifies the best contact email on that domain.",
+   "how": "Paste the creator's domain into Hunter's Domain Search; 1 credit per email found.",
+   "cost": "free (50 credits/mo) or $34/mo Starter for more volume",
+   "risk": "low",
+   "sources": [
+    "https://help.hunter.io/en/articles/11060999-what-s-included-in-hunter-s-free-plan",
+    "https://hunter.io/pricing"
+   ]
+  },
+  {
+   "name": "Preorder-vendor client/case-study pages (Purple Dot, PreProduct)",
+   "what": "Purple Dot and PreProduct specifically serve pay-later/long-lead-time preorders (closer to Tideover's actual ICP than generic restock-notify apps like Notify Me!). Their own marketing sites list named enterprise clients and case studies - a small, free, pre-qualified, higher-ACV shortlist that StoreLeads structurally under-detects because these vendors use custom/enterprise integrations.",
+   "how": "Visit getpurpledot.com and preproduct.io, pull every named customer/case-study logo, cross-check each brand's live Shopify store for a 'ships in X weeks' preorder banner.",
+   "cost": "free",
+   "risk": "low, manual browsing",
+   "sources": [
+    "https://docs.getpurpledot.com/docs",
+    "https://preproduct.io/"
+   ]
+  },
+  {
+   "name": "ScrapingBee Kickstarter Scraper API",
+   "what": "On-demand single-page scraper (handles proxy rotation/bot-detection) returning full campaign+creator detail for one URL at a time - not built for bulk discovery, but useful to enrich a final shortlist right before outreach.",
+   "how": "Call the API per-URL for your top 30-50 shortlisted campaigns to pull creator profile fields/bio links that bulk-discovery actors miss.",
+   "cost": "1,000 free credits to start, then $49/mo (250K credits) up to $599/mo (8M credits); JS-rendered request = 5 credits",
+   "risk": "low, but too expensive per-record for bulk work - reserve for shortlist enrichment only",
+   "sources": [
+    "https://www.scrapingbee.com/scrapers/kickstarter-scraper-api/",
+    "https://www.scrapingbee.com/pricing/"
+   ]
+  },
+  {
+   "name": "Apollo.io / Snov.io (backup contact enrichment)",
+   "what": "Sales-intelligence databases for finding a named creator's business email/LinkedIn once you know their name and company - backup/cross-check to Hunter when a domain search comes up empty.",
+   "how": "Search by creator name + company; use as a spot-check, not primary volume, given thin free tiers.",
+   "cost": "free (Apollo 100 credits/mo since late-2025 restructure, or Snov 50 credits/mo), paid from $39/mo (Snov, 1,000 credits) or $49/user/mo (Apollo Basic, 1,000 credits)",
+   "risk": "low",
+   "sources": [
+    "https://salesmotion.io/blog/apollo-pricing",
+    "https://coldemailkit.com/tools/snov-io"
+   ]
+  }
+ ],
+ "load_bearing_claims": [
+  {
+   "claim": "Kickstarter has no official public API and its Terms of Service explicitly forbid bulk harvesting/scraping ('access or copy in bulk, retrieve, harvest, or index any portion of the Services'); the platform also actively blocks automated bots.",
+   "source": "https://www.scrapingbee.com/blog/how-to-scrape-kickstarter/"
+  },
+  {
+   "claim": "webrobots.io publishes a free full monthly re-scrape of all Kickstarter projects in JSON/CSV, run continuously on a monthly cadence since March 2016.",
+   "source": "https://webrobots.io/kickstarter-datasets/"
+  },
+  {
+   "claim": "The Apify actor xtracto/kickstarter-projects charges $20.00 per 1,000 results and supports a Discover mode filtering by categoryIds/state/sort with optional enrichment returning updates_count and comments_count.",
+   "source": "https://apify.com/xtracto/kickstarter-projects/api"
+  },
+  {
+   "claim": "StoreLeads tracks installed-app data across 2.9M Shopify stores; Premium tier is $75/mo (browse only), CSV/API export requires the $250/mo Pro tier.",
+   "source": "https://syncgtm.com/blog/store-leads-review-2026"
+  },
+  {
+   "claim": "Hunter.io's free plan in 2026 provides 50 credits/month (roughly 50 email finds), with paid plans starting at $34/mo (Starter).",
+   "source": "https://help.hunter.io/en/articles/11060999-what-s-included-in-hunter-s-free-plan"
+  },
+  {
+   "claim": "A 534,514-store Shopify scan found Notify Me! on 3,535 stores, PreOrder Globo on 2,391, PreProduct on 132, and Purple Dot on 65 - with the study noting Purple Dot's enterprise/custom-integration clients are likely undercounted by public detection.",
+   "source": "https://storeinspect.com/blog/best-shopify-preorder-apps"
+  }
+ ],
+ "summary": "Fastest path to a 200-row prospect list: pull webrobots.io's free monthly Kickstarter dump and BackerLens's free curated late-pledge/InDemand list first (zero cost, same day), then layer in Apify's $20/1,000-result Kickstarter discover actor and StoreLeads ($75-250/mo) for Shopify preorder-app install data to hit volume. Kickstarter has no official API, actively blocks bot traffic (confirmed 403 on direct automated fetch), and its ToS forbids bulk harvesting - treat any Kickstarter-side scraping (Apify, ScrapingBee) as tolerated-but-not-sanctioned, keep volumes modest, and never republish the raw data. \"Distressed and in fulfillment\" is best detected by combining machine signals (deadline 60-120 days past, updates_count low relative to age, comments_count high) from Apify's enrichment fields with human spot-checks of BoardGameGeek threads and campaign comment walls, which name specific angry creators directly and for free. For contact discovery, Kickstarter's own in-platform creator inbox (free) plus Hunter.io domain search (free 50/mo) covers most volume cheaply; the $9.99/mo Apify email scraper is the highest-leverage paid add but needs verification before sending. On the Shopify side, target PreProduct's and Purple Dot's install base specifically over generic restock apps like Notify Me! - they serve genuine pay-later/long-wait preorders, a tighter ICP match, and their own case-study pages are a free pre-qualified shortlist that StoreLeads structurally undercounts."
+}
