@@ -795,6 +795,39 @@ The tone work — the labeling, the cadence, the accusation audit, the refusal t
 
 ---
 
+## 6. THE STRUNK LAYER — sentence mechanics, enforced (added 2026-07-16)
+
+Dylan's directive: implement the rules of Strunk's *Elements of Style* as how the agent speaks. The right mental model: **Strunk is the grammar of calm; the doctrine above is its psychology.** P1–P12 decide what to say and in what order; Strunk governs how every sentence is built. Where they conflict, the doctrine is senior, and the capability lint is senior to both. We implement the *rules* in our own words with our own examples — the 1918 Strunk original is public domain, the later Strunk & White editions are not, and either way no book text enters the repo or the prompt: the model already knows the book; what it needs is the *contract*.
+
+Enforcement takes the same three-layer shape as truth: prompt directives → a deterministic scorer (`lib/drafting/style-lint.ts` — **scores and flags, never blocks**; blocking on taste would push drafts to the deterministic floor and trade coverage for polish) → eval numbers. LEARN-1's edit corpus is the long-run judge of which rules merchants actually keep.
+
+### 6.1 The ten rules, support-adapted
+
+| # | Rule (adapted) | Support-reply application | Enforced by |
+|---|---|---|---|
+| S1 | Omit needless words | "due to the fact that" → "because" · "in order to" → "to" · "please be advised" → cut. **The acknowledgment (M2) is never needless** — cut filler, not feeling. | scorer + prompt |
+| S2 | Active voice | "I posted an update Tuesday," never "an update was posted." Passive is tolerable only for external events with no known agent ("the shipment was held at the port") — never for our own actions or fault (§2.2's passive-fault ban stays a block). | scorer + prompt |
+| S3 | Definite, specific, concrete | Concrete nouns from the closed fact list — proof-only's stylistic twin. "The frames are being anodized," not "things are progressing." | prompt (M3 mandates it) |
+| S4 | Positive form | "Your order ships in weeks 9–11" over "we can't say exactly when." **The refusal discipline overrides:** when we do not know, P9 names the gap. Positive form never manufactures certainty. | prompt |
+| S5 | One idea per sentence | No sentence over 30 words; mean ≤ 18 (P10); the bad-news sentence ≤ 12. Long sentences read as evasive. | scorer |
+| S6 | Plain words | "use" not "utilize" · "help" not "assist"/"facilitate" · "start" not "commence." Band phrasing is exempt — `lib/time.ts` owns band wording. | scorer |
+| S7 | Kill the qualifier leeches | very · quite · rather · really · fairly · extremely. Softeners doing de-escalation work ("just a heads-up") flag at low weight, not as errors. | scorer (low weight) |
+| S8 | No stacked hedges | One hedge per reply, maximum. Two hedges in one sentence is a lawyer's sentence. | scorer |
+| S9 | Paragraphs are units | One topic per paragraph; ≤ 3 sentences per paragraph in email. | scorer |
+| S10 | End on the thing to remember | The last line before the signoff is the lever (M6). Strunk's emphatic-position rule and §2.1's no-close rule are the same instruction. | prompt (M6 mandates it) |
+
+Ring order, for clarity: §2.2's forbidden lexicon **blocks**; the Strunk lists **score**. Nothing moves from the block ring to the score ring.
+
+### 6.2 The scorer contract
+
+`styleScore(text) → { score: 0–100, flags: [{rule, match, weight}] }` — deterministic, pure, no LLM call. Needless phrases and passive constructions weigh heavy; leeches weigh light. The score of every accepted draft is logged structurally (body never logged — the `llm_lint_reject` pattern) so LRN1's telemetry has a style channel the day it lands. Never a gate: a low-scoring draft still ships if the truth gates pass; the operator's edit (LEARN-1) is the vote on whether the style actually mattered.
+
+### 6.3 What this is not
+
+Not a rewrite pass (a one-shot "tighten" re-prompt below a score threshold is the v2 candidate), not a block, not a fine-tune, and never the book pasted into a prompt.
+
+---
+
 ## SOURCES
 
 **De-escalation & clinical**

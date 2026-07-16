@@ -674,6 +674,33 @@ L5  TASK              the ticket, verbatim, sanitized</code></pre>
 <p>The tone work — the labeling, the cadence, the accusation audit, the refusal to over-apologise — is what makes a reply <em>land</em>. But it is the third item that makes it a <strong>product</strong>, because a presale backer does not read one reply. He reads his, and then he reads six other people's in a Discord, and then he decides whether the person who took his money is telling the truth.</p>
 <p><strong>That is the test we are training for. Not the reply. The thread.</strong></p>
 <hr>
+<h2>6. THE STRUNK LAYER — sentence mechanics, enforced (added 2026-07-16)</h2>
+<p>Dylan's directive: implement the rules of Strunk's <em>Elements of Style</em> as how the agent speaks. The right mental model: <strong>Strunk is the grammar of calm; the doctrine above is its psychology.</strong> P1–P12 decide what to say and in what order; Strunk governs how every sentence is built. Where they conflict, the doctrine is senior, and the capability lint is senior to both. We implement the <em>rules</em> in our own words with our own examples — the 1918 Strunk original is public domain, the later Strunk &amp; White editions are not, and either way no book text enters the repo or the prompt: the model already knows the book; what it needs is the <em>contract</em>.</p>
+<p>Enforcement takes the same three-layer shape as truth: prompt directives → a deterministic scorer (<code>lib/drafting/style-lint.ts</code> — <strong>scores and flags, never blocks</strong>; blocking on taste would push drafts to the deterministic floor and trade coverage for polish) → eval numbers. LEARN-1's edit corpus is the long-run judge of which rules merchants actually keep.</p>
+<h3>6.1 The ten rules, support-adapted</h3>
+<table>
+<thead>
+<tr><th>#</th><th>Rule (adapted)</th><th>Support-reply application</th><th>Enforced by</th></tr>
+</thead>
+<tbody>
+<tr><td>S1</td><td>Omit needless words</td><td>"due to the fact that" → "because" · "in order to" → "to" · "please be advised" → cut. <strong>The acknowledgment (M2) is never needless</strong> — cut filler, not feeling.</td><td>scorer + prompt</td></tr>
+<tr><td>S2</td><td>Active voice</td><td>"I posted an update Tuesday," never "an update was posted." Passive is tolerable only for external events with no known agent ("the shipment was held at the port") — never for our own actions or fault (§2.2's passive-fault ban stays a block).</td><td>scorer + prompt</td></tr>
+<tr><td>S3</td><td>Definite, specific, concrete</td><td>Concrete nouns from the closed fact list — proof-only's stylistic twin. "The frames are being anodized," not "things are progressing."</td><td>prompt (M3 mandates it)</td></tr>
+<tr><td>S4</td><td>Positive form</td><td>"Your order ships in weeks 9–11" over "we can't say exactly when." <strong>The refusal discipline overrides:</strong> when we do not know, P9 names the gap. Positive form never manufactures certainty.</td><td>prompt</td></tr>
+<tr><td>S5</td><td>One idea per sentence</td><td>No sentence over 30 words; mean ≤ 18 (P10); the bad-news sentence ≤ 12. Long sentences read as evasive.</td><td>scorer</td></tr>
+<tr><td>S6</td><td>Plain words</td><td>"use" not "utilize" · "help" not "assist"/"facilitate" · "start" not "commence." Band phrasing is exempt — <code>lib/time.ts</code> owns band wording.</td><td>scorer</td></tr>
+<tr><td>S7</td><td>Kill the qualifier leeches</td><td>very · quite · rather · really · fairly · extremely. Softeners doing de-escalation work ("just a heads-up") flag at low weight, not as errors.</td><td>scorer (low weight)</td></tr>
+<tr><td>S8</td><td>No stacked hedges</td><td>One hedge per reply, maximum. Two hedges in one sentence is a lawyer's sentence.</td><td>scorer</td></tr>
+<tr><td>S9</td><td>Paragraphs are units</td><td>One topic per paragraph; ≤ 3 sentences per paragraph in email.</td><td>scorer</td></tr>
+<tr><td>S10</td><td>End on the thing to remember</td><td>The last line before the signoff is the lever (M6). Strunk's emphatic-position rule and §2.1's no-close rule are the same instruction.</td><td>prompt (M6 mandates it)</td></tr>
+</tbody>
+</table>
+<p>Ring order, for clarity: §2.2's forbidden lexicon <strong>blocks</strong>; the Strunk lists <strong>score</strong>. Nothing moves from the block ring to the score ring.</p>
+<h3>6.2 The scorer contract</h3>
+<p><code>styleScore(text) → { score: 0–100, flags: [{rule, match, weight}] }</code> — deterministic, pure, no LLM call. Needless phrases and passive constructions weigh heavy; leeches weigh light. The score of every accepted draft is logged structurally (body never logged — the <code>llm_lint_reject</code> pattern) so LRN1's telemetry has a style channel the day it lands. Never a gate: a low-scoring draft still ships if the truth gates pass; the operator's edit (LEARN-1) is the vote on whether the style actually mattered.</p>
+<h3>6.3 What this is not</h3>
+<p>Not a rewrite pass (a one-shot "tighten" re-prompt below a score threshold is the v2 candidate), not a block, not a fine-tune, and never the book pasted into a prompt.</p>
+<hr>
 <h2>SOURCES</h2>
 <p><strong>De-escalation &amp; clinical</strong></p>
 <ul>

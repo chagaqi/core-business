@@ -3,6 +3,7 @@ import { DeterministicDrafter } from "@/lib/drafting/DeterministicDrafter";
 import { enabledCapabilities, guardedCapabilities } from "@/lib/drafting/capabilities";
 import { llmDraftBlocked, sanitizeInline } from "@/lib/drafting/llm-lint";
 import { floorDecision } from "@/lib/drafting/safe-floor";
+import { styleScore, type StyleScoreResult } from "@/lib/drafting/style-lint";
 import { formatWeeksBand, getCurrentStatus } from "@/lib/status-board";
 import type { DraftContext, DrafterOutput, ReplyDrafter } from "@/lib/drafting/ReplyDrafter";
 import type { OrderTimeline, ProductionStatusEntry } from "@/lib/types";
@@ -148,6 +149,16 @@ export function buildSystemPrompt(
     `3. Never claim an action you have not taken and cannot take (see THINGS YOU CANNOT DO).`,
     `4. Do not use the word "${BANNED_CRUTCH}" or any banned word above.`,
     `5. Output the reply body only — no subject line, no markdown, no notes to the operator. Greet the buyer by first name; end with the sign-off.`,
+    ``,
+    `Style rules (the hard rules above always win):`,
+    `- Omit needless words. Cut filler like 'due to the fact that', 'in order to', 'please be advised'. Never cut the acknowledgment.`,
+    `- Active voice for anything we did or will do: 'I posted an update Tuesday', never 'an update was posted'.`,
+    `- Concrete nouns from the facts above. 'The frames are being anodized', not 'things are progressing'.`,
+    `- Positive form when the facts allow it: say what IS happening. When you do not know, say so plainly — never manufacture certainty.`,
+    `- One idea per sentence. No sentence over 30 words. Keep the sentence carrying bad news under 12.`,
+    `- Plain words: 'use' not 'utilize', 'help' not 'assist'.`,
+    `- Drop empty intensifiers (very, quite, really). At most one hedge in the whole reply.`,
+    `- The last line before the signoff is the reader's next move (their status link or the next update), nothing else.`,
   ].join("\n");
 }
 
@@ -169,6 +180,26 @@ function warnFallback(event: string, ctx: DraftContext, detail?: string): void {
       merchantId: ctx.merchant.id,
       ticketId: ctx.ticket.id ?? null,
       detail: detail ?? null,
+    }),
+  );
+}
+
+/**
+ * structured style-score log (VOICE-ENGINE-SPEC.md §6.2) — score + flag rule names and
+ * counts ONLY, same shape as warnFallback. Never the draft body, never a flag's matched
+ * text. Fires once per accepted llm-drafted reply; style-lint never gates the send.
+ */
+function warnStyleScore(ctx: DraftContext, result: StyleScoreResult): void {
+  const flagCounts: Record<string, number> = {};
+  for (const f of result.flags) flagCounts[f.rule] = (flagCounts[f.rule] ?? 0) + 1;
+  console.warn(
+    JSON.stringify({
+      at: "LlmDrafter",
+      event: "style_score",
+      merchantId: ctx.merchant.id,
+      ticketId: ctx.ticket.id ?? null,
+      score: result.score,
+      flagCounts,
     }),
   );
 }
@@ -303,6 +334,10 @@ export class LlmDrafter implements ReplyDrafter {
       warnFallback(event, ctx, reason);
       return floor;
     }
+
+    // The draft passed every truth gate and ships as llm-drafted — log its Strunk-layer
+    // score now (§6.2). Scoring never gates: this runs after the decision to ship is made.
+    warnStyleScore(ctx, styleScore(text));
 
     // A clean draft still gets the operator flag when the BUYER asked for something the
     // product cannot do: the reply is truthful (it says a human will handle it), but the
