@@ -39,7 +39,13 @@ ${preheader}
  * caller keeps going. No-ops (sent:false, reason:"not-configured") when
  * RESEND_API_KEY or EMAIL_FROM is unset — the local/dev/unprovisioned case.
  */
-export async function sendEmail(msg: { to: string; subject: string; html: string }): Promise<SendResult> {
+export async function sendEmail(msg: {
+  to: string;
+  subject: string;
+  html: string;
+  /** extra RFC headers, e.g. List-Unsubscribe for bulk backer sends (Deliverer). */
+  headers?: Record<string, string>;
+}): Promise<SendResult> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.EMAIL_FROM;
   if (!apiKey || !from) return { sent: false, reason: "not-configured" };
@@ -48,7 +54,13 @@ export async function sendEmail(msg: { to: string; subject: string; html: string
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { authorization: `Bearer ${apiKey}`, "content-type": "application/json" },
-      body: JSON.stringify({ from, to: msg.to, subject: msg.subject, html: msg.html }),
+      body: JSON.stringify({
+        from,
+        to: msg.to,
+        subject: msg.subject,
+        html: msg.html,
+        ...(msg.headers ? { headers: msg.headers } : {}),
+      }),
     });
     if (!res.ok) return { sent: false, reason: `send-failed:${res.status}` };
     const data = (await res.json().catch(() => ({}))) as { id?: string };
