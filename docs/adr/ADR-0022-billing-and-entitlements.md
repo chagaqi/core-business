@@ -1,6 +1,6 @@
 # ADR-0022 — Take money: Stripe Checkout, a plan on the merchant, and entitlements that are actually enforced
 
-**Date:** 2026-07-16 · **Status:** proposed (needs Dylan's sign-off on §Decisions-for-Dylan before build) · **Task:** NS1 / NORTH-STAR P1
+**Date:** 2026-07-16 · **Status:** accepted (Dylan signed off 2026-07-16; the trial-expiry + reminder-email system builds now, the Stripe payment half stays gated on keys) · **Task:** NS1 / NORTH-STAR P1
 
 ## Context
 
@@ -57,13 +57,18 @@ A single `lib/entitlements.ts` maps `plan → { seatCap, orderCap }` from the ta
 
 Billing shows Stripe's real numbers and nothing else — no "you saved $X," no projected ROI on an invoice. The evidence pack and the dashboard keep their measured-only discipline; money is the one place a fabricated number is also fraud.
 
-## Decisions for Dylan (the gate — build does not start until these are answered)
+## Decisions for Dylan — RESOLVED 2026-07-16
 
-1. **Confirm the published ladder becomes the enforced entitlements** (prices + seats + order caps in the table), or adjust. *Recommendation: ship it as published — the numbers are already public and the copy is now honest.*
-2. **Trial-expiry behavior:** soft-lock read-only (recommended) vs. contact-only-no-lock vs. hard-lock.
-3. **Refund posture on prepaid annual:** *Recommendation — cancel stops renewal; no mid-term refund on the current annual term beyond the first-cycle guarantee already advertised (`PricingParts` GuaranteeBox: "if your first cycle doesn't move them, you don't pay").* This needs your (and ideally counsel's) yes, and a matching edit to `/terms`.
-4. **Stripe access:** provide test + live API keys and confirm the account. Then either you create the 3 Products / 6 Prices (monthly+annual) in the Stripe dashboard, or authorize me to create them by API once the keys are set (a credentialed action — your explicit go each time, per the charter).
-5. **Over-cap grace margin:** confirm soft-overage-then-contact (recommended) and the margin (e.g. 10% over cap before new imports gate).
+1. **Ladder → enforced entitlements: SHIP AS PUBLISHED.** ("ship as is we can always tweak it later.") The table's prices/seats/order caps become the enforced entitlements, verbatim.
+2. **Trial-expiry: BUILD IT — soft-lock + a full reminder-email lifecycle** ("lets actually create the trial expiry though thats important. we need reminder emails etc all that saas type stuff"). Welcome on signup, a mid-trial nudge, an ending-soon warning, and a trial-ended email; soft-lock (read-only, data kept, no auto-bill) at expiry. **This is the build starting now** — it needs no Stripe (the trial is no-card).
+3. **Refund posture: STANDARD NO-REFUNDS, except any guarantee we make in the sale** ("refund make it standard no refunds apart from any guarantees we make in sales"). So: no mid-term refund on a prepaid term; the advertised first-cycle guarantee stands. `/terms` gets a matching refund/cancellation clause (flag for a counsel skim before publish).
+4. **Stripe keys: NOT present.** Verified from code + `.env.example` (I did not open `.env.local`, per policy): there is no Stripe code and no `STRIPE_*` in the documented template, so nothing consumes a key even if one is pasted in. The **payment/Checkout half stays gated** until Dylan sets `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PUBLISHABLE_KEY` and the price IDs (and either creates the Products/Prices or authorizes API creation — a credentialed action needing his explicit go).
+5. **Over-cap: soft-overage-then-contact** (recommended, matches the FAQ). Grace margin to confirm at wiring time (default 10%).
+
+## Build split (from the decisions above)
+
+- **NOW (no Stripe): the trial + entitlement system.** Plan/trial fields on `Merchant`; `lib/entitlements.ts` (ladder → caps, with a backward-compatible default so seed/demo/plan-less merchants are unaffected); `lib/trial.ts` (the derived 14-day clock + reminder milestones); the outbound email sender + lifecycle templates (raw-fetch Resend, reusing `RESEND_API_KEY`, no new dependency); a `/api/cron/trial-reminders` daily job (alongside the existing `sweep-outcomes` cron). Soft-lock **enforcement** in the app + the countdown UI land as their own careful slice (they touch app/hot surfaces and carry lockout risk).
+- **GATED on keys: the payment half.** Stripe Checkout create route, the webhook, plan written by Stripe, per-plan cap enforcement at the two choke points, Billing Portal link.
 
 ## Out of scope for v1
 

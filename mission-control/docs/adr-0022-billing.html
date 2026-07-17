@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ADR-0022 — Billing &amp; entitlements (proposed)</title>
+<title>ADR-0022 — Billing &amp; entitlements (accepted)</title>
 <style>
   :root{
     --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
@@ -109,12 +109,12 @@
 </head>
 <body>
   <div class="topbar">
-    <span class="doc-title">ADR-0022 — Billing &amp; entitlements (proposed)</span>
+    <span class="doc-title">ADR-0022 — Billing &amp; entitlements (accepted)</span>
     <a class="back" href="../tideover-hq.html">&larr; Mission Control</a>
   </div>
   <main>
 <h1>ADR-0022 — Take money: Stripe Checkout, a plan on the merchant, and entitlements that are actually enforced</h1>
-<p><strong>Date:</strong> 2026-07-16 · <strong>Status:</strong> proposed (needs Dylan's sign-off on §Decisions-for-Dylan before build) · <strong>Task:</strong> NS1 / NORTH-STAR P1</p>
+<p><strong>Date:</strong> 2026-07-16 · <strong>Status:</strong> accepted (Dylan signed off 2026-07-16; the trial-expiry + reminder-email system builds now, the Stripe payment half stays gated on keys) · <strong>Task:</strong> NS1 / NORTH-STAR P1</p>
 <h2>Context</h2>
 <p>A stranger cannot give Tideover money today. The gap sweep (<code>docs/gap-sweep-2026-07-16/audit-revenue-path.json</code>) traced the whole chain and every link past the login wall is missing:</p>
 <ul>
@@ -159,14 +159,19 @@
 <p><code>/api/stripe/webhook</code> verifies the Stripe signature over the <strong>raw body before any parse</strong> (the exact pattern <code>lib/ingest-auth.ts</code> established), is idempotent on Stripe's event id, and fails closed. Events handled: <code>checkout.session.completed</code>, <code>customer.subscription.updated|deleted</code>, <code>invoice.paid|payment_failed</code>.</p>
 <h3>Proof-only holds here too</h3>
 <p>Billing shows Stripe's real numbers and nothing else — no "you saved $X," no projected ROI on an invoice. The evidence pack and the dashboard keep their measured-only discipline; money is the one place a fabricated number is also fraud.</p>
-<h2>Decisions for Dylan (the gate — build does not start until these are answered)</h2>
+<h2>Decisions for Dylan — RESOLVED 2026-07-16</h2>
 <ol>
-<li><strong>Confirm the published ladder becomes the enforced entitlements</strong> (prices + seats + order caps in the table), or adjust. <em>Recommendation: ship it as published — the numbers are already public and the copy is now honest.</em></li>
-<li><strong>Trial-expiry behavior:</strong> soft-lock read-only (recommended) vs. contact-only-no-lock vs. hard-lock.</li>
-<li><strong>Refund posture on prepaid annual:</strong> <em>Recommendation — cancel stops renewal; no mid-term refund on the current annual term beyond the first-cycle guarantee already advertised (<code>PricingParts</code> GuaranteeBox: "if your first cycle doesn't move them, you don't pay").</em> This needs your (and ideally counsel's) yes, and a matching edit to <code>/terms</code>.</li>
-<li><strong>Stripe access:</strong> provide test + live API keys and confirm the account. Then either you create the 3 Products / 6 Prices (monthly+annual) in the Stripe dashboard, or authorize me to create them by API once the keys are set (a credentialed action — your explicit go each time, per the charter).</li>
-<li><strong>Over-cap grace margin:</strong> confirm soft-overage-then-contact (recommended) and the margin (e.g. 10% over cap before new imports gate).</li>
+<li><strong>Ladder → enforced entitlements: SHIP AS PUBLISHED.</strong> ("ship as is we can always tweak it later.") The table's prices/seats/order caps become the enforced entitlements, verbatim.</li>
+<li><strong>Trial-expiry: BUILD IT — soft-lock + a full reminder-email lifecycle</strong> ("lets actually create the trial expiry though thats important. we need reminder emails etc all that saas type stuff"). Welcome on signup, a mid-trial nudge, an ending-soon warning, and a trial-ended email; soft-lock (read-only, data kept, no auto-bill) at expiry. <strong>This is the build starting now</strong> — it needs no Stripe (the trial is no-card).</li>
+<li><strong>Refund posture: STANDARD NO-REFUNDS, except any guarantee we make in the sale</strong> ("refund make it standard no refunds apart from any guarantees we make in sales"). So: no mid-term refund on a prepaid term; the advertised first-cycle guarantee stands. <code>/terms</code> gets a matching refund/cancellation clause (flag for a counsel skim before publish).</li>
+<li><strong>Stripe keys: NOT present.</strong> Verified from code + <code>.env.example</code> (I did not open <code>.env.local</code>, per policy): there is no Stripe code and no <code>STRIPE_*</code> in the documented template, so nothing consumes a key even if one is pasted in. The <strong>payment/Checkout half stays gated</strong> until Dylan sets <code>STRIPE_SECRET_KEY</code>, <code>STRIPE_WEBHOOK_SECRET</code>, <code>STRIPE_PUBLISHABLE_KEY</code> and the price IDs (and either creates the Products/Prices or authorizes API creation — a credentialed action needing his explicit go).</li>
+<li><strong>Over-cap: soft-overage-then-contact</strong> (recommended, matches the FAQ). Grace margin to confirm at wiring time (default 10%).</li>
 </ol>
+<h2>Build split (from the decisions above)</h2>
+<ul>
+<li><strong>NOW (no Stripe): the trial + entitlement system.</strong> Plan/trial fields on <code>Merchant</code>; <code>lib/entitlements.ts</code> (ladder → caps, with a backward-compatible default so seed/demo/plan-less merchants are unaffected); <code>lib/trial.ts</code> (the derived 14-day clock + reminder milestones); the outbound email sender + lifecycle templates (raw-fetch Resend, reusing <code>RESEND_API_KEY</code>, no new dependency); a <code>/api/cron/trial-reminders</code> daily job (alongside the existing <code>sweep-outcomes</code> cron). Soft-lock <strong>enforcement</strong> in the app + the countdown UI land as their own careful slice (they touch app/hot surfaces and carry lockout risk).</li>
+<li><strong>GATED on keys: the payment half.</strong> Stripe Checkout create route, the webhook, plan written by Stripe, per-plan cap enforcement at the two choke points, Billing Portal link.</li>
+</ul>
 <h2>Out of scope for v1</h2>
 <p>Usage-based/metered billing; seat proration edge cases beyond Stripe's defaults; dunning beyond Stripe's built-in retries; <strong>multi-currency</strong> — the app hardcodes USD/en-US (<code>lib/onboarding-schema.ts:71</code>), a separate gap (NORTH-STAR P6) that blocks non-US merchants and should be sequenced before international paid signups, not bolted onto billing.</p>
 <h2>Consequences</h2>
