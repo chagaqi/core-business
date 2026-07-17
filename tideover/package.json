@@ -13,6 +13,7 @@
     "seed-check": "node scripts/seed-check.mjs",
     "seed:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-mongo.mjs",
     "resign:status-tokens": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/resign-status-tokens.mjs",
+    "stripe:products": "node --env-file-if-exists=.env.local scripts/create-stripe-products.mjs",
     "backup": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/backup.mjs",
     "smoke:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/mongo-smoke.mjs",
     "smoke": "node --env-file-if-exists=.env.local scripts/smoke.mjs",
