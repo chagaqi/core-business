@@ -1,0 +1,68 @@
+{
+ "summary": "A stranger cannot become a paying customer today: the revenue path is marketing copy with almost no backing code past the login wall. Pricing CTAs correctly route to a real Auth0-gated onboarding wizard (works), but from there every downstream link is missing — onboarding never asks which of the three plans the signup wants, no plan/tier field exists anywhere in the data model, no trial clock is ever started or checked, Dylan's July Stripe activation produced zero code (no stripe dependency, no STRIPE_* env vars, no checkout/webhook route), and the plan-based seat/order caps advertised on /pricing are fiction — replaced by two flat, plan-blind ceilings (10 seats, 50,000 import rows) that apply identically to a $299 and a $749 customer. Upgrade/downgrade and cancellation copy on /pricing and /terms describes a self-serve billing system that has no code behind it at all. This is partially known — `docs/TORCH-PASS-TO-OPUS.md` line 254 flags \"Billing is not built\" as a no-improvise zone and §3 item 10 flags pricing's wrong axis — but neither names the specific file-level breaks below, so I'm reporting those as the missing granularity rather than re-flagging the same conclusion.",
+ "gaps": [
+  {
+   "gap": "Zero payment infrastructure exists anywhere in the codebase — no Stripe SDK, no checkout route, no webhook receiver, despite Dylan activating a Stripe account in early July.",
+   "evidence": "package.json dependencies list (checked via `node -e` dump) contains no `stripe`/`@stripe/*` package; `.env.example` (full file read) has zero STRIPE_* variables in any section; grep for stripe|billing|subscription|checkout across tideover/ matches only doc comments and unrelated words (e.g. `security-content.ts`, `PricingParts.tsx` prose), never real integration code.",
+   "severity": "P1-blocks-finished",
+   "tracked": "docs/TORCH-PASS-TO-OPUS.md:254 says 'Billing is not built. Do not build it on a guess about the tier ladder.' — a governance warning, not a mapped chain-break; still list because it doesn't name any of the specific breaks below and gives no evidence of scope.",
+   "fix": "Land a minimal Stripe Checkout + webhook integration behind an ADR before touching any of the gaps below — this is the root blocker for the whole chain."
+  },
+  {
+   "gap": "Onboarding never asks which plan the customer wants, and no merchant record anywhere stores a plan/tier — the $299/$499/$749 choice on /pricing is purely decorative.",
+   "evidence": "lib/onboarding-schema.ts OnboardingBodySchema (full file read) has no plan/tier field; lib/types.ts Merchant interface (lines 257-352, full read) has no plan field; repo-wide grep for `plan:`/`tier:` as field names across lib/*.ts and lib/repositories/**/*.ts returns zero real matches (only incidental word hits like 'out-of-plan' in lib/time.ts:37).",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW",
+   "fix": "Add a plan field to Merchant, capture it at onboarding (or at the eventual Stripe Checkout step), and thread it through team/import cap checks below."
+  },
+  {
+   "gap": "The 14-day free trial promised on /pricing, Home, and /terms has no clock anywhere — no start timestamp is recorded for trial purposes, no expiry check exists, no lockout, no countdown UI.",
+   "evidence": "grep -i 'trial' across tideover/lib and tideover/app returns only marketing-copy pages (app/terms/page.tsx, app/pricing/page.tsx, app/vsl/*) and a test-file name (get-started-href.test.ts) with no trial logic; Merchant.createdAt (lib/types.ts:351) exists but is never read for a trial-deadline calculation anywhere in lib/ or app/.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW",
+   "fix": "Derive trialEndsAt from Merchant.createdAt + 14d, surface a countdown in app/app, and decide what happens at expiry (soft lock vs manual contact, per the FAQ's stated intent)."
+  },
+  {
+   "gap": "Plan-based seat caps are fictional: a single flat 10-seat ceiling (the Scale-tier max) applies to every merchant regardless of plan, so a $299 Starter customer (promised '1 seat') can add up to 10 seats for free.",
+   "evidence": "lib/team.ts:20 `export const TEAM_SEAT_CAP = 10;` used unconditionally in lib/team-route.ts:81 and app/app/team/page.tsx:66; lib/types.ts:284 comment admits it directly: 'Per-plan seat-count enforcement is deferred to billing; the hard cap is TEAM_SEAT_CAP.'",
+   "severity": "P2-punches-below-weight",
+   "tracked": "TORCH-PASS-TO-OPUS.md §3 item 9 ('Seats are sold; ticket assignment does not exist') flags a related but different problem (no ticket routing between seats) — does not mention the cap itself is plan-blind, so listing separately.",
+   "fix": "Gate TEAM_SEAT_CAP per-plan once the plan field (gap #2) exists; until then this is a revenue leak, not just a UX gap."
+  },
+  {
+   "gap": "Plan-based order caps (1,000/5,000/15,000) advertised on /pricing are fictional: the only enforced limit is a flat 50,000-row technical ceiling that applies identically to every merchant.",
+   "evidence": "lib/csv.ts:85 `export const IMPORT_ROW_CAP = 50_000;` enforced in lib/import.ts:117-119 and lib/onboarding-schema.ts:67-73 with no plan check anywhere in either path — a Starter customer can import 50x their advertised cap for the same $299/mo.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "TORCH-PASS-TO-OPUS.md §3 item 10 ('Pricing is on the wrong axis... one persona has no tier at all') flags the pricing model's design problem, not that the caps have zero code enforcement at all — listing the enforcement gap separately since it's independently actionable.",
+   "fix": "Same as seat caps — needs the plan field before a real per-tier IMPORT_ROW_CAP can exist; pricing FAQ's 'What happens if I go over my cap?' answer currently describes enforcement that isn't there."
+  },
+  {
+   "gap": "The /pricing FAQ promises self-serve, immediate plan changes with billing-difference settlement — a capability that has zero code behind it, in the same repo that treats unbacked product promises as a fireable-offense-grade doctrine violation (ADR-0002/capability lint) everywhere else.",
+   "evidence": "app/pricing/page.tsx:52-53 FAQ answer: 'Yes, any time. Plan changes take effect immediately, and we settle the billing difference with you directly...' — no plan field to change (gap #2), no billing system to settle a difference in (gap #1), no UI in app/app/settings or app/app/team for plan selection/change.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW — distinct from the general 'billing is not built' warning because this is a specific customer-facing claim of a working self-serve flow, the exact class of risk ADR-0002/lib/drafting/capabilities.ts was built to prevent in AI replies but wasn't applied to the pricing FAQ's own copy.",
+   "fix": "Either soften the FAQ copy to reflect the current manual process, or scope upgrade/downgrade as part of the Stripe build before re-publishing the claim."
+  },
+  {
+   "gap": "No invoice or receipt generation exists anywhere in the codebase, consistent with the total absence of billing infrastructure.",
+   "evidence": "grep -i 'invoice|receipt' across tideover/**/*.{ts,tsx} returns zero matches outside terms/pricing prose describing intent, not code.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW",
+   "fix": "Comes for free with Stripe Checkout/Billing Portal once gap #1 lands — no separate build needed, just don't forget to surface it in-app."
+  },
+  {
+   "gap": "Terms of service states 'You can cancel at any time' but no subscription object exists anywhere (no Stripe, no plan field, no billing record), so there is no code path a customer or Dylan can actually execute to cancel.",
+   "evidence": "app/terms/page.tsx:42 'You can cancel at any time, and a full export of your data is available to every plan on request.' — cross-checked against gaps #1 and #2: nothing in lib/ or app/api/ represents an active subscription/plan state that a cancel action could mutate.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW",
+   "fix": "Cancellation is meaningless until a subscription record exists; scope it as part of the same Stripe build, not a follow-on."
+  },
+  {
+   "gap": "The board log claims seat/order caps and the trial were 'shipped' on 2026-07-09, which overstates what's actually enforced and could mislead planning toward believing billing readiness that doesn't exist.",
+   "evidence": "mission-control/tideover-hq.html:361 — 'SWAN PRICING — $299/$499/$749, seats + caps + annual 2-months-free toggle + 14-day no-card trial' listed as shipped in the same breath as tenancy/seats and DeepSeek drafting, which WERE fully wired; the pricing page and copy shipped, but per gaps #3-#5 none of trial/seat-cap/order-cap enforcement did.",
+   "severity": "P3-polish",
+   "tracked": "NEW",
+   "fix": "Amend the board entry or add a follow-up note distinguishing 'pricing page shipped' from 'pricing enforcement shipped' so future planning doesn't assume billing readiness."
+  }
+ ]
+}
