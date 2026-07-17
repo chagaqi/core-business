@@ -43,6 +43,10 @@ const EVIDENCE_ADDITIONS = ["/api/evidence/:path*"];
  *  tenant-scope-stamped exactly like /api/team. */
 const SETTINGS_ADDITIONS = ["/api/settings"];
 
+/** The app-subdomain root: "/" runs middleware so the real host can redirect its
+ *  bare root into /app (app-only). Demo hosts still pass "/" through untouched. */
+const ROOT_ADDITION = ["/"];
+
 const ENV_KEYS = ["DEMO_MODE", "REAL_APP_HOST", ...AUTH0_ENV_VARS] as const;
 
 async function withEnv(env: Record<string, string>, fn: () => Promise<void>): Promise<void> {
@@ -80,8 +84,18 @@ test("matcher regression: every legacy operator surface is still covered", () =>
 test("matcher: exactly the legacy list + the ADR-0020 + evidence + settings additions, nothing else", () => {
   assert.deepEqual(
     [...config.matcher].sort(),
-    [...LEGACY_MATCHER, ...ADR_0020_ADDITIONS, ...EVIDENCE_ADDITIONS, ...SETTINGS_ADDITIONS].sort(),
+    [...LEGACY_MATCHER, ...ADR_0020_ADDITIONS, ...EVIDENCE_ADDITIONS, ...SETTINGS_ADDITIONS, ...ROOT_ADDITION].sort(),
   );
+});
+
+test("app subdomain is app-only: real host '/' redirects into /app; demo host '/' stays marketing", async () => {
+  await withEnv({}, async () => {
+    const real = await middleware(req("/", "app.tideover.app"));
+    assert.equal(real.status, 307, "real-host root redirects");
+    assert.equal(new URL(real.headers.get("location") ?? "").pathname, "/app", "…into /app, which then gates to login");
+    const demo = await middleware(req("/", "www.tideover.app"));
+    assert.ok(passesThrough(demo), "the www root stays the marketing home");
+  });
 });
 
 test("demo host: middleware passes everything through untouched", async () => {

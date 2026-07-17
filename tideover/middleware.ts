@@ -49,6 +49,15 @@ export async function middleware(req: NextRequest) {
 
   const { pathname, search } = req.nextUrl;
 
+  // The app subdomain is APP-ONLY: its bare root belongs in the app, not the
+  // marketing home (which lives on the www host). Redirect "/" into /app, which
+  // re-enters this middleware and gates to login when there's no session — so a
+  // logged-out visitor to app.tideover.app lands on login, a logged-in one on the
+  // cockpit. Applies in both auth modes.
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/app", req.url));
+  }
+
   if (authMode() === "password") {
     // Unchanged legacy gate (ADR-0004). The two auth0-only matcher additions
     // pass through: /auth/* has no route in password mode (404s), and the
@@ -143,6 +152,7 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
+    "/",
     "/app/:path*",
     "/auth/:path*",
     "/onboarding",
