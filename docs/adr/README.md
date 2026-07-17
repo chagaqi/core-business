@@ -48,5 +48,10 @@ Every non-trivial decision (a new dependency, an engine change, an integration, 
 |---|----------|
 | [0013](./ADR-0013-scheduled-jobs.md) | Scheduled jobs (F4): Vercel Cron + the resolved_quiet sweep |
 
+**Billing & entitlements**
+| # | Decision |
+|---|----------|
+| [0022](./ADR-0022-billing-and-entitlements.md) | *(proposed)* Stripe Checkout + Billing Portal + webhook; a `plan` on the merchant written only by Stripe; the published ladder becomes enforced seat/order entitlements; 14-day no-card trial soft-locks at expiry. Blocked on Dylan's tier + keys sign-off |
+
 ## Reading order for a newcomer
 0001 → 0002 (the substrate) → 0006 (how engine changes are gated) → then whichever area you're touching.
