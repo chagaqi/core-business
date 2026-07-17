@@ -30,6 +30,8 @@ export async function createCheckoutSession(args: {
   successUrl: string;
   cancelUrl: string;
   customerEmail?: string;
+  /** attach an existing Stripe customer (a returning/prior subscriber) so we never mint a duplicate. */
+  stripeCustomerId?: string;
 }): Promise<{ url: string } | { error: string }> {
   const key = secretKey();
   if (!key) return { error: "billing-not-configured" };
@@ -47,7 +49,10 @@ export async function createCheckoutSession(args: {
     "subscription_data[metadata][plan]": args.plan,
     allow_promotion_codes: "true",
   };
-  if (args.customerEmail) params.customer_email = args.customerEmail;
+  // Reuse the existing customer when we have one; Stripe rejects customer +
+  // customer_email together, so it's one or the other.
+  if (args.stripeCustomerId) params.customer = args.stripeCustomerId;
+  else if (args.customerEmail) params.customer_email = args.customerEmail;
 
   try {
     const res = await fetch(`${API}/checkout/sessions`, {
@@ -64,10 +69,8 @@ export async function createCheckoutSession(args: {
 }
 
 /**
- * Verify a Stripe webhook signature (the `Stripe-Signature: t=…,v1=…` header).
- * Recomputes HMAC-SHA256 over `${t}.${payload}` with the endpoint secret and
- * constant-time compares. Rejects a timestamp outside `toleranceSec` (replay
- * defense). `now` is injected for testability.
+ * Create a Stripe Billing Portal session for an existing customer — the canonical
+ * place to change plan, update payment, view invoices, or cancel. Returns its URL.
  */
 export async function createPortalSession(args: {
   stripeCustomerId: string;
@@ -97,21 +100,25 @@ export function verifyStripeSignature(
   toleranceSec = 300,
 ): boolean {
   if (!sigHeader) return false;
-  const parts = Object.fromEntries(sigHeader.split(",").map((kv) => kv.split("=", 2) as [string, string]));
-  const t = Number(parts.t);
-  const v1 = parts.v1;
-  if (!t || !v1) return false;
+  const pairs = sigHeader.split(",").map((kv) => kv.split("=", 2) as [string, string]);
+  const t = Number(pairs.find(([k]) => k === "t")?.[1]);
+  // Stripe includes ONE v1 per active signing secret — TWO during a secret
+  // rotation. Accept if ANY matches; clobbering to the last (as Object.fromEntries
+  // did) silently fails verification for the whole rotation window.
+  const v1s = pairs.filter(([k]) => k === "v1").map(([, v]) => v);
+  if (!t || v1s.length === 0) return false;
   if (Math.abs(now / 1000 - t) > toleranceSec) return false;
 
-  const expected = createHmac("sha256", secret).update(`${t}.${payload}`).digest("hex");
-  const a = Buffer.from(expected);
-  const b = Buffer.from(v1);
-  if (a.length !== b.length) return false;
-  try {
-    return timingSafeEqual(a, b);
-  } catch {
-    return false;
-  }
+  const a = Buffer.from(createHmac("sha256", secret).update(`${t}.${payload}`).digest("hex"));
+  return v1s.some((v1) => {
+    const b = Buffer.from(v1);
+    if (a.length !== b.length) return false;
+    try {
+      return timingSafeEqual(a, b);
+    } catch {
+      return false;
+    }
+  });
 }
 
 /** Map Stripe's subscription.status to our narrower lifecycle. */
@@ -164,15 +171,25 @@ export function billingUpdateFromEvent(event: unknown): BillingUpdate | null {
     const merchantId = meta.merchantId;
     if (!merchantId) return null;
     const deleted = e.type === "customer.subscription.deleted";
-    const status = deleted ? "canceled" : mapStatus(String(obj.status ?? ""));
-    // resolve the plan from the subscription's active price when present
+    const rawStatus = String(obj.status ?? "");
+    // Ignore in-flight/incomplete states: the definitive state arrives via
+    // checkout.session.completed or a later `active` update. Acting on an
+    // "incomplete" (card still settling, e.g. 3-D Secure) would cancel a paid
+    // signup mid-flight if it landed after the completion event.
+    if (!deleted && (rawStatus === "incomplete" || rawStatus === "incomplete_expired")) return null;
+
+    const metaPlan = (meta.plan as PlanKey) ?? null;
     const items = obj.items as { data?: { price?: { id?: string } }[] } | undefined;
     const priceId = items?.data?.[0]?.price?.id;
-    const plan = deleted ? null : priceId ? planForPriceId(priceId) : ((meta.plan as PlanKey) ?? null);
+    // Preserve the plan the merchant is paying for. When the price id isn't in our
+    // map (create-products re-run with new ids, or a dashboard edit to an unwired
+    // price), fall back to the plan we stamped in the subscription metadata at
+    // checkout — never silently null an ACTIVE plan back to default entitlements.
+    const plan = deleted ? null : priceId ? (planForPriceId(priceId) ?? metaPlan) : metaPlan;
     return {
       merchantId,
       plan,
-      subscriptionStatus: status,
+      subscriptionStatus: deleted ? "canceled" : mapStatus(rawStatus),
       stripeCustomerId: typeof obj.customer === "string" ? obj.customer : null,
     };
   }

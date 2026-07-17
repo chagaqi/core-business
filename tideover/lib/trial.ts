@@ -50,11 +50,21 @@ function isTrialing(m: Merchant): boolean {
   if (m.isDemo) return false; // the open demo is never trial-gated
   if (!m.ownerSub) return false; // legacy / password-mode records carry no trial
   if (m.plan) return false; // picked a paid plan → a customer, not a trialer
-  if (m.subscriptionStatus === "active" || m.subscriptionStatus === "past_due") return false;
-  return true; // subscriptionStatus null or "trialing"
+  // ANY prior billing state means they are no longer on the fresh free trial: an
+  // active/past_due subscriber is a customer, and a "canceled" one is handled as a
+  // hard lock in trialState below — never resurrected back onto the createdAt clock.
+  if (m.subscriptionStatus) return false;
+  return true; // subscriptionStatus null/undefined → never subscribed → trialing
 }
 
 export function trialState(merchant: Merchant, now: Date): TrialState {
+  // A canceled subscription soft-locks exactly like an expired trial — they had
+  // access, chose to cancel, and get it back by choosing a plan. WITHOUT this a
+  // canceled merchant (plan nulled by the webhook) would fall back through the
+  // trial clock and regain free access for the rest of the original 14 days.
+  if (merchant.subscriptionStatus === "canceled") {
+    return { phase: "expired", daysLeft: 0, endsAt: null, dueReminder: null };
+  }
   if (!isTrialing(merchant)) {
     return { phase: "not-applicable", daysLeft: 0, endsAt: null, dueReminder: null };
   }

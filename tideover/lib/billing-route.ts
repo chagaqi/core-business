@@ -36,6 +36,14 @@ const CheckoutBody = z.object({
 export async function handleCheckoutPOST(req: Request): Promise<Response> {
   const ctx = await resolveOwner();
   if (ctx instanceof Response) return ctx;
+
+  // An active subscriber changes plan through the Billing Portal (which modifies
+  // the existing subscription), NOT a fresh Checkout — a new Checkout mints a
+  // second subscription and double-bills them.
+  if (ctx.merchant.subscriptionStatus === "active" && ctx.merchant.stripeCustomerId) {
+    return json(409, { error: "you're already subscribed — use Manage billing to change your plan", useBillingPortal: true });
+  }
+
   const parsed = CheckoutBody.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return json(400, { error: "choose a plan and a monthly/annual interval" });
 
@@ -46,6 +54,8 @@ export async function handleCheckoutPOST(req: Request): Promise<Response> {
     successUrl: `${ORIGIN}/app/billing?checkout=success`,
     cancelUrl: `${ORIGIN}/app/billing?checkout=cancelled`,
     customerEmail: ctx.email ?? undefined,
+    // Reuse the customer if one exists (a prior/canceled subscriber returning).
+    stripeCustomerId: ctx.merchant.stripeCustomerId ?? undefined,
   });
   if ("error" in result) return json(502, { error: "could not start checkout", detail: result.error });
   return json(200, { url: result.url });

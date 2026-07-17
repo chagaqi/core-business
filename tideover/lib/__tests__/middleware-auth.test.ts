@@ -100,6 +100,16 @@ test("app subdomain is app-only: real host '/' redirects into /app; demo host '/
     const demo = await middleware(req("/", "www.tideover.app"));
     assert.ok(passesThrough(demo), "the www root stays the marketing home");
   });
+
+  // DEMO_MODE=false forces real mode on EVERY host — the www marketing root must
+  // STILL pass through (only the app host redirects), never get auth-gated to login.
+  await withEnv({ DEMO_MODE: "false" }, async () => {
+    const www = await middleware(req("/", "www.tideover.app"));
+    assert.ok(passesThrough(www), "www '/' stays public even under DEMO_MODE=false");
+    const app = await middleware(req("/", "app.tideover.app"));
+    assert.equal(app.status, 307, "app host '/' still redirects under DEMO_MODE=false");
+    assert.equal(new URL(app.headers.get("location") ?? "").pathname, "/app");
+  });
 });
 
 test("demo host: middleware passes everything through untouched", async () => {

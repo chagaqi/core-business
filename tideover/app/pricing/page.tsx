@@ -50,7 +50,7 @@ const PRICING_FAQ: readonly { q: string; a: string }[] = [
   },
   {
     q: "Can I change plans later?",
-    a: "Yes. Reach out any time and we'll move you to the new plan and handle any billing difference personally — you deal with the operator, not a self-serve billing console.",
+    a: "Yes, any time — from the billing page in your dashboard. Upgrades and downgrades run through Stripe, which handles the prorated difference for you.",
   },
   {
     q: "Do you offer annual billing?",

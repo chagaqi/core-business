@@ -54,6 +54,41 @@ test("verifyStripeSignature: a correctly-signed recent payload passes; everythin
   assert.equal(verifyStripeSignature(payload, "garbage", secret, now), false, "malformed header");
 });
 
+test("verifyStripeSignature: accepts when ANY v1 matches — a secret rotation sends two", () => {
+  const secret = "whsec_test";
+  const payload = '{"id":"evt_2"}';
+  const now = 1_800_000_000_000;
+  const t = Math.floor(now / 1000);
+  const good = createHmac("sha256", secret).update(`${t}.${payload}`).digest("hex");
+  assert.equal(verifyStripeSignature(payload, `t=${t},v1=deadbeef,v1=${good}`, secret, now), true, "good sig second");
+  assert.equal(verifyStripeSignature(payload, `t=${t},v1=${good},v1=deadbeef`, secret, now), true, "good sig first");
+  assert.equal(verifyStripeSignature(payload, `t=${t},v1=dead,v1=beef`, secret, now), false, "neither matches");
+});
+
+test("billingUpdateFromEvent: ignores in-flight 'incomplete'; preserves the paid plan when the price id is unknown", () => {
+  // an incomplete (card still settling) update must not cancel a paid signup
+  assert.equal(
+    billingUpdateFromEvent({
+      type: "customer.subscription.updated",
+      data: { object: { metadata: { merchantId: "m" }, status: "incomplete" } },
+    }),
+    null,
+  );
+  // an unrecognized price on an ACTIVE sub falls back to the metadata plan, never null
+  const u = billingUpdateFromEvent({
+    type: "customer.subscription.updated",
+    data: {
+      object: {
+        metadata: { merchantId: "m", plan: "growth" },
+        customer: "cus_1",
+        status: "active",
+        items: { data: [{ price: { id: "price_unwired_new" } }] },
+      },
+    },
+  });
+  assert.deepEqual(u, { merchantId: "m", plan: "growth", subscriptionStatus: "active", stripeCustomerId: "cus_1" });
+});
+
 // ── event → merchant update ───────────────────────────────────────────────────────
 
 test("billingUpdateFromEvent: checkout completion activates the plan the session carried", () => {

@@ -5,10 +5,13 @@ import type { PlanKey } from "@/lib/types";
  * seat + order caps. Before this, both caps were flat and plan-blind — a $299
  * Starter got the $749 Scale allowances free (gap sweep, revenue-path lane).
  *
- * This module is the single source of truth for the caps. Enforcement points
- * (lib/team.ts seat cap, lib/import.ts / lib/csv.ts row cap) import FROM here —
- * never the other way round — so there is no cycle and the numbers live in one
- * place.
+ * This module is the single source of truth for the caps. The SEAT cap IS enforced
+ * from here (lib/team-route.ts imports entitlementsFor). The ORDER cap is displayed
+ * (BillingPanel) but NOT yet hard-enforced at import: over-cap is a
+ * soft-overage-then-contact posture per ADR-0022 decision #5, so lib/import.ts
+ * still applies only the flat technical ceiling (IMPORT_ROW_CAP). Wiring the soft
+ * order-cap signal is a tracked follow-up — do not add a hard block without the
+ * grace-margin design.
  */
 
 export interface Entitlements {

@@ -38,7 +38,13 @@ if (!uri) {
   process.exit(1);
 }
 const SRC = process.env.TEST_SRC_MERCHANT || "mch_lumen0001";
-const SECRET = process.env.STATUS_TOKEN_SECRET || "dev-only-change-me";
+const SECRET = process.env.STATUS_TOKEN_SECRET;
+if (!SECRET) {
+  // Fail loud, not a silent dev fallback: dev-signed tokens 404 in prod — the
+  // exact dead-status-links incident this repo already lived through once.
+  console.error("✗ STATUS_TOKEN_SECRET is not set. Refusing to seed with dev-signed status tokens (they 404 in prod). Add it to .env.local.");
+  process.exit(1);
+}
 const now = Date.now();
 const DAY = 24 * 60 * 60 * 1000;
 const iso = (ms) => new Date(ms).toISOString();
@@ -109,6 +115,16 @@ const client = new MongoClient(uri);
 try {
   await client.connect();
   const db = client.db(process.env.MONGODB_DB_LIVE || "tideover_live");
+  // This script reuses the source record ids (merchant + customers/orders/…), so
+  // running it for a SECOND owner would replaceOne over the first tester's docs and
+  // silently hijack their workspace. Refuse if the merchant already belongs to a
+  // different owner. (To populate an EXISTING account, use seed:test-tickets.)
+  const existing = await db.collection("merchants").findOne({ id: testMerchant.id });
+  if (existing && existing.ownerSub && existing.ownerSub !== OWNER) {
+    console.error(`✗ ${testMerchant.id} already belongs to ${existing.ownerSub}. Reusing fixed ids would overwrite that workspace — refusing.`);
+    process.exit(1);
+  }
+
   const upsert = async (coll, docs) => {
     if (docs.length === 0) return 0;
     await db.collection(coll).createIndex({ id: 1 }, { unique: true }).catch(() => {});

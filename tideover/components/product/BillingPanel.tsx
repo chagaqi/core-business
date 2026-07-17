@@ -26,6 +26,9 @@ export function BillingPanel({ currentPlan, subscriptionStatus, hasBillingAccoun
   const [interval, setInterval] = useState<"month" | "year">("month");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // An active subscriber changes plan through the Stripe Portal (modifies the one
+  // subscription), never a fresh Checkout (which would double-bill).
+  const subscribed = subscriptionStatus === "active" && Boolean(currentPlan);
 
   async function go(url: string, body?: unknown, key?: string) {
     setBusy(key ?? url);
@@ -104,7 +107,11 @@ export function BillingPanel({ currentPlan, subscriptionStatus, hasBillingAccoun
                   <button
                     type="button"
                     disabled={isCurrent || busy !== null}
-                    onClick={() => go("/api/billing/checkout", { plan: p.key, interval }, p.key)}
+                    onClick={() =>
+                      subscribed
+                        ? go("/api/billing/portal", undefined, p.key)
+                        : go("/api/billing/checkout", { plan: p.key, interval }, p.key)
+                    }
                     className={clsx(
                       "mt-1 rounded-lg px-3 py-2 text-[13px] font-semibold transition",
                       isCurrent

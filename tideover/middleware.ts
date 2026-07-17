@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { SESSION_COOKIE, verifySessionValue } from "@/lib/session";
-import { resolveMode } from "@/lib/mode";
+import { resolveMode, isRealHost } from "@/lib/mode";
 import {
   authMode,
   auth0ConfigMissing,
@@ -49,13 +49,18 @@ export async function middleware(req: NextRequest) {
 
   const { pathname, search } = req.nextUrl;
 
-  // The app subdomain is APP-ONLY: its bare root belongs in the app, not the
-  // marketing home (which lives on the www host). Redirect "/" into /app, which
-  // re-enters this middleware and gates to login when there's no session — so a
-  // logged-out visitor to app.tideover.app lands on login, a logged-in one on the
-  // cockpit. Applies in both auth modes.
+  // The bare root is special-cased and never reaches the operator auth gate:
+  //   - on the real APP HOST (app.tideover.app) → redirect into /app, which
+  //     re-enters this middleware and gates to login (logged-out) or the cockpit;
+  //   - on any other host → pass straight through as the public marketing home.
+  // Gate on isRealHost (host-only), NOT resolveMode()==="real": a DEMO_MODE=false
+  // deploy forces real mode on EVERY host, and without this the www marketing
+  // homepage would be redirected/auth-gated to login. "/" is in the matcher ONLY
+  // for the app-host redirect; it must stay public everywhere else.
   if (pathname === "/") {
-    return NextResponse.redirect(new URL("/app", req.url));
+    return isRealHost(req.headers.get("host") ?? undefined)
+      ? NextResponse.redirect(new URL("/app", req.url))
+      : NextResponse.next();
   }
 
   if (authMode() === "password") {

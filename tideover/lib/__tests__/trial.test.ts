@@ -64,6 +64,21 @@ test("trialState: demo, legacy (no owner), and on-a-plan merchants are not-appli
   }
 });
 
+test("trialState: a canceled subscription soft-locks (expired), never resurrected onto the trial clock", async () => {
+  // 3 days since createdAt — the raw clock would say "active" with ~11 days left.
+  const canceled = await trialingMerchant({ subscriptionStatus: "canceled", createdAt: daysAgo(3) });
+  const s = trialState(canceled, NOW);
+  assert.equal(s.phase, "expired", "canceled → expired, not a live trial");
+  assert.equal(isSoftLocked(canceled, NOW), true);
+  assert.equal(s.dueReminder, null, "no trial reminders for a canceled account");
+});
+
+test("trialState: past_due is a paying customer (not-applicable), not soft-locked", async () => {
+  const pastDue = await trialingMerchant({ plan: "growth", subscriptionStatus: "past_due" });
+  assert.equal(trialState(pastDue, NOW).phase, "not-applicable");
+  assert.equal(isSoftLocked(pastDue, NOW), false, "a failed payment retry must not lock a customer out");
+});
+
 // ── trial: phases ────────────────────────────────────────────────────────────────
 
 test("trialState: phase follows the derived clock", async () => {

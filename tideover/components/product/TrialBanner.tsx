@@ -14,7 +14,7 @@ export function TrialBanner({ phase, daysLeft }: { phase: TrialPhase; daysLeft: 
   if (phase === "expired") {
     return (
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E4A56B] bg-[#FBE7D6] px-6 py-2.5 text-[13px] text-[#7A3E12]">
-        <span className="font-semibold">Your trial has ended — choose a plan to keep sending replies and importing backers.</span>
+        <span className="font-semibold">Your access has paused — choose a plan to keep sending replies and importing backers.</span>
         <Link href="/app/billing" className="rounded-lg bg-[#B85422] px-3 py-1.5 font-semibold text-white no-underline hover:brightness-105">
           Choose a plan
         </Link>
