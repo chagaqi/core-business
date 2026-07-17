@@ -67,11 +67,11 @@ test("trialEmail: every milestone is proof-only, names the merchant, and never c
   }
 });
 
-test("trialEmail: ending + ended route to pricing; welcome + midpoint route to the app", () => {
+test("trialEmail: ending + ended route to the in-app billing page; welcome + midpoint route to the app", () => {
   const ending = trialEmail("ending", { merchantName: "M", daysLeft: 2 });
   const ended = trialEmail("ended", { merchantName: "M", daysLeft: 0 });
-  assert.ok(ending.html.includes("/pricing"), "ending points to plans");
-  assert.ok(ended.html.includes("/pricing"), "ended points to plans");
+  assert.ok(ending.html.includes("/app/billing"), "ending points to in-app checkout");
+  assert.ok(ended.html.includes("/app/billing"), "ended points to in-app checkout");
 
   const welcome = trialEmail("welcome", { merchantName: "M", daysLeft: 14 });
   assert.ok(/tideover\.app/.test(welcome.html), "welcome links into the product");

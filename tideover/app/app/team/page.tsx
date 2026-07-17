@@ -1,6 +1,7 @@
 import { getRepositories } from "@/lib/repositories";
 import { getTenantSession } from "@/lib/tenant";
-import { TEAM_SEAT_CAP, memberEmailsOf, memberSubsOf, pendingInvitesOf } from "@/lib/team";
+import { memberEmailsOf, memberSubsOf, pendingInvitesOf } from "@/lib/team";
+import { entitlementsFor } from "@/lib/entitlements";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
 import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { TeamManager } from "@/components/product/TeamManager";
@@ -63,7 +64,7 @@ export default async function TeamPage({
           email: memberEmailsOf(merchant)[sub] ?? null,
         }))}
         invites={pendingInvitesOf(merchant)}
-        seatCap={TEAM_SEAT_CAP}
+        seatCap={entitlementsFor(merchant.plan).seatCap}
       />
     </div>
   );

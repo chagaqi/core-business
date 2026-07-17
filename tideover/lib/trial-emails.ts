@@ -8,9 +8,10 @@ import type { TrialReminderKey } from "@/lib/types";
  * and warm. Flagged for Dylan's voice review like the pricing copy.
  */
 
-const SITE = (process.env.APP_URL || "https://www.tideover.app").replace(/\/$/, "");
 const APP = process.env.NEXT_PUBLIC_REAL_APP_HOST ? `https://${process.env.NEXT_PUBLIC_REAL_APP_HOST}` : "https://app.tideover.app";
-const PRICING = `${SITE}/pricing`;
+// The in-app billing page is where a returning merchant actually picks a paid plan
+// (Stripe Checkout, session-gated) — not the public marketing /pricing page.
+const BILLING = `${APP}/app/billing`;
 
 export interface TrialEmail {
   subject: string;
@@ -64,7 +65,7 @@ ${button(APP, "Back to the queue")}`,
         html: shell(
           `<p style="margin:0 0 12px">Your trial ends in ${left}, ${name}. Nothing charges automatically — there's no card on file — so if you do nothing, the workspace just pauses and your data stays put.</p>
 <p style="margin:0 0 4px">To keep the queue running without a break, pick a plan whenever you're ready.</p>
-${button(PRICING, "See the plans")}`,
+${button(BILLING, "See the plans")}`,
           `${left} left — pick a plan to keep the queue running.`,
         ),
       };
@@ -74,7 +75,7 @@ ${button(PRICING, "See the plans")}`,
         html: shell(
           `<p style="margin:0 0 12px">Your trial has ended, ${name}. Your workspace is read-only for now, your data is exactly where you left it, and nothing was charged.</p>
 <p style="margin:0 0 4px">Pick a plan whenever you want to pick back up — you'll land right where you stopped.</p>
-${button(PRICING, "Choose a plan")}`,
+${button(BILLING, "Choose a plan")}`,
           "Your data is safe and nothing was charged. Pick a plan to continue.",
         ),
       };
