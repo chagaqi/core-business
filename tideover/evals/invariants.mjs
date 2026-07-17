@@ -106,6 +106,30 @@ for (const shape of shapes) {
     }
   }
 
+  // Banned-word COLLISION garble (sim D1). The engine's own overdue eta_band is the
+  // literal phrase "as soon as it's ready..."; a merchant who bans "soon" strips the
+  // middle word and, before the fix, was left with "as as it's ready" — a doubled
+  // function word that reads as broken software, shipped to a real customer in the run.
+  // Force a clearly-overdue order and assert banning "soon" (a) leaves no survivor and
+  // (b) introduces no NEW immediately-repeated word vs the unbanned draft (comparing to
+  // baseline so any legitimately-repeated word in seed prose can't false-trip this).
+  {
+    const cctx = { merchant: merchant.id, customer: customer.id, check: "banned-collision-no-garble" };
+    const odOrder = { ...shape.order, productionStage: "production" };
+    const odNow = nowForDaysInWait(odOrder, 200);
+    const odArgs = { ticket: { sentiment: "calm" }, order: odOrder, customer, catalog, ticketsLast7d: 1, now: odNow };
+    const doubles = (s) => (s.match(/\b(\w+)\s+\1\b/gi) || []).length;
+    const baseOverdue = computeTicketIntelligence({ ...odArgs, merchant }).reassurance.draftText;
+    const soonMerchant = { ...merchant, brand: { ...merchant.brand, banned: [...merchant.brand.banned, "soon"] } };
+    const bannedOverdue = computeTicketIntelligence({ ...odArgs, merchant: soonMerchant }).reassurance.draftText;
+    check(bannedSurvivor(bannedOverdue, ["soon"]) === null, cctx, `banned "soon" survived the overdue draft`);
+    check(
+      doubles(bannedOverdue) <= doubles(baseOverdue),
+      cctx,
+      `banning "soon" introduced a doubled-word scar: ${bannedOverdue.slice(0, 90)}`,
+    );
+  }
+
   for (const stage of STAGES) {
     const order = { ...shape.order, productionStage: stage };
     for (const days of DAYS_IN_WAIT) {

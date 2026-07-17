@@ -58,9 +58,26 @@ function mergeFields(
 
 function stripBanned(text: string, banned: string[]): string {
   let out = text;
+  let stripped = false;
   for (const word of banned) {
     const re = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "gi");
-    out = out.replace(re, "").replace(/\s{2,}/g, " ");
+    const next = out.replace(re, "");
+    if (next !== out) {
+      stripped = true;
+      out = next.replace(/\s{2,}/g, " ");
+    }
+  }
+  // A banned word deleted from the MIDDLE of authored prose leaves a scar: the overdue
+  // eta_band "as soon as it's ready" collapses to "as as it's ready" when a merchant
+  // bans "soon" — the exact garble that reached a real customer in the ten-merchant run
+  // (docs/sim-2026-07-12, backlog D1). The sprint's word-boundary lint only covered the
+  // LLM path; the deterministic engine is the default drafter AND the floor under every
+  // LLM draft, so this shipped unchecked. Collapse the strip-induced doubled word and any
+  // space stranded before punctuation. GATED on an actual strip, so clean templates are
+  // never rewritten and no golden moves (no seed merchant bans a word its templates use).
+  if (stripped) {
+    out = out.replace(/\b(\w+)(\s+\1\b)+/gi, "$1");
+    out = out.replace(/\s+([,.!?;:])/g, "$1");
   }
   return out.trim();
 }
