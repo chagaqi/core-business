@@ -3,6 +3,8 @@ import { z } from "zod";
 import { approveSend } from "@/lib/service";
 import { assertNoHardDate } from "@/lib/proof";
 import { withApiErrorHandling } from "@/lib/api-handler";
+import { getRepositories } from "@/lib/repositories";
+import { isSoftLocked } from "@/lib/trial";
 
 /**
  * POST /api/approve-send — human approval gate. The (possibly edited) reply is
@@ -16,6 +18,16 @@ const Body = z.object({
 });
 
 async function handlePOST(req: Request) {
+  // Soft-lock (ADR-0022): an expired trial with no plan cannot send until they
+  // choose a plan. Tenant-scoped in real mode; demo merchants are not-applicable.
+  const merchant = (await getRepositories().merchants.list())[0];
+  if (merchant && isSoftLocked(merchant, new Date())) {
+    return NextResponse.json(
+      { error: "Your trial has ended — choose a plan to keep sending replies.", failedCheck: "trial_expired" },
+      { status: 402 },
+    );
+  }
+
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid body" }, { status: 400 });

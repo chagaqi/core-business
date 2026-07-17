@@ -1,9 +1,11 @@
 import type { ReactNode } from "react";
 import { Sidebar } from "@/components/product/Sidebar";
 import { DemoBadge } from "@/components/ui/DemoBadge";
+import { TrialBanner } from "@/components/product/TrialBanner";
 import { getDemoOperator, isDemoMode } from "@/lib/auth";
 import { authMode } from "@/lib/auth-mode";
 import { getRepositories } from "@/lib/repositories";
+import { trialState } from "@/lib/trial";
 
 /**
  * Product shell for every /app surface: fixed Sidebar + scrollable main column.
@@ -29,12 +31,19 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   // Password/demo deployments keep the legacy POST /api/logout path — the
   // /auth/* routes don't exist there.
   const signOutHref = !demo && authMode() === "auth0" ? "/auth/logout" : null;
+  // Trial countdown / expiry bar — real trialing merchant only (in real mode the
+  // list is tenant-scoped to the caller's own merchant; demo merchants are
+  // not-applicable and render nothing).
+  const trial = !demo && merchants[0] ? trialState(merchants[0], new Date()) : null;
   return (
     // Stack on narrow widths (Sidebar renders its own mobile top bar + drawer),
     // restore the fixed sidebar + main row at lg. Desktop layout is unchanged.
     <div className="flex min-h-screen flex-col bg-sand lg:flex-row">
       <Sidebar operator={operator} isDemo={demo} signOutHref={signOutHref} />
-      <main className="min-w-0 flex-1">{children}</main>
+      <main className="min-w-0 flex-1">
+        {trial ? <TrialBanner phase={trial.phase} daysLeft={trial.daysLeft} /> : null}
+        {children}
+      </main>
       {demo && <DemoBadge />}
     </div>
   );

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { importBackerRows, IMPORT_ROW_CAP } from "@/lib/import";
 import { withApiErrorHandling } from "@/lib/api-handler";
+import { getRepositories } from "@/lib/repositories";
+import { isSoftLocked } from "@/lib/trial";
 
 /**
  * POST /api/import (ADR-0010, task W3) — operator-side backer-list import.
@@ -39,6 +41,16 @@ const Body = z.object({
 });
 
 async function handlePOST(req: Request) {
+  // Soft-lock (ADR-0022): an expired trial with no plan cannot import until they
+  // choose a plan. Tenant-scoped in real mode; demo merchants are not-applicable.
+  const current = (await getRepositories().merchants.list())[0];
+  if (current && isSoftLocked(current, new Date())) {
+    return NextResponse.json(
+      { error: "Your trial has ended — choose a plan to import more backers.", failedCheck: "trial_expired" },
+      { status: 402 },
+    );
+  }
+
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid body", issues: parsed.error.issues }, { status: 400 });
