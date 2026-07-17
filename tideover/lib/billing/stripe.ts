@@ -69,6 +69,26 @@ export async function createCheckoutSession(args: {
  * constant-time compares. Rejects a timestamp outside `toleranceSec` (replay
  * defense). `now` is injected for testability.
  */
+export async function createPortalSession(args: {
+  stripeCustomerId: string;
+  returnUrl: string;
+}): Promise<{ url: string } | { error: string }> {
+  const key = secretKey();
+  if (!key) return { error: "billing-not-configured" };
+  try {
+    const res = await fetch(`${API}/billing_portal/sessions`, {
+      method: "POST",
+      headers: { authorization: `Bearer ${key}`, "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ customer: args.stripeCustomerId, return_url: args.returnUrl }),
+    });
+    const data = (await res.json()) as { url?: string; error?: { message?: string } };
+    if (!res.ok || !data.url) return { error: `stripe-${res.status}:${data.error?.message ?? "no-url"}` };
+    return { url: data.url };
+  } catch (err) {
+    return { error: `portal-failed:${err instanceof Error ? err.message : String(err)}` };
+  }
+}
+
 export function verifyStripeSignature(
   payload: string,
   sigHeader: string | null,

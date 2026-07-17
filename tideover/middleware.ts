@@ -172,6 +172,7 @@ export const config = {
     "/api/setup-status",
     "/api/settings",
     "/api/team",
+    "/api/billing/:path*",
     "/api/variants/promote",
   ],
 };

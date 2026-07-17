@@ -47,6 +47,10 @@ const SETTINGS_ADDITIONS = ["/api/settings"];
  *  bare root into /app (app-only). Demo hosts still pass "/" through untouched. */
 const ROOT_ADDITION = ["/"];
 
+/** Billing (ADR-0022): owner-gated checkout + portal. The Stripe WEBHOOK is
+ *  deliberately NOT here — it self-authenticates on its signature, like ingest. */
+const BILLING_ADDITIONS = ["/api/billing/:path*"];
+
 const ENV_KEYS = ["DEMO_MODE", "REAL_APP_HOST", ...AUTH0_ENV_VARS] as const;
 
 async function withEnv(env: Record<string, string>, fn: () => Promise<void>): Promise<void> {
@@ -84,7 +88,7 @@ test("matcher regression: every legacy operator surface is still covered", () =>
 test("matcher: exactly the legacy list + the ADR-0020 + evidence + settings additions, nothing else", () => {
   assert.deepEqual(
     [...config.matcher].sort(),
-    [...LEGACY_MATCHER, ...ADR_0020_ADDITIONS, ...EVIDENCE_ADDITIONS, ...SETTINGS_ADDITIONS, ...ROOT_ADDITION].sort(),
+    [...LEGACY_MATCHER, ...ADR_0020_ADDITIONS, ...EVIDENCE_ADDITIONS, ...SETTINGS_ADDITIONS, ...ROOT_ADDITION, ...BILLING_ADDITIONS].sort(),
   );
 });
 

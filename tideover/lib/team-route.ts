@@ -2,13 +2,13 @@ import { z } from "zod";
 import { getRepositories } from "@/lib/repositories";
 import { getTenantSession } from "@/lib/tenant";
 import {
-  TEAM_SEAT_CAP,
   memberEmailsOf,
   memberSubsOf,
   normalizeEmail,
   pendingInvitesOf,
   seatCountOf,
 } from "@/lib/team";
+import { entitlementsFor } from "@/lib/entitlements";
 import type { Merchant } from "@/lib/types";
 
 /**
@@ -38,7 +38,7 @@ function teamView(merchant: Merchant) {
     ownerSub: merchant.ownerSub ?? null,
     members: memberSubsOf(merchant),
     invites: pendingInvitesOf(merchant),
-    seatCap: TEAM_SEAT_CAP,
+    seatCap: entitlementsFor(merchant.plan).seatCap,
   };
 }
 
@@ -78,9 +78,10 @@ export async function handleTeamPOST(req: Request): Promise<Response> {
   if (pendingInvitesOf(merchant).some((i) => normalizeEmail(i.email) === email)) {
     return json(400, { error: "that address already has a pending invite" });
   }
-  if (seatCountOf(merchant) >= TEAM_SEAT_CAP) {
+  const seatCap = entitlementsFor(merchant.plan).seatCap;
+  if (seatCountOf(merchant) >= seatCap) {
     return json(400, {
-      error: `seat limit reached — ${TEAM_SEAT_CAP} seats is the Scale plan maximum. Remove a member or pending invite first.`,
+      error: `seat limit reached — your plan includes ${seatCap} seat${seatCap === 1 ? "" : "s"}. Remove a member or pending invite, or upgrade to add more.`,
     });
   }
 
