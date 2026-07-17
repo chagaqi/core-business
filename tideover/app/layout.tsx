@@ -31,7 +31,9 @@ export const metadata: Metadata = {
   // Absolute base for OG/Twitter image URLs. Without this, file-based image
   // routes (opengraph-image / twitter-image) fail to prerender with "Invalid
   // URL" because Next can't resolve their relative path to an absolute one.
-  metadataBase: new URL(process.env.APP_URL ?? "https://www.tideover.app"),
+  // `||` not `??`: an empty APP_URL ("" from an env pull) is not null/undefined, so
+  // `??` would pass it straight to new URL("") and crash the build (hit 2026-07-16).
+  metadataBase: new URL(process.env.APP_URL || "https://www.tideover.app"),
   title,
   description,
   openGraph: {
