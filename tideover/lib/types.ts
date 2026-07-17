@@ -276,6 +276,13 @@ export interface Merchant {
    */
   ownerSub?: string | null;
   /**
+   * The owner's email, captured from their session at tenant-resolve (ADR-0022).
+   * The session email is only available inside a request; server-side jobs (the
+   * trial-reminder cron, billing) have no session, so it is denormalized here so
+   * they can reach the owner. Absent until the owner's first resolved login.
+   */
+  ownerEmail?: string | null;
+  /**
    * Auth0 subs of teammates attached to this merchant via an accepted invite
    * (seats). A session matches a merchant when sub === ownerSub OR
    * memberSubs includes it — the tenant seam (lib/repositories/tenant-scope.ts)

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { timingSafeEqual } from "crypto";
 import { getRepositories } from "@/lib/repositories";
 import { sweepResolvedQuiet } from "@/lib/outcome-sweep";
+import { cronAuthorized } from "@/lib/cron-auth";
 
 /**
  * GET /api/cron/sweep-outcomes — the daily scheduled job (ADR-0013, task F4).
@@ -25,34 +25,6 @@ import { sweepResolvedQuiet } from "@/lib/outcome-sweep";
  * (log-and-continue) so one bad write never sinks the whole pass.
  */
 export const dynamic = "force-dynamic";
-
-const BEARER_PREFIX = "Bearer ";
-
-/** Constant-time compare of the request's bearer token against CRON_SECRET. */
-function bearerMatches(header: string | null, secret: string): boolean {
-  if (!header || !header.startsWith(BEARER_PREFIX)) return false;
-  const provided = Buffer.from(header.slice(BEARER_PREFIX.length));
-  const expected = Buffer.from(secret);
-  if (provided.length !== expected.length) return false; // timingSafeEqual throws on mismatch
-  try {
-    return timingSafeEqual(provided, expected);
-  } catch {
-    return false;
-  }
-}
-
-/** Auth posture: fail closed in production, open in demo/dev (see route doc). */
-function cronAuthorized(req: Request): boolean {
-  const secret = process.env.CRON_SECRET;
-  if (process.env.NODE_ENV === "production") {
-    // An unset secret means the header is unverifiable → refuse rather than run
-    // unauthenticated. A set secret must match the attached bearer exactly.
-    if (!secret) return false;
-    return bearerMatches(req.headers.get("authorization"), secret);
-  }
-  // demo/dev: allow unauthenticated so the hosted demo + local tests can drive it.
-  return true;
-}
 
 export async function GET(req: Request): Promise<Response> {
   if (!cronAuthorized(req)) {

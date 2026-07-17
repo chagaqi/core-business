@@ -9,6 +9,7 @@ import {
 } from "@/lib/auth-mode";
 import { findMerchantByMemberOrOwnerSub, getTenantSession } from "@/lib/tenant";
 import { acceptPendingInvite } from "@/lib/team";
+import { getRepositories } from "@/lib/repositories";
 
 export const dynamic = "force-dynamic";
 
@@ -50,6 +51,15 @@ export async function GET(req: Request) {
   }
 
   const merchant = await findMerchantByMemberOrOwnerSub(session.sub);
+
+  // Capture the OWNER's email (ADR-0022): the session email exists only here, but
+  // the trial-reminder cron + billing have no session, so denormalize it onto the
+  // merchant. Owner only (a seat-claiming member's email is not the owner's), and
+  // only when it changed, so this is a no-op write on the common path.
+  if (merchant && merchant.ownerSub === session.sub && session.email && merchant.ownerEmail !== session.email) {
+    await getRepositories().merchants.update(merchant.id, { ownerEmail: session.email });
+  }
+
   if (!merchant) {
     // No workspace yet — a pending team invite for this session's verified
     // email attaches them as a member (unverified emails never match). On a
