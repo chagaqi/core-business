@@ -349,7 +349,34 @@ export interface Merchant {
    */
   disclosedEtas?: MerchantDisclosedEta[];
   createdAt: string;
+  /**
+   * BILLING (ADR-0022). The paid plan, or null while trialing / on a legacy or
+   * demo record. WRITTEN ONLY BY STRIPE (the checkout webhook) — the client never
+   * asserts its own plan, the same trust boundary as ingest. `entitlementsFor`
+   * (lib/entitlements.ts) maps it to the enforced seat/order caps; a null plan
+   * keeps the backward-compatible technical ceilings, so nothing today regresses.
+   */
+  plan?: PlanKey | null;
+  /** Subscription lifecycle, also Stripe-written. null = never subscribed (trialing or legacy). */
+  subscriptionStatus?: SubscriptionStatus | null;
+  /** Stripe customer id, set at first checkout. Absent on trialing/legacy/demo records. */
+  stripeCustomerId?: string | null;
+  /**
+   * Which trial-lifecycle reminders have already been emailed to this merchant,
+   * so the daily cron (lib/trial.ts, /api/cron/trial-reminders) never double-sends.
+   * Absent = none sent yet.
+   */
+  trialRemindersSent?: TrialReminderKey[];
 }
+
+/** The three published paid tiers (ADR-0022). "Beyond Scale" is custom/manual, not a key. */
+export type PlanKey = "starter" | "growth" | "scale";
+
+/** Stripe subscription lifecycle, mapped from the webhook. */
+export type SubscriptionStatus = "trialing" | "active" | "past_due" | "canceled";
+
+/** Trial-lifecycle email milestones (lib/trial.ts). `welcome` fires at signup; the rest on the cron. */
+export type TrialReminderKey = "welcome" | "midpoint" | "ending" | "ended";
 
 // ─── order ──────────────────────────────────────────────────────────────
 export interface Order {
