@@ -17,6 +17,9 @@ const ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[number]["ch
   { path: "/how-it-works", changeFrequency: "monthly", priority: 0.8 },
   { path: "/who-its-for", changeFrequency: "monthly", priority: 0.8 },
   { path: "/pricing", changeFrequency: "monthly", priority: 0.9 },
+  // SEO pillar #2 (GTM §9.2/§9.1) — the ungated fulfillment-update template library,
+  // also the destination the X bio/pinned post links to.
+  { path: "/templates", changeFrequency: "monthly", priority: 0.8 },
   { path: "/case-study", changeFrequency: "monthly", priority: 0.6 },
   { path: "/security", changeFrequency: "monthly", priority: 0.5 },
   { path: "/procurement", changeFrequency: "monthly", priority: 0.5 },
