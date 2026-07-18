@@ -46,10 +46,11 @@ export class EmailAdapter implements ChannelAdapter {
     };
   }
 
-  async verifyWebhook(req: Request): Promise<boolean> {
+  async verifyWebhook(_rawBody: string, headers: Headers): Promise<boolean> {
+    void _rawBody;
     // Inbound-parse providers (e.g. SES/Mailgun/Postmark) sign their callbacks;
     // verify the provider signature here. Shared-secret check shown.
     const secret = process.env.EMAIL_INBOUND_SECRET;
-    return Boolean(secret && req.headers.get("x-inbound-secret") === secret);
+    return Boolean(secret && headers.get("x-inbound-secret") === secret);
   }
 }

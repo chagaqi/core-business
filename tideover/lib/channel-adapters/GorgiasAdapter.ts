@@ -53,12 +53,11 @@ export class GorgiasAdapter implements ChannelAdapter {
     };
   }
 
-  async verifyWebhook(req: Request): Promise<boolean> {
+  async verifyWebhook(rawBody: string, headers: Headers): Promise<boolean> {
     const secret = process.env.GORGIAS_WEBHOOK_SECRET;
-    const sig = req.headers.get("x-gorgias-signature");
+    const sig = headers.get("x-gorgias-signature");
     if (!secret || !sig) return false;
-    const body = await req.clone().text();
-    const expected = createHmac("sha256", secret).update(body).digest("hex");
+    const expected = createHmac("sha256", secret).update(rawBody).digest("hex");
     try {
       return timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
     } catch {

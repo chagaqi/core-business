@@ -1,0 +1,38 @@
+[
+ {
+  "area": "onboarding",
+  "title": "'Real timeline' step — the product's actual differentiator — is the most form-like part of the flow",
+  "problem": "Despite the wizard otherwise having a named-step progress bar and a review screen, the timeline step (the one step that encodes the day-stage playbook that IS the product) renders as 6 stacked rows of plain text/number inputs (label, from-day, to-day, blurb) with no visual timeline/bar representation, no live rendering of what the resulting customer message looks like, and no contiguity check between rows. This is the step most likely driving the 'glorified Google form' reaction since it's dense, numeric, and gives zero feedback until the very end.",
+  "evidence": "app/onboarding/OnboardingWizard.tsx:371-457 (TimelineEditor — plain input grid, no visualization, no per-row validation)",
+  "proposal": "Render the stages as a horizontal timeline bar (proportional to day ranges) with inline drag handles or at minimum a rendered sample sentence per stage as the merchant types, so the 'day-stage playbook' concept is visible while being built, not just after submit.",
+  "severity": "P3",
+  "effort": "M"
+ },
+ {
+  "area": "onboarding",
+  "title": "Zero persistence — a refresh mid-wizard silently loses all answers",
+  "problem": "All wizard state (brand fields, 6-stage timeline with 4 sub-fields each, worst-case message, etc.) lives only in React useState with no localStorage/sessionStorage/draft-save call anywhere in app/onboarding. There is no autosave and no resume; a closed tab or accidental refresh at step 4 of 5 loses everything with no warning dialog.",
+  "evidence": "app/onboarding/OnboardingWizard.tsx:78-109 (all state is local useState), grep for localStorage/sessionStorage in app/onboarding returns no matches",
+  "proposal": "Debounce-persist wizard state to localStorage (or a draft record via a lightweight PATCH) and rehydrate on load; at minimum add a beforeunload warning once any field has been touched.",
+  "severity": "P3",
+  "effort": "S"
+ },
+ {
+  "area": "onboarding",
+  "title": "Completion screen's 'sample customer page' link points to unrelated demo data, not the merchant just created",
+  "problem": "After generating a playbook, the success screen offers 'View a sample customer page' using a hardcoded status token (a useMemo constant) that belongs to whatever seed/demo merchant that token was minted for — not the brand the user just spent 5 steps configuring. The merchant just onboarded has no orders/customers yet, so there's no real completion moment showing their own brand's status page; instead they see a different brand's name/colors.",
+  "evidence": "app/onboarding/OnboardingWizard.tsx:115 (const sampleToken = useMemo(() => \"dflvtbcslipuv80vdkkg17us.bf07a04f58\", [])), app/onboarding/OnboardingWizard.tsx:244-246 (link rendered on the completion screen)",
+  "proposal": "Generate a preview status-page render using the new merchant's own brand colors/name/playbook (synthetic order, same technique already used for the day-stage previews) instead of linking out to unrelated demo data.",
+  "severity": "P3",
+  "effort": "S"
+ },
+ {
+  "area": "onboarding",
+  "title": "Full field-by-step inventory and consumption map (reference)",
+  "problem": "Full mode (5 steps): Step 0 'Brand & voice' — Brand name (only validated field; consumed: merchant.name/slug/logoText), Your voice (dead, see voice/tone finding), Tone (dead), Banned words (consumed by stripBanned, reassurance.ts:99), Sign-off (consumed reassurance.ts:100, social-signal.ts:48, service.ts:121, status.ts:102). Step 1 'Current tools' — Helpdesk (dead after write, see helpdesk finding), Preorder app (dead, see finding). Step 2 'Real timeline' — windowMin (dead), windowMax (consumed: import.ts:38, engines/index.ts:52, service.ts:638), 6 stages x {label, from, to, blurb} (consumed: time.ts:74, refund-risk.ts:129-130, status page). Step 3 'Support reality' — worst-case message (dead, see finding); a static explainer about backer/late-pledge/new-preorder groups (no input). Step 4 'Review & generate' — read-only summary, triggers POST. Fast mode (3 steps) asks only brand name + helpdesk + timeline, then review — but still silently submits the unseen default tone array (['Warm','Calm','Straightforward']) since that state is never reset for fast mode (moot only because tone is unconsumed).",
+  "evidence": "app/onboarding/OnboardingWizard.tsx:65-66 (FULL_STEPS/FAST_STEPS), :487-600 (FullSteps per-step render), :618-674 (FastSteps per-step render), :82-98 (all field state declarations)",
+  "proposal": "Use this map to decide field cuts: drop or wire up voice/tone/preorderApp/worstStory/windowMin/helpdesk-branching before the next pilot merchant runs the flow, since roughly half the fields asked currently have no effect on anything the merchant or their customers ever see.",
+  "severity": "P3",
+  "effort": "S"
+ }
+]

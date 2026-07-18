@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="120" viewBox="0 0 480 120" role="img" aria-label="Tideover">
+  <!-- Tideover lockup for the Auth0 Universal Login header: the wave mark +
+       serif wordmark, same geometry and colors as components/ui/Logo.tsx.
+       Served from https://www.tideover.app/auth-logo.svg -->
+  <g transform="translate(64 34) scale(2.0)">
+    <path d="M2 15c2.4 0 2.4-3 4.8-3s2.4 3 4.8 3 2.4-3 4.8-3 2.4 3 4.8 3" stroke="#0E5366" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+    <path d="M2 10c2.4 0 2.4-3 4.8-3s2.4 3 4.8 3 2.4-3 4.8-3 2.4 3 4.8 3" stroke="#D9762F" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  </g>
+  <text x="132" y="76" font-family="Georgia, 'Iowan Old Style', Palatino, serif" font-size="46" font-weight="600" letter-spacing="-1" fill="#0E5366">Tideover</text>
+</svg>

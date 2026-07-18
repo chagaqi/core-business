@@ -1,0 +1,359 @@
+[
+ {
+  "area": "failure-modes",
+  "title": "No real channel can deliver an approved reply: approve-send silently fakes success via MockAdapter or crashes on NotImplementedError, while the cockpit reports 'Reply sent.'",
+  "problem": "getSendAdapter(channel) routes every real channel (gorgias/tidio/intercom/email) to MockAdapter unless DEMO_FORCE_MOCK_SEND===\"false\". MockAdapter.sendReply writes nothing to any helpdesk and fabricates a fake externalId, yet the ticket is marked status:\"sent\", firstResponseSec/outcome ledger update, and the UI shows 'Reply sent.' and advances the queue, so a live merchant's customer receives nothing. If DEMO_FORCE_MOCK_SEND is set to \"false\" (the intuitive 'go live' flip), GorgiasAdapter/EmailAdapter/TidioAdapter/IntercomAdapter.sendReply all throw NotImplementedError; approveSend calls the adapter with no try/catch, so the request 500s and the operator sees 'Request failed.' There is NO configuration in which a real reply reaches a customer. This is not a legacy-channel edge case: normalizeCanonical hardcodes channel:\"email\" for every ticket from the canonical per-merchant webhook (the documented production path), so email is the only send path a real pilot's tickets take. The copy-paste-back fallback is also unsupported: no copy affordance in ApprovalBar, and the ticket drops out of the queue after send so the operator can't retrieve the approved text.",
+  "evidence": "tideover/lib/channel-adapters/registry.ts:26-35, tideover/lib/channel-adapters/MockAdapter.ts:46-52, tideover/lib/channel-adapters/GorgiasAdapter.ts:33-36, tideover/lib/channel-adapters/EmailAdapter.ts:26-29, tideover/lib/channel-adapters/TidioAdapter.ts:25-27, tideover/lib/channel-adapters/IntercomAdapter.ts:28-30, tideover/lib/ingest-schema.ts:43-57 (normalizeCanonical hardcodes channel:\"email\"), tideover/lib/service.ts:528-541 (approveSend, no try/catch), tideover/app/api/approve-send/route.ts:35-38, tideover/components/product/ApprovalBar.tsx:13-14,110,152-163",
+  "proposal": "Product decision (Fable-owned), not a config flip. Before pilot week either (a) implement a real send path for at least one channel end-to-end — Resend outbound email wired as EmailAdapter.sendReply is lowest-lift since RESEND_API_KEY already exists — or (b) redefine 'Approve & send' as 'mark reviewed; operator posts it back into the helpdesk manually': keep the ticket visible with a prominent 'Copy reply' button and a 'mark as sent in your helpdesk' confirmation, change 'Reply sent.' to 'Approved — paste into your helpdesk,' drop the fabricated externalId, and do not set status:\"sent\" as if delivery occurred. Regardless of path, make DEMO_FORCE_MOCK_SEND fail closed and LOUD — if a ticket's channel isn't mock and no real adapter is wired, approveSend returns a clear 'no send path configured for this channel' error rather than faking success or throwing an unhandled 500.",
+  "severity": "P1",
+  "effort": "L",
+  "sources": 3,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified against actual source, not just auditor's claims. registry.ts:31-35 confirmed: getSendAdapter forces MockAdapter for every real channel unless DEMO_FORCE_MOCK_SEND===\"false\". MockAdapter.sendReply (lines 46-52) is a no-op that fabricates externalId with zero external call. GorgiasAdapter.sendReply and EmailAdapter.sendReply both throw NotImplementedError unconditionally (verified directly). ingest-schema.ts:55 normalizeCanonical hardcodes channel:\"email\" for the documented production webhook path -- comment in the file confirms this reuses the (stub) EmailAdapter pipeline intentionally. service.ts approveSend (line 530) calls adapter.sendReply with no try/catch; approve-send/route.ts has no catch around approveSend() either, so a real-channel throw becomes an unhandled 500. ApprovalBar.tsx:155 shows \"Reply sent.\" unconditionally on success with no copy-to-clipboard fallback present in the component. Every element of the finding checks out exactly as cited -- this is not an auditor miss, it's a genuine intentional demo shortcut (comments literally admit it: \"the demo always operates the MockAdapter... to demonstrate approve->send without live vendor credentials\") that becomes a P1 silent-failure trap for a real pilot merchant going live this week, since the only production ingest path (canonical webhook) is hardcoded to the channel that has zero working send implementation. Proposed remediation (manual copy/paste relabel, or wire Resend for email) is feasible without touching the repository seam, proof-only doctrine, or verify/test gate."
+  }
+ },
+ {
+  "area": "data",
+  "title": "Unmatched webhook ticket silently attaches to another customer's most-waited open order and reassigns the ticket to that customer — unconditional, not gated by DEMO_MODE",
+  "problem": "ingestTicket resolves the order via repos.orders.findById(n.orderRef) — which expects a Tideover internal ord_ id, but a real Gorgias/Zendesk payload's order_ref is a helpdesk/Shopify value that never matches — then falls back to findByEmail. When the email wasn't imported (customer used a different address than the backer, a prospect, a typo, any first-contact), a 'demo fallback' attaches the ticket to the merchant's single most-waited open order AND overwrites customer to that order's customer. The comment labels it a demo fallback but the code runs unconditionally — not gated by DEMO_MODE — for BOTH the canonical per-merchant webhook and the legacy ticket-ingest routes. So in a live pilot an unmatched WISMO is drafted quoting a completely unrelated backer's order/stage, recorded against the wrong customer (their ticketCount/lastSentiment are mutated), and the operator sees a normal-looking auto-draft with no flag and can approve+send it. Ticket carries no match-confidence/fallback field. Compounding: CanonicalIngestSchema places no .min(1)/.email() on customer_email/subject/body, so a blank or garbage payload sails through validation straight into this path.",
+  "evidence": "tideover/lib/service.ts:403-419,479-482, tideover/lib/ingest-route.ts:108-109, tideover/lib/ingest-templates.ts:57,86, tideover/lib/ingest-schema.ts:21-23, tideover/lib/types.ts:239",
+  "proposal": "Gate the most-waited-order fallback behind isDemoMode()/merchant.isDemo. For real merchants, when no order+customer match, create the ticket in an 'unmatched — needs manual triage' state (no draft, flagged for the operator to link) rather than silently binding it to another customer. Match order_ref against a real external order key, not findById. At minimum stamp matchConfidence:\"fallback\" on any ticket that took this path so the operator sees it before approving. Tighten CanonicalIngestSchema with .min(1) and .email() on customer_email.",
+  "severity": "P1",
+  "effort": "M",
+  "sources": 2,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified directly in tideover/lib/service.ts:403-419,479-482. The \"demo fallback\" comment is misleading — the code has zero DEMO_MODE/isDemoMode() gate (confirmed via grep: only signature verification in ingest-route.ts and inbound-route.ts checks DEMO_MODE; ingestTicket's order/customer resolution has no such check). order = n.orderRef ? repos.orders.findById(n.orderRef) : null resolves against Tideover's internal ord_ id space, which a real Gorgias/Zendesk order_ref (external order/Shopify id) will never hit — confirmed via ingest-templates.ts:57,86 where order_ref is templated straight from the vendor's native order id field. When both order and customer resolution fail, the code unconditionally falls back to orders.listByMerchant(...).sort(...)[0] (oldest open order) and rebinds customer to that order's customer — mutating the wrong customer's ticketCount/lastSentiment (service.ts:479-482) with no flag. Ticket type (lib/types.ts) has no matchConfidence or similar field, so the operator has no signal to distrust the draft. CanonicalIngestSchema (ingest-schema.ts:21-23) confirmed as claimed: customer_email/subject/body are bare z.string() with no .min(1)/.email(). This hits any real pilot merchant on ticket #1 from a first-contact customer or a customer using a different email than their order — not an edge case, a near-certain week-one occurrence. Fix (gate fallback behind isDemoMode, match on external order key, stamp confidence, tighten schema) is straightforward and doesn't touch the repository seam's dual-driver contract or proof-only doctrine.</note>\n</invoke>\n"
+  }
+ },
+ {
+  "area": "pilot-path",
+  "title": "Customers can never receive their /status/<token> link — no outbound email and no operator copy affordance — so the status page, widget and CSAT are unreachable in the real workflow",
+  "problem": "The status page (/status/[token]), widget (/widget/[token]) and CSAT (/api/csat/[token]) all require the per-order statusToken in the URL. Nothing delivers that token to a customer: there is no outbound email anywhere (grep for emails.send/new Resend/sendEmail is empty; lib/inbound.ts only FETCHES received email), the reply/playbook templates contain no status link, and there is no operator-facing surface that shows or copies an order's status URL (the only /status/ link in the app is the onboarding demo sampleToken). Yet the security/procurement pages repeatedly promise 'a status link you share.' So the whole customer-facing status + CSAT + view-tracked dispute-evidence loop is orphaned for a paying pilot.",
+  "evidence": "tideover/app/api/widget-submit/route.ts:18-24, tideover/app/status/[token]/page.tsx, tideover/app/onboarding/OnboardingWizard.tsx:244, tideover/app/security/page.tsx:120, tideover/app/procurement/page.tsx:48, tideover/lib/inbound.ts:37-44",
+  "proposal": "Add a per-order 'Copy status link' affordance in the cockpit order/ticket view (build the URL from APP_URL + statusToken), and optionally auto-insert {status_link} into the draft templates. If self-serve delivery is wanted, wire an outbound Resend send for the status link at approve time.",
+  "severity": "P1",
+  "effort": "L",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Confirmed. No outbound send path exists anywhere: grepped repo-wide for resend/sendEmail/nodemailer — only hits are inbound webhook verification (lib/inbound.ts, app/api/inbound/resend/route.ts) and unrelated docs. lib/channel-adapters/EmailAdapter.ts:26-29 sendReply() is an explicit stub that throws NotImplementedError(\"EmailAdapter\",\"sendReply\") — outbound email is not just unwired, it's admittedly unbuilt. Searched app/app/** (cockpit) for statusToken/status-link/copy affordance: zero matches — no order/ticket view surfaces or copies the /status/<token> URL. lib/drafting/DeterministicDrafter.ts has no status/link/url references at all, confirming reply templates never include it. The only /status/ references in app/ are the public pages themselves, onboarding's sampleToken demo, and marketing copy on /security and /procurement that explicitly promises customers get 'a status link you share' — a promise the product currently cannot fulfill. This is a real, verified gap: for a pilot merchant going live this week, the entire customer-facing status/CSAT/dispute-evidence loop (the product's core differentiator) is unreachable by any real customer. Proposed fix (cockpit copy-link button building URL from APP_URL+statusToken) is low-risk and outside hot-file/proof-only/repository-seam concerns; auto-inserting into draft templates would touch lib/engines/reassurance.ts (hot file) and should be scoped as a follow-on, not bundled into the P1 fix."
+  }
+ },
+ {
+  "area": "data",
+  "title": "CSV import resets every backer's wait clock to now and hardcodes productionStage=\"production\", so drafts are wrong for exactly the long-wait customers the product targets",
+  "problem": "importBackerRows sets fulfillmentStart=now and productionStage=\"production\" for every imported order, with no CSV column for the real pledge/order date. The reassurance engine derives daysInWait from order.fulfillmentStart (dayStageFor: <=7 -> day-7). So a Kickstarter backer who has genuinely waited 8 months imports as daysInWait=0 and drafts the day-7 script ('totally get that waiting can feel like a long time... on schedule... I'll message you the moment it moves') with stage_blurb 'your unit is on the production line' regardless of true stage. The entire stage-aware-reassurance value prop is defeated on the first ticket after import for the core 60-120 day-wait persona.",
+  "evidence": "tideover/lib/import.ts:37-39,103-108, tideover/lib/engines/reassurance.ts:15-17,68-75, tideover/lib/forecast.ts:134-137, tideover/app/api/import/route.ts:11-19",
+  "proposal": "Add optional pledgedAt/orderDate and productionStage columns to the CSV mapping (lib/csv.ts MappedRow + Row zod) and set fulfillmentStart from the real order date (and stage from the merchant's current run) instead of now/\"production\". Backfill window math from the disclosed date the merchant already exports.",
+  "severity": "P1",
+  "effort": "M",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified end-to-end: lib/csv.ts MappedRow has no pledgedAt/orderDate/stage field (only disclosedEtaValue, a human ETA band, not an order date); lib/import.ts:103,105 hardcodes fulfillmentStart=nowIso and productionStage=\"production\" for every imported row with no override path; app/api/import/route.ts's zod Row schema (lines 11-19) also has no such field, so nothing upstream could supply it even if desired. reassurance.ts:15-19 dayStageFor and forecast.ts:134-137 daysInWait both derive strictly from fulfillmentStart, confirmed by grep. No guard, no backfill, no alternate stage source exists anywhere in this path. Net effect: every backer imported from a Kickstarter/BackerKit export (the exact onboarding flow ADR-0010 built for the 60-120 day-wait persona) gets daysInWait=0 and drafts the day-7/production script regardless of true wait length or stage — silently wrong output on the first ticket after import, not an edge case. Proposal (add optional pledgedAt/orderDate + stage columns, feasible within existing csv.ts/import.ts/route.ts structure, proof-only compliant since fields come from merchant's own export) is a reasonable M-effort fix. Severity P1 is correct: this defeats the core stage-aware value prop for the pilot's target persona in week one, silently (wrong draft content, not a crash)."
+  }
+ },
+ {
+  "area": "data",
+  "title": "DATA_DRIVER defaults to an ephemeral in-memory store and is never checked against DEMO_MODE, so a live pilot's data can silently vanish",
+  "problem": "getRepositories() falls back to the JSON driver — a process-global in-memory Map seeded fresh from buildSeed() — whenever DATA_DRIVER isn't exactly 'mongo'. This is completely independent of DEMO_MODE: DEMO_MODE=false arms auth but does nothing to guarantee durable storage. On Vercel each serverless instance owns its own copy of this store, reset on every cold start/redeploy and never shared across concurrent instances, so a live pilot's tickets/orders can silently disappear or diverge between requests with no error surfaced anywhere.",
+  "evidence": "tideover/lib/repositories/index.ts:15-25, tideover/lib/repositories/json/store.ts:6-19, RELEASE.md:41-47",
+  "proposal": "Add a boot-time/health assertion (lib/health.ts or a startup guard) that throws or logs loudly if DEMO_MODE===\"false\" but DATA_DRIVER!==\"mongo\", so a forgotten flag fails loud instead of silently serving ephemeral demo-shaped storage to a paying merchant. Have Dylan confirm DATA_DRIVER=mongo + MONGODB_URI/MONGODB_DB are set on the exact project/environment serving this pilot.",
+  "severity": "P1",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified against code, not just docs. lib/repositories/index.ts:16-25 confirms getRepositories() defaults to jsonRepositories for any DATA_DRIVER value other than exactly \"mongo\" (unset, \"json\", \"mock\", or a typo all fall through). lib/repositories/json/store.ts:6-19 confirms the store is a process-global in-memory Map seeded via buildSeed(), matching the ephemeral-serverless claim. lib/auth.ts:17 confirms DEMO_MODE only gates auth (\"DEMO_MODE !== 'false'\") and is read completely independently — nowhere in the repo (checked auth.ts, middleware, ingest-route.ts, health.ts, README.md, RELEASE.md) does anything cross-check DEMO_MODE against DATA_DRIVER. The existing lib/health.ts probe (task F6) reports `driver` name and DB reachability but does not fail/degrade when DEMO_MODE=false and driver=\"json\" — a real pilot merchant could go live fully authenticated (DEMO_MODE=false) while every write silently lands in ephemeral per-instance memory, with health checks reporting \"ok\". README.md:110-125 documents this as a known caveat and tells the operator to set DATA_DRIVER=mongo manually, but documentation is not enforcement — exactly the gap the finding identifies. This is a real, plausible solo-founder misconfiguration (two independent env vars, easy to set one and forget the other) that would silently lose or scramble a live pilot's ticket/order data in week one — correctly P1. The proposed fix (a boot-time/health assertion that throws/logs when DEMO_MODE=false && DATA_DRIVER!=='mongo') is small, additive, doesn't touch the repository seam's dual-driver contract or proof-only doctrine, and slots naturally next to the existing lib/health.ts + lib/__tests__/health.test.ts."
+  }
+ },
+ {
+  "area": "env",
+  "title": "Go-live Vercel env checklist: DEMO_MODE and DATA_DRIVER are two independent switches that both must be set correctly or the app runs in a silently-broken hybrid (auth-off on real data, or ephemeral storage)",
+  "problem": "Of ~24 process.env vars actually read on live code paths, .env.example documents only 7. DEMO_MODE and DATA_DRIVER are fully independent switches that both have to be flipped correctly or the app runs in a broken hybrid state (e.g. auth armed but storage ephemeral) with no error surfaced anywhere. Most dangerous: DEMO_MODE unset (or anything other than the literal 'false') silently disables ALL operator auth, exposing /app/* and every operator API on real customer data.",
+  "evidence": "tideover/.env.example, tideover/middleware.ts:15, tideover/lib/auth.ts:17, tideover/lib/repositories/index.ts:16, tideover/lib/ingest-route.ts:71-81, tideover/app/api/cron/sweep-outcomes/route.ts:44-55, tideover/lib/ids.ts:22-24, tideover/lib/channel-adapters/registry.ts:31-35, tideover/lib/session.ts:37-46, tideover/app/api/login/route.ts:44-46",
+  "proposal": "Verify in the pilot merchant's exact Vercel project/environment (name : value shape : what breaks if missing): DEMO_MODE=false (literal 'false'; else auth off on real data) | APP_PASSWORD=<shared secret> (unset = login always fails) | AUTH_SECRET=<long random> (unset = session cookie never minted/verified) | DATA_DRIVER=mongo (unset defaults to ephemeral in-memory 'json' — data silently vanishes/forks across cold starts) | MONGODB_URI=<Atlas conn> (required once mongo; missing 500s everywhere) | MONGODB_DB=<db name> (defaults 'tideover' — confirm it's the seeded DB) | WEBHOOK_ROOT_SECRET=<long random> (unset = every webhook 401s) | STATUS_TOKEN_SECRET=<long random> (unset falls back to hardcoded 'dev-only-change-me') | CRON_SECRET=<long random> (unset = outcome sweep 401s silently) | DEMO_FORCE_MOCK_SEND — leave UNSET until a real send adapter exists | APP_URL=<prod/pilot URL> (only matters once Gorgias OAuth is wired).",
+  "severity": "P1",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "All ten cited evidence points verified by direct read and match the finding exactly: middleware.ts:15 gates auth on `DEMO_MODE !== \"false\"` (unset = open); lib/repositories/index.ts:16 defaults DATA_DRIVER to ephemeral \"json\"; lib/ids.ts:23 falls back to hardcoded 'dev-only-change-me'; cron route fails closed only under NODE_ENV=production; ingest-route.ts branches exactly as described. .env.example documents exactly 7 vars (confirmed by direct read) and omits DATA_DRIVER, MONGODB_URI, MONGODB_DB, APP_URL entirely — no code anywhere validates or surfaces a broken DEMO_MODE/DATA_DRIVER combination. This is a docs/ops-only fix (env checklist), so it can't break verify/test, the repository seam, or proof-only doctrine. Real P1 risk for a solo founder going live this week: wrong/missing env = either full auth bypass on real customer data or silent data loss to in-memory storage, with no error surfaced."
+  }
+ },
+ {
+  "area": "scale",
+  "title": "CSV import hard-rejects any file over 2000 rows (IMPORT_ROW_CAP) instead of chunking — a normal 5k-20k backer list can't be imported at all",
+  "problem": "/api/import validates Body.rows with z.array(Row).max(IMPORT_ROW_CAP=2000), so a POST with 2001+ mapped rows fails the whole request with a blanket 400 'invalid body' — not a partial import of the first 2000. importBackerRows also slices to 2000, so even if the route accepted it, rows beyond 2000 would be silently dropped. ImportPanel only slices for the 5-row preview and posts the full mapped set in one request with no chunking. Kickstarter/BackerKit exports routinely have thousands of backers, so the target customer's real file cannot be bulk-imported through the UI, with no guidance to split it.",
+  "evidence": "tideover/app/api/import/route.ts:21-24, tideover/lib/import.ts:20,52, tideover/app/onboarding/ImportPanel.tsx:66-87",
+  "proposal": "Have ImportPanel POST in <=IMPORT_ROW_CAP-sized batches (loop + progress readout) and accumulate the ImportResult across batches (import is already idempotent on sourceKey), or raise the server cap and rely on IMPORT_ROW_CAP purely as a per-request internal slice as lib/import.ts already does at line 52. At minimum, surface a clear 'file too large, split it' error instead of a generic 400.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 2,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed as described. route.ts:23 caps Body.rows at IMPORT_ROW_CAP=2000 via zod .max(); any request with more rows fails safeParse and returns a blanket 400 \"invalid body\" (no partial import). importBackerRows also silently slices to 2000 (lib/import.ts:52) as defense-in-depth, but the route rejects first so that slice never even runs in the over-cap case. ImportPanel.tsx:71-76 posts the entire `mapped` array in a single fetch with no batching/chunking and no size check before posting — the only feedback on failure is the generic \"Something went wrong importing your list. Please try again.\" (line 81), which gives the merchant zero indication of the real cause (file too big) or a workaround. Kickstarter/BackerKit exports commonly exceed 2000 backers, so this is a real and likely week-one blocker for the exact onboarding step this proof-only product depends on (loading the merchant's own real data) — arguably borderline P1 if the pilot merchant's actual list size is unknown and could exceed 2000, but P2 is defensible since it's not data loss/security and is fixable with a clear error message alone even before chunking is built. Proposed fix (client-side batching, loop across <=2000-row chunks, accumulate ImportResult) is feasible without touching the repository seam — importBackerRows is already idempotent via sourceKey/importKey dedup (lib/import.ts:79-92), so calling it multiple times per merchant is safe by design."
+  }
+ },
+ {
+  "area": "security",
+  "title": "WEBHOOK_ROOT_SECRET absent = total, silent ingest lockout indistinguishable from 'helpdesk not connected yet'",
+  "problem": "With DEMO_MODE=false the per-merchant webhook route requires WEBHOOK_ROOT_SECRET set AND a valid signature; if the secret is simply never configured in Vercel, every POST to /api/ingest/[channel]/[token] 401s for every merchant. It fails closed correctly, but the in-app setup checklist's 'Helpdesk connected' item only checks whether a real ticket has ever arrived — a missing-secret misconfiguration looks identical to 'merchant hasn't connected their helpdesk yet,' so nothing points Dylan at the actual cause.",
+  "evidence": "tideover/lib/ingest-route.ts:71-81, tideover/lib/webhook-secret.ts:29-32, tideover/lib/setup.ts:107-111",
+  "proposal": "Confirm WEBHOOK_ROOT_SECRET is set in Vercel before go-live (paired with DEMO_MODE=false in the same checklist pass). Surface 'webhook secret configured: yes/no' on /api/setup-status or /api/health so this specific misconfiguration is distinguishable from a merchant simply not having connected yet.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Code/checklist behavior as described is accurate (verified ingest-route.ts:71-81, webhook-secret.ts, setup.ts:107-111): missing WEBHOOK_ROOT_SECRET under DEMO_MODE=false fails closed (401) correctly, and computeSetupChecklist's helpdesk item can't tell that apart from 'not connected yet' since both yield zero non-mock tickets. Grep confirms no /api/setup-status or /api/health surfaces this today. Downgraded from P1 to P2: this isn't a security hole, data loss, or silently-wrong-results case — every real helpdesk vendor (Gorgias/Zendesk/generic webhook) shows failed webhook deliveries (401s) in its own dashboard, so the misconfig is externally visible, just not in Tideover's UI. It also requires a specific double-lapse (remembering DEMO_MODE=false but forgetting WEBHOOK_ROOT_SECRET) rather than a single easy-to-hit mistake. Proposal (add a go-live checklist step + optional secret-configured flag on /api/health) is cheap and low-risk to add, doesn't touch the repository seam or proof-only doctrine, but is a nice-to-have observability improvement rather than a pilot-week P1."
+  }
+ },
+ {
+  "area": "data",
+  "title": "Re-importing the same backer CSV silently duplicates every order when the export has no id column",
+  "problem": "importBackerRows guards duplicate orders only via importKey derived from row.sourceKey; the whole dedupe block is skipped when sourceKey is undefined. sourceKey is undefined for any 'unknown'-format export (detectFormat falls through) or any real KS/BackerKit export that omits the optional backer-number/order-id column. Re-uploading the exact same file — a very plausible operator action (retry after an error, or re-run of an updated export with the same rows) — creates a brand-new order for every row every time, with a fresh status token, no warning, no cap. Duplicate orders then make ingestTicket's own-order lookup (orders[0] off an unsorted listByCustomer) non-deterministic per customer.",
+  "evidence": "tideover/lib/import.ts:79-92,164-171, tideover/lib/service.ts:408-411",
+  "proposal": "When sourceKey is absent, fall back to a content-hash dedupe key (merchantId + normalized email + orderValueCents + disclosedEtaValue) so a byte-identical re-import is still recognized as a repeat; and surface a warning in the ImportResult when 0 rows had a sourceKey ('this export has no per-row id — re-imports may duplicate orders').",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "confidence": "high",
+   "severity": "P2",
+   "real": true,
+   "note": "Confirmed mechanically at tideover/lib/import.ts:79-92 and lib/csv.ts:135,145,164-171,233,242: sourceKey is populated only from a merchant-format id alias column (\"backer number\"/\"backer id\"/\"order id\" etc); when a row's export omits that column (or headers don't match KS/BK signatures so detectFormat falls through to \"unknown\"→KS mapper), sourceKey/importKey are undefined and the entire dedupe block (79-92) is skipped — a byte-identical re-upload of the same CSV creates a brand-new order+customer link for every row, silently, with no cap or warning (confirmed no mitigation in app/api/import/route.ts, which just returns the raw ImportResult). Also confirmed service.ts:408-411 does `orders[0]` off an unsorted listByCustomer, so duplicate orders make ingestTicket's own-order match nondeterministic per customer, corroborating the downstream consequence claimed.\n\nDowngrading P1→P2: this requires an operator to literally re-run the exact same import action (retry-after-error or duplicate re-run), which is a real but not week-one-certain pilot path, not a background/automatic corruption path or security/data-loss event — it inflates order counts/LTV rather than losing data or leaking access, and the merchant's normal path (fixing a real KS/BackerKit export) usually does carry backer-number/order-id, so this needs an unusual export or an 'unknown' header set to trigger. Still real, still worth the proposed content-hash fallback + warning (Effort S) before the pilot's first CSV import, since a retry-after-error is a plausible first-week action."
+  }
+ },
+ {
+  "area": "data",
+  "title": "Approve-send has no atomic double-send guard, so two concurrent approvals (two tabs/devices/retry) both send for real once delivery is wired",
+  "problem": "approveSend's only anti-double-send check is a plain read: `if (ticket.status === \"sent\") return existing`, not an atomic compare-and-swap. The mongo layer's updateById is a blind findOneAndUpdate({id},{$set}) never conditioned on status (unlike the ingest path, which already uses a unique-index/duplicate-key pattern). Two concurrent approve-send calls for the same ticket (operator has it open in two tabs, on a laptop and phone, or a flaky network triggers a client retry) both read status \"drafted\", both pass the guard, and both call the send adapter. The client-side sendingRef guard in ApprovalBar is per-component-instance only and does not protect across tabs. Currently masked because sends are faked, but becomes a customer-facing duplicate-message bug the moment real sending is wired.",
+  "evidence": "tideover/lib/service.ts:520-530, tideover/lib/repositories/mongo/repositories.ts:67-87, tideover/components/product/ApprovalBar.tsx:56,104-105",
+  "proposal": "Make the send-claim atomic: findOneAndUpdate({id, status:{$ne:\"sent\"}}, {$set:{status:\"sending\"}}) and treat a null match as 'someone else is already sending this' (mirror the existing isDuplicateKeyError pattern from ingestTicket). Land this before the real send path goes live.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed accurate: repositories.ts:67-87 updateById is a blind findOneAndUpdate({id},{$set}) with no status precondition; service.ts:520-524 approveSend's only guard is a prior read (status===\"sent\"), a TOCTOU race, not a CAS. ApprovalBar.tsx:56,104-105 sendingRef is a per-mount useRef, verified it cannot protect across tabs/devices/retries as claimed. Proposal (findOneAndUpdate({id,status:{$ne:\"sent\"}},{$set:{status:\"sending\"}})) is feasible and cheap, mirrors the existing isDuplicateKeyError dedupe pattern already used in ingestTicket -- no conflict with the repo seam or proof-only doctrine; both drivers should get the guard for symmetry even though JSON's single-process nature masks it there. Downgrading severity from P1 to P2: verified channel-adapters/registry.ts:31-35 -- getSendAdapter forces MockAdapter unless a real adapter is wired AND DEMO_FORCE_MOCK_SEND===\"false\" explicitly. Real sending is not enabled for this week's pilot, so this cannot fire a live duplicate customer message during the pilot window itself. It is a real, well-evidenced landmine that must be fixed before real sending is switched on, but not an active week-one hazard as scoped."
+  }
+ },
+ {
+  "area": "security",
+  "title": "No per-merchant tenancy or auth: one shared password, and every operator page lists ALL merchants unfiltered with no isDemo separation",
+  "problem": "Auth is a single global APP_PASSWORD minting one session; there is no per-merchant operator identity. Every cockpit/dashboard/export page calls repos.merchants.list() and defaults to merchants[0] with no isDemo filter, so if Dylan runs a live pilot merchant in the same Mongo DB as any seeded demo merchant (or a second pilot), all appear in one switcher and the default merchant can be the wrong one. There is no data isolation between tenants and no way for a pilot merchant to log into only their own data. Fine for a one-merchant, Dylan-operated pilot; a real blocker the moment a second pilot or the merchant's own staff needs access.",
+  "evidence": "tideover/lib/auth.ts:6-14, tideover/middleware.ts:15-27, tideover/app/app/page.tsx:48-56, tideover/app/app/inbox/page.tsx:50-58, tideover/app/api/export/route.ts:21-31",
+  "proposal": "Short term: filter operator surfaces to real (isDemo:false) merchants in live mode and scope the session to a merchantId. Medium term: add a per-merchant operator record + login (the documented RBAC seam) before onboarding a second pilot.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified against code, not refuted. lib/auth.ts + middleware.ts confirm single shared-password session with no merchantId scoping (session cookie only proves \"is an operator\", never which merchant). app/app/page.tsx:48-56, app/app/inbox/page.tsx:50-58, app/api/export/route.ts:20-31 all call repos.merchants.list() with zero isDemo filter and default to merchants[0] on no/bad query param. Confirmed isDemo is a real, load-bearing field (lib/types.ts:83, \"seeded demo merchant — its events must never count toward real proof stats\"; merchants.json has isDemo:true rows) that IS respected for proof-stat rollups (per types.ts:347-348 comment) but is NOT applied to these list-and-pick-default operator surfaces — this is a genuine gap, not something handled elsewhere; grepped both json and mongo repository drivers (lib/repositories/json/repositories.ts:67-69, lib/repositories/mongo/repositories.ts:101-103) and both return all merchants unconditionally. Feasibility: the auditor's short-term proposal (filter to isDemo:false + scope session to merchantId in live mode) is a same-shaped, low-risk fix that doesn't touch the repository seam contract or proof-only doctrine — it only adds a filter/param at call sites plus one field on the session. Severity: kept at P2 not bumped to P1 because for the actual pilot model this week (Dylan is the sole operator, one real pilot merchant), a wrong default/no isolation is an operator-facing footgun (could view/export/act on demo data instead of real, or vice versa) rather than a security breach exposing one customer's data to another external party — no external actor can reach another tenant's data since there's only one merchant live and one operator. It becomes a real blocker (arguably P1) the moment a second pilot or the merchant's own staff gets access, exactly as the finding states. Auditor's severity assignment (P2) is correctly calibrated to the current deployment reality, not overstated or understated."
+  }
+ },
+ {
+  "area": "env",
+  "title": "Live webhook ingest requires a body-HMAC the shipped Gorgias/Zendesk setup can't produce, and onboarding copy falsely tells merchants unsigned is accepted — so the documented connect path ingests zero tickets in prod",
+  "problem": "In prod (DEMO_MODE=false) handleCanonicalIngest requires a valid X-Tideover-Signature body-HMAC (verifyWebhookSig with WEBHOOK_ROOT_SECRET) or returns a bare 401 and drops the ticket with no operator visibility. But the onboarding ConnectPanel tells the merchant 'Otherwise leave it unsigned (demo mode accepts unsigned)' — false in a live pilot — and a native Gorgias HTTP Integration / Zendesk trigger cannot dynamically HMAC-SHA256 the request body with an arbitrary shared secret. A merchant following the shipped steps therefore sends unsigned requests that all 401, so the primary documented 'connect your helpdesk' path ingests zero tickets in the exact mode a real pilot runs in.",
+  "evidence": "tideover/lib/ingest-route.ts:71-81, tideover/lib/ingest-templates.ts:60-66,89-95, tideover/app/onboarding/ConnectPanel.tsx:75-83",
+  "proposal": "Confirm with the vendor (needs Dylan) whether Gorgias/Zendesk can emit the body-HMAC; if not, either accept the unguessable URL token alone as sufficient auth for these vendor channels (drop the signature requirement for URL-token-authenticated ingest) or verify the vendor's OWN webhook signature scheme instead. Fix the onboarding copy so it never tells a live merchant unsigned is accepted.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Code confirms the claim: lib/ingest-route.ts:70-81 requires WEBHOOK_ROOT_SECRET + a valid HMAC (verifyWebhookSig) whenever DEMO_MODE!=='false', else bare 401 with no operator-visible log (only the tag-mismatch/discard branch logs; the 401 branch is silent). lib/ingest-templates.ts:60-66 and :89-95 both unconditionally tell the merchant \"Otherwise leave it unsigned (demo mode accepts unsigned)\" regardless of the real DEMO_MODE value — false once the pilot flips DEMO_MODE=false. Neither Gorgias's HTTP Integration UI nor a Zendesk webhook trigger exposes a stock way to compute an arbitrary-secret HMAC-SHA256 over the raw body, so a merchant following the shipped steps literally cannot produce a valid signature.\n\nOne correction to the finding's framing: this is not the pilot's sole/primary ingest path. app/onboarding/OnboardingWizard.tsx:222-232 shows email forwarding first and calls it \"the whole integration\" (rung 1, routed through a separate Resend/Svix-verified handler in lib/inbound-route.ts, unaffected by this bug). ConnectPanel (rendered immediately after, OnboardingWizard.tsx:237) is an additional structured/tag-filtered option for merchants who want to wire Gorgias/Zendesk directly — so the blast radius is \"any pilot merchant who picks the helpdesk-API connect option,\" not \"the pilot's only ingest path.\" That keeps P2 (not P1) right: real merchants would hit this day one if they choose that option and get silent zero-ingest, but there's a working fallback (email forward) so it isn't total ingest failure for the pilot, and it's a copy+auth-policy fix, not a security hole or data-loss event. The proposal (fix copy now; decide URL-token-only vs vendor-native-signature verification with Dylan) is feasible without touching the repository seam or proof-only doctrine — confined to lib/ingest-route.ts's auth gate and lib/ingest-templates.ts's instructions."
+  }
+ },
+ {
+  "area": "data",
+  "title": "CSV import isn't transactional and hides partial-failure counts from the merchant on mid-loop errors",
+  "problem": "importBackerRows commits customers/orders one row at a time in a for-loop with no checkpointing or rollback. If it throws partway (transient DB error, a bad row raising an unexpected exception), the route converts the thrown error to a bare {error} response with no counts — the merchant sees a generic failure with zero indication of how many rows already committed. Combined with the no-sourceKey duplication bug, retrying the same file re-duplicates every already-committed row.",
+  "evidence": "tideover/lib/import.ts:52-130, tideover/app/api/import/route.ts:31-39",
+  "proposal": "On a thrown error mid-loop, return the partial ImportResult counts alongside the error so the operator knows exactly how far it got before deciding whether to retry.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed against tideover/lib/import.ts:52-130 and app/api/import/route.ts:26-40. The for-loop has no try/catch of its own; counts (customersCreated/ordersCreated/skipped) live only in local variables that are discarded if any await throws (e.g. a transient Mongo call inside repos.customers.create/orders.create). The route's outer catch (lines 34-39) converts any thrown error to a bare {error} JSON body with no result payload, so the operator genuinely gets zero visibility into how many rows committed before the failure. This is accurate, not a missed guard elsewhere — there's no other counter, logging, or partial-result path in either file. Severity P2 is right, not P1: nothing is silently wrong (the merchant is correctly told it failed, just not how far it got), no auth/security/data-loss issue, and it only bites on a genuine mid-import exception (rare on Atlas, but plausible transient network blip during a real pilot's first CSV import this week) rather than every run. The fix is cheap and safe: wrap the loop body in try/catch, and on error return the partial ImportResult (200 status won't fit the existing error contract, so keep status 400/500 but include the counts alongside {error}) — this doesn't touch the repository seam contract (both json/mongo drivers already return/commit synchronously per row), doesn't touch proof-only doctrine (no data fabrication), and doesn't require a DB transaction (Mongo transactions would be a much bigger, riskier change and aren't what's being proposed). Recommend implementing as scoped — track counts in a mutable object outside the try, catch-and-attach on throw."
+  }
+ },
+ {
+  "area": "security",
+  "title": "No self-serve way to revoke or rotate a leaked /status/[token] link",
+  "problem": "Once a customer's status-page link is exposed publicly (screenshotted into a Kickstarter comments section, forwarded to the wrong person, indexed by a scraper), nothing in the app can invalidate that specific token. A repo-wide search for statusToken writers found only creation sites (import, seed, onboarding) — no rotate/revoke route or UI action exists. The only remediation is direct Atlas database editing, which isn't available to Dylan without going in by hand.",
+  "evidence": "tideover/lib/ids.ts:34-37, tideover/lib/status.ts:52-66",
+  "proposal": "Add a small operator action (reuse newStatusToken() + an update on the order) to mint a fresh token for one order on demand, invalidating the old link immediately. Low urgency given the exposed fields are limited to first name + timeline + merchant updates (no email/LTV/risk per the documented PII boundary), but worth having before a merchant asks for it under pressure.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: grep across app/lib/scripts shows statusToken is only ever written at creation (lib/import.ts:107, lib/onboarding.ts:138, seed script) — no rotate/revoke route or admin UI action exists anywhere in the repo. lib/status.ts confirms the PII boundary is genuinely narrow (firstName + timeline + merchant updates only, no email/LTV/risk), so the auditor's own severity discount is accurate. Proposal (reuse newStatusToken() + update the order's statusToken field) is straightforward: doesn't touch the repository seam abstraction itself (works identically against json and mongo repos since both already support order updates), doesn't touch proof-only doctrine, and isn't a hot-file listed in CLAUDE.md. No evidence of an existing revoke path being missed elsewhere. Auditor's own severity (P2) and effort (M) estimates look right as stated — not inflating to P1 since there's no data loss/security hole/week-one certainty, just a missing convenience/remediation action.</note>\n</invoke>\n"
+  }
+ },
+ {
+  "area": "ops",
+  "title": "Cron outcome sweep silently never runs if CRON_SECRET is unset, on ANY deployed Vercel build (not just prod)",
+  "problem": "cronAuthorized() gates strictly on process.env.NODE_ENV===\"production\". next build bakes NODE_ENV to the literal 'production' in every compiled output for both Preview and Production Vercel deployments (only next dev sees 'development'), so any deployed instance always takes the fail-closed branch. If CRON_SECRET isn't set in that Vercel project/environment, the endpoint always 401s and the daily resolved_quiet outcome sweep never runs — no crash, no log alarm, and the RELEASE.md monitor only watches /api/health, not this endpoint.",
+  "evidence": "tideover/app/api/cron/sweep-outcomes/route.ts:44-55, RELEASE.md:55-71",
+  "proposal": "Confirm CRON_SECRET is set in every Vercel environment that has vercel.json's cron schedule attached. Log a distinguishable one-line success/failure event on each run so a log-based alert (or a second monitor hitting the endpoint with the real bearer token) can catch a silent stop.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed against tideover/app/api/cron/sweep-outcomes/route.ts:44-55: cronAuthorized() checks process.env.NODE_ENV==='production' and 401s if CRON_SECRET is unset — no crash, no distinguishing log line (only a record-failure log exists, not an auth-failure log). NODE_ENV is baked to 'production' by `next build` for both Vercel Preview and Production deployments (only `next dev` yields 'development'), so this fail-closed branch is live on any deployed build, not just prod, exactly as claimed. .env.example:61-70 confirms CRON_SECRET ships unset by default and is opt-in per Vercel environment/project. RELEASE.md:55-71 confirms the only documented uptime monitor watches /api/health, not this cron path, so a silent auth failure here would go unnoticed. The sweep is idempotent/self-healing per the route's own doc comment (a missed run recomputes fully on the next), and the fail-closed posture is an intentional, correct security choice (mirrors ingest, ADR-0011) — the finding does not ask to change that, only to add an operational check (confirm CRON_SECRET is set + add a success/failure log line), which is a same-file, low-risk, non-breaking change (doesn't touch the repository seam or proof-only doctrine). P2 is right: not a security hole or data-loss risk (fail-closed is correct and self-healing), but a real pre-launch ops gap that could quietly cost a day-one merchant their resolved_quiet outcomes with zero alarm — worth a same-week check, not a stop-ship P1."
+  }
+ },
+ {
+  "area": "security",
+  "title": "STATUS_TOKEN_SECRET silently falls back to a hardcoded, repo-visible literal ('dev-only-change-me') when unset",
+  "problem": "lib/ids.ts's secret() returns process.env.STATUS_TOKEN_SECRET || \"dev-only-change-me\" — the HMAC key signing every customer /status/[token] link. It isn't in .env.example, so it's easy to leave unset. If forgotten in prod, every status token's tamper-evidence signature is computable by anyone who reads this public fallback string, reducing the link's security to just its 124-bit random lookup key.",
+  "evidence": "tideover/lib/ids.ts:12-27, tideover/scripts/gen-seed.mjs:24, tideover/scripts/seed-check.mjs:25",
+  "proposal": "Add STATUS_TOKEN_SECRET to .env.example and the go-live checklist. Note that rotating it invalidates every previously-issued status link, so it should be set once, deliberately, before any real customer link is issued.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: lib/ids.ts:23 secret() falls back to literal \"dev-only-change-me\", same literal duplicated in scripts/gen-seed.mjs:24 and scripts/seed-check.mjs:25. No fail-closed guard exists for this anywhere (contrast: AUTH_SECRET/RESEND_WEBHOOK_SECRET/WEBHOOK_ROOT_SECRET/CRON_SECRET all fail closed or are documented in .env.example). Checked .env.example directly: STATUS_TOKEN_SECRET is genuinely missing from it while all four sibling secrets have entries there — so the \"easy to leave unset\" claim is correct, this is the one secret with no safety net. README does mention it in prose (line 77, 125) but that's not the checklist a solo founder actually works from at go-live. Proposed fix (add to .env.example + go-live checklist, note rotation invalidates outstanding links) is cheap, low-risk, doesn't touch the repository seam or proof-only doctrine. Severity P2 is right, not P1: exploiting it requires an attacker to both know the fallback string AND already possess/guess the 24-char random lookup key for a specific order, and the token carries no PII (per code comment) — so worst case is tamper (marking an order falsely) not data exposure, and only if the founder skips the README note. Could argue P1 given \"silently wrong results\" is in the P1 rubric and this fails perfectly silently, but the compound precondition (still need the random half) and no-PII design keep blast radius bounded."
+  }
+ },
+ {
+  "area": "ops",
+  "title": "No in-product signal when webhook ingest silently drops or rejects tickets",
+  "problem": "The only observability for a dropped (tag-mismatch) or rejected (bad JSON/shape/signature) webhook delivery is a bare console.log JSON line in Vercel's function logs. There is no merchant- or operator-facing ingest-health indicator anywhere in the product. A misconfigured webhook (wrong tag casing, wrong field mapping in the merchant's helpdesk template, wrong URL) can silently discard or 400 every ticket for days, and the only way anyone finds out is an empty inbox or Dylan manually reading Vercel logs.",
+  "evidence": "tideover/lib/ingest-route.ts:71-105, tideover/app/api/ticket-ingest/route.ts:118-133",
+  "proposal": "Persist a lightweight ingest-event record (merchantId, outcome, timestamp, reason) even on reject/discard, and surface a simple counter/last-seen banner on the operator's setup-status or inbox page ('3 webhook deliveries rejected in the last hour — check your tag mapping').",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Core code claim checks out: both routes only console.log on discard/reject (lib/ingest-route.ts:102-105, app/api/ticket-ingest/route.ts:123-130) — no persisted ingest-event record. But the auditor's premise \"no in-product signal anywhere\" is wrong: lib/setup.ts already implements task F7 — a derived `lastInboundAt`/`integrationHealth` quiet-webhook flag (INTEGRATION_QUIET_DAYS=7) surfaced on the setup checklist/helpdesk step, wired into app/app/page.tsx, app/app/setup/page.tsx and the onboarding panel. So a merchant/operator already gets a merchant-facing signal when a real helpdesk has gone silent, which is exactly the \"wrong tag/URL discards everything silently\" scenario the finding worries about — it just fires at day 7 of silence rather than in real time, and it doesn't distinguish \"discarded for tag mismatch\" vs \"rejected 400/401\" vs \"genuinely no tickets.\" Also, one of the two cited files (app/api/ticket-ingest/route.ts) is the legacy route that 410s once DEMO_MODE=false, so it's largely irrelevant to a live pilot week one.\nNet: the specific proposal (persist ingest events + a reason-labeled banner/counter) is a genuine, feasible incremental improvement (small effort, no seam/proof-only conflict — read-only counter view, doesn't touch hot files), but it's an enhancement to an existing partial mitigation, not a from-scratch gap, and the realistic worst case (a full week of silence before the quiet flag trips, or a founder eyeballing an empty inbox) is a rough-pilot-experience issue, not data loss or a security hole. Downgrading P2 to P3."
+  }
+ },
+ {
+  "area": "onboarding",
+  "title": ".env.example is stale — missing over half the vars the app reads, including the two (MONGODB_URI, DATA_DRIVER) CONTRIBUTING.md sends readers there for",
+  "problem": ".env.example documents only DEMO_MODE, APP_PASSWORD, AUTH_SECRET, RESEND_WEBHOOK_SECRET, RESEND_API_KEY, WEBHOOK_ROOT_SECRET, CRON_SECRET. It never mentions DATA_DRIVER, MONGODB_URI, MONGODB_DB, STATUS_TOKEN_SECRET, DEMO_FORCE_MOCK_SEND, APP_URL, LLM_PROVIDER/LLM_API_KEY/LLM_MODEL, GORGIAS_WEBHOOK_SECRET, INTERCOM_CLIENT_SECRET, TIDIO_WEBHOOK_SECRET, EMAIL_INBOUND_SECRET, DEMO_OPERATOR_NAME, or NEXT_PUBLIC_CAL_*. CONTRIBUTING.md:19 explicitly tells a reader to 'set MONGODB_URI... and DATA_DRIVER=mongo (see .env.example)' — neither var is actually there.",
+  "evidence": "tideover/.env.example, tideover/CONTRIBUTING.md:19",
+  "proposal": "Regenerate .env.example from an actual process.env grep so it's the single source of truth; at minimum add DATA_DRIVER/MONGODB_URI/MONGODB_DB/STATUS_TOKEN_SECRET/DEMO_FORCE_MOCK_SEND since those gate data integrity and delivery correctness, not just cosmetic behavior.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified: tideover/.env.example only documents DEMO_MODE/APP_PASSWORD/AUTH_SECRET/RESEND_*/WEBHOOK_ROOT_SECRET/CRON_SECRET. Root CONTRIBUTING.md:19 tells readers to set MONGODB_URI + DATA_DRIVER=mongo '(see .env.example)' but neither appears there. Confirmed DATA_DRIVER, MONGODB_URI, MONGODB_DB, STATUS_TOKEN_SECRET, DEMO_FORCE_MOCK_SEND, APP_URL, LLM_PROVIDER/LLM_API_KEY/LLM_MODEL, GORGIAS_WEBHOOK_SECRET, INTERCOM_CLIENT_SECRET, TIDIO_WEBHOOK_SECRET, DEMO_OPERATOR_NAME, NEXT_PUBLIC_CAL_* are all genuinely read via process.env in lib/auth.ts, lib/channel-adapters/*, lib/drafting/LlmDrafter.ts, lib/repositories/mongo/client.ts, components/booking/BookCal.tsx etc. Real onboarding gap. Downgrading severity from P2 to P3: it's purely a docs/DX defect (fix is regenerating a comment file), doesn't gate data integrity/delivery correctness itself — the app fails safe/demo-mode regardless of what .env.example says, and a solo founder onboarding themselves to their own Mongo prod this week will hit it once, look at lib/repositories/mongo/client.ts or ADR-0001, and unblock in minutes. No security hole, no data loss, no silently wrong results. Fix (S effort) is trivially safe: pure documentation edit, doesn't touch the repository seam, verify gate, or proof-only doctrine."
+  }
+ },
+ {
+  "area": "env",
+  "title": "APP_URL has two different, silently-conflicting defaults across the codebase",
+  "problem": "lib/ingest-templates.ts defaults APP_URL to 'https://www.tideover.app' when unset, while GorgiasAdapter.ts defaults the SAME var to '' (empty string) for authStartUrl(), which would build a schemeless/hostless URL. Low current blast radius since Gorgias OAuth is unimplemented and unreferenced, but a landmine for whoever wires it next.",
+  "evidence": "tideover/lib/ingest-templates.ts:28, tideover/lib/channel-adapters/GorgiasAdapter.ts:69",
+  "proposal": "Give GorgiasAdapter.authStartUrl the same fallback (or extract one shared constant/helper) so both call sites agree on APP_URL's default.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed at both cited lines. tideover/lib/ingest-templates.ts:28 defaults APP_URL to \"https://www.tideover.app\"; tideover/lib/channel-adapters/GorgiasAdapter.ts:69 defaults the same var to \"\" for authStartUrl(), producing a schemeless/hostless URL fragment like \"/api/oauth/gorgias/start?merchant=...\". GorgiasAdapter.authStartUrl is not called anywhere else in the file or wired into any route yet (listTickets/sendReply/authCallback all throw NotImplementedError), so blast radius today is zero — matches auditor's own characterization. Fix is trivial (share one constant/helper) and doesn't touch the repository seam, proof-only doctrine, or hot-file list. P3/S severity and effort are correctly rated as-is; no reason to downgrade to non-finding since it is a genuine landmine for whoever implements Gorgias OAuth next."
+  }
+ },
+ {
+  "area": "ops",
+  "title": "inbound-route.ts's 'accept unsigned in demo' branch is unreachable on any deployed Vercel build, contradicting its own comment",
+  "problem": "handleResendInbound's demo gate is DEMO_MODE !== \"false\" && NODE_ENV !== \"production\". Since next build always bakes NODE_ENV to 'production', this can only be true under local next dev — never on the hosted demo or any Vercel preview/prod URL. So the comment ('accepts unsigned payloads ONLY in demo mode... so the seeded/test path works', mirrored in .env.example) is inaccurate for anything deployed: on the live hosted demo, inbound Resend testing needs RESEND_WEBHOOK_SECRET configured or it always 401s despite DEMO_MODE being true.",
+  "evidence": "tideover/lib/inbound-route.ts:67-77, tideover/.env.example",
+  "proposal": "Given the email-forward path is being cut per current direction, either drop the NODE_ENV clause (mirror ingest-route.ts's simpler DEMO_MODE-only gate) if the route still matters for a transition period, or retire the route and comment together so it doesn't describe behavior that's already dead-and-wrong on every deployed instance.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Verified against tideover/lib/inbound-route.ts:71-77 and .env.example:26-27,50. The demo gate is exactly `DEMO_MODE !== \\\"false\\\" && NODE_ENV !== \\\"production\\\"`; since `next build` always bakes NODE_ENV=production, this branch is dead on every Vercel build (preview or prod) and only reachable under local `next dev`. Effect is fail-closed/safe (no security hole — a misconfigured deploy still requires RESEND_WEBHOOK_SECRET), so severity is correctly capped at P3: it's a docs/comment-accuracy and hosted-demo-testability issue, not a vuln. Proposal (drop the NODE_ENV clause to mirror ingest-route.ts, or retire the route/comment together if the email path is being cut) is feasible and doesn't touch the repository seam or proof-only doctrine. No refutation."
+  }
+ },
+ {
+  "area": "security",
+  "title": "Public widget-submit ticket creation has no rate limit or message-size cap",
+  "problem": "Anyone holding a customer's status token can POST unlimited tickets to /api/widget-submit — each call runs the full ingest->draft pipeline (order/customer lookup, reassurance/risk/gift engine computation, a DB write) with no per-token or per-IP rate limit, and message has a .min(1) but no maximum length, so a single request's body is unbounded.",
+  "evidence": "tideover/app/api/widget-submit/route.ts:13",
+  "proposal": "Add a max length to message (e.g. 5,000 chars) and a simple per-token rate limit (e.g. N requests/hour) before this ships to a public-facing status page for a real merchant's customers.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1,
+  "track": "pilot",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Confirmed as described: tideover/app/api/widget-submit/route.ts:13 has `message: z.string().min(1)` with no max, and the POST handler (lines 15-39) has no per-token/per-IP throttle before running the full ingestTicket pipeline (repos.merchants/customers/orders lookups, computeTicketIntelligence, a DB write via repos.tickets). Notably the sibling endpoint app/api/status/[token]/route.ts already implements a simple in-memory per-IP rate limiter (60 req/min) — so there's an established, cheap pattern in this codebase that just wasn't applied to widget-submit, which is the more expensive of the two (write + engine compute vs. a read). This somewhat raises confidence the omission is a real gap rather than an intentional decision.\\n\\nMitigating factor the auditor didn't flag: getDrafter() (lib/drafting/LlmDrafter.ts) only calls a real LLM when LLM_PROVIDER+LLM_API_KEY are set, which per its own comment is 'intentionally NOT wired live in the demo' — so today there's no per-call external LLM cost amplification, just local DeterministicDrafter + DB writes. That keeps the blast radius to ticket-queue spam / storage bloat / Vercel invocation volume, not runaway API spend. Effort is genuinely S (add .max(5000) to the zod schema + reuse the existing HITS-map pattern keyed by token or IP). Not a week-one blocker for pilot (requires an attacker with a valid status token deliberately hammering the endpoint, not normal customer use), so P3/S as scored is appropriate — I would not upgrade it, but it's legitimate backlog and cheap to knock out before wider rollout, especially if LLM_PROVIDER ever gets turned on."
+  }
+ }
+]

@@ -1,0 +1,155 @@
+# Tideover — Data Provenance Audit (how we retrieve every metric for a REAL merchant)
+
+**Date:** 2026-07-06 · **Author:** Fable (synthesis of a verified 49-agent audit; every MISSING/PARTIAL claim adversarially re-checked against code — 37 gaps claimed, **37 confirmed, 0 overturned**)
+**Answers Dylan's ask:** "make sure any metrics that are used in the SaaS are accounted for as far as how we will retrieve them (in every case)." **Raw data:** `docs/audit-2026-07-06/data-provenance-metrics.json` (all 55 metrics).
+
+## The one-paragraph answer
+
+**Of the 55 metrics the product uses, only 18 have a real retrieval path for a live merchant. 26 are partial (real path, crippled by an upstream bug), and 11 are missing entirely (seed/hardcoded/manual only).** But the picture is far better than that sounds, because **almost the entire failure collapses to two root bugs** — fix those two and most of the "partial" column flips to working:
+
+1. **The fulfillment-date bug (the central one).** CSV import hardcodes every order's `fulfillmentStart` and `createdAt` to *import time* instead of reading the date columns the export actually contains. Because `fulfillmentStart` is the wait-clock anchor that drives *everything* — days-in-wait, day-stage selection, confidence bands, overdue flags, cohort forecast, refund-risk, the Visa dispute window — this single bug makes every time-based number wrong for every imported order (they all read as "day 0 / production"). **Fix: teach `csv.ts` to parse the date column it currently ignores.** One fix, enormous cascade.
+2. **The stubbed send adapters.** Only the mock adapter returns a `sentAt`, so no real reply ever reaches `sent`. That silently zeroes FRT, SLA attainment, sent-count, deflection, saves, and the entire script-performance/outcome ledger. **Fix: one real send path** (which ties directly to your reply-delivery decision — even copy-to-clipboard, if it marks the ticket sent with a real timestamp, satisfies this).
+
+## The LTV verdict (your trigger question), definitively
+
+- **Real LTV must come from Shopify** (`Customer.amountSpent`). **It is not built** — there's zero Shopify wiring. Today `ltvCents` is set once from a single order's value at import and never refreshed, or falls to a $50 floor / a hardcoded $60,000 default. The high-value threshold it's compared to (`ltvTiers.high`) is hardcoded to **$500 for every merchant**. So the gift/save gate is *a fake number vs a fake threshold*.
+- **For a Kickstarter merchant there is no true LTV at all** — only summed pledges. **Your instinct to set the boost to 0% for Kickstarter was exactly right** — the audit confirms KS has no lifetime value to boost on. For Shopify merchants, the boost becomes real only once we sync `amountSpent`. This is precisely why I specced the gift feature to **ship with boost = 0 and activate when Shopify LTV lands** — no blocking dependency.
+- **productionStage** has a similar story: no live feed exists and no route ever advances it, so every real order is frozen at "production." The fix is cheap — *derive* it from days-in-wait vs the merchant's own stage day-bands (the data already exists), no external feed needed.
+
+## What this means strategically
+
+A **Kickstarter/BackerKit pilot needs zero new integrations** — the CSV rail already ships — it just needs the date bug fixed + LTV relabeled honestly ("pledge value," not lifetime value). A **Shopify pilot needs the Shopify Admin API built** (medium effort) *and* reverses the current "no Shopify admin" marketing promise. That fork is the biggest decision the integrations guide surfaces. See `INTEGRATIONS-GUIDE.md`.
+
+The full metric-by-metric table and the prioritized P0/P1/P2 gap-closure plan follow.
+
+---
+
+# Tideover Data Provenance — Definitive Answer
+
+**The question:** for every metric the product consumes, is there a real retrieval path for a paying merchant, or is it seed / hardcoded / manual / missing?
+
+**Status legend**
+- **WIRED** — real path exists end-to-end for a live merchant (caveats noted).
+- **PARTIAL** — real path exists but is thin: CSV-only with no refresh, mock-send-only, or structurally sound yet fed broken inputs.
+- **MISSING** — no live path; value is seed, hardcoded, or a throwaway onboarding preview.
+
+*(Deduped from the raw rows: two `Order.createdAt` entries merged into one; two `Merchant.baseline` entries merged into one.)*
+
+---
+
+## Cluster 1 — Identity & Money
+
+| Metric | Consumed by | Real source | Status | Gap |
+|---|---|---|---|---|
+| **Customer.ltvCents** (LTV — trigger case) | gift.ts:31 high-value gate + gift.ts:47 minLtv eligibility (via engines/index.ts:68-75, gift-catalog route:32) — cockpit gift/save suggestion | Shopify `Customer.total_spent` / GraphQL `customer.amountSpent`; **KS-only merchant has no true LTV** — only summed pledges | **MISSING** | No live path. CSV sets LTV to ONE row's order value at customer create (import.ts:69) and never refreshes — import.ts:127-129 appends orderIds on 2nd+ orders but never touches ltvCents; unparseable rows peg LTV at $50. Seed hardcodes 96000; onboarding preview 60000 (not persisted). |
+| **Merchant.ltvTiers.high** (threshold) | engines/index.ts:73 + gift-catalog route:37 → gift.ts highTierCents | merchant-onboarding, or computed from the merchant's order-value distribution | **MISSING** | IntakeData has no ltvTiers field; onboarding.ts:92 hardwires high=$500 for every merchant. No UI, no calibration. |
+| **Order.orderValueCents** | refund-risk.ts:77 valueExposure; dispute-exposure.ts:90 GMV tile | Shopify `Order.total_price`; CSV pledge column | **PARTIAL** | Real only via one-time CSV parse; unparseable rows silently default to $50 (import.ts:101), polluting risk + GMV. Never refreshed; no live Shopify order feed. |
+| **Order.group** (KS / late-pledge / preorder → $ rail) | dispute-exposure.ts:50 KS-vs-Shopify $ split; status.ts:109 label | computed from source integration; no real payment-rail tag exists | **PARTIAL** | Import infers group from a regex on the tier string (csv.ts:213) or falls to a blanket `ks-backer` default (import.ts:99). The dispute $ rail split rides entirely on this guess. |
+| **Customer.email** | service.ts:403 ingest join key | CSV email column; Shopify `Customer.email` | **WIRED** | Carries real email and is the ingest match key — but CSV-only. A ticket from anyone absent from the last import can't match (falls back, see below). |
+| **Customer.firstName** | reassurance.ts:93 `{first_name}` merge; status.ts:97 greeting | CSV name column; Shopify `Customer.first_name` | **WIRED** | Real via CSV; falls back to email local-part when name is blank (import.ts:68) — a draft can address "dana87". |
+| **Customer.orderIds** | service.ts:409 ingest fallback; gift-catalog route:15 | computed from order→customer linkage | **WIRED** | Maintained correctly by the importer, but only grows via CSV import. |
+| **Customer.ticketCount** | service.ts:480 per-ticket increment; at-a-glance views | helpdesk-webhook | **WIRED** | Genuinely live; increments per inbound ticket. |
+| **Customer.lastSentiment** | gift-catalog route:28 risk input | helpdesk-webhook sentiment | **WIRED** | Write path live on ingest (service.ts:481); accuracy inherits the keyword sentiment classifier. |
+| **Ingest identity match** (orderRef + email join) | service.ts:403 findByEmail + service.ts:406 orders.findById — the pairing the whole cockpit runs off | helpdesk ticket email/ref matched to CSV/Shopify records | **PARTIAL** | Works only if the customer/order was previously CSV-imported. On a miss, service.ts:413-418 silently attaches the ticket to the merchant's oldest open order **and that order's customer** — risk/gift/reassurance then run against the wrong customer's LTV and order value. |
+| **Order.importKey** (re-import dedupe) | import.ts:79-91 dedupe | CSV id column; Shopify `Order.id` | **PARTIAL** | Only set when the export carries an id column. Without one, importKey is undefined (import.ts:80) and dedupe degrades to none — a double-upload duplicates the entire backer list. |
+
+---
+
+## Cluster 2 — Time & Fulfillment
+
+| Metric | Consumed by | Real source | Status | Gap |
+|---|---|---|---|---|
+| **Order.fulfillmentStart** (canonical wait-clock anchor) ★ | time.ts:19 daysInWait + time.ts:65 timeline → dayStageFor (reassurance.ts:72), forecast.ts:94/136, refund-risk.ts:73, status.ts:84, service.ts:416. **Drives the entire wait clock.** | CSV pledge/collection/order-date column; Shopify `order.created_at` | **MISSING** | **The central import bug.** csv.ts reads no date column; import.ts:103 hardcodes fulfillmentStart = now. Every imported order's clock starts at 0 → daysInWait≈0, dayStageFor always returns day-7, forecast/risk/overdue all wrong. |
+| **Order.fulfillmentEnd** (window denominator, overdue) | time.ts:65 denominator + time.ts:78 overdue; refund-risk.ts:73 stageLag | computed = fulfillmentStart + windowMax | **PARTIAL** | Formula is sound but anchored to import `now` (import.ts:39,104) — right-sized, wrong-placed. Self-corrects once fulfillmentStart is real. |
+| **Order.createdAt** (Visa 13.1 / 540-day txn anchor) | dispute-exposure.ts:74 window anchor; refund-risk.ts:126 queue tiebreak | Shopify `order.created_at`; CSV pledge/transaction-date column | **MISSING** | Hardcoded to import nowIso (import.ts:102); csv.ts reads no transaction-date column even though the export carries it. The 540-day cap is anchored to import day, not the real charge. |
+| **Order.productionStage** (sourcing→dispatch) | reassurance.ts:75 playbook byStage + stageBlurb; refund-risk.ts:82 stageLag; time.ts:70/84/98; status.ts:113 | No live feed exists. Closest: merchant manual advance, preorder-app milestone, or derive from daysInWait vs merchant.stages[].dayBand | **MISSING** | Two holes: (1) hardcoded literal `"production"` on import (import.ts:105); (2) **no route ever updates productionStage** — grep confirms only import/seed/preview write it. Every real order is frozen at 'production' forever; the "stage-aware" engine silently always uses the base branch. |
+| **Order.disclosedEta** {value,source,disclosedAt} | dispute-exposure.ts:69 (excluded if absent) + :74 window anchor; evidence.ts pack | CSV KS/BackerKit estimated-delivery column; preorder-app estimate | **PARTIAL** | value/source ARE wired from CSV when present (import.ts:113-121). But many KS exports lack the column → order buckets as unknownCount (under-reports exposure); disclosedAt = import time (import.ts:118), skewing the Visa window; Shopify-only merchants have no import path. |
+| **Order.campaignName / Order.wave** | status page + types.ts:143-145 display only | CSV campaign column; onboarding wave plan | **MISSING** | csv.ts MappedRow has no campaign/wave fields; import never sets them. Every imported order has both undefined — pure seed decoration. |
+| **computed daysInWait / OrderTimeline** (band, overdue, stage state) | time.ts:18-101; reassurance.ts:72; status.ts:84-85; cockpit | computed (right approach, no external source needed) | **PARTIAL** | Arithmetic is correct and pure — but fed the hardcoded fulfillmentStart, so daysInWait≈0 for every imported order; band shows near-full window, overdue never fires. Fix fulfillmentStart and this self-corrects. |
+| **day-7/30/60/89 stage thresholds** | reassurance.ts:15-21 dayStageFor → template pick; status.ts:85 | product-defined cadence; 89-day horizon should scale to merchant window | **PARTIAL** | Fine as a constant, but (1) fed by broken daysInWait so every real order lands in day-7; (2) fixed 89-day ceiling doesn't scale to a 120–200-day merchant. |
+| **Merchant.stages[]** {dayBand,blurb} | time.ts:70 stageDef + :74 stageRemaining; refund-risk.ts:129-131 stageCeil; timeline rows | merchant-onboarding (declared, with defaults) | **WIRED** | Real path from the wizard with sensible defaults. Caveat: never reconciled with the (hardcoded) order.productionStage; the natural "derive stage from daysInWait vs dayBand" path is defined but unused. |
+| **Merchant.fulfillmentWindowDays** {min,max} | refund-risk.ts:78 waitPressure; import.ts:38-39 sizes fulfillmentEnd | merchant-onboarding | **WIRED** | Real, merchant-owned config. Static (no per-cohort override); never validated against observed delivery. |
+| **GMV-in-dispute / orders-in-window** | dispute-exposure.ts:90-98 total + rail split (money-at-risk tile, app/app/page.tsx:176-202) | computed from real value + date + ETA + rail | **PARTIAL** | Dollar figure is real summed GMV, but computed over mis-dated (createdAt=import time), mis-railed (group guess) orders; orders lacking disclosedEta drop to unknownCount. Inherits every upstream gap. |
+
+---
+
+## Cluster 3 — Support & Outcome
+
+| Metric | Consumed by | Real source | Status | Gap |
+|---|---|---|---|---|
+| **Ticket.channel** | service.ts:529 send-routing; setup.ts:111,166 checklist | helpdesk-webhook actual channel | **PARTIAL** | Canonical ingest flattens all real inbound to `email` (ingest-schema.ts:56); and getSendAdapter routes email/gorgias/tidio/intercom to NotImplementedError stubs — a real approved reply can't be sent back out on any non-mock channel. |
+| **Ticket.externalId** | service.ts:398-401,474 idempotency dedupe | helpdesk webhook `ticket.id` | **WIRED** | Real path; depends on the merchant pasting the provided body template. |
+| **Ticket.subject / body** | inbox display; inferType/inferSentiment | helpdesk webhook subject + last message body | **WIRED** | Real via template. Body is only the last message, not the full thread. |
+| **Ticket.type** (wismo/refund/deposit/other) | service.ts:705-706 wismoPer100; :460 tag; filters | computed keyword classifier | **WIRED** | Deterministic over real body, but a 3-list literal keyword match — non-templated phrasing falls to `other`, undercounting WISMO. |
+| **Ticket.sentiment** (calm→chargeback-threat) | refund-risk.ts:79 (weight 0.35); reassurance.ts:105; sla.ts:63-65; service.ts:461,481 | computed keyword classifier | **WIRED** | Input is real; classification is ~15 regex keywords with no negation. A mislabeled 'calm' silently de-prioritizes a real dispute — quality-limited, not seed-limited. |
+| **Ticket.status** (open/drafted/sent/resolved) | service.ts:703 sent filter; :715-716 deflectionPct | Tideover workflow lifecycle | **PARTIAL** | `drafted`→`sent` is real, but **no code ever writes `resolved`** (seed only), and `sent` only advances via the mock adapter. |
+| **Ticket.tags** | service.ts:709-713 savesCount; chips | Tideover-derived from type/sentiment + gift action | **WIRED** | Derived from real fields + real operator gift-send. Note: the merchant's OWN helpdesk tags are deliberately dropped at edge (ingest-schema.ts:41). |
+| **Ticket.draft** {text,band,priority,risk,gift,variant} | inbox DraftRail/ApprovalBar; approveSend (service.ts:525,273) | computed by deterministic engines over real records | **WIRED** | Computed from real records, but text is fixed templates (LLM drafter env-gated off, LlmDrafter.ts:40); embedded risk/stageKey inherit the daysInWait/orderValue weaknesses. |
+| **Ticket.sent** {text,approvedBy,sentAt,externalId} | service.ts:537-541; editedRatio; setup firstReplySent | helpdesk send API + authenticated operator identity | **PARTIAL** | Only MockAdapter.sendReply returns a value (fabricated `mock_send_*`, sentAt=now); Gorgias/Email/Tidio/Intercom throw NotImplementedError. approvedBy = hardcoded env name (service.ts:539), not a logged-in operator. |
+| **ticketsLast7d velocity** | refund-risk.ts:80 velocity factor | computed from real per-customer tickets | **WIRED** | Fully derived; only as complete as the ingest feed. |
+| **StatusView** {viewedAt,ipPrefix,UA} | status.ts:73-81 evidence log; setup.ts:121 | server logs one row per real status-page visit | **WIRED** | Real write path; population depends on the merchant distributing the link. ipPrefix truncated by design. |
+| **MerchantUpdate** {text,imageUrl,hidden} | status.ts:89 feed; setup.ts:121 | merchant-authored broadcast | **WIRED** | Manual by design. imageUrl is an external URL (no upload pipeline). |
+| **Merchant.slaWindows** {amStart,pmStart,tz} | sla.ts:177 target; service.ts:739 attainment; inbox chips | merchant-onboarding (per timezone/hours) | **MISSING** | IntakeData has no slaWindows field; onboarding.ts:94 writes the same ET 9:00/15:00 to every merchant with no edit path. A CET/PT merchant gets wrong targets and breach flags. |
+| **Ticket.createdAt** (SLA/FRT clock start) | sla.ts:179; service.ts:534 firstResponseSec | helpdesk webhook `created_at` | **WIRED** | Real path; silently defaults to ingest-time now() if the template omits it (ingest-schema.ts:54), which would zero the SLA/FRT clock. |
+| **Ticket.firstResponseSec** (measured FRT) | service.ts:703-704 medianFrt; sla.ts:253; :739 attainment | computed = real send timestamp − ticket createdAt | **PARTIAL** | Only populated when the reply is sent THROUGH approveSend, and sentAt only comes from MockAdapter. Replies the merchant sends in their own helpdesk are invisible. |
+| **Merchant.baseline** {medianFrtSec,wismoPer100,ticketsPerWeek,repeatWismoPct,capturedOn} | baseline.ts:74 Day-0 report; forecast.ts:107-108 cohort sizing; proof deltas; service.ts:725 | merchant-declared at onboarding, or computed from pre-Tideover helpdesk history | **MISSING** | onboarding.ts:95-101 hardcodes ALL ZEROS. forecast.ts:107 returns null when wismoPer100=0, so cohort sizing self-disables; proof deltas run against a zero denominator; Day-0 report renders all zeros. |
+| **RiskResult** {score,band,priorityRank,factors} | service.ts:718-721 curve; :734 atRisk queue; refund-risk.ts:69 | computed; realness = min(realness of inputs) | **PARTIAL** | valueExposure uses defaulted orderValueCents; waitPressure/stageLag anchor on fulfillmentStart=now (import.ts:103) so every fresh backer scores waitPressure≈0. Sentiment/velocity are wired. Real only after real dates/values exist. |
+| **ReassuranceResult** {draftText,band,stageKey,overdue,variant} | service.ts:426-433 → draft; DraftRail; variant attribution | computed over playbook + firstName + sentiment + timeline | **PARTIAL** | Template text is wired from onboarding, but stageKey via dayStageFor(daysInWait) and productionStage lookup both depend on the hardcoded fulfillmentStart/productionStage — every imported backer drafts as an early "day-7 / production" message. |
+| **SlaAttainment** {answered,met,rate} + chips | service.ts:739 dashboard; sla.ts:340 chip | computed from real FRT vs real windows | **PARTIAL** | Rests on two weak inputs: firstResponseSec (mock-send-only) and slaWindows (hardcoded ET). Also gated null below n=10 answered (sla.ts:29,304). |
+| **CohortForecast** {enteringWindow,ratePerOrder,expectedMid/Low/High} | forecast page:61 (staffing forecast) | computed; cohort from real dates, rate from real baseline | **MISSING** | Sized forecast is null for every real merchant (baseline.wismoPer100=0 → forecast.ts:107-111 short-circuits). enteringWindow anchors on fulfillmentStart=now, so day-60 crossings cluster ~60 days post-import. Only a distorted raw cohort count survives. |
+| **DashboardView.live.medianFrtSec** | service.ts:703-704; dashboard | computed from real FRTs | **PARTIAL** | Inherits firstResponseSec gap — reflects mock-mediated sends only. |
+| **DashboardView.live.wismoPer100Orders** | service.ts:705-706; dashboard | computed from real ticket types / order count | **WIRED** | Real once tickets flow; numerator limited by keyword classifier. |
+| **DashboardView.live.sentCount** | service.ts:729; dashboard | computed from real sends | **PARTIAL** | 'sent' only advances via mock adapter (real send stubbed). |
+| **DashboardView.live.savesCount** | service.ts:709-713; dashboard | dispute-risk sends + operator gift sends | **PARTIAL** | gift-send branch is genuinely wired (gift-send route:22); dispute-risk branch needs a chargeback ticket reaching 'sent' — mock-only. |
+| **DashboardView.live.deflectionPct** | service.ts:715-716; dashboard | real resolution outcomes | **PARTIAL** | 'resolved' half is dead (never written); 'sent' half is mock-only. For a live merchant this ≈ share of tickets sent through the mock adapter. |
+| **ScriptPerformanceRow** — sends + avgEditedRatio | scripts page:102; service.ts:840-846 | event-sourced from real approved sends | **PARTIAL** | editedRatio (Levenshtein) is a genuine measured fact, but reply_sent only fires via mock-adapter approveSend; needs n≥20 sends. |
+| **ScriptPerformanceRow** — customerReplies / calmRate / reopens | scripts page; service.ts:847-853,878-883 | event-sourced from real follow-ups | **PARTIAL** | Requires the original reply to have gone through Tideover; calmResponseRate keys off Tideover's own regex (not "the channel's sentiment" the type comment claims); gates null below n=20. |
+| **ScriptPerformanceRow** — csatResponses / csatRate | scripts page; service.ts:854-857,884-885 | real CSAT taps on status page | **PARTIAL** | Real end-to-end path (csat route:42), but needs a prior reply_sent + enough taps (n≥20) — realistically unattainable early. |
+| **ScriptPerformanceRow** — resolvedQuiet / quietRate | scripts page; service.ts:860-862,889-890 | absence of comeback 7d after a real send | **PARTIAL** | Sweep + cron are wired (needs CRON_SECRET); derives from reply_sent (mock-only) and gates null below n=20. |
+| **SocialSignal scoring** {score,flagged,keywords,outreach} | social page:33 + feed route:13 | a Twitter/Reddit/Instagram search or streaming integration | **MISSING** | Scoring engine is real but has **no real input feed** — no social-platform client anywhere; mentionsBrand/mentionsCampaign are seeded booleans. Any real merchant sees seed data only. |
+| **OutcomeEvent** {kind,sentimentAtSend,editedRatio,respondedSentiment} | service.ts:840 aggregation; CSAT; sweep; ledger | event-sourced from real send/ingest/CSAT actions; refund/chargeback need a payment/helpdesk webhook | **PARTIAL** | reply_sent (the spine) is mock-send-only. `refund_requested` and `chargeback` kinds are defined but **never written** (service.ts:864 skips them; seed only). Sentiment fields are regex-derived. |
+
+---
+
+## Plain-language answer
+
+**Metrics with a genuine real retrieval path (WIRED, ~18):** the identity spine (`Customer.email`, `firstName`, `orderIds`) and the live support-ingest fields (`ticketCount`, `lastSentiment`, `ticketsLast7d`, `Ticket.externalId / subject / body / type / sentiment / tags / draft`, `Ticket.createdAt`), plus merchant-declared config (`Merchant.stages[]`, `fulfillmentWindowDays`), the customer-facing surfaces (`StatusView`, `MerchantUpdate`), and `wismoPer100Orders`. These carry the merchant's real data — subject to two structural caveats that recur everywhere: (a) customer/order data is **CSV-only with no live refresh**, and (b) classification quality is **keyword-regex**, not the merchant's own helpdesk taxonomy or a real sentiment source.
+
+**Metrics that are seed / hardcoded / manual only (MISSING, 10):** `Customer.ltvCents`, `Merchant.ltvTiers.high`, `Order.fulfillmentStart`, `Order.createdAt`, `Order.productionStage`, `Order.campaignName/wave`, `Merchant.slaWindows`, `Merchant.baseline`, `CohortForecast`, and `SocialSignal`. Each has **no code path** that would populate it for a real merchant — it's a hardcoded literal, an all-zeros default, a throwaway onboarding preview, or a scoring engine with no feed.
+
+**The large PARTIAL middle (~22):** these have a real path that is crippled by one of two upstream defects. Either they inherit the **fulfillment-date bug** (fulfillmentStart/createdAt hardcoded to import time → every time-based number is wrong), or they inherit the **stubbed send adapters** (only the mock adapter returns a `sentAt`, so FRT, SLA attainment, sentCount, deflection, and the entire Script-Performance / outcome ledger reflect mock-mediated sends only). Fix those two roots and most of this column flips to WIRED.
+
+### The LTV situation (the trigger case), called out explicitly
+
+- **Where real LTV must come from:** Shopify `Customer.total_spent` / Admin GraphQL `customer.amountSpent`. For a **Kickstarter-only merchant there is no true lifetime value at all** — the best available proxy is the sum of that backer's pledges across the export.
+- **Is it built? No.** There is no live LTV path. CSV import sets `ltvCents` to a **single order's value** at customer-create (import.ts:69) and **never refreshes it** — import.ts:127-129 appends orderIds on a customer's 2nd+ order but never updates ltvCents, and unparseable rows peg LTV at **$50**. Seed hardcodes the hero to 96000; the onboarding preview hardcodes 60000 and doesn't persist it.
+- **The threshold is also fake.** The high-value tier it's compared against (`Merchant.ltvTiers.high`) is hardcoded to **$500 for every merchant** (onboarding.ts:92) with no onboarding field and no edit UI.
+- **Therefore the gift score-boost / high-value gate is a defaulted number vs a defaulted threshold** — a first-order value (or $50) compared to a flat $500. It is not an LTV model. To make it real: for Shopify merchants, sync `amountSpent`; for Kickstarter merchants, build an importer that **sums all pledge rows per email** and let the merchant set their own tiers. Until then the gift/save feature is demo-only.
+
+---
+
+## Prioritized retrieval gaps to close before a real pilot
+
+**P0 — a truthful pilot is impossible without these:**
+
+1. **Real order/pledge date on import** (fixes `fulfillmentStart`, and cascades to `fulfillmentEnd`, `createdAt`, `disclosedAt`). Add a date-column alias to `csv.ts` and parse it instead of `import.ts:103` hardcoding `now`. This single fix unblocks daysInWait, day-stage selection, the confidence band, overdue flags, cohort forecast timing, refund-risk waitPressure, and the Visa 13.1 dispute window. **This is the central bug.**
+2. **Real LTV + tier calibration** — Shopify `amountSpent` sync, or an importer that sums all pledges per email; add `ltvTiers` to onboarding intake. Without both, the entire gift/save high-value gate is meaningless.
+3. **At least one non-mock send adapter** (Gorgias / email / etc.). Until a real send returns a `sentAt`, nothing truly reaches `sent`, so FRT, SLA attainment, sentCount, deflectionPct, savesCount, and the whole Script-Performance / outcome ledger are mock-only artifacts.
+
+**P1 — core numbers are wrong or zeroed without these:**
+
+4. **Baseline capture** at onboarding (or a ticket-history import) — non-zero `wismoPer100Orders` / `medianFrtSec` so the cohort forecast produces a staffing number and proof deltas have a real denominator.
+5. **productionStage advancement** — derive it from `daysInWait` vs `merchant.stages[].dayBand` (data already exists), or add a manual/cron stage-advance. Today every real order is frozen at `production` and the "stage-aware" engine never leaves the base branch.
+6. **slaWindows onboarding capture** — stop writing ET 9:00/15:00 to every merchant; wrong timezone → wrong SLA targets and breach flags.
+7. **Order-value robustness** — stop defaulting unparseable rows to $50 (pollutes risk + GMV); map the real pledge/order-total column reliably and refresh on re-import.
+8. **Ingest identity-match hardening** — stop silently attaching an unmatched ticket to the oldest open order/customer (service.ts:413-418); that runs risk/gift/reassurance against the wrong person. Hold or flag unmatched tickets instead.
+
+**P2 — correctness/coverage polish:**
+
+9. **importKey dedupe fallback** — a double-upload with no id column duplicates the entire backer list.
+10. **Real payment-rail for `Order.group`** instead of a tier-string regex, so the dispute $ split is real.
+11. **disclosedEta coverage** for KS exports lacking an ETA column, plus a real `disclosedAt` (not import time) for the Visa window.
+12. **campaignName / wave** from the export (currently always undefined for real orders).
+13. **Social-signal real feed** — or hide the social monitor for pilots (it shows seed data only today).
+14. **Scale the 89-day stage ceiling** to `merchant.fulfillmentWindowDays` for long-wait (120–200 day) merchants.
+15. **`status:'resolved'` write path** — the deflectionPct "resolved" bucket is currently dead (seed-only), plus wire `refund_requested` / `chargeback` outcome events from a payment/helpdesk webhook.

@@ -1,0 +1,201 @@
+# TIDEOVER — HEADER + IA REBUILD SPEC
+
+**Build-ready. Repo root:** `C:\Users\dylan\Documents\axiom-balloon\Core Business\tideover\` — all paths below are relative to that root.
+**Model studied:** bigideasdb.com (structure/mechanics only — no copy, assets, or pixels reused). **Verdict driving this:** current redesign reads too tame; adopt their header IA wholesale (minus Live Data), go bolder, and steal their footer's traffic-acquisition *structure* honestly.
+
+**Verified facts this spec is built on** (so nothing 404s):
+- Real routes today: `/`, `/how-it-works`, `/who-its-for`, `/security`, `/procurement`, `/book`, `/login`, `/onboarding`, `/privacy`, `/terms`, `/vsl/{cold-loom,landing-vsl,partner-demo,playbook-promo}`, `/status/[token]`, `/widget/[token]`, `/app` + sub-routes `/app/{inbox,forecast,baseline,scripts,gifts,customers,social,updates,setup}`, `/app/orders/[orderId]/evidence`. **No** `/vsl` index, `/resources`, `/compare/*`, `/blog`, `/pricing`, `/affiliates` pages exist.
+- Home anchors that exist: `#demo` (DemoCenterpiece), `#faq` (FAQ), `#pricing` (Pilot), `#operator` (Operator/founder section), `#how` (HowItWorks).
+- `/app` and every sub-route render **sample data in demo mode** via `app/app/layout.tsx` → `isDemoMode()`; a `DemoBadge` covers the whole shell. **Build gate:** the marketing/prod deploy must run `DEMO_MODE=true` for the mega-menu's `/app/*` deep links to resolve to the public sample cockpit. If a hardened prod ever sets it false, those items must fall back to the marketing anchors noted per row (they redirect to `/login` otherwise — not a broken link, but a dead-end).
+- Tokens (from `tailwind.config.ts` + `app/globals.css`): sand `#FBF8F2`, sand-2 `#F4EEE2`, paper `#FFF`, teal `#0E5366`, terracotta `#D9762F` (action-only, rule D1), tan `#E9B486` (dark-section emphasis), ink `#11252A`, slate `#374A4F`, ink-mute `#5A6B70`, border `#EBE2D0`. Fonts: Fraunces (`--font-fraunces`, serif display) + Inter (`--font-inter`). Shadows: `shadow-card`, `shadow-lift`, `shadow-cta`. `.wrap` = max-w 1160px / 24px pad. `.btn` radius 10px; `.section` pad `clamp(56px,9vw,104px)`. `focus-visible` = 3px terracotta outline.
+- Existing primitives to reuse: `Logo` (`tone` prop), `Button`/`CalButton` (variants primary/ghost/ondark/quiet), `PaperStrata`/`PaperEdge`/`CornerFold`/`ImageSlot`, `Reveal`, `.kicker` eyebrow, `DemoBadge`.
+
+---
+
+## 1. THE NEW HEADER (replaces `components/marketing/Nav.tsx`)
+
+### 1.1 Top-bar item order (adopts their model, minus Live Data)
+
+Left→right, one filled element only:
+
+`[Logo]` · **Features ▾** (mega) · **Live demo** · **How it works** · **FAQ** · **Pricing** · **Book a call** · ‖ · **Log in** (text) · **Get started** (solid terracotta pill, trailing →)
+
+| Item | Type | Target | Notes |
+|---|---|---|---|
+| Logo | `<Logo/>` | `/` | wave mark + serif wordmark, existing component |
+| Features | mega-menu trigger (`<button>`) | — | opens panel §1.3; caret ▾→▲ on open |
+| Live demo | text link | `/#demo` | zero-gate public; DemoCenterpiece's own CTA hands off to `/app` |
+| How it works | text link | `/how-it-works` | absolute so it resolves from any page |
+| FAQ | text link | `/#faq` | |
+| Pricing | text link | `/#pricing` | Pilot section; no standalone page |
+| Book a call | text link | `/book` | grouped with account actions on the right, low-emphasis (their pattern) |
+| Log in | text link | `/login` | plain text |
+| Get started | **solid terracotta pill + →** | `/onboarding` | the single filled element in the bar |
+
+**Key change from today:** demote the current filled "Book a pilot" `CalButton` to plain text and make **Get started** the *only* filled pill (their single-loud-primary principle — a lot of their "bolder" read comes from one unmistakable CTA). `Book a call` stays reachable as text.
+
+Their nav "Case Study" item has **no honest Tideover equivalent** → omitted from the top bar (see §4).
+
+### 1.2 Bar treatment (Tailwind-level)
+
+- Container: `sticky top-0 z-50 border-b border-border`, inline style keeps the existing warm blur: `background: rgba(251,248,242,0.82); backdrop-filter: saturate(140%) blur(12px)` (+ `-webkit-`).
+- Inner: `.wrap flex items-center justify-between gap-4` with **`py-4`** (bar ≈ 66px with the 26px logo — slightly taller than today's `py-3.5` for more presence).
+- Center links: `rounded-full px-3 py-2 text-[15px] font-medium text-slate transition-colors hover:bg-[rgba(14,83,102,0.07)] hover:text-teal` (reuse current class string).
+- **Scroll-aware bold cue:** client `scrollY>8` toggles `shadow-[0_6px_24px_-18px_rgba(17,37,42,0.5)]` on the bar so it lifts off the page once scrolling (respect `prefers-reduced-motion` by keeping it a static shadow, no transition jank).
+- **Get started pill:** `btn btn-primary rounded-full` with trailing `&rarr;` glyph; on hover the arrow nudges `translate-x-0.5`.
+- Right group order: `Book a call` (text) · a hairline `·`/spacer · `Log in` (text) · `Get started` (pill). Divider = `h-5 w-px bg-border` (their thin separator before account actions).
+
+### 1.3 Features MEGA-MENU (their 3-column pattern → our shipped surfaces)
+
+New subcomponents:
+- `components/marketing/nav/nav-data.ts` — typed link config (columns, items, icons, `beta`/`soon` flags).
+- `components/marketing/nav/FeaturesMenu.tsx` — the panel + hover/click/keyboard controller (client component).
+
+**Three labeled columns**, small-caps `ink-mute` headings (their gray small-caps). Every item = icon tile + bold name + one-line **original** descriptor + a real link. 14 items (density parity with their 4/7/4).
+
+**Column A — `PRODUCT` (what your customers feel) — 4 items**
+| Item | Descriptor (original) | Link | Fallback if DEMO_MODE=false |
+|---|---|---|---|
+| Reassurance inbox | WISMO tickets triaged; a calm draft waits on each | `/app/inbox` | `/#demo` |
+| Refund-risk scoring | See which waiting orders are about to churn | `/app/customers` | `/how-it-works` |
+| Customer status pages | A branded "where's my order" page, timeline-aware | `/app/updates` | `/how-it-works` |
+| Goodwill gifts | Risk-unlocked make-goods, only when they'll save the order | `/app/gifts` | `/how-it-works` |
+
+**Column B — `SIGNALS & OPS` (what you learn) — 5 items**
+| Item | Descriptor | Link | Fallback |
+|---|---|---|---|
+| WISMO cohort forecast | Predicts the "where is it" wave before it hits | `/app/forecast` | `/how-it-works` |
+| Day-0 baseline report | Your starting numbers, captured before we touch a thing | `/app/baseline` | `/how-it-works` |
+| Script performance | Which replies calm people and which don't | `/app/scripts` | `/how-it-works` |
+| Dispute evidence pack | One-click proof file when a chargeback lands | `/app/orders/[demoOrderId]/evidence`¹ | `/how-it-works` |
+| Escalation flags | The few tickets a human must take, surfaced early | `/app/inbox` | `/#demo` |
+
+¹ Point at a fixed **seeded demo order id** (confirm the seed's order id in `lib/seed`); if none is guaranteed, link `/app` and drop this to the fallback.
+
+**Column C — `CONNECT & TRUST` (setup + proof) — 5 items**
+| Item | Descriptor | Link | Flag |
+|---|---|---|---|
+| CSV backer import | Bring Kickstarter / BackerKit backers in minutes | `/onboarding` | — |
+| Webhook ingest | Live order events straight from your store | `/app/setup` | `beta` pill |
+| Security | How we handle your data and your customers' | `/security` | — |
+| Procurement | Vendor docs, DPA, and buyer paperwork | `/procurement` | — |
+| Watch a walkthrough | Short video tours of the engine at work | `/vsl/landing-vsl` | — |
+
+**Omit / mark coming-soon:** a "WISMO teardown" resource has no page → **omit** (don't render a `soon` link in the header; keep the header 100% live). The `beta` pill on Webhook ingest uses the existing `.pill`/`.pill-amber` style.
+
+**Panel anatomy (token-level):**
+- Positioning: `absolute` under the trigger, `left`-aligned to Features with a viewport clamp (`max-w` panel never overflows `.wrap`). One panel, three CSS-grid columns: `grid grid-cols-3 gap-x-7 gap-y-1`. Panel `w-[720px] max-w-[calc(100vw-32px)]`.
+- Surface: `bg-paper border border-border rounded-2xl shadow-lift p-6` — 16px radius, the soft diffuse lift, hairline warm border (matches their panel read using *our* tokens).
+- Column heading: `.kicker`-style but neutral — `text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-mute mb-2`.
+- Item row: `group flex items-start gap-3 rounded-xl px-3 py-2.5 hover:bg-[rgba(14,83,102,0.05)]`. Icon tile: `h-9 w-9 flex-none rounded-lg bg-accent-card text-teal grid place-items-center` holding a **24px inline stroke SVG** (hand-rolled, stroke-width ~1.7 to match `Logo`/`ShieldCheck` — do **not** add an icon dependency; the codebase hand-rolls SVGs). Name: `text-[15px] font-semibold text-ink`. Descriptor: `text-[13px] leading-snug text-ink-mute`.
+- Entry motion: `opacity-0 translate-y-1` → `opacity-100 translate-y-0`, 140ms; disabled under `prefers-reduced-motion`.
+
+### 1.4 Interaction + accessibility (hover with click fallback, no focus trap)
+
+Trigger is a real `<button aria-haspopup="true" aria-expanded={open} aria-controls="features-menu">`. The panel is `id="features-menu"` `role="region" aria-label="Features"` containing a plain list of `<Link>`s (not a `menu`/`menuitem` composite — it's a navigation panel, so natural Tab order, **no focus trap**).
+
+- **Desktop hover:** open on `mouseenter` of a wrapper spanning trigger+panel; close on `mouseleave` with a ~150ms grace timer so a diagonal cursor path to the panel doesn't dismiss it.
+- **Click/touch fallback:** click toggles `open` (works where hover doesn't). Clicking a link closes.
+- **Keyboard:** `Enter`/`Space` on trigger toggles; `Tab` moves through the panel's links naturally and closes the panel when focus leaves the wrapper (`onBlur` with `relatedTarget` outside → close). `ArrowDown` on the open trigger moves focus to the first item (nice-to-have).
+- **ESC** closes and returns focus to the trigger.
+- `aria-expanded` reflects state; caret rotates ▾→▲.
+- Only one menu open at a time (single state).
+
+### 1.5 Mobile (accordion)
+
+Below `md`, the hamburger toggles the existing stacked panel (`id="mobile-nav"`, `aria-controls`/`aria-expanded` already present — keep). Inside it:
+1. **Features** as a nested accordion: a `<button aria-expanded>` row with a chevron; expanding reveals the three columns **stacked as labeled groups** (heading + its items, same data, no hover).
+2. Flat rows: Live demo, How it works, FAQ, Pricing, Book a call, Log in.
+3. Full-width **Get started** pill (`btn btn-primary rounded-full w-full`) pinned at the bottom of the sheet.
+- No hover logic on mobile; everything is tap. Each link `onClick` closes the sheet (as today).
+
+---
+
+## 2. BOLD PASS (current redesign is too tame)
+
+Boldness comes from **type scale, one loud pill, teal stat slabs, and confident spacing** — *not* from their rotating per-section accent (see "pull back").
+
+### 2.1 Type — heavier contrast (`app/globals.css`)
+- **H1 scale jump:** `clamp(34px,5.4vw,60px)` → **`clamp(40px,6.4vw,82px)`**, `line-height:1.03`. Keep Fraunces; push its weight to **600** and add a display utility for the hero:
+  `.display { font-size: clamp(46px,7vw,92px); font-weight:600; line-height:1.0; letter-spacing:-0.03em; }`
+- **H2:** `clamp(26px,4vw,40px)` → **`clamp(28px,4.4vw,46px)`**.
+- Widen the weight gap: headings Fraunces 600, body Inter 400, emphasis spans 600 (their selective-bold trick — already used in Hero, apply consistently in section subheads).
+- Keep the `.kicker` eyebrow; add `.kicker` above every tentpole section header for their eyebrow-led rhythm.
+
+### 2.2 Hero (`components/marketing/Hero.tsx`) — adopt their giant display, keep our proof card
+- Bump the H1 to `.display` and add their **period-punch** (short declarative line ending in a period) for punch — keep it in Tideover's voice, all original.
+- **Product-call (Fable-grade, flagged):** do **not** drop to a bare centered headline. Our right-hand reassurance card *is* our honest proof device (real engine, sample data). **Keep the two-panel hero**, enlarge the headline, and let the card carry the visual weight their centered testimonials can't for us. (If Dylan wants to A/B a centered variant, spec is: `.display` centered, badge row centered above, single pill + quiet link below, card moved to the next section — but default is keep-the-card.)
+- CTAs: primary `CalButton large` → make it a **fully-rounded terracotta pill with →** (see §2.4). Keep the quiet `See a live draft →` link.
+
+### 2.3 Honest hero badge row (their star/avatar strip CANNOT be faked)
+Replace their G2/Capterra star badges + "10,000+ entrepreneurs" avatar strip with a **3-chip honest substitute** in the badge-row slot (reuse the existing `accent-card` chip style already in `Hero`'s `CHIPS`):
+
+1. **"Built by a $2M-ops operator"** — real (Dylan's home-gym-equipment co).
+2. **"Live demo — real engine, sample data"** — links to `/#demo`; true and verifiable.
+3. **"Proof-only pledge — every number is your target, never a claimed result"** — our doctrine as a trust device.
+
+**Omit entirely (proof-only landmines):** star ratings, review-count badges, user-count/"10,000+" strips, avatar clusters, testimonial cards with highlighted $MRR claims, customer-logo walls. Where their layout wants a "closing proof row," use **real screenshots of the live `/app` sample cockpit** or an honest mechanism diagram — never invented social proof.
+
+### 2.4 CTA treatment (`app/globals.css`)
+- Add a marketing pill: **`.btn-pill { border-radius: 999px; }`** and use it on all marketing CTAs (nav Get started, hero primary, section CTAs). Keep product-app buttons at the existing 10px radius (fully-round pills would fight dense product UI).
+- Every primary marketing CTA gets a trailing **`→`** glyph with a hover nudge (`group-hover:translate-x-0.5`). Terracotta stays the *only* action color (rule D1) — this is the single loud element, their principle applied on-brand.
+
+### 2.5 Confident spacing + a dark stat slab
+- Add **`.section-lg { padding: clamp(72px,10vw,128px) 0; }`** and apply to the 2–3 tentpole sections (Hero→Capability, Pilot). Keep `.section` elsewhere so the page breathes without ballooning.
+- Adopt their **dark near-black stat panel** honestly: reuse `.section-dark` (teal) with **big numbers in `tan` (#E9B486)** for the baseline/forecast beats. Every number is explicitly labeled **"target vs. your baseline,"** never a claimed result — this keeps the existing footer disclaimer's promise while giving the high-contrast slab that makes their page feel bold.
+
+### 2.6 Paper system — push vs pull
+- **Push:** `PaperStrata` backdrop in the hero (raise strata contrast a notch); `CornerFold` on the Pilot/Objection tier cards; keep the **three** `PaperEdge` tears exactly where they are (hero tear, light→dark hand-off, final crest).
+- **Pull back:** don't add more `PaperEdge` seams (one per beat, not per section); keep paper texture subtle under the enlarged type and on the dark/dense slabs so it doesn't fight legibility.
+- **Explicitly do NOT** chase their rotating per-section accent color (orange/blue/green). It's off-brand and violates rule D1 (terracotta = action). Our boldness budget is spent on type + the single pill + teal stat slabs.
+
+---
+
+## 3. FOOTER — traffic-hand adoption (`components/marketing/Footer.tsx`)
+
+Rebuild today's Explore/Trust/Watch footer into their **sitemap-as-SEO-mesh** *structure*, but the iron rule holds: **only ship links to pages that exist.** Phase-2 destinations are documented as build-next, not rendered as live links.
+
+**Keep** the current dark-teal surface, wordmark + tagline, the `CalButton variant="ondark"`, the proof-only disclaimer line, and the legal row. Expand the column grid:
+
+| Column | Rendered now (live) | Documented, NOT rendered until built |
+|---|---|---|
+| **Product** | Reassurance inbox, Refund-risk, Status pages, Goodwill gifts, WISMO forecast, Baseline report (mirror mega-menu links) | — |
+| **Compare** *(their traffic hand)* | **Render only what exists** — nothing today, so **omit the column from render** | Build-next pages: `/compare/hiring-a-va` (recommend first — the real alternative our ICP weighs), `/compare/gorgias`, `/compare/zendesk-macros`. Ship the column the moment the first page exists (one live link beats three "coming soon"). |
+| **Resources** | Watch (the 4 real `/vsl/*`) | Blog / WISMO teardown → `/resources` (phase-2), not linked |
+| **Company / Proof** | Founder story → `/#operator`, Security, Procurement | Case study → lights up only with a real cohort (see §4) |
+| **Help** | `contact@tideover.app` (mailto), Book a call → `/book`, Security, Procurement | Help center / docs (phase-2) |
+| **Legal** | Privacy, Terms | — |
+
+**Affiliate program slot → DYLAN DECISION (do not fabricate).** Their footer runs an "Earn $2000" affiliate badge → `/affiliates` (mechanics observed: 35% on lifetime purchases, 90-day cookie, $50 PayPal payout threshold). For Tideover this is a **business call for Dylan**, not something we invent. Spec the slot but **render nothing live**: leave a documented `{/* TODO(Dylan): affiliate program — decide commission %, cookie window, payout threshold, then build /affiliates + light this slot */}` placeholder in the Company column. No badge, no number, no `/affiliates` link until Dylan decides and the page ships.
+
+**Also omit (honesty):** their "All systems operational" status pill (we have no public system-status page — `/status/[token]` is *customer* order status, not uptime) and their "Featured On" backlink row (no real placements yet). Render socials only if/when accounts exist (Dylan decision).
+
+**Column heading style:** keep the existing `text-[12px] font-semibold uppercase tracking-[0.1em]` in the muted footer color. Grid: `grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-x-8 gap-y-9`.
+
+---
+
+## 4. CASE-STUDY SLOT (proof-only substitute)
+
+Their nav "Case Study" (a single dogfooding narrative — "from problem to $X in N days," a milestone timeline, no customer-logo wall) has **no honest Tideover equivalent yet**: we have no real cohort, and doctrine forbids a fabricated one (`[CASE STUDY PLACEHOLDER]` until real).
+
+**Recommendation:**
+- **Top nav:** OMIT a "Case study" item (keep the bar tight — their model puts it inline, but ours has no page to honor it). Do **not** add a nav item that scrolls to a placeholder.
+- **Honest substitute, rendered now:** surface **"Founder story"** in the **footer Company/Proof column → `/#operator`** (the existing Operator section — Dylan's real $2M gym-equipment/COVID story, signed "— Dylan"). This is our version of their dogfounding narrative: one true first-party story, not a cohort.
+- **Reserve, documented, unrendered:** a top-nav **"Case study"** slot in `nav-data.ts`, commented, that lights up **only when a real pilot cohort produces numbers** — at which point it points to a `/case-study` page built on their milestone structure (problem → what we changed → measured deltas vs. the day-0 baseline → verdict), using **real numbers only**. Until then it stays `[CASE STUDY PLACEHOLDER]` and renders nothing.
+
+---
+
+## 5. BUILD ORDER + FILES TOUCHED
+
+Serial (each verified before the next; none are in the hot-file serialization list, but keep one in-flight change at a time):
+
+1. **Nav data + mega-menu** (new) — `components/marketing/nav/nav-data.ts`, `components/marketing/nav/FeaturesMenu.tsx`. Pure additive; wire icons as inline SVGs.
+2. **Nav rebuild** — rewrite `components/marketing/Nav.tsx` (§1): new item order, single terracotta pill, Features trigger + hover/click/keyboard controller, mobile accordion. Shared across all marketing pages, so verify Home + `/how-it-works` + `/who-its-for` + `/security` render it correctly.
+3. **Bold-pass tokens** — `app/globals.css`: H1/H2 clamp bumps, `.display`, `.btn-pill`, `.section-lg`. Optional `tailwind.config.ts` fontSize token for `display`. This is a global type change — eyeball every marketing page after.
+4. **Hero bold pass** — `components/marketing/Hero.tsx`: `.display` H1, honest 3-chip badge row, pill CTA with arrow. Keep the reassurance card.
+5. **Footer rebuild** — `components/marketing/Footer.tsx` (§3): 6-column mesh, Compare column omitted-until-built, affiliate `TODO(Dylan)` slot, Founder-story link.
+6. **(Optional, phase-2 scaffold, not now)** first `/compare/hiring-a-va` page — build-next, then light the footer Compare column.
+
+**Verify (required gate):** `cd tideover && npm run verify && npm test` green (seed-check · proof-lint · eval · lint · build). **proof-lint is load-bearing here** — it will catch any fabricated rating/count/badge that slips into the bold pass or footer.
+
+**Risk to watch:** (a) the mega-menu `/app/*` deep links depend on `DEMO_MODE=true` on the marketing deploy — confirm before shipping, else swap to the per-row marketing fallbacks; (b) the evidence-pack item needs a real seeded demo order id; (c) the global H1 scale jump touches every marketing page — check `/security`/`/procurement` headers don't overflow.

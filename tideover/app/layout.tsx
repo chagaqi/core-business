@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { PaperTexture } from "@/components/marketing/paper/PaperTexture";
 import "./globals.css";
 
 /**
@@ -27,6 +28,12 @@ const description =
   "Tideover is the presale-specialist support layer for Shopify brands with 60–120 day waits. It reads each order's real timeline and drafts calm, day-stage reassurance — bolted onto the helpdesk you already run.";
 
 export const metadata: Metadata = {
+  // Absolute base for OG/Twitter image URLs. Without this, file-based image
+  // routes (opengraph-image / twitter-image) fail to prerender with "Invalid
+  // URL" because Next can't resolve their relative path to an absolute one.
+  // `||` not `??`: an empty APP_URL ("" from an env pull) is not null/undefined, so
+  // `??` would pass it straight to new URL("") and crash the build (hit 2026-07-16).
+  metadataBase: new URL(process.env.APP_URL || "https://www.tideover.app"),
   title,
   description,
   openGraph: {
@@ -47,7 +54,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${fraunces.variable} ${inter.variable}`}>
-      <body>{children}</body>
+      <body>
+        {/* bakes the crumpled-paper tiles once and sets the --paper-crumple
+            CSS vars every surface reads; renders nothing itself */}
+        <PaperTexture />
+        {children}
+      </body>
     </html>
   );
 }

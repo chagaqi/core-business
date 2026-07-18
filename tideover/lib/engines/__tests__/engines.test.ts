@@ -3,10 +3,11 @@ import { test } from "node:test";
 import { dayStageFor, draftReassurance } from "@/lib/engines/reassurance";
 import { scoreRefundRisk, DEFAULT_PROFILE } from "@/lib/engines/refund-risk";
 import { recommendGift } from "@/lib/engines/gift";
+import { computeTicketIntelligence } from "@/lib/engines";
 import { scoreSignal } from "@/lib/engines/social-signal";
 import { containsHardDate } from "@/lib/proof";
 import { formatBand } from "@/lib/time";
-import type { Customer, Gift, Merchant, Order, SocialSignal } from "@/lib/types";
+import type { Customer, Gift, Merchant, Order, SocialSignal, Ticket } from "@/lib/types";
 
 const STAGES = [
   { key: "sourcing" as const, label: "Sourcing", dayBand: { from: 0, to: 12 }, blurb: "sourcing" },
@@ -18,6 +19,8 @@ const merchant: Merchant = {
   id: "mch_t",
   name: "Testco",
   slug: "testco",
+  isDemo: true,
+  inboxToken: "testcoinbox000000000000t",
   brand: { voice: "warm", tone: ["warm"], banned: ["unfortunately"], signoff: "— Testco", logoText: "Testco", colors: { primary: "#0E5366", bg: "#FBF8F2", ink: "#11252A" } },
   helpdesk: "mock",
   preorderApp: "PreProduct",
@@ -27,7 +30,7 @@ const merchant: Merchant = {
     "day-7": { base: "Hey {first_name}, your {brand} order is {stage_blurb}, {eta_band}. {next_window}.", byStage: {} },
     "day-30": { base: "Hi {first_name}, {stage_blurb}, {eta_band}.", byStage: {} },
     "day-60": { base: "Fair to feel that {first_name}. {stage_blurb}, {eta_band}.", byStage: {} },
-    "day-89": { base: "{first_name}, honest status: {stage_blurb}, {eta_band}.", byStage: {} },
+    "day-89": { base: "{first_name}, where things stand: {stage_blurb}, {eta_band}.", byStage: {} },
   },
   ltvTiers: { standard: 0, high: 50000, vip: 200000 },
   giftCatalogIds: [],
@@ -94,17 +97,60 @@ test("refund-risk: chargeback threat scores higher than calm", () => {
   assert.ok(cb.priorityRank < calm.priorityRank);
 });
 
-test("gift gate: recommends for high-LTV deep-wait, declines for low-LTV", () => {
+test("gift unlock: risk band picks the best unlocked tier; LTV no longer gates", () => {
   const catalog: Gift[] = [
-    { id: "gft_a", merchantId: "mch_t", name: "Priority dispatch", kind: "priority-dispatch", costCents: 1200, perceivedValueCents: 6000, eligibility: { minLtvCents: 50000, minWaitDays: 45, minRiskScore: 50 } },
-    { id: "gft_b", merchantId: "mch_t", name: "Founder note", kind: "founder-note", costCents: 500, perceivedValueCents: 3000, eligibility: { minLtvCents: 0, minWaitDays: 45, minRiskScore: 50 } },
+    { id: "gft_a", merchantId: "mch_t", name: "Priority dispatch", kind: "priority-dispatch", tier: "mid", costCents: 1200, perceivedValueCents: 6000, eligibility: { minLtvCents: 50000, minWaitDays: 45, minRiskScore: 50 } },
+    { id: "gft_b", merchantId: "mch_t", name: "Founder note", kind: "founder-note", tier: "mid", costCents: 500, perceivedValueCents: 3000, eligibility: { minLtvCents: 0, minWaitDays: 45, minRiskScore: 50 } },
   ];
-  const yes = recommendGift({ customer, order: orderDaysAgo(50), daysInWait: 50, riskScore: 70, highTierCents: 50000, catalog });
-  assert.ok(yes.gift);
-  assert.equal(yes.gift?.id, "gft_a");
-  const lowLtv = { ...customer, ltvCents: 1000 };
-  const no = recommendGift({ customer: lowLtv, order: orderDaysAgo(50), daysInWait: 50, riskScore: 70, highTierCents: 50000, catalog });
-  assert.equal(no.gift, null);
+  // watch band (score ≥ 50) unlocks mid — best perceived value wins, regardless of LTV.
+  const watch = recommendGift({ riskScore: 70, escalated: false, catalog, daysInWait: 0 });
+  assert.ok(watch.gift);
+  assert.equal(watch.gift?.id, "gft_a");
+  // standard band (score < 50) unlocks only base — this catalog has no base gift, so nothing is offered.
+  const standard = recommendGift({ riskScore: 10, escalated: false, catalog, daysInWait: 0 });
+  assert.equal(standard.gift, null);
+});
+
+test("computeTicketIntelligence threads full-catalog gift availability (UX-86)", () => {
+  const catalog: Gift[] = [
+    { id: "gft_base", merchantId: "mch_t", name: "Early access", kind: "early-access", tier: "base", costCents: 0, perceivedValueCents: 2000, eligibility: { minLtvCents: 0, minWaitDays: 0, minRiskScore: 0 } },
+    { id: "gft_mid", merchantId: "mch_t", name: "Priority dispatch", kind: "priority-dispatch", tier: "mid", costCents: 1200, perceivedValueCents: 6000, eligibility: { minLtvCents: 0, minWaitDays: 0, minRiskScore: 0 } },
+    { id: "gft_full", merchantId: "mch_t", name: "Next-order credit", kind: "next-order-credit", tier: "full", costCents: 2500, perceivedValueCents: 4000, eligibility: { minLtvCents: 0, minWaitDays: 0, minRiskScore: 0 } },
+  ];
+  const merchantWithCatalog: Merchant = { ...merchant, giftCatalogIds: catalog.map((g) => g.id) };
+
+  // Escalated (chargeback-threat) → every tier unlocks; availability covers the
+  // WHOLE catalog in catalog order, each entry flagged unlocked.
+  const hot = computeTicketIntelligence({
+    ticket: { sentiment: "chargeback-threat" } as Ticket,
+    order: orderDaysAgo(80),
+    customer,
+    merchant: merchantWithCatalog,
+    catalog,
+    ticketsLast7d: 1,
+    now: NOW,
+  });
+  assert.equal(hot.availability.length, catalog.length);
+  assert.deepEqual(hot.availability.map((a) => a.gift.id), catalog.map((g) => g.id));
+  assert.ok(hot.availability.every((a) => a.unlocked));
+
+  // Calm + early wait → only the base tier unlocks; mid/full stay locked but are
+  // STILL listed (the panel shows the ladder), each carrying an unlock reason.
+  const calm = computeTicketIntelligence({
+    ticket: { sentiment: "calm" } as Ticket,
+    order: orderDaysAgo(2, 110, "sourcing"),
+    customer,
+    merchant: merchantWithCatalog,
+    catalog,
+    ticketsLast7d: 0,
+    now: NOW,
+  });
+  assert.equal(calm.availability.length, catalog.length);
+  const byTier = new Map(calm.availability.map((a) => [a.gift.tier, a]));
+  assert.equal(byTier.get("base")?.unlocked, true);
+  assert.equal(byTier.get("mid")?.unlocked, false);
+  assert.equal(byTier.get("full")?.unlocked, false);
+  assert.match(byTier.get("mid")!.unlockReason, /watch risk/i);
 });
 
 test("social-signal flags negative brand mention, ignores noise", () => {

@@ -4,7 +4,7 @@
 >
 > **The bar.** Every line you send clears `copy-standard.md`. Read it aloud before it ships. No em-dash connector, no "I hope this finds you well," no triads, no hype.
 >
-> **Proof-only, non-negotiable.** No fabricated metrics, case studies, testimonials, or refund stats. Credibility is the operator war story, framed as experience not a number ("I ran fulfillment and the where's-my-order comms for a physical-goods brand for years"). The ~$2M figure is warm-call only. The refund-reduction case study does not exist until a cohort completes its wait. Say that plainly.
+> **Proof-only, non-negotiable.** No fabricated metrics, case studies, testimonials, or refund stats. Credibility is Dylan's lived gym-equipment story, framed as experience not a number ("I ran a physical-goods brand through brutal fulfillment delays and answered the where's-my-order emails myself for years"). No revenue figure is claimed; the only numbers are his own self-reported account ($200K week one, 60-plus-day waits, two years). The refund-reduction case study does not exist until a cohort completes its wait. Say that plainly.
 >
 > **The one motion.** One fresh, verifiable trigger per prospect. One soft, interest-based ask. The free teardown is the artifact that buys the trust. Personal DM first, never the cold-email rig.
 
@@ -65,7 +65,7 @@ The teardown is the credential. It replaces the case study you do not have. Prod
 
 **Voice + proof check before it ships:**
 - [ ] Honest confidence bands only ("currently tracking for [month]" / "ETA band X to Y"). Zero hard dates.
-- [ ] War story, not the $2M number.
+- [ ] Lived gym-equipment story, no revenue figure.
 - [ ] Read it aloud. Run the `copy-standard.md` pass. Cut 30 to 60%.
 
 ---

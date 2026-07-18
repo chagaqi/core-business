@@ -1,0 +1,54 @@
+{
+ "summary": "Seven genuinely new gaps found beyond the merged list and existing backlogs, spanning demo-experience friction, GTM-mechanism gaps, and organizational risk. The most severe (P1) is that the entire post-pilot PR motion in GTM-CAMPAIGN-2026-07.md is gated on 'first real testimonial' with zero mechanism to actually capture one — no consent form, no CSAT-to-testimonial trigger, no owner. The rest are P2/P3: no self-serve interactive demo (only a static image + book-a-call CTA everywhere), no bus-factor/incident plan for solo-founder Dylan, no merchant community channel, no partnership/agency distribution motion (an old roadmap doc floated one but it was never carried into the current campaign), hardcoded USD/en-US formatting despite an explicitly global EU-inclusive ICP, and Q4 treated only as an SEO-harvest horizon rather than a seasonal demand-gen trigger despite the doc's own thesis that late campaigns are the open wedge.",
+ "gaps": [
+  {
+   "gap": "The only 'live' product demo on the marketing site is a static screenshot, and the sole CTA next to it (plus Hero, FinalCTA, and Footer) is 'book a call' — a prospect who won't book a call has no interactive/self-serve way to see the product work.",
+   "evidence": "tideover/components/marketing/DemoCenterpiece.tsx:10-24,83-85 — code comment: 'the interactive live embed is a later serialized batch...the action it drives is a booked demo call, not a self-serve draft.' Hero.tsx:65-70, FinalCTA.tsx:44-46, Footer.tsx:108 all render CalButton as primary CTA. Only PricingParts.tsx:181 ('Start free trial') offers a non-call path, and it requires committing to full onboarding, not a no-commitment sandbox. Not in board TASKS, TORCH-PASS, or GTM-CAMPAIGN-2026-07.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW",
+   "fix": "Ship a read-only interactive sandbox (sample-data cockpit, click through inbox/reply/status) reachable with zero signup, distinct from the static image and the real trial."
+  },
+  {
+   "gap": "GTM-CAMPAIGN-2026-07.md gates every earned-media/PR motion (Product Hunt, Show HN, BackerKit blog, Stonemaier PR) on 'first real testimonial,' but defines no mechanism — no consent-to-quote form, no trigger tied to a pilot finishing or a positive CSAT, no owner, no task — to actually produce one.",
+   "evidence": "docs/gtm-campaign/GTM-CAMPAIGN-2026-07.md:19-20,69 ('None of these fire before proof exists'). In-app CSAT exists (/api/csat/[token], per merged ops-legal list) but nothing connects a positive response to a testimonial ask. The one place a capture process was ever specified is a different, seemingly superseded strategy doc (docs/tideover-gtm-roadmap.md:121,133,139 — 'ask 1 happy partner for an experience-only testimonial') which is not referenced by or reconciled with the current campaign doc.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW",
+   "fix": "Define and scope the actual ask-script + consent/quote-release + storage location, triggered off pilot completion or a qualifying CSAT score, as a task inside GTM-CAMPAIGN-2026-07.md itself."
+  },
+  {
+   "gap": "No incident-response or bus-factor plan exists for Tideover's own operations: Dylan is the sole founder, sole developer, and sole support responder for a product whose entire pitch is reliable, on-time customer communication — nothing documents who covers a merchant-facing outage, a missed SLA, or support continuity if Dylan is unavailable.",
+   "evidence": "Grep across docs/ for on-call/backup-contact/succession language returns only merchant-side SLA-window content (docs/adr/ADR-0016-sla-timers.md, docs/audit-2026-07-06/onboarding-data-checklist.md:21) — nothing about Tideover's own support continuity. The already-tracked ops-legal gaps (secrets-rotation runbook, backup-restore drill, uptime monitoring) are all technical; none address the human single-point-of-failure.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW",
+   "fix": "Write a one-page continuity note: who a merchant contacts if Dylan is unreachable, and what happens to in-flight approvals/replies during an outage."
+  },
+  {
+   "gap": "No merchant-facing community (Discord/Slack) exists or is planned — a peer channel for feature requests, retention, and word-of-mouth among the exact small-brand crowdfunding/DTC audience this product targets.",
+   "evidence": "Repo-wide grep for 'discord' inside tideover/ returns zero hits; the only Discord references anywhere are backer-side competitive-intel mentions (docs/TORCH-PASS-TO-OPUS.md:44,158,464,476) describing backers comparing screenshots — never a Tideover merchant community. Not in board TASKS or either GTM doc.",
+   "severity": "P3-polish",
+   "tracked": "NEW",
+   "fix": "Defer explicitly or scope a lightweight merchant Slack/Discord tied to the design-partner cohort, since retention and referrals both benefit from a peer channel this ICP already lives in."
+  },
+  {
+   "gap": "No partnership/integration distribution motion with pledge managers (BackerKit, PledgeBox) or Shopify/WooCommerce agencies — despite an earlier internal roadmap once naming a rev-share agency tier — leaving referrals/intros as an unowned metric with no channel behind it.",
+   "evidence": "docs/tideover-gtm-roadmap.md:72 ('Enterprise/agency white-label...rev-share with Gorgias-heavy agencies') and :195,201 (referral/intro OKR with no mechanism named) never carried into docs/gtm-campaign/GTM-CAMPAIGN-2026-07.md, where pledge managers and BackerKit appear only as competitive context (docs/TORCH-PASS-TO-OPUS.md:23) or a post-pilot PR pitch target (line 20), never as an active partnership/referral channel.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW",
+   "fix": "Either explicitly kill the agency/pledge-manager partnership motion for this sprint or scope one outreach task with a named contact list, since it's the cheapest channel this ICP concentrates behind."
+  },
+  {
+   "gap": "The product hardcodes USD/en-US formatting everywhere (no currency field on Merchant/Order, no locale switch) despite an explicitly global, EU-inclusive ICP (Kickstarter/BackerKit backers) already flagged elsewhere for GDPR cross-border data-transfer exposure.",
+   "evidence": "tideover/lib/onboarding-schema.ts:71 ('en-US'); no 'currency' field found in lib/onboarding-schema.ts or lib/repositories schemas. Distinct from the merged list's GDPR/subprocessor finding, which covers data residency, not currency/number-format correctness for non-US merchants.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW",
+   "fix": "Add a currency field to merchant setup and route all money display through Intl.NumberFormat with that currency instead of a hardcoded en-US/USD assumption."
+  },
+  {
+   "gap": "GTM-CAMPAIGN-2026-07.md treats Q4 only as an SEO-ranking harvest horizon ('plant now, harvest in Q4') — there is no trigger-based demand-gen motion (surge outbound, paid push, timely lead magnet) aimed at the actual Q4 event that matters to this ICP: campaigns missing their holiday ship promises and WISMO volume spiking, which is exactly the 'already-late campaign' wedge the doc says is the open lane.",
+   "evidence": "docs/gtm-campaign/GTM-CAMPAIGN-2026-07.md:144,148 — Q4 appears only as a content-ranking timeline note; no section schedules a seasonal outbound surge, ad spend increase, or lead-magnet timed to Nov-Dec campaign distress despite the doc's own thesis that late campaigns are the wedge.",
+   "severity": "P3-polish",
+   "tracked": "NEW",
+   "fix": "Add a Q4-specific outbound/paid surge plan (budget bump, seasonal lead magnet: 'will your campaign make its holiday ship date') timed to when the ICP's pain peaks, not just when SEO content matures."
+  }
+ ]
+}

@@ -1,0 +1,682 @@
+[
+ {
+  "area": "perf",
+  "title": "CSV backer import does O(n²)/serial per-row DB round trips with no batching and no timeout override",
+  "problem": "importBackerRows loops rows.slice(0, IMPORT_ROW_CAP=2000) with a plain for-of + per-row awaits (findByEmail → create/update → sometimes listByCustomer) — 3-5 sequential Mongo round trips per row, no Promise.all/batching. findByEmail scans the merchant's entire customer collection (no email index), so cost grows with customers created earlier in the same run (~O(n²)). app/api/import/route.ts sets no maxDuration, so at Atlas latency a realistic Kickstarter/BackerKit import (hundreds–thousands of backers) plausibly exceeds Vercel's function timeout mid-loop, leaving a partial import with no progress signal and no resume path. This is the merchant's FIRST onboarding action.",
+  "evidence": "tideover/lib/import.ts:20,52,61,82,123,127-130, tideover/lib/repositories/mongo/repositories.ts:144-149, tideover/app/api/import/route.ts:26-40",
+  "proposal": "Pre-fetch all existing customers+orders for the merchant once (2 queries), build in-memory email→customer and importKey→order maps, then bulkWrite/insertMany new customers and orders instead of per-row create/update. Add export const maxDuration sized to the row cap or chunk across requests with a resumable cursor. Cuts O(n) sequential chains to O(1) batched writes.",
+  "severity": "P1",
+  "effort": "M",
+  "sources": 2,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified against source. lib/import.ts:52-130 is a plain for-of over rows.slice(0,IMPORT_ROW_CAP) with sequential awaits: findByEmail (repositories.ts:144-149, which does findWhere({merchantId}) then filters ALL that merchant's customers in JS — cost scales with customers already created this run, confirming O(n²)), then customers.create or the listByCustomer catch-up, then orders.create, then customers.update — 3-4 sequential round trips per row, no Promise.all/bulkWrite. app/api/import/route.ts has no `export const maxDuration` and no vercel.json functions override (checked repo-wide — no maxDuration set anywhere in source, only .next generated type stubs). ImportPanel.tsx does a single client-side fetch with the full mapped-rows array (no client-side chunking), so the whole cap-sized import runs in one function invocation. This is the merchant's first onboarding action (Kickstarter/BackerKit backer list), realistically hundreds-to-thousands of rows, well within plausible reach of Vercel's default function timeout (10s Hobby / 60s Pro) at even modest Atlas round-trip latency. A mid-loop timeout leaves a partial import with no resume path and no progress UI — a real week-one pilot-onboarding failure mode, not a theoretical scale problem. Proposed fix (batch prefetch + bulkWrite + maxDuration/chunking) is feasible without touching the proof-only doctrine or breaking the dual json/mongo repository seam (would need to add equivalent batch methods to both drivers, but that's a scoped, mechanical change). P1 is justified."
+  }
+ },
+ {
+  "area": "security",
+  "title": "Operator auth fails open: entire cockpit/PII gate hinges on DEMO_MODE===\"false\"",
+  "problem": "The operator gate is `if (process.env.DEMO_MODE !== \"false\") return NextResponse.next()`. Any value other than the exact string \"false\" (unset, \"true\", \"False\", \"0\", trailing space) lets the whole /app cockpit and every operator API through UNAUTHENTICATED. DATA_DRIVER=mongo (real customer data) is chosen independently with no coupling, so a deploy that sets DATA_DRIVER=mongo but forgets/mistypes DEMO_MODE serves every merchant's customers, emails, orders and export with zero auth — a one-keystroke catastrophic exposure at go-live with no guardrail.",
+  "evidence": "tideover/middleware.ts:15, tideover/lib/auth.ts:16-17, tideover/lib/repositories/index.ts:16",
+  "proposal": "Fail closed: treat only DEMO_MODE===\"true\" as demo and everything else as protected, OR add a boot-time assertion that refuses to serve when DATA_DRIVER=mongo unless DEMO_MODE===\"false\". Trim/normalize the env value. Add a RELEASE.md smoke check that curls an operator route on prod and asserts 401.",
+  "severity": "P1",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "confidence": "high",
+   "severity": "P1",
+   "real": true,
+   "note": "Verified exactly as claimed: middleware.ts:15 `if (process.env.DEMO_MODE !== \"false\") return NextResponse.next()` — any value other than the literal string \"false\" (unset/\"true\"/typo/case/whitespace) skips the entire operator gate for all matcher routes (/app/*, approve-send, draft, export, gift-send, orders, onboarding, import, etc.), unauthenticated. lib/auth.ts:16-17 mirrors the identical fail-open comparison. lib/repositories/index.ts chooses DATA_DRIVER independently (default \"json\", mongo only via explicit env var) with zero coupling to DEMO_MODE — no boot assertion anywhere ties them together. Checked RELEASE.md and scripts/smoke.mjs (the post-deploy gate referenced in the release ritual): the smoke test only asserts public pages 200, status API JSON, and the proof-only no-hard-date tripwire — it never curls an operator route to assert 401, so this exact gap the auditor flags (no smoke check for auth) is real and unmitigated. .env.example even documents the fail-open behavior as intentional (\"DEMO_MODE: unset or anything but 'false' = demo... all surfaces open\"), confirming this is deliberate design, not a bug the auditor misread — but deliberate-and-fragile is still the failure mode: two independently-set env vars (DATA_DRIVER=mongo + DEMO_MODE left unset/mistyped) is a plausible one-keystroke/one-omission mistake for a solo founder doing a manual `vercel --prod` deploy this week, and it would silently expose every merchant's real customer PII with no auth and no CI/smoke tripwire to catch it. Fix (fail-closed comparison + boot-time coupling assertion + smoke 401 check) is small (effort S) and doesn't touch the repository seam or proof-only doctrine. Severity P1 is correct: pilot-week deploy, real customer PII, silent, no existing guardrail."
+  }
+ },
+ {
+  "area": "failure-modes",
+  "title": "'Approve & send' fabricates success for every real merchant channel; nothing distinguishes a mock send from a real one",
+  "problem": "For any ticket ingested through the real per-merchant webhook path, normalizeCanonical hardcodes channel:'email'. approveSend resolves the adapter via getSendAdapter(channel), which forces MockAdapter for every non-mock channel unless DEMO_FORCE_MOCK_SEND is explicitly the literal 'false' — an env var absent from README's go-live checklist, RELEASE.md, and every ADR. Even if flipped, Email/Gorgias/Tidio/Intercom sendReply all throw NotImplementedError (write-back deferred per ADR-0011). MockAdapter.sendReply fabricates a fake externalId/sentAt and returns success. ApprovalBar then unconditionally renders 'Reply sent.' and the ticket is stamped status:'sent' — with no log line, health signal, or UI marker that the send was fabricated. A real pilot merchant going live gets zero working outbound delivery and neither Dylan nor the merchant would notice; everything downstream reports truthful-looking success.",
+  "evidence": "tideover/lib/channel-adapters/registry.ts:31-35, tideover/lib/channel-adapters/EmailAdapter.ts:26-29, tideover/lib/channel-adapters/GorgiasAdapter.ts:33-35, tideover/lib/ingest-schema.ts:55, tideover/lib/service.ts:514-541, tideover/components/product/ApprovalBar.tsx:152-163, docs/adr/ADR-0011-webhook-ingest.md:25",
+  "proposal": "Before a real merchant goes live: (a) block/relabel approve-send for any non-mock channel with an honest UI state ('copied — paste into your helpdesk') instead of claiming delivery, or (b) emit a structured log line (channel.send.mocked, merchantId, ticketId, channel) every time getSendAdapter falls back to Mock, and surface a persistent banner/health flag so a run of fabricated sends is visible same-day instead of discovered by an angry customer.",
+  "severity": "P1",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified line-by-line against source, no missed guard found. registry.ts:31-35 getSendAdapter forces MockAdapter whenever real.name !== \"mock\" unless process.env.DEMO_FORCE_MOCK_SEND === literal string \"false\" — confirmed by direct read. ingest-schema.ts:55 hardcodes channel:\"email\" for every webhook-ingested ticket (ADR-0011's canonical push schema has no channel field from the merchant side). EmailAdapter.sendReply/GorgiasAdapter.sendReply both throw NotImplementedError — confirmed, and ADR-0011 itself states write-back is \"deferred per ADR-0011... post-first-revenue,\" corroborating the auditor's citation. MockAdapter.sendReply (lines 46-51) fabricates externalId/sentAt with zero logging — no console.log, no health flag, nothing. Grepped the whole repo for DEMO_FORCE_MOCK_SEND: it appears in exactly one file (registry.ts) — not in README.md, RELEASE.md, or any ADR, confirming the auditor's \"absent from go-live checklist\" claim. ApprovalBar.tsx:152-155 renders \"Reply sent.\" unconditionally on the sentMeta branch with no mock/real distinction. No alternate code path, feature flag, or UI banner anywhere counters this — I checked MockAdapter for logging and grepped for the env var project-wide. This is a real, unmitigated fabricated-success gap in the merchant-live send path, and given the sprint's stated goal (real pilot merchant going live this week per user memory), it is squarely a P1: it would silently produce zero working outbound delivery with no operator-visible signal."
+  }
+ },
+ {
+  "area": "env",
+  "title": "README's prod env checklist omits AUTH_SECRET, APP_PASSWORD, WEBHOOK_ROOT_SECRET, CRON_SECRET — following it locks Dylan out and breaks ingest+cron",
+  "problem": "README's 'Production env vars' section lists only DATA_DRIVER/MONGODB_URI/MONGODB_DB, STATUS_TOKEN_SECRET, and per-helpdesk webhook secrets. It never mentions AUTH_SECRET or APP_PASSWORD (both required for login's `configured` check — without them login always rejects any password once DEMO_MODE=false), WEBHOOK_ROOT_SECRET (without it every real ingest 401s), or CRON_SECRET (without it every cron invocation 401s). Each failure looks like ordinary auth-gate behavior (401/redirect), not misconfiguration, so nothing flags it — the operator can be fully locked out of the inbox on launch day with no obvious cause.",
+  "evidence": "tideover/README.md:122-127, tideover/app/api/login/route.ts:44-51, tideover/lib/ingest-route.ts:71-81, tideover/app/api/cron/sweep-outcomes/route.ts:45-55, tideover/middleware.ts:14-27",
+  "proposal": "Add AUTH_SECRET, APP_PASSWORD, WEBHOOK_ROOT_SECRET, and CRON_SECRET to README's production checklist, and add a one-time go-live script (or extend /api/health) that reports which of these are actually set in the target environment before DEMO_MODE is flipped to false.",
+  "severity": "P1",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Confirmed by direct read of all 5 cited files plus a repo-wide grep for the four var names across every .md file (zero hits anywhere, not just README). All three failure paths are real and gated exactly as claimed: login/route.ts:44 (`configured = Boolean(expected && process.env.AUTH_SECRET)`) silently rejects all passwords without AUTH_SECRET set; ingest-route.ts's live branch 401s without WEBHOOK_ROOT_SECRET; cron route 401s in NODE_ENV=production without CRON_SECRET. lib/health.ts only probes DB reachability today, not env-var presence, so the proposed health extension is net-new, not redundant. This is a go-live-week lockout scenario (flip DEMO_MODE=false per README's own instructions -> get silently locked out of login/ingest/cron with no error pointing at the cause) for a solo founder deploying this week, which matches the P1 bar in the brief. Fix is doc-only + optional health.ts extension, touches none of the seam/proof-only/hot-file constraints, effort S is accurate."
+  }
+ },
+ {
+  "area": "scale",
+  "title": "The MongoDB driver — the actual prod data path — has zero automated test coverage",
+  "problem": "The test script only globs lib/**/__tests__/*.test.ts, and getRepositories() defaults to the JSON driver whenever DATA_DRIVER is unset — which is every case in CI. `npm run verify && npm test` never sets DATA_DRIVER=mongo, so all 19 lib test files plus the eval harness exercise the JSON driver only. lib/repositories/mongo/repositories.ts (312 lines) — including its own README's exact-semantics claims (findByToken narrow-then-verify, case-insensitive findByEmail, $set-vs-shallow-merge update parity, the ticket duplicate-key backstop) — ships to the pilot's real DB with no automated check that it matches JSON-driver behavior. The only verification tool, npm run smoke:mongo, requires a live MONGODB_URI and is not in CI.",
+  "evidence": "tideover/package.json:12-24, .github/workflows/ci.yml:25-27, tideover/lib/repositories/index.ts:16-24, tideover/lib/repositories/mongo/repositories.ts, tideover/lib/repositories/mongo/client.ts:25-59",
+  "proposal": "Add a CI-runnable Mongo test path (mongodb-memory-server, or a services: mongo container in ci.yml) and re-run the highest-value existing fixtures (webhook-ingest dedupe/duplicate-key, import re-import-no-duplicate, a status-token findByToken round trip) with DATA_DRIVER=mongo so both drivers are proven to agree before the pilot goes live on mongo.",
+  "severity": "P1",
+  "effort": "L",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified directly. Root .github/workflows/ci.yml:25-27 runs `npm ci && npm run verify && npm test` with no DATA_DRIVER set anywhere in the job — Mongo is never exercised in CI. lib/repositories/index.ts:15-16 confirms DATA_DRIVER unset defaults to jsonRepositories. Test glob in package.json is `lib/**/__tests__/*.test.ts`; the only test referencing DATA_DRIVER (lib/__tests__/health.test.ts:13) explicitly asserts the default is \"json\" — it doesn't exercise mongo. Grepped all test files: none touch the mongo driver. mongo/repositories.ts is 312 lines as claimed, and smoke:mongo (scripts/mongo-smoke.mjs) requires a live MONGODB_URI and has no CI job. So a pilot merchant going live on Mongo this week has zero automated proof the mongo driver matches the JSON driver's semantics (findByToken, case-insensitive email lookup, update merge semantics, dup-key backstop) — exactly the kind of silently-wrong-in-prod risk P1 is meant for, and it's on the P1 Mongo/ingest-hardening critical path per the sprint plan. Proposal (mongodb-memory-server or a services: mongo container in ci.yml, re-running key fixtures with DATA_DRIVER=mongo) is feasible without touching the hot-file list or the proof-only doctrine — it's pure CI/test-infra, no production code path changes required. Effort=L is reasonable (new CI service/lib, parallel fixture wiring)."
+  }
+ },
+ {
+  "area": "tests",
+  "title": "approveSend — the actual human-approval send action — has no test anywhere",
+  "problem": "approveSend (behind POST /api/approve-send) is the single action that sends a real reply to a real customer through a channel adapter. No test file references approveSend or getSendAdapter. Untested: the idempotent re-send guard (status==='sent' short-circuit that prevents double-sending / double-counting the outcome ledger on a retry), the 'no draft to send' error path, the editedRatio/canPromote threshold math, and channel-override dispatch. A regression means either a duplicate customer-facing send or a silently wrong editedRatio/canPromote signal, and it would pass npm run verify && npm test untouched.",
+  "evidence": "tideover/lib/service.ts:514-555, tideover/app/api/approve-send/route.ts:1-49, tideover/lib/channel-adapters/registry.ts",
+  "proposal": "Add lib/__tests__/approve-send.test.ts using MockAdapter: (1) normal send returns externalId/sentAt and stamps ticket.sent, (2) calling approveSend twice does not re-send or re-record an outcome event, (3) missing draft returns {error}, (4) editedRatio/canPromote boundary just above/below PROMOTE_THRESHOLD=0.3, (5) channelOverride dispatches to the right adapter.",
+  "severity": "P1",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified directly against tideover/lib/service.ts:514-555 and app/api/approve-send/route.ts. approveSend is exactly as described: idempotent status==='sent' short-circuit, 'no draft to send' error, editedRatio/canPromote via PROMOTE_THRESHOLD=0.3, channelOverride→getSendAdapter dispatch. Grepped all *.test.ts/*.spec.ts in the repo (20 files under lib/__tests__ and lib/engines/__tests__) — none reference approveSend or getSendAdapter. promote-variant.test.ts exists but covers the separate promoteVariant fn, not the send path. This is the one function with a real customer-facing side effect (sends a reply via a channel adapter) and it has zero coverage of its idempotency guard, the exact defect class the auditor flags (duplicate customer send / silently wrong outcome-ledger attribution on retry) is plausible in a solo-founder pilot going live this week, and it would pass npm run verify && npm test untouched today. Proposal is feasible: a MockAdapter test in lib/__tests__/approve-send.test.ts is a pure addition, doesn't touch the repository seam or proof-only doctrine, and isn't in the hot-file serialization list. Correctly scoped as P1."
+  }
+ },
+ {
+  "area": "onboarding",
+  "title": "CSV import hard-caps at 2000 rows but the crowdfunding ICP ships 5k–50k backers — cannot onboard",
+  "problem": "IMPORT_ROW_CAP=2000 and the route's zod schema rejects the whole body with a 400 'invalid body' when rows>2000 — no partial progress, no chunking. A Kickstarter/BackerKit export (the literal ADR-0010 onboarding path) routinely exceeds this, so the target merchant cannot onboard their backer list at all. A 50k-row JSON body also likely exceeds Vercel's ~4.5MB request cap before it reaches zod. This is the (c) scenario and it fails hard for a real pilot.",
+  "evidence": "tideover/lib/import.ts:20, tideover/app/api/import/route.ts:23",
+  "proposal": "Chunk client-side into sequential ≤2000-row POSTs — importKey idempotency already makes re-POSTs safe — and surface progress. Keep the per-request cap for payload safety but let the total import be many requests.",
+  "severity": "P1",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P1",
+   "note": "Verified directly. lib/import.ts:20 sets IMPORT_ROW_CAP=2000; app/api/import/route.ts:23 validates rows via z.array(Row).max(IMPORT_ROW_CAP), so any body with >2000 rows fails Body.safeParse and returns 400 before importBackerRows even runs (the .slice(0, IMPORT_ROW_CAP) inside import.ts is unreachable dead code on this path since the schema already rejects first). Confirmed the only client, app/onboarding/ImportPanel.tsx (lines 66-85), POSTs the entire mapped rows array in one fetch call with no chunking, no cap-aware warning, and no batching UI — a >2000-row file simply surfaces \"Something went wrong importing your list. Please try again,\" which is misleading since retrying never succeeds. Confirmed importKey/sourceKey dedupe (lib/import.ts:78-89) is real and correctly idempotent, so the proposed client-side sequential-chunk fix is sound and low-risk — it only touches ImportPanel.tsx, not the repository seam, auth, or proof-only doctrine, so it won't break verify/test. ADR-0010 explicitly frames Kickstarter/BackerKit import as the onboarding path, and the target ICP is described elsewhere as shipping 5k-50k backers, so this plausibly blocks pilot onboarding in week one for any merchant with a mid-size-or-larger campaign — meeting the \"pilot hits it week one\" P1 bar. One overstatement in the finding: the claim that a 50k-row body \"likely exceeds Vercel's ~4.5MB cap\" is unverified and probably not the binding constraint (2000 rows of this row shape is well under 1MB), but that's a secondary detail and doesn't change the core defect or the fix."
+  }
+ },
+ {
+  "area": "scale",
+  "title": "getQueue does 1+3N serial Mongo round trips over ALL historical tickets; reused by 4 daily-use pages",
+  "problem": "getQueue lists every ticket ever created for the merchant (tickets.list({merchantId}) — no status filter, even though TicketFilter.status is supported), then in a sequential for-loop does orders.findById + customers.findById + a per-ticket ticketsLast7dFor() (itself another tickets.list). That's ~1+3N sequentially-awaited round trips where N = all-time ticket count, and the inbox throws most of it away by filtering to open in JS. Called on /app/inbox, /app/ (dashboard via getDashboard, which ADDITIONALLY re-lists all tickets+orders and recomputes FRT/wismo/saves/SLA over full sets), /app/customers, and /app/gifts — all force-dynamic, no caching. Invisible on the 55-ticket JSON seed; on Mongo Atlas the cockpit gets slower every week and eventually exceeds Vercel's function timeout.",
+  "evidence": "tideover/lib/service.ts:620-659, tideover/lib/service.ts:41-46,633, tideover/lib/service.ts:692-701, tideover/app/app/inbox/page.tsx:15,62,68, tideover/app/app/page.tsx:58, tideover/app/app/customers/page.tsx:36, tideover/app/app/gifts/page.tsx:37, tideover/lib/repositories/types.ts:27-32, tideover/lib/repositories/mongo/repositories.ts:169-177",
+  "proposal": "Query tickets.list({merchantId, status:'open'}) (add the index), plus one orders.listByMerchant + one customers.listByMerchant, build id→entity Maps, and join in memory; derive ticketsLast7d from the already-loaded ticket set (group by customerId) instead of a per-ticket round trip. Reuse that single bounded load for getDashboard's rollups (they operate on in-memory arrays). Wire the unused Page<T> so the queue is bounded.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 4,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified against tideover/lib/service.ts:620-659 and 692-701: getQueue calls tickets.list({merchantId}) with no status filter (TicketFilter.status exists and is honored by both JSON and Mongo drivers per repositories/mongo/repositories.ts:169-177, but unused here), then serially awaits orders.findById + customers.findById + a nested ticketsLast7dFor (another tickets.list) per ticket — genuine O(N) sequential round trips over all-time tickets. getDashboard additionally re-lists tickets+orders on top of calling getQueue. Page<T> is defined in repositories/types.ts but never wired for pagination. Auditor's evidence is accurate, not a misread.\\n\\nDowngrading P1→P2: no security/data-loss/correctness defect — sort and filter results are correct, just increasingly slow. On the JSON seed (55 tickets) and for a pilot launching this week, this is invisible; it degrades gradually as Mongo Atlas ticket volume grows over weeks, not something the pilot 'hits week one.' Fix is low-risk to land (add status filter + batch listByMerchant + in-memory join; both repository drivers already support the needed calls, no seam break, no proof-only doctrine conflict) but touches app/app/page.tsx, which is on the CLAUDE.md hot-file serialization list — so it should be scheduled as its own single in-flight change, not bundled. Reasonable to prioritize soon, but it's a scaling debt item, not a launch blocker."
+  }
+ },
+ {
+  "area": "data",
+  "title": "approveSend's non-atomic send transition can send a customer two replies for one ticket",
+  "problem": "The idempotency guard checks status==='sent', then calls adapter.sendReply (irreversible external send) BEFORE persisting status='sent', and updateById filters on {id} only with no compare-and-swap. Two paths both duplicate the customer message: (1) if the post-send tickets.update throws (Atlas cold-start / serverSelectionTimeoutMS blip), 'sent' never persists, so an operator re-click or retry re-sends; (2) two concurrent approve-send calls (double-click, retry, two tabs) both read status='drafted', both pass the guard, and both externally send before either write lands.",
+  "evidence": "tideover/lib/service.ts:514-541, tideover/lib/service.ts:524,530,537-541, tideover/lib/repositories/mongo/repositories.ts:67-87, tideover/app/api/approve-send/route.ts:35",
+  "proposal": "Make the send transition atomic: in the Mongo driver do a findOneAndUpdate({id, status:{$ne:'sent'}}) conditional claim (mark 'sending'/sendAttemptId) BEFORE calling the adapter, then finalize after; a losing or retried request short-circuits on the claim with a defined {error:'already sending'} instead of a second real send.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 2,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed exactly as described: tideover/lib/service.ts:530 calls adapter.sendReply (irreversible external send) BEFORE service.ts:537 persists status='sent'; the idempotency guard at line 524 only checks an already-persisted status==='sent'. tideover/lib/repositories/mongo/repositories.ts:67-87 updateById/findOneAndUpdate filters on {id} alone with no compare-and-swap on status. app/api/approve-send/route.ts has no lock, dedup key, or rate limit upstream. Both failure paths hold: (1) post-send write throws (Atlas cold-start blip) -> status never flips to 'sent' -> retry/re-click re-sends; (2) two concurrent approve-send calls both read status='drafted', both pass the guard, both call adapter.sendReply before either write lands. Feasibility of fix is good: a findOneAndUpdate({id, status:{$ne:'sent'}}) claim step confined to the mongo driver, without touching the JSON driver's semantics, is a small scoped change to a hot file already under the CLAUDE.md serialization rule. Downgrading from the auditor's P1 to P2: real pilot-week exposure is bounded because current pilot traffic is DEMO_MODE-gated (mock/low-volume, single human operator clicking once per ticket) rather than high-concurrency automated retries, so the double-tab/double-click race is plausible but not the dominant near-term failure mode -- though the Atlas-blip-then-retry path is easy to hit and worth fixing before any real paying merchant goes live on a real channel adapter this week."
+  }
+ },
+ {
+  "area": "scale",
+  "title": "customers.findByEmail has no usable index — full customer-collection scan on every ingest and import row",
+  "problem": "The Mongo findByEmail does findWhere('customers', {merchantId}) (fetches every customer for the merchant) then a JS case-insensitive .find(); ensureIndexes only creates {id:1} and {merchantId:1} on customers — no email index. ingestTicket calls this on every inbound WISMO ticket (the core value-prop path) and importBackerRows calls it per row. A presale/Kickstarter merchant with thousands of backers pays a full customer-list read + linear scan per ticket and per import row (quadratic during import), worsening steady-state as customer count climbs.",
+  "evidence": "tideover/lib/repositories/mongo/repositories.ts:144-149, tideover/lib/repositories/mongo/client.ts:25-59, tideover/lib/service.ts:403, tideover/lib/import.ts:61",
+  "proposal": "Persist a normalized emailLower field at write time, add a compound index {merchantId:1, emailLower:1}, and do an indexed findOne instead of scan-then-JS-compare, bounding ingest/import lookups to O(1) regardless of backer-list size while preserving JSON-driver semantics.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 2,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed at repositories.ts:144-149 and client.ts:25-59: customers.findByEmail does findWhere({merchantId}) then a JS .toLowerCase() scan; ensureIndexes only builds {id:1} unique and {merchantId:1} on customers, no email index. Confirmed call sites: service.ts:403 (ingestTicket, every inbound ticket) and import.ts:61 (importBackerRows, per row, IMPORT_ROW_CAP=2000, called synchronously from app/api/import/route.ts with no batching/background job). A presale merchant importing a large backer CSV this week could plausibly hit a Vercel function timeout — a concrete week-one risk, not just long-run scale drift. Proposal (emailLower field + compound {merchantId:1,emailLower:1} index + findOne) is feasible, Small effort, and doesn't touch the JSON driver or proof-only doctrine. Downgraded from P1 to P2: this is a performance/availability risk (import fails loudly with a timeout, not silent corruption) not a security hole or data loss, so it doesn't meet the stated P1 bar, but it's real and worth fixing before a backer-list pilot."
+  }
+ },
+ {
+  "area": "scale",
+  "title": "ingestTicket's unmatched-order fallback fetches the merchant's entire order collection and sorts it in JS on the ACK path",
+  "problem": "When a normalized ticket carries no orderRef (or the matched customer has no linked orders), ingestTicket falls back to orders.listByMerchant(merchantId) — every order the merchant ever had — and does `.sort((a,b)=>a.fulfillmentStart.localeCompare(...))[0]` in JS to guess the oldest. Labeled a 'demo fallback' but it runs unconditionally in prod whenever order-matching misses (realistic for the native widget or any payload without a reliable order reference). For a merchant with thousands of orders this is a full-collection read + in-memory sort on the live customer-facing webhook fast-ACK path, per unmatched inbound.",
+  "evidence": "tideover/lib/service.ts:412-418",
+  "proposal": "Push 'earliest active order' into the query (orders.find({merchantId}).sort({fulfillmentStart:1}).limit(1)) instead of pulling every order into memory, or gate the fallback to demo merchants only (its stated purpose).",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 2,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified against tideover/lib/service.ts:412-418 and both repo drivers (json/repositories.ts, mongo/repositories.ts:124-126). listByMerchant has no limit/sort pushdown in either driver — it's a genuine full-collection fetch + in-memory sort, and there is no gating on merchant/demo status anywhere in the call path despite the 'demo fallback' comment; it runs unconditionally whenever orderRef/customer matching misses on the live webhook ACK path. Proposal (query-level sort+limit(1), or actually gate to demo merchants) is feasible without touching the repository seam contract (just tightens the query inside each driver's listByMerchant or adds a new findOldestActive method) and doesn't affect proof-only doctrine or verify/test gate. Severity P2 is appropriate, not P1: for a solo-founder pilot merchant going live this week, order volumes are realistically low (dozens-hundreds), so this won't cause an outage, data loss, or silently wrong results this week — it's a scaling landmine that should be fixed before onboarding a merchant with thousands of historical orders, but doesn't block this week's launch."
+  }
+ },
+ {
+  "area": "scale",
+  "title": "getSetupChecklist fans out one statusViews.listByOrder query per order for a single yes/no item",
+  "problem": "getSetupChecklist loads a merchant's orders then does Promise.all(orders.map(o => statusViews.listByOrder(o.id))) — one DB query per order just to answer 'has any customer viewed a status page.' Parallelized, but at 2k–20k orders it fires thousands of simultaneous queries, exhausting the Mongo driver's default pool (~100) and wedging /api/setup-status. The inline comment claims it 'stays cheap' — true only at seed scale.",
+  "evidence": "tideover/lib/service.ts:928-935",
+  "proposal": "The checklist only needs 'does any status view exist for this merchant.' Store merchantId on StatusView (or join through an $in orderId list) with a {merchantId} index and answer via a single findOne/count (statusViews.existsForMerchant), dropping the per-order fan-out.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 2,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed as described: service.ts:928-935 fans out Promise.all(orders.map(listByOrder)) with no merchant-scoped alternative in either driver (json or mongo repositories.ts:206-213 both key StatusView lookup by orderId only). The inline comment's \"stays cheap\" claim is scale-dependent, exactly as flagged. Proposal (merchantId field + index, or $in-based single query) is feasible without touching the seam contract shape materially — it's an additive index/field, not a breaking interface change, and doesn't touch proof-only doctrine or hot-file list. Severity P2 is right, not P1: this is a scale-triggered slow/wedge risk (thousands of orders), not a security hole, data loss, or silently-wrong-result bug, and a solo-founder pilot launching this week almost certainly has order counts far below the 2k-20k threshold where Mongo's default pool exhausts. Real risk, correctly not urgent for week one."
+  }
+ },
+ {
+  "area": "security",
+  "title": "Login has no rate limiting or lockout; one shared password guards all data and the send button",
+  "problem": "POST /api/login compares `form.get(\"password\") !== APP_PASSWORD` with no attempt counter, lockout, or backoff, and is deliberately never behind middleware. One shared APP_PASSWORD is the only credential protecting read access to all customer PII, data export, and sending messages to customers as the merchant. An attacker can brute-force at full speed; a guessable password loses the whole cockpit. The compare is also non-constant-time (secondary).",
+  "evidence": "tideover/app/api/login/route.ts:41-52, tideover/middleware.ts:29-45",
+  "proposal": "Add per-IP + global rate limiting with exponential backoff/lockout on failed logins, return a constant-time compare, log/alert on repeated failures, and enforce a minimum APP_PASSWORD length at boot. Consider a second factor for the send-capable operator.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed: tideover/app/api/login/route.ts:46 does `form.get(\"password\") !== expected` — no attempt counter, no lockout, no backoff. middleware.ts:15/29-45 deliberately excludes /api/login from the auth gate (per its own comment), and no rate-limiting package (upstash/@vercel/kv/etc.) exists anywhere in package.json or lib/. A single shared APP_PASSWORD really is the only thing standing between an unlimited-attempt attacker and PII/export/send. Auditor did not miss a guard — there isn't one. Downgrading P1→P2, not because it's fake but because: (1) this is a low-value, unlisted/unindexed URL with no known targeting for a pre-revenue solo-founder pilot launching this week — realistic exploitation likelihood this week is low; (2) fix is cheap (add a basic in-memory or KV-backed lockout + crypto.timingSafeEqual + min-length assertion at boot) and should still be done before broader traffic, but it's not a \"drop everything\" blocker for week-one pilot go-live like an actual data-exposure or silent-corruption bug would be. Recommend fixing before scaling past the pilot merchant, not necessarily before this week's launch."
+  }
+ },
+ {
+  "area": "arch",
+  "title": "No tenant isolation on any operator route: one session reaches every merchant by id",
+  "problem": "Every operator handler resolves the merchant FROM the entity id in the URL/body and never scopes to a session-bound merchant, because the single shared password carries no identity. /api/export and /api/setup-status accept any ?merchant=<id>; orders/[orderId], gift-catalog/[customerId], draft, approve-send act on any id. Acceptable only while Dylan is the sole operator of exactly one merchant. The moment a second pilot merchant (or seeded demo merchants) coexists in the DB, one credential = full cross-merchant read/send with no authz layer to build on.",
+  "evidence": "tideover/app/api/export/route.ts:29-32, tideover/app/api/orders/[orderId]/timeline/route.ts:6-12, tideover/app/api/gift-catalog/[customerId]/route.ts:8-13, tideover/lib/auth.ts:5-7",
+  "proposal": "Before onboarding a second merchant, bind the session to a merchantId and enforce it in a shared guard every route calls, rejecting entity ids outside the session's merchant. Until then keep prod single-merchant and document that demo-seed merchants must NOT be seeded into the pilot's mongo DB.",
+  "severity": "P2",
+  "effort": "L",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified directly against code, not just auditor's word. lib/session.ts's session value is only \"<expiry>.<hmac>\" — no identity/merchantId claim at all — confirming lib/auth.ts's own comment: \"Single shared password — per-operator identity/RBAC is a documented seam, post-revenue.\" Checked all three cited routes: export/route.ts takes ?merchant=<id> directly off the query string with no session-merchant check; orders/[orderId]/timeline and gift-catalog/[customerId] resolve merchant straight from the fetched order/customer record, again with zero authz comparison to any session claim. middleware.ts (auth gate) only checks cookie validity/expiry, never binds or checks merchant identity — so the finding's claim generalizes correctly across the operator surface, not just the 3 cited files. Repositories confirm single flat `list()`/`findById()` with no per-tenant scoping mechanism to hook into today. Severity P2 is right, not P1: current deployment is genuinely single-merchant (documented, intentional), so no real user or data is exposed to a second merchant today — the hole is latent, not live. It would become P1 the instant a second merchant/demo-seed coexists in the same Mongo DB, which the proposal correctly calls out as the trigger condition and recommends guarding against procedurally (keep prod single-tenant, don't seed demo merchants into pilot DB) until the guard is built. Proposal (session-bound merchantId + shared guard) is feasible without touching the repository seam's two drivers or proof-only doctrine — it's an additive authz layer, not a data-model change. Effort L is reasonable given the guard must be applied consistently across every operator route."
+  }
+ },
+ {
+  "area": "security",
+  "title": "widget-submit is an unauthenticated-scale abuse vector: no length cap, no rate limit, heavy per-call work",
+  "problem": "POST /api/widget-submit validates only `message: z.string().min(1)` (no max) with no rate limiting. Each call runs the full ingestTicket pipeline — findByEmail (lists all merchant customers on mongo), listByCustomer/listByMerchant, drafting, gift catalog, ticket-intelligence, variant resolution, plus a persisted ticket. Any holder of one valid status token (any real customer) can loop it to flood storage and burn compute/DB on a $750 budget, and inject unbounded-size ticket bodies into the operator inbox. /api/updates caps text at 2000 and inbound caps recipients, but this hotter public path caps nothing.",
+  "evidence": "tideover/app/api/widget-submit/route.ts:13-38, tideover/lib/service.ts:391-436",
+  "proposal": "Add a max length (e.g. 4000) to `message`, rate-limit per status token/order and per IP, and add a per-order open-ticket cap so one customer can't create unbounded tickets.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified against tideover/app/api/widget-submit/route.ts:13 (Body schema: message: z.string().min(1), no max, no rate limit) and lib/service.ts:391-436 (ingestTicket does findByEmail/listByCustomer/listByMerchant, drafting, gift catalog, ticket-intelligence, variant resolution, and a DB write per call). Two comparators corroborate the auditor's framing: app/api/updates/route.ts:19 caps text at max(2000), and app/api/status/[token]/route.ts:9-19 has an existing in-memory per-IP rate limiter (60 req/min) that widget-submit does not reuse — so this is an established, cheap pattern in the same codebase simply missing on the heavier endpoint, not a novel/infeasible ask. Adding a message max + reusing the same in-memory rate-limit helper is low-effort, doesn't touch the repository seam (json/mongo), doesn't touch proof-only doctrine, and isn't one of the hot-file serialization files. Severity P2 is right, not P1: token is per-order/customer (not fully unauthenticated internet-wide), no evidence of active abuse, and a solo pilot going live this week is more likely to hit cost/noise from a confused or malicious single customer than catastrophic data loss — worth fixing soon but not a stop-ship security hole or silent-wrong-results bug."
+  }
+ },
+ {
+  "area": "data",
+  "title": "JSON and Mongo drivers return list results in different orders (seam's 1:1 promise is false)",
+  "problem": "The Mongo driver's findWhere forces `{createdAt:1, id:1}` sort on every list read; the JSON driver returns raw file/insertion order with no sort. Seed files are NOT in createdAt order, and customers/gifts/social carry no createdAt (Mongo falls to id-ascending random nanoid order). So the same list method returns different order in demo (JSON) vs prod (Mongo) for orders, tickets, customers, gifts, and social. Queue/dashboard re-sort so they're safe, but the data export emits raw list order and the gift engine's final tie-break falls through to list order — a fully-tied eligible gift can be recommended differently in prod than validated in demo, undermining the 'validate on JSON, ship on Mongo' bet for every future list consumer.",
+  "evidence": "tideover/lib/repositories/mongo/repositories.ts:46-53, tideover/lib/repositories/json/repositories.ts:68,91-93,117-119,159-171, tideover/lib/types.ts:203-283, tideover/lib/engines/gift.ts:56-63, tideover/lib/export.ts:90-96",
+  "proposal": "Give every entity a createdAt (add to Customer/Gift/SocialSignal) and have BOTH drivers sort list reads by the same deterministic key (createdAt then id), or drop the findWhere sort and have both return a documented matching order. Add a driver-parity test that runs a fixed query set through both drivers over the same seed and asserts identical id-order arrays.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed by direct read. mongo/repositories.ts:46-53 sorts every findWhere by {createdAt:1,id:1}; json/repositories.ts only replicates this for statusViews/outcomeEvents/merchantUpdates (explicit byViewedAt/byObservedAt/byCreatedAtDesc helpers, commented \"matches Mongo\") but customers, orders, tickets, gifts, and social list methods (lines ~91-171) return raw array filter order with no sort at all. Customer/Gift/SocialSignal types (types.ts:203-283) indeed have no createdAt field, so Mongo falls back to id-ascending while JSON keeps seed/insertion order — genuine driver divergence, not a missed guard.\n\nChecked the two cited failure paths: gift.ts recommendGift's final tiebreak (roi desc) is a no-op when perceivedValueCents and costCents are both equal (roi is then also equal), so Array.sort's stability means driver input order decides the winner on a true tie — confirmed as claimed. Checked current lib/data/gifts.json: no two gifts for the same merchant currently share both perceivedValueCents and costCents, so this can't fire against today's seed catalog, and there's no other gift-catalog authoring path in the repo yet — it's a real latent bug, not a currently-live one. Also spot-checked app/api/social-signal-feed/route.ts -> lib/engines/social-signal.ts: scoreFeed re-sorts by flagged+signalScore but has the identical tie-fallthrough gap, confirming the pattern is broader than the two cited files. lib/export.ts genuinely emits whatever order listByMerchant gave it with no re-sort, as claimed.\n\nNet: real, well-evidenced structural gap in the seam's \"identical behavior\" doctrine, correctly scoped to the two consumers where a resort doesn't already mask it. Not P1 — no security/data-loss, nothing observably wrong against the current seed/pilot dataset, requires a future exact-tie catalog entry or a customer relying on export row order to surface. P2/effort-M as filed is appropriate; proposal (add createdAt everywhere + driver-parity test) is feasible without touching the proof-only doctrine or hot-file list."
+  }
+ },
+ {
+  "area": "data",
+  "title": "approveSend swallows a failed reply_sent ledger write, silently undercounting the core proof metric",
+  "problem": "recordReplySent is awaited but its failure is logged-and-swallowed, so a Mongo hiccup silently drops the reply_sent outcome event — an undercount of the exact measurable FRT/deflection delta the whole product sells. The proof stats drift down with no signal.",
+  "evidence": "tideover/lib/service.ts:546, tideover/lib/service.ts:285-307",
+  "proposal": "On recordReplySent failure, don't swallow — flag the ticket (e.g. outcomePending=true) so a sweep can reconcile the ledger, otherwise proof stats undercount invisibly.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed as described. approveSend (service.ts:537-546) persists ticket.status=\"sent\" first, then awaits recordReplySent; on Mongo failure it logs-and-swallows (line 298-307) and returns null, so approveSend returns editedRatio:0/canPromote:false but the send is already committed — the reply_sent event is simply never written, with no flag or retry path. Unlike the resolved_quiet sweep (outcome-sweep.ts via cron/sweep-outcomes), which self-heals because it's a full idempotent recompute each run, reply_sent is a point-in-time action event with no persisted \"pending\" state, so nothing can reconcile it later — the proposal (flag ticket + sweep reconciliation) is the right fix and is feasible without touching the repository seam (just an extra field + a new sweep case, same pattern as existing cron job). Severity P2 is appropriate: it silently undercounts the core proof metric (matches \"silently wrong results\") but only triggers on an actual second-write DB failure after the first write already succeeded — a narrow, not day-one-certain, race — and effort is genuinely S given the existing sweep-outcomes infrastructure to extend."
+  }
+ },
+ {
+  "area": "data",
+  "title": "CSV re-import duplicates orders (and inflates order-derived proof numbers) when source-id is absent or on concurrent submit",
+  "problem": "Order-level dedup hinges entirely on importKey, only set when the CSV has a mapped id column. If a merchant's export lacks/mismaps that column, sourceKey is empty, the dedup block is skipped, and every order is unconditionally created — a re-upload after a timeout DOUBLES every order. Customers dedupe by email so headline numbers double via accumulated orderIds: wismoPer100Orders denominator and the M3 dispute-exposure GMV sum. Even WITH sourceKey, dedup is per-request in-memory only (README deliberately keeps NO unique DB index for driver parity), so two concurrent/double-clicked imports each pass their own check and both insert.",
+  "evidence": "tideover/lib/import.ts:45-50,61-92,123-129, tideover/lib/csv.ts:233,242, tideover/lib/service.ts:679-682,706, tideover/lib/repositories/mongo/README.md:34-35",
+  "proposal": "Add a request-level idempotency key for the whole import batch (hash of merchantId + row set, or a client-supplied uploadId) and reject a repeat within a short window, so dedup no longer depends on the CSV having an id column. Keep it app-level (not a DB unique index) for parity. Surface an 'X orders already imported, skipped' count so a re-upload is visibly a no-op.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified against tideover/lib/import.ts:45-92 and lib/csv.ts:233,242. Confirmed: order dedup is gated entirely on row.sourceKey (auto-picked from an id-column alias set); if absent, importKey is undefined and the create-order path (line 94-123) runs unconditionally on every row on every re-upload, with no fallback dedup. Also confirmed seenImportKeys is a fresh in-memory Set per call (line 49), so two concurrent POSTs to app/api/import/route.ts each pass their own check and both insert; mongo/README.md:34-35 documents no unique index on {merchantId,email} for driver parity, consistent with the same doctrine applying to importKey (not literally cited but same philosophy). service.ts:706 confirms wismoPer100Orders divides by orders.length and disputeExposure (679-682) sums GMV over orders, so doubled orders do skew both headline numbers, though wismoPer100Orders would move toward zero rather than literally \"inflate\" — a minor wording imprecision, not a substantive error.\n\nMitigating context the auditor underweighted: this is an operator-only route gated by auth middleware, invoked from ImportPanel.tsx, which already disables the submit button while importing=true (line 165), cutting down the double-click scenario to network-retry/multi-tab edge cases. sourceKey is auto-detected from a broad alias set, so typical Kickstarter/BackerKit exports (which almost always carry a backer/pledge/order id column) hit the safe path by default — the missing-id failure mode requires an atypical export, not the common case.\n\nNet: real bug, correctly scoped and feasible fix (app-level batch idempotency key, no DB unique index, preserves driver parity). The core risk (silently wrong proof-number headlines, which are Tideover's product thesis) is genuine, but it requires an operator-side edge case rather than being hit automatically by normal traffic, so P2 (as filed) is the right severity, not P1."
+  }
+ },
+ {
+  "area": "ops",
+  "title": "seed-mongo --force is an unguarded production wipe",
+  "problem": "seed-mongo.mjs refuses a non-empty DB without --force, but with --force it runs deleteMany({}) on every seed collection then reloads demo data. There is no environment guard: if .env.local points MONGODB_URI at prod (which it must for backup/seed against Atlas) and someone runs `npm run seed:mongo -- --force` to 'refresh the demo', it deletes the live pilot merchant's real orders/customers/tickets and replaces them with demo seed — a one-command unrecoverable data-loss footgun, compounded by un-restorable backups.",
+  "evidence": "tideover/scripts/seed-mongo.mjs:41,48-57,68-76",
+  "proposal": "Before deleteMany under --force, refuse if the DB contains any merchant with isDemo=false, or require a second confirmation token (e.g. --i-understand=<dbName> that must match), or refuse when NODE_ENV=production. Log the doc counts about to be destroyed and require confirmation.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Code matches evidence exactly: seed-mongo.mjs has no environment/prod guard on --force; it deleteManys every seed collection based solely on whichever MONGODB_URI is in the environment. Fix is cheap and safe (isDemo field already exists in the schema per lib/onboarding.ts:75 and is enforced by seed-check.mjs:163, so gating deleteMany on 'no merchant with isDemo=false' is a small, low-risk addition that doesn't touch the repository seam, both drivers, or proof-only doctrine). Rated P2 not P1 because it requires an operator to (a) point .env.local at prod Atlas and (b) explicitly pass --force with intent to 'refresh demo' -- not a passive/automatic footgun, and package.json shows a separate backup.mjs script exists (though whether it's routinely run before seed ops is unverified). Still a real one-command irrecoverable-data-loss risk for a solo founder about to have a live pilot merchant, so P2 (not lower) and worth fixing before go-live rather than deferring indefinitely."
+  }
+ },
+ {
+  "area": "ops",
+  "title": "Backups are not restorable and the restore/migration runbook does not exist",
+  "problem": "backup.mjs writes a single wrapped object `{generatedAt, db, counts, collections:{name:[docs]}}`. Nothing consumes that shape: seed-mongo.mjs reads FLAT per-collection arrays from lib/data/*.json, and mongoimport expects one file per collection. The docstring's claim that a backup 'restores cleanly with mongoimport or by feeding a collection back through the seed path' is false as written — restore needs a hand-written transform that doesn't exist. The referenced docs/ops-backup.md restore runbook is absent, and there is no schema-migration mechanism, so the first post-pilot schema change has no safe forward path. A pilot's real data has backups that cannot be restored under pressure.",
+  "evidence": "tideover/scripts/backup.mjs:12-14,53-67, tideover/scripts/seed-mongo.mjs:59-76, docs/ops-backup.md (missing)",
+  "proposal": "Ship a real restore script (read the backup wrapper, per-collection deleteMany + bulk replaceOne on id, same guard as seed-mongo) and a tested runbook, OR change backup output to per-collection flat-array files seed-mongo already ingests. Add a migration convention (scripts/migrations dir + schemaVersion marker) so the first field change post-pilot has a path.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified directly. scripts/backup.mjs:12-14 docstring claims a backup \"restores cleanly with mongoimport or by feeding a collection back through the seed path\" — false. backup.mjs writes {generatedAt,db,counts,collections:{name:[docs]}} (line 62), while seed-mongo.mjs (lines 22-33, 59-76) only reads flat per-collection JSON arrays from lib/data/*.json, never from backups/. No transform/restore script exists in scripts/ (only alias-hooks, backup, gen-seed, local-dns, mongo-smoke, proof-lint, register-hooks, seed-check, seed-mongo, smoke). docs/ops-backup.md, referenced by the docstring as \"the full backup + restore runbook,\" does not exist anywhere in the repo. Auditor's evidence is accurate, not mischaracterized. Proposal (real restore script or flat-array backup format + migration convention) is feasible and low-risk — doesn't touch the repository seam, proof-only doctrine, or hot-file serialization list. Kept at P2 rather than P1: this is a latent/procedural gap (no data has actually been lost, Atlas itself likely has independent PITR/snapshot backups as a safety net, and DEMO_MODE gating limits real customer data exposure at initial pilot launch), not a live bug that silently corrupts data or a guaranteed week-one hit — it only bites if/when a restore is actually needed under pressure."
+  }
+ },
+ {
+  "area": "perf",
+  "title": "Inbox j/k keyboard nav re-runs the full force-dynamic page (incl. getQueue N+1) on every keystroke",
+  "problem": "QueueKeyboard's j/k handler calls router.replace('/app/inbox?merchant=...&ticket=...') on every navigation key. Because inbox/page.tsx is force-dynamic, each replace is a full server round trip that re-runs getQueue (the ~2N Mongo round trips), getTicketView, getPreviouslyTold, and getDraftAlternates for the newly selected ticket — not just a selection-state update. For an operator holding 'j' to move down a real Mongo-backed queue, every keystroke re-triggers the entire N+1 queue scan, compounding getQueue's cost into a per-keystroke tax.",
+  "evidence": "tideover/components/product/QueueKeyboard.tsx:103-105, tideover/app/app/inbox/page.tsx:15,62",
+  "proposal": "After fixing getQueue to O(open tickets), fetch the full queue once and drive ticket selection client-side — pass rendered rows down and update just the detail pane via a lighter server action/fetch for the single selected ticket, instead of a full page re-render per arrow key.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed as described. QueueKeyboard.tsx:103-105 calls router.replace on every j/k/ArrowUp/Down keydown (no debounce; native key-repeat fires it repeatedly while held), and inbox/page.tsx:15 is `force-dynamic` with no caching, so each replace is a full RSC round trip re-running getQueue (confirmed real N+1 at lib/service.ts:620-659 — one Promise.all + one ticketsLast7dFor query per ticket), getTicketView, getPreviouslyTold, and getDraftAlternates. QueueList.tsx has no optimistic/client-side selection state, so there's no local highlight to mask the round trip. Next's router does cancel in-flight navigations on a newer one, so N keypresses don't literally stack N full fetches, but the operator still pays a live Mongo round-trip per keystroke with no client-side fallback — real, reproducible perf debt. However it does not meet this repo's P1 bar (security hole, data loss, silently wrong results, or breaks the pilot week one) — it's a UX/latency degradation during rapid queue scanning, not a correctness or safety issue, and effort is fairly scoped (fix N+1 first, then move selection client-side). Downgrading P1→P2; everything else in the finding (mechanism, evidence, proposal, dependency on the getQueue fix) checks out as written."
+  }
+ },
+ {
+  "area": "perf",
+  "title": "Selected-ticket detail is fetched twice (getTicketView called twice) plus its tickets.list repeated ~4x, all sequential",
+  "problem": "In inbox/page.tsx, getTicketView(selectedId) is awaited, then getDraftAlternates(view.ticket.id) — but getDraftAlternates INTERNALLY calls getTicketView again, redoing the ticket/order/customer/merchant findById calls, the gift catalog fetch, and the ticketsLast7dFor query, then does another gift-catalog fetch + ticketsLast7dFor for its de-escalate recompute. getPreviouslyTold independently calls tickets.list({merchantId, customerId}) — the same query ticketsLast7dFor already ran twice. Net: the identical tickets.list executes ~4 times per ticket-detail render, and none of getTicketView/getPreviouslyTold/getDraftAlternates are parallelized despite being derivable from the same known selectedId/customerId.",
+  "evidence": "tideover/lib/service.ts:97-99,102,106-108,144-171, tideover/app/app/inbox/page.tsx:102,107,112",
+  "proposal": "Have getDraftAlternates accept the already-computed TicketView instead of refetching it; hoist the ticketsLast7dFor call once per render and pass it through; run getPreviouslyTold/getDraftAlternates concurrently via Promise.all since neither depends on the other's result.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified against tideover/lib/service.ts:60-121 and tideover/app/app/inbox/page.tsx:102-112. getTicketView (60-68) does findById x3 + gift catalog fetch + ticketsLast7dFor. getDraftAlternates (93-121) calls getTicketView again at line 97 then redundantly redoes the catalog fetch and ticketsLast7dFor at 107-108. getPreviouslyTold (144-171) independently runs repos.tickets.list. In the page, view/getPreviouslyTold/getDraftAlternates are awaited sequentially (lines 102,107,112), not Promise.all'd, and getPreviouslyTold/getDraftAlternates don't depend on each other's results. Redundancy is real, ~3-4x tickets.list per render is a fair characterization. Fix is a scoped refactor to lib/service.ts (not a hot-file, not the engine itself, no schema/seam change) — safe under verify+test since goldens/invariants target engine output not call counts. Correct as P2: real perf/DB-load tax but not correctness-breaking or a week-one pilot blocker at solo-founder pilot volume."
+  }
+ },
+ {
+  "area": "arch",
+  "title": "Every /app/* page is force-dynamic with zero caching — near-static reads refetch on every nav",
+  "problem": "All 11 operator pages declare export const dynamic='force-dynamic' and none use unstable_cache/revalidate. merchants.list() runs fresh on every single page load and every merchant-switcher change across all 11 pages, and the gift catalog (gifts.listByMerchant), which changes rarely, is refetched identically on /app/inbox and /app/gifts each load. At 1-3 merchants this is cheap, but there's no caching layer to absorb load as volume grows, so the N+1 issues are the only thing between 'fine' and 'slow' with no cache to fall back on.",
+  "evidence": "tideover/app/app/inbox/page.tsx:15, tideover/app/app/page.tsx:11, tideover/app/app/customers/page.tsx:8, tideover/app/app/gifts/page.tsx:7, tideover/app/app/baseline/page.tsx:24, tideover/app/app/scripts/page.tsx:24, tideover/app/app/setup/page.tsx:23, tideover/app/app/social/page.tsx:7, tideover/app/app/forecast/page.tsx:28, tideover/app/app/updates/page.tsx:7, tideover/app/app/orders/[orderId]/evidence/page.tsx:19",
+  "proposal": "Wrap slow-changing reads (merchants.list, gifts.listByMerchant, scriptVariants.listByMerchant) in unstable_cache with a short revalidate (30-60s) or a tag invalidated on the relevant mutation routes, leaving genuinely live surfaces (queue, ticket detail) fully dynamic while removing repeat cost for reference data.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: all 11 listed pages declare export const dynamic=\"force-dynamic\" (grep confirmed each file:line). No unstable_cache/revalidate/cache() usage anywhere in the repo (lib/repos or elsewhere) — confirmed by grep returning zero hits. merchants.list() is indeed called in both app/app/inbox/page.tsx:51 and app/app/gifts/page.tsx:25 with no dedup/caching layer between them. Auditor's factual claims hold up; no missed guard or handler. Feasibility: unstable_cache works fine alongside force-dynamic (route-level dynamic rendering and per-fetch data caching are orthogonal in Next 14), so the proposal doesn't require ripping out force-dynamic or touching the repository seam/proof-only doctrine — it's an additive wrapper around specific repo calls, low risk to verify+test gate. Severity: correctly scoped down to P2 by the auditor's own admission (\"at 1-3 merchants this is cheap\") — this is a real architectural gap but not a week-one pilot fire for a solo founder with a handful of merchants; P2 (important, not urgent) is right, arguably even P3-adjacent but P2 is defensible given the \"no cushion as volume grows\" framing."
+  }
+ },
+ {
+  "area": "data",
+  "title": "Customer dedupe-by-email is a check-then-act race with no unique-index backstop (unlike tickets)",
+  "problem": "Both ingestTicket and importBackerRows dedupe customers by findByEmail(merchantId, email) then create() if none found, with no atomicity between the two calls. Unlike tickets — which got a real {merchantId, channel, externalId} unique index as a concurrency backstop — the README explicitly documents NO unique index on {merchantId, email} by deliberate design. Two near-simultaneous ingests for the same new customer (duplicate webhook redelivery without externalId, or two channels reporting the same person) can create two Customer rows with the same email, silently fragmenting that person's ticket history, ticketCount, and risk scoring across two ids.",
+  "evidence": "tideover/lib/service.ts:403-419, tideover/lib/import.ts:61-77, tideover/lib/repositories/mongo/README.md:34",
+  "proposal": "Add a unique {merchantId, email} index in ensureIndexes (mirroring the tickets pattern) and handle the resulting 11000 duplicate-key error in ingestTicket/importBackerRows exactly like isDuplicateKeyError already does for tickets (re-read and use the winner instead of erroring). This also enables the emailLower lookup index from the findByEmail-scan finding.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed. service.ts:403-419 and import.ts:59-73 both do findByEmail-then-create with no atomicity, unlike tickets which have a unique+sparse index plus an 11000 handler. mongo README.md:34 confirms no unique index on merchantId+email, by deliberate design. Evidence is accurate. Caveat: README also states the JSON driver never rejects duplicates and the drivers must not diverge, an intentional seam-parity rule; adding a unique index to mongo only, without matching duplicate detection in the JSON driver's create path, would break that parity, so the stated M effort is understated. That is a gap in the fix plan, not a refutation of the finding. For a solo-founder pilot launching this week with one low-volume merchant, the race window (two near-simultaneous ingests of the same brand-new email, no externalId) is narrow and unlikely to fire in week one; impact when it does is silent fragmentation of ticket history and risk scoring, not data loss or a security hole. P2 is correctly calibrated, not P1."
+  }
+ },
+ {
+  "area": "arch",
+  "title": "Cockpit 'Escalate' control is fully decorative — no persistence, no backend call, misleads the operator",
+  "problem": "ApprovalBar's Escalate button only toggles local React state (useState(false)) and renders 'Flagged for manager review this window.' It never calls fetch/post to any API, is never written to the Ticket record, and resets the instant the operator navigates away or the force-dynamic page remounts. A pilot operator who clicks it believes an escalation has been recorded; nothing happens server-side.",
+  "evidence": "tideover/components/product/ApprovalBar.tsx:45,216-220,234-239, tideover/lib/types.ts:219",
+  "proposal": "Either wire Escalate to a real persisted field (ticket.operatorEscalated + a route that sets it and surfaces it on the dashboard/queue) or remove the control and its false confirmation copy until that's built.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed exactly as described. ApprovalBar.tsx:45 declares `const [escalated, setEscalated] = useState(false)`; the Escalate button (line 234-239) only calls `setEscalated((v) => !v)` — no fetch/post call anywhere in that handler, unlike regenerate() and approveSend() which both call post(url,...) to real API routes. The confirmation copy at line 216-220 (\"Flagged for manager review this window\") renders purely off local state. No write to Ticket, no route touched. State resets on navigation/remount since it's plain useState with no persistence. Proposal (wire to a real persisted field + route, or remove control) is feasible and doesn't touch the proof-only doctrine, repo seam, or hot-file serialization list beyond ApprovalBar.tsx itself (which IS one of the listed hot files, so this edit should be serialized per CLAUDE.md). Severity P2 is well-calibrated: it's a real trust-eroding UX bug an operator could hit week one, but it's not a security hole, data-loss, or silent-wrong-financial-result — just a decorative control with false confirmation text."
+  }
+ },
+ {
+  "area": "data",
+  "title": "Synthetic ticket built via `as Ticket` cast bypasses type safety on the live-ingest drafting path, untested by evals",
+  "problem": "ingestTicket builds `{ sentiment: n.sentiment } as Ticket` twice to feed the drafter and the reassurance/risk engine before a real Ticket exists. This only works because both callees happen to read .sentiment and nothing else. TypeScript can't catch a future engine change that reads any other Ticket field (id, tags, createdAt) on this path — it would compile clean and fail only at runtime in prod, on every new-ticket ingest. Because the eval harness exercises the engine against real seeded tickets via getTicketView, not this synthetic ingest-time shape, such a regression would not be caught by npm run verify.",
+  "evidence": "tideover/lib/service.ts:422,427, tideover/lib/drafting/DeterministicDrafter.ts:16, tideover/lib/engines/index.ts:54,64",
+  "proposal": "Change the drafter/engine input types that only need sentiment at ingest time to accept a narrow Pick<Ticket,'sentiment'>-shaped context instead of a full Ticket, so this call site type-checks honestly and a future field-access mismatch is caught at compile time, not at runtime in prod.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: service.ts:422 and 427 both use `{ sentiment: n.sentiment } as Ticket`. Confirmed via grep that on this ingest path only `.sentiment` is read (DeterministicDrafter.ts:16 reads ctx.ticket.sentiment; engines/index.ts:54,64 reads ticket.sentiment for risk+reassurance) before the real Ticket is constructed at service.ts:438. No other ticket field (id/createdAt/tags/channel) is touched via this cast object anywhere. Proposal to narrow DraftContext.ticket and IntelInput.ticket to Pick<Ticket,'sentiment'> is safe/feasible: real Ticket objects used elsewhere (eval harness via getTicketView, other service.ts call sites) structurally satisfy a Pick-narrowed type, so no other caller breaks, verify/proof-lint/evals unaffected — pure type narrowing. Severity P2 is correctly calibrated: it's a compile-time-only latent footgun (a future engine change reading e.g. ticket.id would compile clean here and NPE/undefined at runtime on every ingest), not a live bug and not currently exercised — no data loss, no security hole, nothing hits it this week absent a future edit. Effort S is right (interface + 2 call-site type changes, no logic change)."
+  }
+ },
+ {
+  "area": "env",
+  "title": "STATUS_TOKEN_SECRET silently falls back to a hardcoded value in production instead of failing closed",
+  "problem": "lib/ids.ts returns `process.env.STATUS_TOKEN_SECRET || 'dev-only-change-me'` with no NODE_ENV check, unlike the sibling secrets (WEBHOOK_ROOT_SECRET, AUTH_SECRET) which explicitly fail closed under NODE_ENV=production. If STATUS_TOKEN_SECRET is ever left unset in Vercel prod (easy to miss — it's the only checklist secret not gated by a visible failure), every customer status token is signed and verified with a publicly-known default string, silently, with no error, no log, and a healthy /api/health response the whole time.",
+  "evidence": "tideover/lib/ids.ts:22-24, tideover/lib/ingest-route.ts:71-81, tideover/lib/session.ts:36-38,44-46",
+  "proposal": "Make ids.ts throw (or have checkHealth report degraded) when NODE_ENV==='production' and STATUS_TOKEN_SECRET is unset, mirroring the fail-closed pattern already used for WEBHOOK_ROOT_SECRET and AUTH_SECRET.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified: lib/ids.ts:23 secret() has no NODE_ENV gate, unlike AUTH_SECRET (lib/session.ts:38, throws unconditionally when unset) and WEBHOOK_ROOT_SECRET (ingest-route.ts:74-77, explicit prod-required check). grep confirms STATUS_TOKEN_SECRET appears only in ids.ts, gen-seed.mjs, seed-check.mjs, README — no health-check or startup guard exists. Proposal (throw/degrade in prod when unset) is feasible, small, mirrors existing sibling patterns, and poses low risk to verify/test gate. Downgraded P1->P2: the token only gates a customer-facing order-status READ endpoint that carries 'no PII' per the code's own doc comment (line 9) — a default/leaked secret enables forged status-lookup tokens for guessing, not account takeover, not merchant data exposure, not billing/auth compromise, and not silently-wrong business results. Real and worth a fast fix, but bounded blast radius keeps it below P1."
+  }
+ },
+ {
+  "area": "ops",
+  "title": "Most API routes have no try/catch and no error reporting — an unhandled exception leaves no trail",
+  "problem": "Only 6 of ~20 route files (approve-send, cron/sweep-outcomes, csat, ticket-ingest, import, login) have any try/catch; draft, widget-submit, gift-send, updates, onboarding, orders/timeline, export, variants/promote and others have none. An exception thrown deeper (a Mongo hiccup, an adapter throwing NotImplementedError, a malformed repo write) becomes a bare Next.js 500 with no application-level log line, no merchantId/ticketId context, and no error-tracking service (no Sentry/otel/logtail anywhere). The only trail is Vercel's raw function log, whose retention on lower tiers is short and which nobody watches.",
+  "evidence": "tideover/app/api/draft/route.ts (no try/catch), tideover/app/api/widget-submit/route.ts (no try/catch), tideover/lib/ingest-route.ts:102-105, tideover/app/api/cron/sweep-outcomes/route.ts:76-84",
+  "proposal": "Wrap route handlers in one shared helper that catches, logs a structured JSON line ({event:'api.error', route, error} — matching the ingest/cron pattern), and returns a generic 500. Optionally add a free-tier error tracker (Sentry) so a spike of 500s pages Dylan instead of sitting silently in logs.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified directly: 6/22 route.ts files under tideover/app/api have try/catch (approve-send, cron/sweep-outcomes, csat, import, login, ticket-ingest); draft/route.ts and widget-submit/route.ts confirmed to have zero error handling — any thrown exception (Mongo hiccup, adapter error, repo write failure) falls straight through to Next's default 500 with no structured log line. No shared error wrapper, no logger module, no Sentry/otel found anywhere in lib/. Proposal (shared try/catch wrapper emitting {event:'api.error',route,error} JSON, matching the pattern already used in ingest/cron routes) is low-risk, additive, doesn't touch the repository seam or proof-only doctrine, and wouldn't threaten the verify+test gate. Severity P2 is right, not P1: this is an observability gap, not a security hole or data-loss vector — requests still fail safely (500) and don't produce silently-wrong results, they just leave no trail for debugging when something breaks in week one. Given solo-founder/no on-call, this is worth fixing before it costs debugging time under a live pilot, but it doesn't block launch."
+  }
+ },
+ {
+  "area": "ops",
+  "title": "/api/health only probes DB reachability; broken cron, ingest auth, or operator login still report 200 healthy",
+  "problem": "checkHealth does exactly one thing: race a merchants.list() call against a 5s timeout. It never checks whether AUTH_SECRET/CRON_SECRET/WEBHOOK_ROOT_SECRET are set, and never checks when the daily cron last ran. A misconfigured prod deploy can have zero working operator login, zero working real ingest, and a permanently-401ing cron — and the external uptime monitor described as 'the dead-man switch' in RELEASE.md would keep seeing 200s the whole time, because the health check literally cannot see any of those failure modes.",
+  "evidence": "tideover/lib/health.ts:1-50, tideover/app/api/health/route.ts:1-21, tideover/RELEASE.md:55-71",
+  "proposal": "Extend HealthResult with boolean presence flags for the critical prod secrets (never the values) and a cronLastRunAt derived from a persisted heartbeat, so the one monitor Dylan is told to trust actually reflects whether the app is doing its job, not just whether Next.js is responding.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed by direct read of tideover/lib/health.ts:22-50 and app/api/health/route.ts:15-21: checkHealth only races getRepositories().merchants.list() against a 5s timeout, sets ok/status purely from dbOk. No check of AUTH_SECRET/CRON_SECRET/WEBHOOK_ROOT_SECRET presence, no cron-last-run heartbeat. RELEASE.md:55-71 explicitly instructs pointing an external uptime monitor at this exact endpoint and calls it \"the dead-man switch,\" alerting only on non-200 — so a misconfigured secret or dead cron would indeed stay invisible to the one monitor Dylan is told to trust. Proposal (add boolean presence flags + a persisted cron heartbeat timestamp) is feasible without touching the repository seam's write paths or proof-only doctrine — it's additive to HealthResult and one small persisted field, not a schema-breaking change. Severity P2 is appropriate: this is an observability gap, not itself a live security hole or data-loss bug, and DEMO_MODE/solo-founder-week-1 volume means an actual silent failure is plausible but not certain to bite in week one — P1 is reserved for things that already are broken/exposed, not for a missing alarm. Effort \"S\" is roughly right for the env-flag part; the cron heartbeat needs a small persisted-state addition, so slightly more than trivial but still small."
+  }
+ },
+ {
+  "area": "ops",
+  "title": "The daily cron sweep has no persisted heartbeat — a silently broken cron is undetectable except by stale metrics",
+  "problem": "cron/sweep-outcomes logs per-event failures but never records that a run happened at all, successfully or otherwise, anywhere queryable. If CRON_SECRET drifts out of sync between Vercel env and whatever mints the bearer token, or Vercel Cron simply stops firing (plan change, deploy failure, misconfigured vercel.json), the sweep goes permanently 401 or silent and the only symptom is quietResolutionRate staying null/stale — something a human notices only by actively looking at script-performance numbers over days, with no alert.",
+  "evidence": "tideover/app/api/cron/sweep-outcomes/route.ts:57-90, tideover/vercel.json:6",
+  "proposal": "Have the sweep write a one-line heartbeat (last run time + merchants swept + emitted count) to a small persisted doc, and expose it via the health endpoint or a tiny internal /api/cron/status so a missed day is visible within the same external monitor already watching /api/health.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified against tideover/app/api/cron/sweep-outcomes/route.ts:57-90 and tideover/vercel.json. Confirmed: the handler only returns {swept, emitted} in the HTTP response and console.logs per-event failures — nothing is persisted to Mongo/repo seam recording that a run occurred, succeeded, or was even invoked. cronAuthorized() fails closed in prod (401) if CRON_SECRET is unset or mismatched, and if Vercel Cron simply stops firing (plan change, deploy failure, misconfigured vercel.json) there's zero queryable trace anywhere. The only observable symptom is quietResolutionRate staying stale, which nothing currently polls or alerts on — no heartbeat, no /api/cron/status, no tie-in to the existing /api/health endpoint. The proposed fix (persist a last-run heartbeat doc, expose via health or a small status endpoint) is small and additive: it doesn't touch the proof-only doctrine, doesn't require concurrent edits to the serialized hot-file list, and fits the existing repository seam (new small collection or field, implementable for both json+mongo drivers) — feasible without threatening the verify+test gate. P2 is correct: not a security hole and not data loss (the sweep is explicitly idempotent/self-healing per the route's own doc comment, so a missed day back-fills on the next run), and it's not something the pilot merchant will visibly hit in week one — it's a founder-side observability gap that could let a broken sweep go unnoticed for days, worth fixing but not urgent-blocking."
+  }
+ },
+ {
+  "area": "ops",
+  "title": "Backup coverage during a real pilot depends entirely on Dylan remembering a manual command — no automated check",
+  "problem": "docs/ops-backup.md already documents (and self-flags NEEDS-DYLAN) that layer 3 — automated nightly offsite backup — is unbuilt, and says 'do not run a real pilot on M0 without layer 2 running' and 'set a daily reminder for layer 2.' That reminder is entirely outside the system: nothing monitors that npm run backup was run recently, or that Atlas backups are enabled on the live cluster. If the daily manual habit lapses in week one — the most likely time — there is no automated signal that coverage has silently stopped.",
+  "evidence": "docs/ops-backup.md:1-43, tideover/scripts/backup.mjs:1-40",
+  "proposal": "Until layer 3 is wired, add a cheap automated nudge now: a Vercel Cron (same pattern as sweep-outcomes) that runs backup-equivalent logic and pings a free webhook (email/Slack/Discord) on success or failure, so backup cadence isn't purely a memory exercise during the highest-risk week.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed against docs/ops-backup.md:32-39 and tideover/scripts/backup.mjs. Layer 3 (automated offsite) is explicitly self-flagged NEEDS-DYLAN/unbuilt; layer 2 (`npm run backup`) is a manual CLI script with no scheduler, monitor, or freshness check anywhere in the repo — coverage genuinely depends on Dylan remembering to run it, exactly as claimed. Severity P2 (not P1) is right: layer 1 (Atlas managed backups) is the actual automated safety net when enabled on M2+, and the doc already tells Dylan not to pilot on M0 without layer 2 running — so this isn't a silent, undetected gap, it's a known manual-process risk with a cheap fix. Proposal (Vercel Cron mirroring sweep-outcomes, running backup.mjs logic + webhook ping) is feasible without touching the repository seam, proof-only doctrine, or verify/test gate — backup.mjs is already read-only find()-based and framework-agnostic. Effort S is reasonable for a cron+webhook wrapper."
+  }
+ },
+ {
+  "area": "security",
+  "title": "getPublicStatus's documented PII boundary is asserted only in a comment, never in a test",
+  "problem": "lib/status.ts states the PII contract in its docstring: 'only first name + order timeline + reassurance leave this function. Never email, LTV, risk, or other orders.' There is no test asserting this. A future edit that spreads ...customer or ...order instead of hand-picking fields (an easy mistake given the file's careful field-by-field construction) would leak a real customer's email, LTV, or risk score to an unauthenticated public status page with nothing in npm run verify && npm test catching it.",
+  "evidence": "tideover/lib/status.ts:1-30, tideover/lib/status.ts:96-115",
+  "proposal": "Add lib/__tests__/status.test.ts: seed a customer/order with extra fields (email, ltv, riskScore) and assert getPublicStatus's return keys are exactly the PublicStatus shape (JSON round-trip key check) — a cheap structural test that fails loudly the moment a spread leaks a new field.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed. tideover/lib/status.ts:96-115 hand-picks fields; the PII contract (line 10-11 docstring) has zero test coverage — grep found no *status*test* file and no existing test imports getPublicStatus. Customer type (lib/types.ts:206,208,221) really carries email, ltvCents, riskScore, so a future refactor to `...customer` would leak them to the unauthenticated /status/[token] page silently (verify+test would stay green). Proposal is feasible and cheap: other tests (lib/__tests__/webhook-ingest.test.ts, sla.test.ts) already call getRepositories()/exercise route-core functions directly in node:test without touching Mongo, so a structural key-set assertion on getPublicStatus's return fits the existing seam and test style with no architecture change. Severity P2 is right, not P1: nothing currently leaks (the code today is correct field-by-field), this is a regression guardrail against a future edit, not a live hole hitting the pilot merchant this week. Effort S is accurate — one small test file, no production code changes needed."
+  }
+ },
+ {
+  "area": "security",
+  "title": "lib/session.ts — the sole operator-cookie auth gate — has zero unit test",
+  "problem": "middleware.ts's entire operator authentication (every /app and session-gated /api route once DEMO_MODE=false) rests on verifySessionValue/createSessionValue. No test exercises expiry-boundary behavior, a malformed value (missing dot, non-numeric expiry), a tampered signature, or the missing-AUTH_SECRET path (should return false, not throw, since it's called on every gated request). This is pure, dependency-free logic (Web Crypto only) trivial to test, currently shipping with no regression protection on the pilot's only auth mechanism.",
+  "evidence": "tideover/lib/session.ts:36-54, tideover/middleware.ts:3,14-18",
+  "proposal": "Add lib/__tests__/session.test.ts: valid round-trip, expired-but-well-formed rejected, tampered signature rejected, malformed value (no dot / non-numeric) rejected, missing AUTH_SECRET returns false without throwing.",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified against tideover/lib/session.ts:36-54 and middleware.ts:14-18. Claim is accurate: verifySessionValue at line 46 returns false (not throw) when AUTH_SECRET unset, lines 47-51 reject malformed values (no dot, non-numeric expiry), line 52 rejects expired, line 53 does constant-time sig compare — all correct behavior, but zero test coverage exists (confirmed lib/__tests__/ has no session.test.ts, only 19 unrelated test files). This is the sole gate for every /app route and most session-gated APIs per middleware.ts's matcher. Adding a dependency-free unit test file is low-risk: doesn't touch the repository seam, hot-file serialization list, or proof-only doctrine, and can only add to `npm test` coverage. Severity P2 is right, not P1: current code is correct today (no live security hole or data loss), this is a regression-protection gap on critical auth logic rather than an active defect — appropriate for a solo-founder pilot to fix soon but not a stop-ship item."
+  }
+ },
+ {
+  "area": "arch",
+  "title": "Security-critical logic inline in route.ts files is structurally untestable by the current harness",
+  "problem": "The test script only globs lib/**/__tests__/*.test.ts, so any logic inside app/api/**/route.ts is invisible to the suite no matter how important. lib/ingest-route.ts and lib/inbound-route.ts were explicitly pulled out into lib/ so they'd be 'unit-testable without the Next runtime' — but two other security-critical pieces were not: login/route.ts's sanitizeNext/sameOriginNext (the open-redirect defense on the one public auth entry point) and cron/sweep-outcomes's bearerMatches/cronAuthorized (the fail-closed-in-prod bearer-secret check). Both are pure functions with no Next dependency, yet neither has run against a single test case.",
+  "evidence": "tideover/app/api/login/route.ts:15-39, tideover/app/api/cron/sweep-outcomes/route.ts:32-55, tideover/lib/ingest-route.ts:9-11",
+  "proposal": "Move sanitizeNext/sameOriginNext and bearerMatches/cronAuthorized into lib/ modules following the ingest-route.ts/inbound-route.ts pattern, then add direct unit tests: open-redirect payloads (//evil.com, backslash tricks, control chars) for login; prod-fail-closed-when-CRON_SECRET-unset and timing-safe compare across mismatched lengths for cron.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified both files match the finding exactly. sanitizeNext/sameOriginNext (login/route.ts:15-39) and bearerMatches/cronAuthorized (cron/sweep-outcomes/route.ts:32-55) are pure, Next-independent functions with zero Next.js API dependency — same shape as lib/ingest-route.ts/inbound-route.ts which were already extracted for exactly this reason. Confirmed via grep that no *.test.ts anywhere references sanitizeNext/bearerMatches/etc., and the test script only globs lib/**/__tests__/*.test.ts (package.json), so this logic genuinely has zero coverage under `npm run verify`/`npm test`. Proposal (extract to lib/, add unit tests) is low-risk, matches existing repo convention, doesn't touch the repository seam or proof-only doctrine, and is pure refactor+tests so it can't regress the verify gate. Severity P2 is right, not P1: both functions currently look correct by inspection (open-redirect guard covers //, backslash, control chars, and re-validates via URL origin; cron auth fails closed in prod via unset-secret check + timingSafeEqual with pre-length-check to avoid the throw-on-mismatched-length gotcha) — so this is a coverage/regression-risk gap, not a live vulnerability a pilot merchant hits this week. Appropriately P2/M."
+  }
+ },
+ {
+  "area": "tests",
+  "title": "All 55 golden fixtures are reviewed:false — the eval harness's correctness claim is regression-only, not human-verified",
+  "problem": "evals/golden/goldens.json has 55/55 fixtures with reviewed:false. golden.mjs's own header and inline comment state this is intentional — the goldens are a tripwire against unintended drift, not proof the drafted copy is correct, and the harness deliberately never fails the build on unreviewed status (just a console.log). For a merchant going live this week, the reassurance engine's exact customer-facing wording — including the chargeback-threat / escalated-priority / gift-eligible branches — has never been confirmed correct by a human, only confirmed 'unchanged.'",
+  "evidence": "tideover/evals/golden/goldens.json, tideover/evals/golden.mjs:9-16,84-89",
+  "proposal": "Before the pilot's first real send, human-review at minimum the goldens covering chargeback-threat, escalated priority, and gift-eligible paths (highest customer-harm branches) and flip them to reviewed:true; make the pending count surface as a CI warning annotation rather than a console.log easy to miss in a green run.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Verified directly: evals/golden.mjs:9-16 explicitly documents goldens as a regression-only tripwire, never a correctness proof, and its review-status check (lines 84-89) is a console.log that never fails the run — confirmed all 55/55 fixtures have reviewed:false via direct JSON check. This is not a code defect the auditor missed a guard for; it's accurately described, intentional-by-design behavior. It's also already a known, tracked task: mission-control/NOTES-FOR-CLAUDE.md explicitly lists 'D9 (55 goldens → reviewed:true)' as a founder sign-off item recommended before the pilot outreach build. So the finding is real and correctly characterized, but severity P2 (not P1) is right: it's a human-review/process gap on customer-facing copy, not a crash/security hole/data-loss/silently-wrong-code bug, and it's already surfaced on the board awaiting Dylan's ~30min review pass. The proposal (prioritize chargeback/priority/gift branches, promote the console.log to a CI warning annotation) is low-risk and doesn't touch the repository seam, proof-only doctrine, or hot-file serialization list."
+  }
+ },
+ {
+  "area": "scale",
+  "title": "Every inbound ingest reads the merchant's entire outcome-event ledger",
+  "problem": "ingestTicket → recordReplyAttribution calls outcomeEvents.listByMerchant on EVERY inbound (webhook, widget, CSV), pulling the merchant's whole append-only ledger (reply_sent + customer_replied + reopened + csat + resolved_quiet grow forever) and filtering by orderId in JS. There is no orderId index — the Mongo compound index is {merchantId,variantId,kind,observedAt} — so this is an unbounded scan on the webhook fast-ACK path. As the ledger reaches tens of thousands of rows it slows every ingest and eventually breaches the vendor's ~5s webhook timeout.",
+  "evidence": "tideover/lib/service.ts:324-336,485, tideover/lib/repositories/mongo/client.ts:51-53",
+  "proposal": "Add outcomeEvents.listByOrder backed by a {orderId, observedAt} index and query only this order's events in recordReplyAttribution (it only ever needs one order's reply_sent/reopened rows). Same for the reopen-dedupe check.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed accurate against code: service.ts recordReplyAttribution (line 326) calls outcomeEvents.listByMerchant then filters by orderId in JS (330-336, 362-364), invoked from ingestTicket on every webhook/widget/CSV inbound (line 485). No listByOrder exists on OutcomeEventRepository (types.ts:122); the only Mongo index on outcome_events is {merchantId,variantId,kind,observedAt} (client.ts:51-53) -- no orderId -- so this is genuinely a full per-merchant scan on every ingest. The proposed fix (add listByOrder backed by an {orderId,observedAt} index, implemented in both json and mongo drivers) is additive, doesn't touch the proof-only doctrine, and is plausible at M effort. Severity downgraded to P2: the stated P1 bar is security hole / data loss / pilot hits it week one / silently wrong results. Nothing here is lost or wrong -- it's a latency/scale defect that only bites once a merchant's append-only ledger reaches tens of thousands of rows, which a solo founder's week-one pilot merchant (low order volume) will not approach. Worth fixing before scale, but not urgent for this week's go-live."
+  }
+ },
+ {
+  "area": "ops",
+  "title": "Quiet-resolution cron is O(events²) per merchant and permanently starves merchants after the first slow one",
+  "problem": "sweepResolvedQuiet nests events.some(...) inside for(reply of events) — quadratic in a merchant's full event history — and the route loads the entire ledger per merchant and processes merchants sequentially in ONE request. With months of events the pass exceeds Vercel's max function duration; because merchants are iterated in fixed order, every daily run dies at the same merchant and those after it are never swept, so their quiet-resolution stats silently freeze. Idempotency preserves correctness but not liveness.",
+  "evidence": "tideover/lib/outcome-sweep.ts:60-77, tideover/app/api/cron/sweep-outcomes/route.ts:67-68",
+  "proposal": "Precompute an orderId→latest-comeback map once (O(E)) instead of events.some per reply, and either shard the cron per-merchant (Vercel cron can hit a per-merchant param) or give each merchant a bounded time budget so a slow one can't starve the rest.",
+  "severity": "P2",
+  "effort": "M",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed as described. lib/outcome-sweep.ts:71-76 nests events.some(...) inside the reply-events for-loop — genuine O(events²) per merchant. route.ts:64-87 awaits repos.outcomeEvents.listByMerchant + the sweep sequentially per merchant in one request, no maxDuration override in vercel.json/route.ts and no per-merchant sharding, so a slow merchant's pass can exhaust the function's time budget. Verified merchant order is NOT incidental: lib/repositories/mongo/repositories.ts:47-52 explicitly sorts by createdAt then id for deterministic order (JSON driver is stable file order too), so the same merchant would die at the same point on every run — the route doc's claim that \"a missed run self-heals on the next\" (route.ts:23-25) is true only for the merchant that times out, not for the ones after it in fixed order, which never get swept at all. That's a real, silent bug in the code's own reasoning, not an auditor error. Severity: P2 is right, not P1 — this pilot launches with a single merchant this week, and the blowup needs 'months of events' per the auditor's own evidence; no data loss or wrong-result risk (idempotent, correctness preserved), only a liveness/stats-freshness risk that only bites once there are multiple merchants with real history. Fix (precompute orderId→latest-comeback map + per-merchant sharding or time budget) is straightforward and doesn't touch the repository seam or proof-only doctrine — feasible without breaking verify/test gate."
+  }
+ },
+ {
+  "area": "env",
+  "title": "DATA_DRIVER defaults to the ephemeral in-memory JSON store — wrong fail-safe for prod",
+  "problem": "getRepositories() returns the JSON in-memory driver for ANY DATA_DRIVER value other than exactly 'mongo' (unset, 'json', 'mock', or a typo). In production that means writes land in a per-lambda in-memory store that resets on cold start and diverges across concurrent instances — silent data loss and split-brain with no error surfaced. For a paying pilot this is catastrophic and invisible.",
+  "evidence": "tideover/lib/repositories/index.ts:16-24",
+  "proposal": "Fail closed: when DEMO_MODE==='false' (or NODE_ENV==='production') and DATA_DRIVER!=='mongo', throw at startup instead of silently using json. (Whether prod actually sets DATA_DRIVER=mongo needs Dylan to confirm in Vercel, but the default should not be the ephemeral driver.)",
+  "severity": "P2",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P2",
+   "note": "Confirmed as described. tideover/lib/repositories/index.ts:16-24 defaults to jsonRepositories for any DATA_DRIVER value except exactly \"mongo\" — unset, \"json\", \"mock\", or a typo all silently fall through. RELEASE.md:41-46 documents that prod is *supposed* to set DATA_DRIVER=mongo, but this is a manual Vercel dashboard step with zero code-level enforcement. Checked for guards elsewhere: lib/health.ts:23 reads the same env var and exposes it via /api/health but doesn't fail on json-in-prod; scripts/smoke.mjs (the deploy-gate smoke test) never calls /api/health or asserts driver===\"mongo\" — it only checks page/API 200s and the proof-only copy tripwire. So a forgotten or mistyped DATA_DRIVER in Vercel would deploy clean, pass smoke, and silently serve every pilot merchant from an ephemeral per-lambda in-memory store (data loss + split-brain across instances), with no error anywhere. Proposal (throw at startup when DEMO_MODE==='false' or NODE_ENV==='production' and driver!=='mongo') is feasible, cheap (effort S), doesn't touch the mongo driver or the JSON driver internals, and doesn't affect DEMO_MODE=true / dev / test paths since NODE_ENV!=='production' there — verify+test gate unaffected. Auditor's own P2 rating is reasonable: this is a one-time deploy-config misconfiguration risk (not a bug hit by normal pilot usage) and Dylan already documents the correct value in RELEASE.md, but it's a real single-point-of-failure with no fail-safe or smoke-test coverage, worth fixing before/soon after go-live. Not bumping to P1 since it requires an env-config mistake to trigger, not a code path a compliant deploy would ever hit — but flagging that adding a smoke-test assertion on /api/health driver would close this cheaply alongside the proposed throw."
+  }
+ },
+ {
+  "area": "arch",
+  "title": "lib/service.ts is a 938-line, 15-function god module under every hot file but not itself in the serialization list",
+  "problem": "service.ts orchestrates ingest, drafting/alternates, approve-send, variant promotion, queue, dashboard, script performance, and setup — every designated hot file (inbox page, DraftRail, ApprovalBar, app dashboard page) funnels through this single module. The 'one in-flight change at a time' discipline names the UI hot files but not the shared module they all call, so two agents each told to touch a different named hot file can still collide by editing overlapping functions in service.ts with no serialization rule catching it.",
+  "evidence": "tideover/lib/service.ts (938 lines; 15 exported functions spanning ingestTicket/regenerateDraft/approveSend/promoteVariant/getQueue/getDashboard/computeScriptPerformance/getSetupChecklist), all five named hot files import from @/lib/service",
+  "proposal": "Either add lib/service.ts to the explicit hot-file serialization list in CONTRIBUTING.md, or split it along its seams (ingest, send/approve, dashboard/queue read-models, script performance) so unrelated concurrent changes don't share one file.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "medium",
+   "severity": "P3",
+   "note": "Core fact checks out: tideover/lib/service.ts is 938 lines with ~13 exported functions (ingestTicket, regenerateDraft, approveSend, promoteVariant, getQueue, getDashboard, computeScriptPerformance, getSetupChecklist, etc.) and CONTRIBUTING.md:38's hot-file serialization list (inbox/page.tsx, DraftRail.tsx, ApprovalBar.tsx, app/page.tsx, lib/engines/reassurance.ts) indeed omits it. But the evidence overstates connectivity: only 2 of the 5 named hot files (app/app/inbox/page.tsx, app/app/page.tsx) actually `import ... from \"@/lib/service\"` directly — ApprovalBar.tsx, DraftRail.tsx, and reassurance.ts have no direct import. So \"every designated hot file... funnels through this single module\" is not literally true. More importantly, CLAUDE.md Part 2 already has a general rule — \"Never parallelize two agents that write to overlapping files\" — which independently covers the exact collision scenario the finding worries about, regardless of whether the file is on the named hot-file list. The named list is a belt-and-suspenders callout for particularly load-bearing UI/engine surfaces, not the sole safeguard against concurrent edits. Given a solo founder (rarely running two agents destructively editing the same backend module in parallel) and an existing general anti-collision rule already mitigating the risk, this is a legitimate but minor documentation/hygiene gap (worth adding service.ts to the explicit list or splitting it, effort S as proposed) rather than a P2 risk that bites in week-one pilot. Downgrading to P3."
+  }
+ },
+ {
+  "area": "security",
+  "title": "verifyStatusToken (public status-page auth) has no direct unit test and no driver-parity test",
+  "problem": "lib/ids.ts's verifyStatusToken gates /status/[token], /api/status/[token], /api/csat/[token], and /api/widget-submit, and is called independently inside both json/repositories.ts:86 and mongo/repositories.ts:122 for order lookup. No test calls verifyStatusToken directly with a tampered signature, a malformed token (missing dot, empty raw/mac), or checks that both drivers' findByToken agree on the same predicate — the README flags 'the drivers must not diverge' as a live constraint with nothing enforcing it. seed-check re-implements its own sign() copy, never the real function. A bug or future driver divergence would misroute or leak one customer's order-status page to a different token holder.",
+  "evidence": "tideover/lib/ids.ts:22-56, tideover/scripts/seed-check.mjs:23-24, tideover/lib/repositories/json/repositories.ts:86, tideover/lib/repositories/mongo/repositories.ts:122",
+  "proposal": "Add lib/__tests__/ids.test.ts: valid round-trip, tampered signature rejected, malformed token (no dot / empty parts) rejected, and a parametrized test that seeds one order then asserts json and mongo findByToken agree given the same verifyStatusToken output. Cheap — pure crypto, no I/O for the token half.",
+  "severity": "P3",
+  "effort": "S",
+  "sources": 1,
+  "track": "eng",
+  "verdict": {
+   "real": true,
+   "confidence": "high",
+   "severity": "P3",
+   "note": "Facts check out: verifyStatusToken (lib/ids.ts:51-56) is called independently by json/repositories.ts:86 and mongo/repositories.ts:122, and seed-check.mjs:183 reimplements sign() rather than calling verifyStatusToken directly, so there's genuinely no test exercising the real function or asserting driver parity. But the function itself is correct and trivial today (split on '.', empty-part guard, HMAC-SHA256 truncated compare) — this is a coverage gap, not an active bug, security hole, or data-loss risk. No pilot merchant hits this in week one absent a code change; it only bites if someone edits ids.ts or one driver's findByToken later without the other. Downgrading auditor's P1 to P3: worth adding (proposal is cheap, pure-crypto, no I/O, doesn't touch hot files or the seam) but not urgent/blocking for this week's launch."
+  }
+ }
+]

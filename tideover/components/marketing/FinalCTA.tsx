@@ -4,14 +4,20 @@ import { CalButton } from "@/components/booking/CalButton";
 /**
  * Final CTA — a dark, centered close. The tide-comes-in headline, a calm
  * reassurance subhead, the primary booking CTA, and three supporting points.
+ *
+ * The supporting points are a prop. The DEFAULT set is trial-true and safe on
+ * every public surface (Home renders the paid #pricing section on the same
+ * page, so the default must never contradict the tiers). The founding-pilot
+ * bullet is NOT in the defaults — pass it explicitly, and only on allowed
+ * lead-magnet surfaces (the /vsl pages), per the pricing doctrine.
  */
-const POINTS: readonly string[] = [
+const DEFAULT_POINTS: readonly string[] = [
   "No new helpdesk to install",
-  "Free founding-partner pilot",
+  "14-day free trial, no card required",
   "Talk to the operator, not a queue",
 ];
 
-export function FinalCTA() {
+export function FinalCTA({ points = DEFAULT_POINTS }: { points?: readonly string[] }) {
   return (
     <section className="section section-dark">
       <div className="wrap max-w-[820px] text-center">
@@ -30,7 +36,7 @@ export function FinalCTA() {
         <Reveal index={2}>
           <p className="mx-auto mb-8 max-w-[560px] text-[17px] leading-relaxed" style={{ color: "#BDD4D2" }}>
             Start with a free 15-minute presale-support teardown &mdash; a real operator looking at your real support, no
-            pitch. We&rsquo;ll tell you honestly whether we can help.
+            pitch. We&rsquo;ll tell you straight whether we can help.
           </p>
         </Reveal>
 
@@ -42,7 +48,7 @@ export function FinalCTA() {
 
         <Reveal index={4}>
           <div className="mt-8 flex flex-wrap justify-center gap-x-7 gap-y-2.5 text-[14px]" style={{ color: "#A9C5C2" }}>
-            {POINTS.map((p) => (
+            {points.map((p) => (
               <span key={p} className="inline-flex items-center gap-2">
                 <span style={{ color: "#E9B486" }}>&bull;</span>
                 {p}

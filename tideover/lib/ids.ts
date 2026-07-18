@@ -13,7 +13,21 @@ const ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyz";
 const nano = customAlphabet(ALPHABET, 12);
 const nanoToken = customAlphabet(ALPHABET, 24);
 
-export type IdPrefix = "mch" | "ord" | "cus" | "tkt" | "gft" | "sig" | "drf";
+export type IdPrefix =
+  | "mch"
+  | "ord"
+  | "cus"
+  | "tkt"
+  | "gft"
+  | "sig"
+  | "drf"
+  | "sv"
+  | "var"
+  | "oe"
+  | "upd"
+  | "ld"
+  /** production-status-board entry (append-only history). */
+  | "pst";
 
 export function newId(prefix: IdPrefix): string {
   return `${prefix}_${nano()}`;
@@ -34,6 +48,17 @@ function sign(raw: string): string {
 export function newStatusToken(): string {
   const raw = nanoToken();
   return `${raw}.${sign(raw)}`;
+}
+
+/**
+ * A merchant inbound token (ADR-0008): the unguessable local-part of
+ * `<inboxToken>@in.tideover.app`. High-entropy random (24 base36 chars ≈ 124
+ * bits) so the address can't be enumerated; a leak exposes only one merchant
+ * and is revoked by rotating the token. Seeded merchants derive theirs
+ * deterministically in gen-seed.mjs; new merchants mint one here at onboarding.
+ */
+export function newInboxToken(): string {
+  return nanoToken();
 }
 
 /** Verify a token's signature. Returns the lookup key or null if invalid. */

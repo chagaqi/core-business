@@ -1,12 +1,13 @@
 import { clsx } from "clsx";
+import { readableAccent } from "@/lib/color";
 import type { OrderTimeline } from "@/lib/types";
 
 /**
  * The prominent, calm "where things stand" card. Shows timeline.confidenceBand
  * verbatim (already a band string like "ships in weeks 9–11" or an overdue
- * message). If overdue, we lean into the honest "running a little longer than
+ * message). If overdue, we lean into the "running a little longer than
  * planned" tone instead of a chipper one. Always ends with a proof note so the
- * customer understands this is an honest window, never a hard date.
+ * customer understands this is a projected window, never a hard date.
  */
 export function ConfidenceBand({
   timeline,
@@ -18,6 +19,9 @@ export function ConfidenceBand({
   compact?: boolean;
 }) {
   const overdue = timeline.overdue;
+  // Contrast-safe accent for the thin edge + kicker text (both sit on the paper
+  // card over the sand page). Large fills keep the raw brand color elsewhere.
+  const edge = accent ? readableAccent(accent) : undefined;
 
   return (
     <div
@@ -30,12 +34,12 @@ export function ConfidenceBand({
       <span
         aria-hidden
         className="absolute inset-y-0 left-0 w-1.5"
-        style={{ background: overdue ? "var(--terracotta)" : accent ?? "var(--teal)" }}
+        style={{ background: overdue ? "var(--terracotta)" : edge ?? "var(--teal)" }}
       />
 
       <div className="pl-2.5">
-        <p className="kicker mb-2" style={accent && !overdue ? { color: accent } : undefined}>
-          {overdue ? "An honest update" : "Where your order is"}
+        <p className="kicker mb-2" style={edge && !overdue ? { color: edge } : undefined}>
+          {overdue ? "A straight update" : "Where your order is"}
         </p>
 
         {overdue ? (
@@ -65,12 +69,12 @@ export function ConfidenceBand({
                 strokeLinejoin="round"
               />
             </svg>
-            An honest window based on current production pace &mdash; not a hard date. We&rsquo;ll
+            A window based on current production pace &mdash; not a hard date. We&rsquo;ll
             update it the moment it moves.
           </p>
         ) : (
           <p className="mt-1.5 text-[12px] leading-snug text-ink-mute">
-            An honest window based on current pace &mdash; not a hard date.
+            A window based on current pace &mdash; not a hard date.
           </p>
         )}
       </div>

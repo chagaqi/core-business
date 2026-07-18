@@ -1,0 +1,125 @@
+# Tideover — Integrations List & Testing Guide
+
+**Date:** 2026-07-06 · **Author:** Fable (from a verified 49-agent audit that read each API's official docs + checked our code) · **For Dylan** (you asked for the list to make trial accounts + the easiest way to test each). **Raw data:** `docs/audit-2026-07-06/integrations-research.json`.
+
+## The three decisions this surfaces (Fable recommendations)
+
+1. **Which pilot first? (the big fork.)** A **Kickstarter/BackerKit pilot needs ZERO new API builds** — the CSV rail already ships and is the only possible data path for crowdfunding (there's no KS/BackerKit "API," just a human clicking Export). A **Shopify pilot needs the Shopify Admin API built** (medium effort) because Shopify is the *only* real source of LTV + live order/fulfillment data. **My lean: run the Kickstarter path first** — it's buildable now (fix the CSV date bug + LTV honesty) with no integration dependency, and it's your stated ICP anyway. Shopify is the fast-follow.
+2. **Drop Tidio.** Its API + webhooks are paywalled behind the **~$749/mo Plus tier** — more than your entire budget and absurd for a small-merchant tool. There's no self-serve way to even test it. Recommend not building the Tidio adapter at all.
+3. **Shopify = a positioning reversal.** Wiring Shopify contradicts the current marketing line "no OAuth, no passwords, no Shopify admin" (`FAQ.tsx:47`). That's a copy/positioning call for you, not just an engineering ticket — decide before we build it.
+
+## Easiest way to test (short version)
+
+For most of these, **a free dev store / sandbox / hand-built sample file beats a trial account** — you often don't need to sign up for anything:
+- **Shopify** → free **Development Store** (no expiry, place fake-paid orders via Bogus Gateway that fire *real* webhooks). Best test env of all.
+- **Zendesk** → the **14-day trial IS the sandbox** (no card); recommended first helpdesk — it's the best-wired in our code.
+- **Intercom** → free **dev workspace** (unlimited, forever) beats a trial.
+- **Gorgias** → 7-day trial (no card).
+- **Kickstarter/BackerKit** → **no account needed** — hand-build a sample CSV with the documented headers; it exercises the exact same parser.
+- **Tidio** → neither trial nor free plan unlocks the API — skip it.
+
+## One truth that repeats
+
+**No helpdesk (Zendesk/Gorgias/Intercom/Tidio) ever gives us LTV, order value, or fulfillment status** — they carry the conversation + customer identity only. Commerce data comes from Shopify (Shopify merchants) or the CSV (crowdfunding merchants), nowhere else.
+
+## Known blocker to fix before any live helpdesk launch
+
+The **Gorgias HMAC gap**: Gorgias HTTP Integrations can only attach a static header, never a per-request signature over their own body — so a live Gorgias merchant **cannot** pass Tideover's webhook signature gate once `DEMO_MODE=false`. Fix is either a static-shared-secret auth path for templated channels (touches the ingest hot path) or a thin re-signing relay in front. Same class of issue likely affects other templated helpdesks — resolve the auth model before promising any of them as "live."
+
+The full table + per-integration setup-and-verify checklists follow.
+
+---
+
+# Tideover Integrations List & Testing Guide
+
+Ordered by priority for a real pilot. Shopify + one helpdesk lead; the CSV rail is last in the table but is #1 for a crowdfunding pilot (see the pilot sets at the bottom).
+
+| # | Integration | Category | What it gives Tideover | State in our code | Auth Dylan needs | Free test account | Cheapest way to test | Effort |
+|---|---|---|---|---|---|---|---|---|
+| 1 | **Shopify Admin API** (GraphQL) | E-commerce | The only real source of our two hardcoded fields: per-customer LTV (`Customer.amountSpent` → `ltvCents`, `lib/types.ts:208`) and order value + fulfillment/financial status (`Order.totalPriceSet` / `displayFulfillmentStatus` → `lib/types.ts:122,126`). Live `orders/*` webhooks replace CSV import for Shopify merchants. | **Not built.** Zero Shopify wiring anywhere: no `shopify` in `Channel` (`lib/types.ts:16`), no OAuth route, no order/customer ingest. Today `ltvCents` is seed / a flat `60000` default (`lib/onboarding.ts:112`) / one CSV row (`lib/import.ts:69`). | **Custom app static Admin token** scoped `read_customers` + `read_orders` (+`read_fulfillments`). No OAuth needed for a single store. (Public OAuth app only if a self-serve "Connect Shopify" button is added later.) | **Free.** Partner account → free Development Store (unlimited, no expiry, Bogus Gateway for fake paid orders). | Dev store → install custom app → hit GraphQL directly: `{ customers(first:10){ nodes { amountSpent{amount currencyCode} numberOfOrders } } }`. Proves LTV data exists with **no webhook infra**. | **M** |
+| 2 | **Zendesk** | Helpdesk | Real-time ticket ingest (subject, body, requester email, tags, ID) via Trigger → Webhook. **No** LTV / order / commerce data — pure conversation surface. | **Stubbed but architecturally real.** Copy-paste setup + body template already generated (`lib/ingest-templates.ts:74-97`); channel allowlisted (`lib/ingest-route.ts:42`). Never tested against a live trigger; `order_ref` placeholder (`:86`) is an unvalidated guess. | **None from Dylan.** Merchant self-configures Trigger + Webhook → `/api/ingest/zendesk/{token}`, optionally with Tideover's HMAC. API token only if we later pull `user_fields`. | **14-day trial**, no credit card, full Suite Pro. The trial **is** the sandbox. | Trial → Webhooks → built-in "Test webhook" fires synthetic JSON to an ngrok tunnel → `/api/ingest`. Then a real Trigger "Tags contains `presale` → Notify webhook" for the true tag→push path. | **S** |
+| 3 | **Gorgias** | Helpdesk | Ticket text only (subject, body, tags, email, optional `order_ref`) via an outbound HTTP Integration. **No** LTV — the Gorgias Customer object has no spend field. | **Stubbed.** `GorgiasAdapter.listTickets`/`authCallback` throw (`:29-31,73-75`); `verifyWebhook` is wired only to the legacy `410 gone` route (`app/api/ticket-ingest/route.ts:80`), not the live ingest path. | **Merchant self-serves** a REST API key (Settings → Account → REST API) for pull; HTTP Integration attaches a **static header** for push. No OAuth for single-merchant. | **7-day trial**, no credit card. (Persistent Sandbox needs a submitted draft app — not worth it here.) | Trial → HTTP Integration (trigger "Ticket created") → point at webhook.site to see the rendered payload → then at `/api/ingest` in demo mode (unsigned OK, `lib/ingest-route.ts:71-73`). | **M** |
+| 4 | **Intercom** | Helpdesk | Ticket ingest via conversation webhooks. LTV **only** if the merchant separately runs Intercom's own Shopify app (writes `custom_attributes`) **and** we build a net-new Contacts fetch we don't have today. | **Half-real.** `verifyWebhook` (X-Hub-Signature HMAC) and `normalizeInbound` are correct/working (`IntercomAdapter.ts:33-63`); `listTickets`/`sendReply`/`authCallback` throw (`:24-31,65-67`). Onboarding only stores the label. | **Personal Access Token** (Developer Hub → Configure → Authentication) for testing; OAuth only for a public app. | **Free dev workspaces** — unlimited, no paid account needed (US-region only). | Dev workspace + app → Access Token → subscribe `conversation.user.created` → ngrok to ingest → confirm HMAC passes. Curl `POST /conversations/{id}/reply` to validate send separately. | **M** |
+| 5 | **Tidio** | Helpdesk | Ticket ingest only via webhook. **No** commerce/LTV object at all. | **Stubbed + partly wrong.** `listTickets`/`sendReply` throw; `verifyWebhook` string-compares `x-tidio-secret` (a **placeholder guess**, not Tidio's real scheme, `TidioAdapter.ts:48-52`); doc-comment about "project API tokens" is inaccurate. | **Client-Id / Client-Secret** header pair (Settings → Developer → OpenAPI). **Both API and Webhooks are gated to the Plus tier.** | **None self-serve.** Widget is free (50 convos/mo) but OpenAPI/Webhooks panels are invisible below Plus. | Free plan → real chat to confirm the JSON shape only. Cannot fire a real webhook without Plus (~**$749/mo**) or emailing sales for an eval credential. | **L** |
+| 6 | **BackerKit / Kickstarter CSV import** | Crowdfunding | email, firstName, customer group, order value (used **as** the `ltvCents` proxy), optional ETA. The **only** data path for a KS/BackerKit merchant — no Shopify involved. | **Wired.** `lib/csv.ts` parser + `lib/import.ts` `importBackerRows` (`:28-133`), unit-tested (`__tests__/csv.test.ts`, `import.test.ts`). | **None.** Merchant downloads the CSV from their own dashboard; it's parsed client-side (`lib/csv.ts`) and only mapped rows POST to `/api/import`. Matches ADR-0010 "Rung 0: no OAuth, no Shopify admin." | **No sandbox exists** (KS needs a funded, completed project; BackerKit a paid campaign). Build synthetic CSVs instead. | Hand-build two sample CSVs with the documented headers (they already match the alias tables at `lib/csv.ts:123-162`) → run through the parser + `ImportPanel` → `/api/import`. | **S** |
+
+**One truth that repeats down the whole table:** no helpdesk (Zendesk, Gorgias, Intercom, Tidio) ever supplies LTV, order value, or fulfillment status — they carry conversation + identity only. Real LTV/order data for a Shopify merchant comes from **Shopify only**; for a crowdfunding merchant it comes from the **CSV only**, and even there it's a single pledge, not a true lifetime sum (see the CSV gaps below).
+
+---
+
+## Per-integration set-up-and-verify checklists
+
+### 1. Shopify Admin API (do this first for any Shopify pilot)
+1. Create a **free Shopify Partner account** (partners.shopify.com).
+2. From the Partner dashboard, create a **free Development Store** (no expiry, cannot take real money).
+3. Create a **custom app** for that store (via Partner/Dev Dashboard or Shopify CLI — as of Jan 2026 the plain Settings-UI path for new custom apps is gone). Grant scopes `read_customers`, `read_orders`, `read_fulfillments`. Install → copy the static **Admin API access token**.
+4. **Verify LTV exists (no webhooks needed):** call the GraphQL Admin endpoint with the token: `{ customers(first:10){ nodes { amountSpent{amount currencyCode} numberOfOrders } } }`. Confirm real `amount` values come back.
+5. **Verify order flow:** place a fake-money order on the dev store via **Bogus Gateway** checkout — this fires a genuine `orders/create` with a valid HMAC. (The admin's per-webhook "Send test notification" button, or `shopify webhook trigger --topic orders/create`, also work, but the CLI trigger's payload has **no valid HMAC** so it won't exercise signature-checking code.)
+6. **Product decision before building:** wiring this reverses the marketing promise "no OAuth, no passwords, no Shopify admin" (`components/marketing/FAQ.tsx:47-48`). That's a Fable-level positioning call, not just an engineering ticket.
+
+### 2. Zendesk (recommended first helpdesk — lowest effort, best-wired)
+1. Sign up for the **14-day trial** (zendesk.com/register, no card). This single instance is your full test environment.
+2. Create a test ticket; tag it `presale`.
+3. Admin Center → Apps and integrations → **Webhooks** → new webhook, `request_format: json`, endpoint = ngrok tunnel to a local Tideover `npm run dev` (or a request bin).
+4. Use the webhook's **"Test webhook"** action to fire a synthetic payload — cheapest round trip, confirms the JSON shape `zendeskTrigger()` expects.
+5. Create a real **Trigger** (Objects and rules → Triggers): condition "Tags contains `presale`" → action "Notify active webhook." Fire it and confirm the ticket lands in Tideover.
+6. Adapt the `order_ref` custom-field placeholder (`lib/ingest-templates.ts:86`) to the merchant's own ticket form — the shipped value is a guess.
+
+### 3. Gorgias
+1. Start the **7-day trial** (gorgias.com/signup, no card).
+2. Settings → Account → **HTTP integration** → Add. Trigger "Ticket created," method POST, JSON body templated to Tideover's canonical shape (`external_id: {{ticket.id}}`, `customer_email: {{ticket.customer.email}}`, `subject: {{ticket.subject}}`, `body: {{ticket.last_message.body_text}}`, `tags: {{ticket.tags}}`).
+3. Point the URL at **webhook.site** first to see the real rendered payload.
+4. Repoint at `/api/ingest/[channel]/[token]` running with `DEMO_MODE` not `false` (accepts unsigned traffic, `lib/ingest-route.ts:71-73`), then email the trial helpdesk's support address to create a real ticket and fire the trigger.
+5. **Known gap to resolve before live launch:** Gorgias HTTP Integrations can only attach a **static header or OAuth2 bearer**, never a per-request HMAC over their own body — so a live Gorgias merchant **cannot** satisfy Tideover's signature gate (`lib/ingest-route.ts:73-81`) once `DEMO_MODE=false`. Fix is either (a) a Fable decision to add a static-shared-secret auth path for templated channels (touches a high-risk ingest file), or (b) a thin re-signing relay (e.g. a Cloudflare Worker) in front of Tideover.
+
+### 4. Intercom
+1. Create a **free development workspace** + app in the Developer Hub (unlimited, no paid account; US-region only).
+2. Configure → Authentication → generate a **Personal Access Token**.
+3. Subscribe webhook topics `conversation.user.created` / `conversation.user.replied`, pointed at an ngrok tunnel to Tideover's ingest route.
+4. Fire a test conversation from the Messenger (or `POST /conversations`); confirm `verifyWebhook`'s HMAC passes and `normalizeInbound` yields a sane ticket (both already correct, `IntercomAdapter.ts:33-63`).
+5. Validate send separately: curl `POST /conversations/{id}/reply` with the token — `sendReply` is still a stub and demo sends are forced through `MockAdapter` (`registry.ts:31-35`).
+6. LTV is a separate, optional, larger lift: needs the merchant to already run **Intercom's own Shopify app** *and* a net-new Contacts fetch. Dead end for crowdfunding merchants.
+
+### 5. Tidio (deprioritize — poor real target)
+1. Sign up for the **Free plan** and install the widget on a throwaway site.
+2. Generate a real chat manually to confirm the conversation/contact JSON shape (validates `normalizeInbound` assumptions only).
+3. **Stop here on free** — Settings → Developer → OpenAPI/Webhooks is locked below **Plus (~$749/mo)**, so there is no self-serve way to fire a real webhook or call the API. Only escalate by emailing Tidio sales for a time-boxed eval credential.
+4. Fix the inaccurate auth doc-comment in `TidioAdapter.ts` (real auth is a Client-Id/Client-Secret pair, not "project API tokens") even before any build-out.
+5. **Flag for Dylan:** the $749/mo API paywall exceeds his entire $750 budget and is wildly out of line for Tideover's small-merchant ICP. Recommend not building this adapter for the pilot.
+
+### 6. BackerKit / Kickstarter CSV import
+1. **No trial account needed and none usefully exists.** Hand-build two synthetic CSVs using the documented headers:
+   - Kickstarter: `Backer Number, Backer Name, Email, Pledge Amount, Reward Title, Estimated Delivery`
+   - BackerKit: `Backer ID, Email, Pledge Level, Pledge Total, Estimated Delivery, BackerKit Order ID`
+   These already match the alias/signature tables (`lib/csv.ts:123-162`), so a synthetic file is functionally identical to a real export.
+2. Run them through the parser (`parseCsv → detectFormat → mapRows`), already unit-tested.
+3. Walk the wizard's "Import your backer list" step (`app/onboarding/ImportPanel.tsx`) → previews mapped rows → POSTs to `/api/import` (zod-validated, capped at 2000 rows, `lib/import.ts:20`).
+4. Confirm N customers / N orders are created via `importBackerRows` (`lib/import.ts:28-133`). Worth checking in a sample CSV fixture so this becomes a repeatable regression test.
+5. **Two honesty gaps to fix (small, scoped, no architecture change):**
+   - `ltvCents` is set **once**, at first customer creation, from a single row's amount, and is **never re-summed** on a later pledge/re-import (`lib/import.ts:63-77` only sets it inside the `if (!customer)` branch). So it's "pledge value," not lifetime value. Consider accumulating `ltvCents` across a customer's orders, and/or relabeling the field "pledge value" in merchant-facing copy for KS/BackerKit sources.
+   - When a row has no parseable money, Tideover fabricates a **$50 floor** (`DEFAULT_ORDER_VALUE_CENTS = 5000`, applied at `lib/import.ts:69,101`) that then feeds the gift engine's `highValue` gate (`lib/engines/gift.ts:31`). Intentional but synthetic — surface it honestly.
+
+---
+
+## Minimum viable set — the two pilots differ
+
+**First Shopify pilot (MVS = 2 builds):**
+- **Shopify Admin API** — the only real LTV + order-value + fulfillment-status source. Without it, the risk/gift engine scores on hardcoded `60000` / `50` defaults. This is **not built** (M effort) and carries a positioning reversal.
+- **One helpdesk for ticket ingest** — recommend **Zendesk** (S effort, best-wired, push model already matches). Brings the "where is my order?" tickets in.
+- Skip the CSV rail and skip Tidio.
+
+**First Kickstarter / BackerKit pilot (MVS = 0 API builds):**
+- **CSV import** — already **wired** and the *only* possible data path (no Shopify order API exists for either platform; the "API" is a human clicking Export). This is the whole commerce-data story for a crowdfunding merchant.
+- **One helpdesk for tickets** (Zendesk cheapest) — or, given ADR-0010's forward-only-email stance, tickets can arrive by forwarded email without any helpdesk API.
+- **No Shopify.** Accept up front that "LTV" is single-pledge value plus a $50 floor, and relabel/fix per the CSV gaps above.
+
+**The core divergence:** the Shopify pilot's realness depends on a net-new integration that doesn't exist yet (and contradicts current marketing copy). The Kickstarter pilot needs **zero new API work** — its data path already ships — but is honest only if the pledge-value/LTV framing and the $50 floor are corrected first.
+
+---
+
+## Where a dev store / sandbox / sample file beats a trial account
+- **Shopify — dev store beats everything.** Free, unlimited, no expiry, and the Bogus Gateway lets you place fake *paid* orders that fire real webhooks. A time-limited trial store can't safely do that.
+- **Intercom — free dev workspace beats a trial.** Unlimited, free forever, and real webhooks + Conversations/Contacts API all work.
+- **Zendesk / Gorgias — the trial *is* the sandbox.** No separate sandbox below Enterprise (Zendesk) or without a submitted draft app (Gorgias), and you don't need one — the trial is a full instance.
+- **Tidio — neither helps.** The free plan and any trial both leave the API/webhook layer paywalled behind Plus. Only paying or a sales-granted eval credential unlocks it.
+- **Kickstarter / BackerKit — a hand-built sample CSV beats a real account outright.** No sandbox exists (real data needs a funded/completed KS project or a paid BackerKit campaign), and synthetic files with the documented headers exercise the exact same parser path.

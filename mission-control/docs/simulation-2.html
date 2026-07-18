@@ -1,0 +1,853 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Simulation — second read</title><style>body{margin:0;background:#fbf8f2;color:#11252a;font:16px/1.65 -apple-system,Segoe UI,Roboto,sans-serif}main{max-width:960px;margin:0 auto;padding:40px 24px 80px}h1,h2,h3{line-height:1.15}h1{font-size:31px}h2{margin-top:2em;border-bottom:1px solid #ebe2d0;padding-bottom:6px}a{color:#0e5366}code{background:#f4eee2;padding:1px 5px;border-radius:4px;font-size:13.5px}pre{background:#f4eee2;padding:14px;border-radius:10px;overflow-x:auto;font-size:13px}table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}th,td{border:1px solid #ebe2d0;padding:7px 10px;text-align:left;vertical-align:top}th{background:#f4eee2}blockquote{border-left:3px solid #d9762f;margin-left:0;padding-left:14px;color:#374a4f;background:#f8f3e9;padding:10px 14px;border-radius:6px}.top{font-size:13px;margin-bottom:18px}.top a{text-decoration:none}</style></head><body><main><p class="top"><a href="../tideover-hq.html">&larr; Tideover HQ</a></p><div id="c"><pre style="white-space:pre-wrap"># Tideover — 10-Customer Dress Rehearsal
+
+**Decision report for Dylan · 2026-07-09 · Everything in this document is SIMULATED.**
+
+---
+
+## 1. WHAT WE DID
+
+We built ten merchant personas out of real Reddit, Kickstarter-comment and Shopify-Community voices (the WISMO complaints, the "eight weeks became a year" refund threats, the creator post-mortems), gave each one a real campaign shape (backer count, pledge dates, money, platform, stage plan, brand voice), and ran all ten through **the actual Tideover code** for a simulated 30 days each. Not a mock. The real importer, the real ingest route, the real risk engine, the real reassurance engine, the real DeepSeek drafter behind the real QA gate, the real gift gate, the real evidence pack.
+
+- 10 personas · 30 sim-days each · **48,180 orders imported** · **136 tickets** · **136 drafts** (135 DeepSeek, 1 deterministic floor) · 136 sends · 128 gifts recommended, 17 sent · 25 escalations · 14 evidence packs · 251 outcome-ledger events · 34 merchant events (delay posts, band moves, pile-ons).
+- **0 crashes. 10/10 personas completed.**
+- An independent verifier (`sim/verify.mjs`) recomputed the results from the persona files rather than trusting the harness.
+
+**Read this before you quote any number:**
+
+- **Every figure here is SIMULATED.** None of it is a customer result, a testimonial, or a measured outcome. Where a number is a formula, the formula and its assumptions are shown inline. Where the simulation did not measure something, it says so.
+- **This was a behavioural test, not a volume test.** 136 scripted tickets total. The personas themselves describe 8 to 160 tickets *per day*. So the run proves how the engine behaves on a ticket, not how many tickets a month costs. Every hours figure below combines sim-observed per-ticket behaviour with persona-stated volume, and says which is which.
+- **The drafts quoted in §5 are verbatim engine output.** They are what DeepSeek, behind Tideover's own prompt, with Tideover's own stage data and confidence bands, actually produced for these tickets.
+- **Two arithmetic corrections to the working papers:** the order total is **48,180**, not 58,160 (persona sum). The modelled ticket total is **11,170/mo**, not 10,970. The hours figures were already computed off the correct base.
+
+---
+
+## 2. THE TEN
+
+| # | Persona | Path | Backers | What went wrong in their month | Headline outcome |
+|---|---------|------|---------|-------------------------------|------------------|
+| p01 | **Foldwork Press** · Nia, solo | Kickstarter CSV | 420 | Delay post rewritten three times, posted late; a refund request sat 11 days and became a chargeback threat; an address change never reached the packing list | 14/14 drafted and sent, both chargeback threats at queue rank 1 and 2. **But 28 of her 420 orders were stamped the wrong production stage at import** (stage-boundary bug) |
+| p02 | **Lumen Field** · Priya + Sam | KS pledge manager | 18,400 | Tooling slipped; the comment wall decided they were a scam; refund tail discovered at the bank | Largest import in the set held (37 chunks, 0 skipped). **The run's only banned-phrase leak shipped here.** And **18,400 orders exceeds every tier we sell** |
+| p03 | **Hollowfell Games** · Devon, 2 people | BackerKit | 2,600 | Late-pledge cohort never told it was on a different clock; a $320 deluxe backer waited 9 days | Widest wait spread in the set (45/92/141 days) and the wait math held. His core pain — a cohort on a second clock — **cannot be expressed by the product** |
+| p04 | **Brasslight Miniatures** · Teodora, 2 people | Gamefound | 5,800 | An EU container rolled; no way to tell only the EU half, so every announcement panicked the cohort that was fine | 12/12 drafted, chargeback threat at rank 1. **Region is hardcoded "US" at import.** The one thing he would buy this for does not exist, and he is the only persona whose value does not clear his price |
+| p05 | **Grindhouse Supply** · Aiden, solo | Shopify + Gorgias | 900 | His preorder app let Shopify send a "ships in 3–5 days" confirmation. Three customers filed disputes citing a promise he never made | Highest single-ticket risk outside the crisis persona (78, `at_risk`, rank 1). **The evidence pack that would rebut his dispute shipped with `hasDisclosedEta: false`** |
+| p06 | **Vantage Audio** · Camille, 3 agents | Zendesk | 6,400 | Tickets got lost; they found out from a forum thread. A $790 flagship customer opened three tickets and got three silences | Best risk discrimination in the set (bands 34–80, gift ladder fully used). **And Tideover reproduces her exact trauma: a dropped webhook payload is not counted, not stored, not shown** |
+| p07 | **Keyframe Keyboards** · Wes, solo | Help Scout | 1,150 | Group buy: 1,150 people paid on the same three days, so one delay hit all of them at once. He went silent on email and lived in Discord | Tightest cohort in the set, engine tracked it. **Help Scout has no adapter and cannot be ingested.** The sim had to route him to email |
+| p08 | **Marrow &amp; Mould** · Sunny, solo ceramicist | Email only | 210 | A kiln failed. The announcement went to all 210 instead of the 70 affected. A wedding-gift refund sank for six days | 14/14 drafted, 9 resolved quiet. **And the risk engine produced one band across all 14 tickets. Zero signal.** She is paying $299 for a triage engine with nothing to triage |
+| p09 | **Two Lantern Studio** · Jamie, 2 people | Two KS campaigns | 3,300 | One campaign fulfilling, one funding. No way to announce a delay to only the delayed one. 640 dual backers never identified | Kept correct per-order clocks across a 118-day pledge spread. **The only QA-gate fire in the run, and the fallback it shipped was worse than the draft it blocked** (§5) |
+| p10 | **Foundry One** · Odette, 3 agents | Shopify + Gorgias | 9,000 × $800 CNC | Told 9,000 people the machine is six months late. Refund requests wait 15–20 days for a first reply. The word in the tickets is not "late", it is "lies" | Strongest economic case in the set (12× at mid). **And risk ranking degenerates exactly here:** zero `standard` tickets, floor of 56, so his third chargeback threat ranked **5th of 8** |
+
+---
+
+## 3. WHAT THE PRODUCT ACTUALLY DID
+
+### The good — sim-observed, not assumed
+
+| | |
+|---|---|
+| **Tickets handled** | 136/136 ingested, matched to an order, drafted, and sent. 0 unmatched, 0 draft failures, 0 errors. |
+| **Drafts produced** | **135 LLM (DeepSeek) · 1 deterministic floor.** 99.3% LLM dependence. |
+| **Proof-only doctrine** | **0 hard dates in 136 drafts.** 136/136 carried a confidence band. 136/136 carried the merchant's own verbatim signoff. The hard-date lint held across 135 real LLM generations. |
+| **Status link** | Attached to **136/136** replies. Every `sentText` ends with `Track your order anytime: https://…/status/…`. The mechanism is real and verifiable. |
+| **Risk ranking** | Of **14 chargeback-threat tickets, 13 landed in the top 2** of the live queue (10 at rank 1). Of **16 hostile tickets, 15 landed in the top 2.** This is the single strongest defensible claim in the product. |
+| **Gift gate** | 17 gifts sent through a working risk/wait gate: avg 1.3–3.9 tiers unlocked vs 1.1–3.7 locked per ticket. A calm day-30 customer cannot be handed the expensive gift. p06 was the only merchant to use the full ladder (mid 4 / full 3 / base 5). |
+| **Import** | 48,180 rows, 0 unparseable, 0 dateless, 0 failed chunks — including 18,400 rows in 37 chunks for p02. |
+| **SLA timers** | 136/136 met. |
+| **Escalations** | 25, concentrated correctly (p10 the crisis merchant: 5, the most in the run; p08 the calm ceramicist: 0). |
+
+### The ugly
+
+| | |
+|---|---|
+| **Send-as-is rate** | **24% (33/136).** Edit: 57% (77). Bin and rewrite: 19% (26). Mechanical defect flags fire on **51% (70/136)**. |
+| **What the operator did** | Edited **zero of 136** and approved everything. That is partly a harness default (`harness.ts:1388` reads `action ?? "approve"`), but it is also the finding: **these drafts are plausible enough to wave through.** A visibly bad draft costs nothing. A plausible one gets sent. |
+| **Deflection** | Reads **100% for all 10 personas** and it is not deflection. `lib/service.ts:1008` computes `resolved / tickets`. A ticket the status page prevented never enters the denominator. It is a **reply rate wearing an outcome name.** |
+| **Saves** | Counts chargeback-threat tickets that got *a reply*, or *any* gift sent. An activity count, never a result. |
+| **Evidence packs** | 14 assembled. **All 14 shipped with `hasDisclosedEta: false` and `statusViewsLogged: 0`.** The pack proves "we replied four times on these dates" and nothing else. |
+| **Dispute exposure** | **$0 for all ten merchants**, with `unknownCount` = **48,180 of 48,180 orders**. The money-at-risk tile reads 100% unknown against merchants holding $24.4M of pledge value. |
+| **Day-0 baseline** | `measured: false` for all 10. `medianFrtSec: null`, `wismoPer100Orders: null`, `ticketsPerWeek: 0`. **No product path writes it.** |
+| **WISMO forecast** | `expectedMid: null` for **10 of 10.** The window is hardcoded to days 60–89 (`forecast.ts:32-33`) while these merchants run 90–240 day windows, so **9 of 10 forecast an empty cohort.** |
+| **At-risk panel** | 0 for all 10, after ingesting chargeback threats into every persona. |
+| **Outcome ledger** | Only exists because the harness hand-seeded 4 ScriptVariants per merchant. `createMerchantFromIntake` seeds none, so for a real merchant `recordReplySent()` returns null and **no `reply_sent` event is ever written.** Six shipped features are silently dead in production. |
+
+**Two real code bugs the run surfaced (both verified in source, not inferred):**
+
+1. **Stage-boundary bug** (`lib/import.ts:71-83`). `deriveInitialStage` matches half-open bands `[from, to)` against stage bands the wizard collects as **inclusive** from-to. Any wait day exactly equal to a band's `to` matches no band, falls through, and returns `stages[0]` — the **first** stage. Predicted 27 of p01's 420 orders; observed 28. **55 of 136 drafts named a production stage inconsistent with the backer's own wait clock.**
+2. **Production stage never advances** (`lib/import.ts:67-69`, admitted in-code). Stage is a snapshot stamped at import. Nothing re-derives it. Every status page and every draft describes where the order was **on the day the CSV was uploaded.**
+
+---
+
+## 4. WITH vs WITHOUT
+
+### Shared inputs — every formula uses these
+
+| Input | Value | Provenance |
+|---|---|---|
+| `compose_min` | 5–10 min/ticket | Merchant-reported WISMO handling time (Shopify Community). Corroborated at ~6 min AHT by our own CX research digest. **RESEARCH-CITED.** |
+| `approve_min` | 1–2.5 min/ticket | **ASSUMPTION.** The sim could not measure it (every draft was auto-approved by construction). This is the load-bearing input in every formula below. |
+| `saved_min/ticket` | 2.5 low · 5.75 mid · 9.0 high | Derived from the two rows above. |
+| `tickets/day` | Persona-stated | Each persona's own `withoutTideover`. **PERSONA-STATED, not sim-observed.** |
+| Labour rate | $25/h loaded support · $50/h founder opportunity cost | **ASSUMPTION.** Deliberately the cheapest defensible rates. |
+
+**Master formula:** `hours_saved/mo = tickets_per_month × (compose_min − approve_min) ÷ 60`
+
+### The economics, per ICP flavour
+
+| Persona | Orders | Tickets/mo | Hours/mo (low · **mid** · high) | Value @rate | Tier | Ratio (mid) |
+|---|---|---|---|---|---|---|
+| p01 Foldwork | 420 | 330 | 13.8 · **31.6** · 49.5 | $1,581 @$50 | $299 | 5.3× |
+| p02 Lumen Field | 18,400 | 1,560 | 65.0 · **149.5** · 234.0 | $3,738 @$25 | **NO TIER** | — |
+| p03 Hollowfell | 2,600 | 600 | 25.0 · **57.5** · 90.0 | $1,438 @$25 | $499 | 2.9× |
+| p04 Brasslight | 5,800 | 685 | 28.5 · **65.6** · 102.8 | $1,641 @$25 | $749 | **2.2×** |
+| p05 Grindhouse | 900 | 600 | 25.0 · **57.5** · 90.0 | $1,438 @$25 | $299 | 4.8× |
+| p06 Vantage | 6,400 | 1,350 | 56.3 · **129.4** · 202.5 | $3,234 @$25 | $749 | 4.3× |
+| p07 Keyframe | 1,150 | 825 | 34.4 · **79.1** · 123.8 | $3,953 @$50 | $499 | 7.9× |
+| p08 Marrow | 210 | 345 | 14.4 · **33.1** · 51.8 | $1,653 @$50 | $299 | 5.5× |
+| p09 Two Lantern | 3,300 | 1,125 | 46.9 · **107.8** · 168.8 | $2,695 @$25 | $499 | 5.4× |
+| p10 Foundry One | 9,000 | 3,750 | 156.3 · **359.4** · 562.5 | $8,984 @$25 | $749 | **12.0×** |
+
+**Aggregate:** 48,180 orders in the wait window · ~11,170 tickets/month modelled · **466 / 1,071 / 1,676 hours/month** saved (low/mid/high) · $24.4M of pledge value under management. All SIMULATED, all formula-based.
+
+### The four ROI sentences we can actually defend
+
+**A · Solo crowdfunding creator (p01, p08) — $299.** "In a 30-day simulation on your own campaign shape, every ticket arrived with a draft already written and a status link attached. At your stated 8–15 tickets/day and the merchant-reported 5–10 minutes to compose one, against an assumed 1–2.5 minutes to review and approve: `~340 tickets × 2.5–9 min ÷ 60` = **14 to 52 hours a month** — most of which you currently spend after 10pm."
+
+**B · Crowdfunding studio, 2–6k backers (p03, p04, p09) — $499/$749.** "Your BackerKit/Gamefound exports become one file with one clock per order, and the queue sorts by refund risk, not arrival time: **13 of 14 chargeback-threat tickets landed in the top 2 of the queue** the moment they arrived. `600–1,125 tickets × 2.5–9 min ÷ 60` = **25 to 169 hours a month.** The midnight reconciliation is not in that number."
+
+**C · Small-batch preorder DTC (p05, p07) — $299/$499.** "Flat fee, not per-ticket: your bill does not spike in the week a delay blows your inbox up. `600–825 tickets × 2.5–9 min ÷ 60` = **25 to 124 hours a month**, and the highest-risk ticket in the simulation sat at **rank 1** the day it arrived."
+
+**D · High-ticket hardware in a public slip (p06, p10) — $749.** "You are answering 90–160 tickets a day with nothing to paste. In simulation every one arrived pre-drafted from your own production stages, with a status link, and the queue put both risk-89 chargeback threats at **rank 1**. `3,750 tickets × 2.5–9 min ÷ 60` = **156 to 563 person-hours a month** against three seats."
+
+**Say none of these, in any tier:** deflection %, refunds prevented, disputes won, CSAT, or first-response time. The simulation produced no defensible number for any of them. (The sim's 90–135 min median FRT is set by an *authored* operator-delay table, not by the product.)
+
+### Where Tideover does NOT earn its price — name them
+
+- **p04 Brasslight — fails outright.** `28.5 h × $25 = $713` against a **$749** price. Negative at the conservative end. And 5,800 orders pushes a **2-person studio past the Growth cap (5,000) into Scale $749 for 10 seats it will never use**, to solve an EU/US split the product **cannot express** (region hardcoded `"US"`; `Order` has no wave field).
+- **p08 Marrow &amp; Mould — cannot justify it.** All 14 of her tickets scored one band (`standard`, 21–49). Zero chargeback threats, zero `watch`. The priority queue, the refund-risk score, the dispute tile and the at-risk gift gate all produced **no signal at all.** She buys the drafts and the status page: roughly 30% of the product, for 2.4% of her total campaign gross ($897 across her wait window vs $36,883 earned). **That is a $49–99 product for her, not a $299 one.**
+- **p02 Lumen Field — cannot buy it.** Second-highest hours saved in the entire set (149 h/mo) and **18,400 orders exceeds the 15,000 Scale cap.** There is no tier. That is a pricing gap, not a value gap, and it is the cheapest fix on this list.
+- **p03 Hollowfell — thin.** `25.0 h × $25 = $625` against $499 is **1.25×** at the conservative end, and his central pain (late-pledge cohort on a different clock) is unfixed.
+- **p01 Foldwork — half the model is inert.** Single pledges, median $38, so no order clears the hardcoded $500 high-LTV tier. Priority comes from risk band alone.
+
+**Three structural pricing problems the run exposed:**
+1. **The order cap, not the seat count, drives the tier — and it misprices small teams.** p07 (1 person, 1,150 orders) pays $499 for 3 seats. p04 (2 people, 5,800 orders) pays $749 for 10. Both are buying seats to buy headroom.
+2. **There is no tier above 15,000 orders**, and an 18k-backer hit campaign is the customer with the most pain, the most money and the loudest public failure.
+3. **The value ladder does not track the price ladder.** Value scales with *ticket volume and refund risk*, not order count. p05 (900 orders, $299) gets 57.5 h/mo. p04 (5,800 orders, $749) gets 65.6 h/mo. Nearly the same value at 2.5× the price.
+
+---
+
+## 5. THE DRAFTS
+
+135 of 136 came from DeepSeek. Voice is the engine's one real win: the `voice`/`tone`/`signoff` intake fields do genuine work, and the signoff was correct 136/136. Everything downstream of voice leaks.
+
+### Three that would ship as-is
+
+**1 · p01 Foldwork · refund, chargeback threat · risk 57 `watch` · rank 1**
+> Customer: *"No reply to my refund request either. That is what actually bothers me now. Not the book. The fact that nobody answers."*
+
+> Wes,
+>
+> I hear you. I read your refund request, and I should have replied sooner — that's on me. I'm one person in a small studio, and I let the quiet of the binding room get in the way of writing back.
+>
+> Right now your book is in binding and check. The signatures are folded and sewn, and I'm going through a sample from every stack to make sure the offset and registration are right. That's the stage we're in. It's slow because I'm checking each one.
+>
+> I can't give you a calendar date, but I can tell you it ships in weeks 1–3. If you still want a refund, I'll process it — just say the word and I'll send the confirmation. No need to escalate.
+>
+> — Nia, Foldwork Press
+
+**Why:** it names the miss, refuses a date, quotes the band grammatically, and **offers the refund without being asked twice.** That last clause is what closes the ticket. Only 8 of 14 chargeback-threat drafts did it.
+
+**2 · p05 Grindhouse · WISMO, anxious · the wrong-ship-date ticket his preorder app manufactured**
+> Customer: *"Your confirmation email says my order ships in 3 to 5 days. It has been six. Where is it?"*
+
+> Tomas,
+>
+> Your order #4412 is a preorder, not a standard stock item. It is currently in the assembly and grind test stage. Every unit is assembled and grind-tested. Units that fail the consistency test get pulled and rebuilt, which is why a batch never ships 100% at once. You have been waiting 79 days. Your unit ships in weeks 1–2.
+>
+> — Aiden, Grindhouse
+
+**Why:** blunt and metallic, which is Aiden. It **rebuts the false promise directly** rather than apologising around it, and it uses the stage blurb as an *explanation* rather than filler.
+
+**3 · p02 Lumen Field · refund, chargeback threat · risk 63 `watch` · rank 1**
+> Customer: *"Eight weeks becomes twelve, then it becomes a year. Refund my pledge and my add-ons."*
+
+> Owen,
+>
+> You've been waiting 64 days, and I understand the frustration that brings. You're right to be direct about it.
+>
+> Your unit is in the tooling stage — the injection moulds for the joint housing. This is the stage that is most likely to move, and it is the stage that moved. We are not giving you a date, because we don't have one that holds. What we can tell you is that your unit ships in weeks 1–3.
+>
+> If you want a refund, we will process it. Reply to this message and we'll start that. If you stay, we will ship your unit in build order as soon as the line runs.
+>
+> — Priya and Sam, Lumen Field
+
+**Why:** *"it is the stage that moved"* is the best sentence the engine produced all run. Unspun, specific, offers the refund.
+**And it is also the warning.** *"as soon as the line runs"* uses a word Lumen Field explicitly bans. **`merchant.banned` is injected into the prompt and never checked after generation** (`LlmDrafter.ts:58/70/84`; `llmDraftBlocked` tests hard dates only). Nothing in the product stops a banned phrase from shipping. The best draft in the set carries an unenforced violation.
+
+### Three that would embarrass us
+
+**1 · p09 Two Lantern · a CALM customer asking for an ADDRESS CHANGE · the deterministic floor**
+
+The customer wrote: *"I have moved twice since I backed Deepwater. Please use the address on my Saltmarsh pledge."*
+
+The LLM drafted a reply that actually handled it. The QA gate blocked that draft on `llm-lint` — a **false positive**: `DAYS_WINDOW` matched *"two moves in 105 days"* (a retrospective count, not a promise) and `GUARANTEE_VERB` matched *"ships"* — **from the engine's own confidence band.** The gate blocked a reply because the band it was told to quote contains the word "ships". The product then **discarded the blocked text entirely** (`LlmDrafter.ts:203-206` logs a reason string and returns the floor) and shipped this instead:
+
+> Owen — you've waited longer than anyone should have to, and I won't give you a canned line. Where things actually stand: Cardstock, wood tokens, and the miniatures resin are locked with the manufacturer.. Your tracking is generating and I'll have it to you in weeks 5–7. I'd rather see this through for you than have it routed to your bank — I'm on it personally.
+>
+> — Jamie, Two Lantern
+
+**Why it is the worst thing in the run.** Four failures in four sentences. (a) A canned line announcing that it is not one. (b) A double period from blurb interpolation. (c) **"Your tracking is generating" is false** — the order is in manufacturing, no tracking exists, and it is a hard-fact claim in a hard-date-free product. (d) It **volunteers the word "bank"** to a customer who never mentioned one, firing a refund-save script at a calm address change, and **never answers the address question.** This template lives at `lib/onboarding.ts:110` and is **seeded into every new merchant.** The floor is not a floor. It is a trapdoor, and it is what ships whenever the LLM is blocked, rate-limited or unconfigured. 1 in 136 is 0.7%; at Foundry One's volume that is **~26 wrong letters a month.**
+
+**2 · p10 Foundry One · chargeback threat · risk 85 `at_risk` · a customer building a consumer-law case**
+
+> You're right that we gave a date at order, and we missed it. **That's on us**... If you want to escalate to a chargeback, **that's your right.**
+
+**Why:** that is a **written admission of fault, handed to the card issuer**, plus an explicit invitation to dispute, with **no refund offered** and no evidence pack surfaced. This draft loses the chargeback. And it is not isolated: **6 of 14 chargeback-threat drafts never mention a refund at all**, including the two highest-risk tickets in the corpus. Three of them bless the chargeback. The de-escalation *tone* is credible; the de-escalation *mechanics* are absent. The engine sympathises beautifully and then fails to do the one thing that closes the ticket.
+
+**3 · p08 Marrow &amp; Mould · address change · the customer never supplied the new address**
+
+Customer: *"I typed my old flat number at checkout... I do not want it going to my ex."*
+
+> I've noted your current flat number and will make sure the parcel goes to the right place.
+
+**Why:** **Tideover has no address field on `Order` or `Customer`.** It cannot note anything. The customer never gave a new number. The parcel goes to the ex, and the merchant told her in writing that it would not. **This is the single most dangerous class of defect in the run: the LLM inventing an *action*.** The prompt forbids inventing *facts* and says nothing about inventing *actions*, so five drafts promise a system that does not exist: *"We have updated your shipping address to Ireland"* (p02), *"I can confirm it's updated in our system"* (p03), *"I've noted the address change for order VA-2211 and updated it in our system"* (p06), *"I'll update your proxy to the EU region now"* (p07).
+
+### Dishonourable mentions (the mechanical stuff that forces an edit on a third of all drafts)
+
+- **Band spliced as a raw noun phrase — 32/136 (24%) ungrammatical.** `LlmDrafter.ts:74` passes `Timing to give the buyer, verbatim: "ships in weeks 2-4"`. Result: *"your mugs ships in weeks 1–3"* · *"I'm aiming for your order to ships in weeks 2–4"* · *"The current timing band for this product is ships in weeks 6–8"*.
+- **The overdue band leaks a status-page fragment into email — 16/136 (12%).** *"It is running a little longer than planned — see the update below."* There is nothing below. It is an email. **Foundry One, the flagship crisis persona, has this in 11 of his 15 replies. Every one is unsendable.**
+- **Internal day-bands leaked in 8 drafts.** The prompt hands the model `Burn-in (days 56-78)` and never says those numbers are internal. p06: *"the next stages are Burn-in and measurement (days 56–78), then Air freight (days 79–92), then Dispatch (days 93–105)"* next to *"You are 72 days in."* **That is a hard date by arithmetic**, and it contradicts the same email's band.
+- **Invented facts, 5 drafts** — all sycophantic confirmation of a number the *customer* supplied. *"You are in block 6, and block 6 has started dispatch"* (p10). *"There are no batches ahead of you"* (p05). The engine has no batch or block data at all.
+- **The one word we ban shipped**, with the model narrating its own system prompt: *"the honest (and I know we don't use that word lightly) answer is..."* (p09).
+- **The stage blurb is mail-merge.** 13 of Lumen Field's 15 replies contain the identical string *"moulds for the joint housing. This is the stage that is most likely to move, and it is the stage that moved."* Per draft the operator sees nothing wrong. **Backers paste replies into Discord and the comments section.** Two of them comparing notes see a form letter, and the whole promise ("this reads bespoke") dies at cohort level.
+- **The stage named is often wrong anyway.** 55/136 drafts named a stage inconsistent with the customer's own wait clock. Live example: a backer **94 days** into a 90–120 day wait was told *"the uncoated stock for the interior is ordered"* — the **sourcing** blurb. He should be in freight.
+
+**The bottom line on drafting: the engine is plausible-but-mediocre, which is the churn zone.** Not sellable as-is.
+
+---
+
+## 6. WHERE IT BROKE
+
+**Nothing crashed.** Every failure below is silent, which is worse.
+
+**The one structural fact.** `package.json` carries **no email, SMS or outbound-HTTP dependency** — no Resend, no nodemailer, no Postmark, no Twilio. `GorgiasAdapter.sendReply` throws `NotImplementedError`. Every real merchant routes to `ManualAdapter`, whose `sendReply` does nothing. **Tideover cannot send a message to a customer. Its only outbound channel is the operator's clipboard.** That is fine for a 1:1 reply the operator was going to paste anyway. It is fatal for the delay announcement, the status-link push, and every proactive motion in the product. It is the root of ~15 of the 71 backlog items. (And `lib/security-content.ts:106` lists **Resend as a data subprocessor** for a capability that does not exist.)
+
+**Where an operator gets stuck, in order of how badly:**
+
+1. **The integration goes live and the queue goes silent.** Gorgias's HTTP integration offers a static `Authorization` header or OAuth2 — **it cannot compute the per-request HMAC our ingest route requires.** On the day a Gorgias merchant leaves demo mode, every ticket **401s with a bare, unlogged response.** That is p05 and p10: half the ICP, dead on arrival. Separately, **Zendesk renders `{{ticket.tags}}` as a space-separated string**, our template emits it as a one-element array, and `ingest-route.ts:103` exact-matches it, so any Zendesk ticket with 2+ tags is acked `200 {status:"discarded"}` and **never persisted.** That is p06 losing 100% of her tickets. In **both** cases the merchant sees a **calm, empty inbox — indistinguishable from a quiet week.** There is no counter, no dead-letter, no surface. Camille's stated trauma is "we lost tickets and found out from the chargeback paperwork," and **this product reproduces it with a nicer dashboard.**
+2. **Help Scout has no path in or out.** Not templatable (fixed v2 payload), signs with base64 HMAC-SHA1, tags are objects not strings. `ingest-templates.ts` exports exactly two things: Gorgias and Zendesk. **Help Scout is sold on the website and has no route.** p07's WITH column assumes an integration that does not exist.
+3. **The delay announcement writes a database row and sends nothing.** All 10 personas posted one. `POST /api/updates` returned `200 {status:"posted"}` every time. The route's own docstring says *"It fans out to every waiting backer's status page."* It does not. The only people who can see it are the handful who already wrote in. **A 5,000-backer delay announcement reaches approximately the people who did not need it.**
+4. **The status page reaches 0.3% of backers.** 136 status links delivered across 48,180 orders — and only ever appended to a reply (`service.ts:636`). **You have to write a complaint to be given the link to the page that would have prevented your complaint.** A WISMO-deflection tool that requires a WISMO to deflect.
+5. **The address change is a black hole. 10 of 10 personas hit it.** No address field exists on `Order` or `Customer`. Address tickets **rank 1957–1985 of ~2000** in the queue. Nothing is recorded. And the drafter promises to have done it anyway (§5).
+6. **Ticket type is not a risk factor at all.** A **calm refund request sorts below an anxious WISMO.** Sentiment and wait drive the score; intent does not.
+7. **Risk ranking degenerates in the crisis it was built for.** p10: zero `standard` tickets, risk floor 56, so "sort by risk" stops being triage. His **third chargeback threat (risk 74) ranked 5th of 8.**
+8. **Unmatched tickets are invisible.** A ticket from a new email or an Apple private-relay address gets `orderId: ""`, **no draft, no risk score, no clock**, is skipped by `getQueue` (`service.ts:898`), and there is **no unmatched filter anywhere.** Those are the tickets most likely to be a real customer in trouble. (The sim's 136/136 match rate is an artefact: every scripted event matched by construction.)
+9. **An empty body ingests silently.** `CanonicalIngestSchema` uses `z.string()` with no `.min(1)`. An unrendered webhook placeholder becomes an empty body, infers as `other`/`calm`, and **sorts to the bottom of the queue.** A chargeback threat arriving through a broken template is buried.
+10. **Seats are sold; assignment does not exist.** `TEAM_SEAT_CAP` and 1/3/10 pricing are shipped. There is **no assignee field on `Ticket`.** Three Vantage agents open the queue and draft the same reply.
+11. **Gifts have no budget, no cap, no cost rollup.** `DEEP_WAIT_DAYS = 45` means the "warrant" gate is **permanently open** on a 60–120 day ICP. A $3 note × 18,400 backers = **$55,200**, and nothing anywhere would stop it or total it. A "sent" gift is a tag; nothing is fulfilled.
+12. **The merchant cannot prove the product worked.** The baseline can never be captured (seeded to zeros, no writer anywhere), so the baseline report is four blank rows **and** the forecast is null. "Deflection 100%" sits next to "0 WISMO per 100 orders" (a rounding artefact) next to "Not yet measured." **That is the first screen a merchant shows anyone, and it destroys trust in every real number beside it.**
+13. **Money is understated by ~65% on pledge-manager exports.** `csv.ts:244-259` detects add-on/shipping/tax columns and **discards them.** A $60 core pledge with $180 of expansions imports as $60. So `valueExposure` (weight 0.20 in the risk score) and the money tiles understate on exactly the population where add-ons are the majority of the money — **and the most valuable backers wear a standard-tier badge, so the save gate stays shut on the people most worth saving.**
+14. **Harness-only paths that a real merchant does not get.** No ScriptVariant seeding (kills six features). No injectable `now` in the service layer (the harness had to monkey-patch `Date`). CSAT attribution lives inside an HTTP route, not the service layer (the harness had to fabricate a `Request`). `draft.riskScore` never equals the score on screen (ingest counts `ticketsLast7d` before creating the ticket: observed 53 vs 57, 60 vs 63), so the evidence pack and the exports disagree with the UI.
+
+---
+
+## 7. THE BACKLOG
+
+**71 items, 15 groups, every one verified against the code.** Tags: **[GAP]** does not exist · **[WIRING]** the type, engine and consumer all exist, only the input or the call site is missing · **[DISCOVERY]** exists, mislabelled or hard to find. Sizes: **S** ≤1 day · **M** 2–5 days · **L** 1–3 weeks. Full file: `scratchpad/sim/backlog.md`.
+
+### THE TOP 10 THAT MATTER MOST
+
+Ranked by (customer pain × frequency) ÷ effort. **Seven of ten are S. Five are [WIRING].** Tideover is not missing features. **It is missing wires.**
+
+| # | Item | Size | Unblocks | Why |
+|---|---|---|---|---|
+| 1 | **N-01** — the day-0 baseline can never be captured | **S** [WIRING] | all 10 | Four number inputs. Unlocks the baseline report, the dashboard deltas **and** the WISMO forecast. One missing number kills three shipped features. |
+| 2 | **C-01 / J-01** — `disclosedEta` never populated | **S** [WIRING] | all 10 (p05, p10 acutely) | Field, importer, alias set and evidence-pack consumer **all already exist.** No export in this market carries the column, so **ask the merchant once in onboarding** and backfill. Fixes 100%-unknown dispute exposure and the missing chargeback exhibit for every merchant. |
+| 3 | **B-08** — onboarding seeds no ScriptVariants | **S** [WIRING] | all 10 | A `for` loop. Resurrects the outcome ledger, Script Performance, CSAT attribution, reopen rate, quiet-resolution rate and the promote flow: **six shipped features, silently dead for every real merchant.** |
+| 4 | **O-01** — silent ingest drops | **S** [GAP] | p05, p06, p10 | The scariest failure mode. A broken webhook looks **exactly** like a happy week. Add a discard counter, a dead-letter and an ingest-health tile. |
+| 5 | **B-01** — Gorgias cannot produce our HMAC; every ticket 401s | **S** [GAP] | p05, p10 | Both Shopify/DTC personas are dead on arrival the day they leave demo mode. Accept a static bearer secret (`timingSafeEqual`) alongside HMAC. **Ship before a Gorgias merchant signs.** |
+| 6 | **F-01** — no deep link back to the helpdesk ticket | **S** [WIRING] | p05, p06, p07, p10 | We already store `externalId`. One settings field + one link collapses the operator's worst three steps into one click, **with no vendor API.** Best single day of work in the product. |
+| 7 | **A-01 / H-01** — the delay wave reaches nobody | **L** [GAP] | all 10 | The moment the product exists for. 14 announcements in the sim; all wrote a DB row and sent nothing. Needs the delivery seam (A-02). Expensive, unavoidable, and **it is the product.** |
+| 8 | **N-02** — forecast window hardcoded to days 60–89 | **S** [GAP] | 9 of 10 | `enteringWindow: 0` for nine personas. Derive it from the merchant's own band and a headline differentiator starts working. |
+| 9 | **K-01** — the address-change black hole | **M** [GAP] | all 10 | No address field exists anywhere. We rank it last, record nothing, and **draft promises we cannot keep.** |
+| 10 | **D-04 + N-04** — the dashboard's headline numbers are wrong | **S** [GAP] | all 10 | "100% deflection" (an answered-rate) next to "0 WISMO per 100" (rounding) next to "Not yet measured." Rename it, or fix it, but do not ship it. |
+
+**Two that would be top-10 on pain alone:** **C-02** (production stage frozen at import — every status page and draft is stale from day 1, and the fix is *to stop persisting a value that is already a pure function of elapsed days*) and **I-02** (no gift budget — the only item that can actively cost a cash-fragile merchant real money).
+
+### The full list, grouped
+
+**A · Outbound delivery (5)** — the hole everything else falls into.
+`A-01` L a posted update reaches nobody · `A-02` L **no delivery seam at all** · `A-03` L helpdesk write-back is a documented stub · `A-04` M the "sent" reply never closes the source ticket, so we *add* an inbox instead of draining one · `A-05` S the legal page promises Resend, a subprocessor we do not use.
+
+**B · Onboarding + the four integration paths (9)**
+`B-01` S Gorgias cannot HMAC · `B-02` S Zendesk multi-tag tickets silently discarded · `B-03` S Zendesk `{{ticket.description}}` is the *first* comment, not the latest, so we classify a month-old opener · `B-04` M Help Scout has no path in or out · `B-05` M BackerKit needs a 3-file hand reconcile (the obvious export has no money; another has no name, so drafts open *"Hi dana87"*) · `B-06` L no Shopify integration exists · `B-07` M the merchant must hand-derive their own stage day-bands · `B-08` S no ScriptVariant seeding · `B-09` S first-run empty state shows an empty box (onboarding already computes draft previews and **throws them away**).
+
+**C · Import data fidelity (7)**
+`C-01` S `disclosedEta` never populated · `C-02` S–M production stage freezes at import · `C-03` S region hardcoded `"US"` (the country column **is in the KS and Gamefound exports**; we read it and discard it) · `C-04` M add-ons/shipping/tax detected and discarded · `C-05` M `ltvCents` is one pledge, not lifetime value · `C-06` S `campaignName` and `wave` exist on `Order` and are never set · `C-07` S the `datelessRows` counter is load-bearing and buried (a missed date header silently anchors **every** wait clock to `now()`).
+
+**D · Queue + risk ordering (7)**
+`D-01` M ticket type is not a risk factor · `D-02` S address changes rank last · `D-03` S the dashboard risk curve plots customers you already answered · `D-04` S "deflection" is an answered-rate · `D-05` M unmatched tickets are invisible · `D-06` S the persisted draft's risk score never equals the one on screen · `D-07` S `highTicketCents` is $400 and fixed.
+
+**E · Draft rail + QA gate (5)**
+`E-01` M two of the three draft alternates are usually byte-identical · `E-02` S the gate fired once, caught a real one, and **told nobody** · `E-03` M 99.3% LLM dependence with no cost or latency surface · `E-04` S every draft is one-shot; there is no "try again" · `E-05` S the `day-89` template is fired at 68-day waiters.
+
+**F · Approve-and-copy, the operator's real loop (5)**
+`F-01` S no deep link back to the helpdesk ticket · `F-02` M approve is a one-at-a-time ceremony in a queue that arrives in waves · `F-03` S the clipboard is the only delivery record *(handled well — keep it)* · `F-04` S auto-advance is 500ms and unconditional · `F-05` S `firstResponseSec` measures **time-to-clipboard, not time-to-customer.**
+
+**G · Status pages (4)**
+`G-01` M the status link only reaches customers who already complained · `G-02` S no status link for unmatched customers · `G-03` S nothing proves the customer saw it (`statusViewsLogged: 0` on all 14 packs) · `G-04` M the confidence band is merchant-wide, so a status page cannot tell one cohort from another.
+
+**H · The delay-announcement wave (4)**
+`H-01` L telling 5,000 backers bad news writes **one database row** · `H-02` S the band move and the announcement are two unrelated actions · `H-03` L the public comment wall — **the loudest hour in every persona** — is invisible to the product (8 pile-on beats, all unrepresentable) · `H-04` M no pre-drafting for a wave the merchant just caused.
+
+**I · Gifts (4)**
+`I-01` S on a 60–120 day ICP the "warrant" gate is permanently open · `I-02` M **no budget, no cap, no cost rollup** · `I-03` M a "sent" gift is a tag; nothing is fulfilled · `I-04` S no bulk or cohort gift.
+
+**J · Chargebacks + evidence (3)**
+`J-01` S every pack ships with no disclosed ETA · `J-02` S the dispute tile reads 100% unknown for all 10 · `J-03` M the pack is per-order and pull-only.
+
+**K · Address changes + non-WISMO intents (3)**
+`K-01` M the address black hole · `K-02` S "add to my order" / upsell requests have nowhere to go · `K-03` M the VIP/reviewer ticket sorts like everyone else (a reviewer with 90k subscribers and a video slot in two weeks got two sentences of burn-in blurb; **that reviewer makes a video about it**).
+
+**L · Multi-campaign + cohorts (3)**
+`L-01` L a delay hitting one cohort cannot be expressed; announcing it panics everyone else · `L-02` M two campaigns in one merchant record are separable **only by pledge date** · `L-03` M stage day-bands are merchant-wide, so a second campaign is scored against the first one's plan.
+
+**M · Team seats (3)**
+`M-01` M seats are sold; assignment does not exist · `M-02` S escalation is a tag string, not a routing action · `M-03` S no per-seat activity or accountability.
+
+**N · Reporting a merchant would show an investor (6)**
+`N-01` S the baseline can never be captured · `N-02` S the forecast window is hardcoded · `N-03` M Script Performance shows no rates for months (a 20-response min-n ≈ 10 months) · `N-04` S `wismoPer100Orders` rounds to 0 for every large merchant · `N-05` M **there is no report a merchant would actually show an investor** · `N-06` S "hours saved" is never computed, though every persona file contains the formula.
+
+**O · Ingest health + trust (3)**
+`O-01` S a merchant whose webhook 401s sees a calm, empty queue · `O-02` S an empty body ingests silently and buries a chargeback threat · `O-03` S our Gorgias template guesses at three undocumented variables.
+
+---
+
+## 8. THE FIVE DECISIONS DYLAN OWNS
+
+### D1 · Pricing fit — the ladder is priced on the wrong axis
+
+**What the run showed.** Value scales with **tickets in the anxiety window and refund risk**, not with total orders imported. The current ladder prices on orders. So p05 (900 orders, $299) gets 57.5 h/mo and p04 (5,800 orders, $749) gets 65.6 h/mo: nearly the same value at 2.5× the price. One persona (p04) is underwater at the conservative end, one (p08) is paying $299 for ~30% of the product, and one (p02) — the second-best hours case in the set — **cannot buy any tier at all.**
+
+**Recommendation.** Four moves, in order of cost:
+1. **Add a Scale+ / custom tier above 15,000 orders.** p02 is a signature logo and there is no price for him. One line of config.
+2. **Raise Starter's cap to 1,500 orders.** Captures p07 at $299 (he is one person; today 150 orders over the cap forces him to $499 for 3 seats he will never use). Costs nothing.
+3. **Add a Maker tier, ~$99, ≤300 orders — drafts + status page only.** That is exactly what p08 uses and exactly what she can afford. It also stops us charging $299 for a triage engine that found nothing to triage.
+4. **Decouple seats from order caps.** Both p04 and p07 are buying seats to buy headroom.
+**And hold the flat fee.** p05 named usage-based support pricing as the reason he rejected the entire category: *the bill spikes exactly in the week a delay blows the inbox up, which is when a preorder brand is most cash-fragile.* Flat pricing is not a concession, **it is the pitch.**
+
+### D2 · Which integration to build — fix the two you already sell before you add a third
+
+**What the run showed.** We sell Gorgias, Zendesk, Help Scout and BackerKit. **Gorgias physically cannot produce the HMAC our ingest route demands** (their HTTP integration offers a static header or OAuth2, not per-request HMAC), so every ticket 401s the day they go live. **Zendesk renders tags as a space-separated string**, so any ticket with 2+ tags is silently discarded. **Help Scout has no adapter at all.** In every case the merchant sees a calm empty queue. We are not choosing which integration to *add*. We are choosing whether the ones on our pricing page work.
+
+**Recommendation.** Sequence, roughly one week total:
+- **Day 1: B-01** — accept a static per-merchant bearer secret alongside HMAC (`timingSafeEqual`, still a secret over TLS, the URL token is already unguessable). This unblocks p05 and p10, i.e. the entire Shopify/DTC half of the ICP.
+- **Day 1: B-02 + B-03** — split the tag string on whitespace/commas, accept `string | string[]`, and template `{{ticket.latest_comment}}` instead of `{{ticket.description}}`. Two-line and one-line fixes. Unblocks p06.
+- **Day 2: O-01** — a discard counter, a dead-letter, and an ingest-health tile. **Ship this in the same week, because the first two fixes are worthless if the next silent drop is invisible.**
+- **Then: B-04 Help Scout adapter (M, ~200 lines).** It is on the pricing page and it has no route.
+- **Do not build Shopify (B-06) yet.** Even wired, Shopify has no estimated-delivery field and no production-stage concept, so it supplies money and identity, not a wait clock. It does not move the needle this quarter.
+
+### D3 · Build the delay-broadcast? — Yes. It is the product.
+
+**What the run showed.** All 10 personas posted a delay announcement. All 10 returned `200 {status:"posted"}`. All 10 **wrote one database row and sent nothing.** The route's own docstring claims it fans out to every waiting backer. It does not. Meanwhile the status link — the one artefact that could deflect a WISMO rather than merely answer it faster — reached **136 of 48,180 orders (0.3%)**, and only as a footer on a reply. **You have to complain to be handed the link to the page that would have prevented your complaint.**
+
+Without broadcast, Tideover is a faster typewriter. Every hour in §4 comes from **reducing cost-per-ticket**. Not one comes from **reducing tickets**. The only mechanism in the product that could reduce tickets is the status page, and it is reachable only by writing a ticket.
+
+**Recommendation. Build it, and treat it as the quarter's one L-sized bet.** Scope v1 tightly:
+- **A-02, the delivery seam** — one `Deliverer` behind the existing `ChannelAdapter` contract. `EmailDeliverer` (Resend, **already named as a subprocessor in our own legal page**) and `NoopDeliverer` (today's manual paste). **Do not fabricate delivery receipts:** a manual paste stays "Copied", never "Delivered". The existing UX copy is already scrupulous here. Keep it.
+- **Push the status link on import**, not just as a reply footer (G-01). This is the change that turns the status page from a signature line into a deflection surface.
+- **On update post, enqueue a cohort send:** the update text plus each backer's own status link. Show "sent to N, opened by M."
+- **Prerequisite: a segment key.** C-03 (map the country column we already read and throw away) and C-06 (set `campaignName`/`wave`, which already exist on `Order` as "pure display"). Without these, broadcast can only shout at everyone, which is p04's and p08's original problem with a nicer button.
+- **Explicitly out of v1: the public comment wall (H-03).** It is the loudest hour in six of ten personas and it is an L on its own. Name it as a known gap, do not let it grow the bet.
+
+### D4 · The address-change gap — ship the guardrail this week, the feature later
+
+**What the run showed.** **10 of 10 personas hit it.** There is **no address field on `Order` or `Customer`.** Address tickets rank **1957–1985 of ~2000** in the queue. And the drafter **promises to have done it anyway** in five separate drafts, including one to a customer who never supplied a new address and explicitly did not want the parcel going to her ex.
+
+This is the only defect in the run with a plausible path to a **real-world harm and a legal complaint**, and it is a two-part problem: a missing capability (M) and a lying draft (S).
+
+**Recommendation. Split it and ship the safety half now.**
+- **This week (S):** (a) add an explicit prompt rule — **never claim to have performed an action; you can only describe status and offer to escalate** — plus a post-generation lint that blocks `updated|noted|changed|confirmed + address` in a draft. (b) Route address/non-WISMO intents to a **"needs a human" bucket ranked near the top**, not the bottom (D-01/D-02). The correct draft today is: *"I can't change an address from here — I've flagged this to Nia and she'll confirm before your parcel is packed."* That is truthful, it closes the loop, and it costs one template.
+- **Later (M):** the real address capture + a packing-list export. Do not build it before the delivery seam.
+**Do not leave it as-is.** Today the product writes a promise it cannot keep, to the customer least able to absorb the mistake.
+
+### D5 · Engine and prompt investment — one week of prompt-and-lint work, no fine-tune
+
+**What the run showed.** Send-as-is is **24%**. Mechanical defect flags fire on **51%**. And the operator waved all 136 through, because the drafts are **plausible**, not because they are right. The failures are almost all cheap and mechanical:
+
+| Defect | Rate | Fix |
+|---|---|---|
+| Band spliced as a raw noun phrase (*"your mugs ships in weeks 1–3"*) | 24% | Pass the band as a **rendered clause**, not a verbatim string, at `LlmDrafter.ts:74`. **S.** |
+| "see the update below" in an **email** | 12% (11 of Foundry One's 15) | Channel-aware band copy. **S.** |
+| Internal day-bands quoted to the customer | 6% | Label them internal in the prompt, and lint for `days \d+-\d+`. **S.** |
+| Invented **actions** ("I've updated your address") | 4% | Prompt rule + post-gen lint. **S.** See D4. |
+| Invented **facts** (block numbers, batch positions) | 4% | Prompt rule: never confirm a number the customer supplied that we do not hold. **S.** |
+| Banned phrases (incl. the one word we ban) | 1% observed, **0% enforced** | `merchant.banned` is injected into the prompt and **never checked after generation.** Add it to `llmDraftBlocked`. **S.** |
+| Refund tickets that never mention the refund | **6 of 14 chargeback threats** | A hard rule: a refund/chargeback ticket **must** either offer the refund or state the policy. **S–M.** This is the expensive one. |
+| Stage blurb pasted verbatim, so a cohort sees a mail-merge | 13/15 on p02 | 3–5 blurb variants per stage, rotated. **M.** |
+
+**Recommendation. Spend one focused week on prompt hardening + a real post-generation lint. Do not fine-tune, do not swap models.** The model is not the problem: voice is genuinely good and 0/136 hard dates is a real achievement. The problem is that **the QA gate catches dates and nothing else**, and that all 70 defective drafts walked straight through it.
+
+**Two things to fix in the gate itself:**
+- **It produced a false positive and destroyed the evidence.** The one block in 136 fired because `GUARANTEE_VERB` matched **"ships"** — from the engine's own confidence band — and `DAYS_WINDOW` matched a *retrospective* wait count. Then `LlmDrafter.ts:203-206` **discarded the blocked text**, logging only a reason string. `DrafterOutput` carries no `blocked`/`fallbackReason` field, so nothing downstream can tell "the QA gate blocked the model" from "the LLM was never configured." We recovered the text only by intercepting `fetch`.
+- **The deterministic floor is not a floor, it is a trapdoor.** The seeded templates (`lib/onboarding.ts`) are ticket-type-blind: `day-89` fires a refund-save script at a calm address change and fabricates *"Your tracking is generating"*; `day-7` promises *"on schedule"* (a banned phrase for two personas); `day-30` asserts *"Nothing has slipped"* (factually false for Foundry One, whose entire identity is that things slipped twice). **Rewrite the four seeded templates to be type-aware and claim nothing.** The floor is what ships whenever the LLM is blocked, rate-limited or misconfigured — it is the failure mode under degradation, and today it is worse than saying nothing.
+
+---
+
+## 9. VERDICT
+
+**Would these ten pay?** Most of them, yes — on the demo. The pitch lands: the import holds at 18,400 rows, the queue puts 13 of 14 chargeback threats in the top 2, every ticket arrives pre-drafted in their own voice with a status link attached, and the price is flat in a category that bills you hardest on your worst week. **Seven of ten clear a 4× value-to-price bar at the mid case.**
+
+**Would they renew?** Today, no. Here is precisely where we lose each of them.
+
+- **We lose p05, p06 and p10 in week one, silently.** Gorgias cannot make our HMAC and Zendesk's multi-tag ticket is discarded on arrival. They go live, their queue stays empty, they assume it is a quiet week, and they find out from a chargeback packet. **That is not churn, that is a refund and a bad review.** Fix `B-01`, `B-02`, `O-01` before a single Gorgias or Zendesk merchant signs.
+- **We lose p04 and p08 on value.** p04 is underwater at the conservative end and the EU/US split he would buy this for **cannot be expressed by the data model.** p08 got one risk band across fourteen tickets: she is paying $299 for a triage engine with nothing to triage. Both are pricing decisions (D1), not engineering ones.
+- **We never sell p02 at all.** 18,400 orders, no tier.
+- **We lose everyone at renewal, on the dashboard.** The screen that is supposed to prove the product worked reads **"100% deflection"** (an answered-rate), **"$0 dispute exposure, 100% unknown"** (no export carries an ETA column), **"WISMO forecast: —"** (null for 10 of 10) and **"Baseline: not yet measured"** (no writer exists). **A merchant cannot renew on that.** They will renew on a feeling, once, and not twice.
+- **And we lose them in their own Discord.** Backers paste replies into the comments. 13 of Lumen Field's 15 drafts share an identical sentence. Two backers comparing notes see a form letter, and the one thing the product is *for* — sounding like a person who is actually there — dies in public.
+
+**Would they tell a friend?** The crowdfunding world is small, loud, and it talks. Today the story they would tell is *"the drafts are shockingly good and then it told a backer his address was updated when it wasn't."* That story travels further than the good half.
+
+### The single highest-leverage fix
+
+**Ship the delivery seam and push the status link to every backer at import — not as a footer on a reply.**
+
+Everything else in this report makes Tideover a faster typewriter. **Every hour in §4 comes from reducing the cost of a ticket. Not one hour comes from reducing the number of tickets.** The status page is the only mechanism in the product that can do that, and today it reaches **0.3% of backers**, exclusively the ones who already complained. Wire the seam (`A-02`) and the whole product turns over: the status page becomes a deflection surface, the delay announcement stops being a database row, the WISMO cohort forecast has something to forecast against, and — for the first time — **we can measure deflection instead of asserting it.**
+
+**But do the cheap week first, because it is the price of admission, not the win.** Five S-sized wires (`N-01` baseline · `C-01/J-01` disclosed ETA · `B-08` script variants · `O-01` ingest health · `B-01`+`B-02` the two broken integrations) resurrect the baseline report, the forecast, the outcome ledger, Script Performance, CSAT attribution, the dispute tile, the evidence pack's best exhibit, and the two integrations on our own pricing page. **Roughly one week of work. Nine dead features.**
+
+**Tideover is not missing features. It is missing wires — and one channel.**
+
+### And three things we must not say until they are fixed
+
+1. **Do not sell chargeback defense.** All 14 evidence packs shipped with `hasDisclosedEta: false`. *"We told you weeks 9–11 on the day you pledged and you accepted it"* is the strongest exhibit in a card-network rebuttal and the pack **cannot produce it for a single merchant.** Fix C-01 first: it is one onboarding question and a backfill loop.
+2. **Do not quote a deflection number.** We have never observed one. `statusViewsLogged: 0` on every pack. Any deflection figure must be labelled as the cited 15–30% tier-0 ecommerce benchmark applied as an **assumption**, not as our result.
+3. **Do not quote first-response time.** The sim's 90–135 minute median is set by an authored operator-delay table in the harness, not by the product. And `firstResponseSec` measures **time to clipboard, not time to customer.**
+
+---
+
+*Sources: `scratchpad/sim/results.json` (1.14 MB) · `scratchpad/sim/verify.mjs` (independent recompute) · `scratchpad/sim/with-without.md` · `scratchpad/sim/backlog.md` (71 items) · `scratchpad/sim/AUDIT-DUMP.txt` (136 verbatim drafts) · `scratchpad/sim/classify.mjs`. Ten personas × 30 simulated days through the real Tideover code, DeepSeek drafter live, 0 errors. **Every number in this document is SIMULATED.***</pre></div><script type="text/plain" id="md"># Tideover — 10-Customer Dress Rehearsal
+
+**Decision report for Dylan · 2026-07-09 · Everything in this document is SIMULATED.**
+
+---
+
+## 1. WHAT WE DID
+
+We built ten merchant personas out of real Reddit, Kickstarter-comment and Shopify-Community voices (the WISMO complaints, the "eight weeks became a year" refund threats, the creator post-mortems), gave each one a real campaign shape (backer count, pledge dates, money, platform, stage plan, brand voice), and ran all ten through **the actual Tideover code** for a simulated 30 days each. Not a mock. The real importer, the real ingest route, the real risk engine, the real reassurance engine, the real DeepSeek drafter behind the real QA gate, the real gift gate, the real evidence pack.
+
+- 10 personas · 30 sim-days each · **48,180 orders imported** · **136 tickets** · **136 drafts** (135 DeepSeek, 1 deterministic floor) · 136 sends · 128 gifts recommended, 17 sent · 25 escalations · 14 evidence packs · 251 outcome-ledger events · 34 merchant events (delay posts, band moves, pile-ons).
+- **0 crashes. 10/10 personas completed.**
+- An independent verifier (`sim/verify.mjs`) recomputed the results from the persona files rather than trusting the harness.
+
+**Read this before you quote any number:**
+
+- **Every figure here is SIMULATED.** None of it is a customer result, a testimonial, or a measured outcome. Where a number is a formula, the formula and its assumptions are shown inline. Where the simulation did not measure something, it says so.
+- **This was a behavioural test, not a volume test.** 136 scripted tickets total. The personas themselves describe 8 to 160 tickets *per day*. So the run proves how the engine behaves on a ticket, not how many tickets a month costs. Every hours figure below combines sim-observed per-ticket behaviour with persona-stated volume, and says which is which.
+- **The drafts quoted in §5 are verbatim engine output.** They are what DeepSeek, behind Tideover's own prompt, with Tideover's own stage data and confidence bands, actually produced for these tickets.
+- **Two arithmetic corrections to the working papers:** the order total is **48,180**, not 58,160 (persona sum). The modelled ticket total is **11,170/mo**, not 10,970. The hours figures were already computed off the correct base.
+
+---
+
+## 2. THE TEN
+
+| # | Persona | Path | Backers | What went wrong in their month | Headline outcome |
+|---|---------|------|---------|-------------------------------|------------------|
+| p01 | **Foldwork Press** · Nia, solo | Kickstarter CSV | 420 | Delay post rewritten three times, posted late; a refund request sat 11 days and became a chargeback threat; an address change never reached the packing list | 14/14 drafted and sent, both chargeback threats at queue rank 1 and 2. **But 28 of her 420 orders were stamped the wrong production stage at import** (stage-boundary bug) |
+| p02 | **Lumen Field** · Priya + Sam | KS pledge manager | 18,400 | Tooling slipped; the comment wall decided they were a scam; refund tail discovered at the bank | Largest import in the set held (37 chunks, 0 skipped). **The run's only banned-phrase leak shipped here.** And **18,400 orders exceeds every tier we sell** |
+| p03 | **Hollowfell Games** · Devon, 2 people | BackerKit | 2,600 | Late-pledge cohort never told it was on a different clock; a $320 deluxe backer waited 9 days | Widest wait spread in the set (45/92/141 days) and the wait math held. His core pain — a cohort on a second clock — **cannot be expressed by the product** |
+| p04 | **Brasslight Miniatures** · Teodora, 2 people | Gamefound | 5,800 | An EU container rolled; no way to tell only the EU half, so every announcement panicked the cohort that was fine | 12/12 drafted, chargeback threat at rank 1. **Region is hardcoded "US" at import.** The one thing he would buy this for does not exist, and he is the only persona whose value does not clear his price |
+| p05 | **Grindhouse Supply** · Aiden, solo | Shopify + Gorgias | 900 | His preorder app let Shopify send a "ships in 3–5 days" confirmation. Three customers filed disputes citing a promise he never made | Highest single-ticket risk outside the crisis persona (78, `at_risk`, rank 1). **The evidence pack that would rebut his dispute shipped with `hasDisclosedEta: false`** |
+| p06 | **Vantage Audio** · Camille, 3 agents | Zendesk | 6,400 | Tickets got lost; they found out from a forum thread. A $790 flagship customer opened three tickets and got three silences | Best risk discrimination in the set (bands 34–80, gift ladder fully used). **And Tideover reproduces her exact trauma: a dropped webhook payload is not counted, not stored, not shown** |
+| p07 | **Keyframe Keyboards** · Wes, solo | Help Scout | 1,150 | Group buy: 1,150 people paid on the same three days, so one delay hit all of them at once. He went silent on email and lived in Discord | Tightest cohort in the set, engine tracked it. **Help Scout has no adapter and cannot be ingested.** The sim had to route him to email |
+| p08 | **Marrow &amp; Mould** · Sunny, solo ceramicist | Email only | 210 | A kiln failed. The announcement went to all 210 instead of the 70 affected. A wedding-gift refund sank for six days | 14/14 drafted, 9 resolved quiet. **And the risk engine produced one band across all 14 tickets. Zero signal.** She is paying $299 for a triage engine with nothing to triage |
+| p09 | **Two Lantern Studio** · Jamie, 2 people | Two KS campaigns | 3,300 | One campaign fulfilling, one funding. No way to announce a delay to only the delayed one. 640 dual backers never identified | Kept correct per-order clocks across a 118-day pledge spread. **The only QA-gate fire in the run, and the fallback it shipped was worse than the draft it blocked** (§5) |
+| p10 | **Foundry One** · Odette, 3 agents | Shopify + Gorgias | 9,000 × $800 CNC | Told 9,000 people the machine is six months late. Refund requests wait 15–20 days for a first reply. The word in the tickets is not "late", it is "lies" | Strongest economic case in the set (12× at mid). **And risk ranking degenerates exactly here:** zero `standard` tickets, floor of 56, so his third chargeback threat ranked **5th of 8** |
+
+---
+
+## 3. WHAT THE PRODUCT ACTUALLY DID
+
+### The good — sim-observed, not assumed
+
+| | |
+|---|---|
+| **Tickets handled** | 136/136 ingested, matched to an order, drafted, and sent. 0 unmatched, 0 draft failures, 0 errors. |
+| **Drafts produced** | **135 LLM (DeepSeek) · 1 deterministic floor.** 99.3% LLM dependence. |
+| **Proof-only doctrine** | **0 hard dates in 136 drafts.** 136/136 carried a confidence band. 136/136 carried the merchant's own verbatim signoff. The hard-date lint held across 135 real LLM generations. |
+| **Status link** | Attached to **136/136** replies. Every `sentText` ends with `Track your order anytime: https://…/status/…`. The mechanism is real and verifiable. |
+| **Risk ranking** | Of **14 chargeback-threat tickets, 13 landed in the top 2** of the live queue (10 at rank 1). Of **16 hostile tickets, 15 landed in the top 2.** This is the single strongest defensible claim in the product. |
+| **Gift gate** | 17 gifts sent through a working risk/wait gate: avg 1.3–3.9 tiers unlocked vs 1.1–3.7 locked per ticket. A calm day-30 customer cannot be handed the expensive gift. p06 was the only merchant to use the full ladder (mid 4 / full 3 / base 5). |
+| **Import** | 48,180 rows, 0 unparseable, 0 dateless, 0 failed chunks — including 18,400 rows in 37 chunks for p02. |
+| **SLA timers** | 136/136 met. |
+| **Escalations** | 25, concentrated correctly (p10 the crisis merchant: 5, the most in the run; p08 the calm ceramicist: 0). |
+
+### The ugly
+
+| | |
+|---|---|
+| **Send-as-is rate** | **24% (33/136).** Edit: 57% (77). Bin and rewrite: 19% (26). Mechanical defect flags fire on **51% (70/136)**. |
+| **What the operator did** | Edited **zero of 136** and approved everything. That is partly a harness default (`harness.ts:1388` reads `action ?? "approve"`), but it is also the finding: **these drafts are plausible enough to wave through.** A visibly bad draft costs nothing. A plausible one gets sent. |
+| **Deflection** | Reads **100% for all 10 personas** and it is not deflection. `lib/service.ts:1008` computes `resolved / tickets`. A ticket the status page prevented never enters the denominator. It is a **reply rate wearing an outcome name.** |
+| **Saves** | Counts chargeback-threat tickets that got *a reply*, or *any* gift sent. An activity count, never a result. |
+| **Evidence packs** | 14 assembled. **All 14 shipped with `hasDisclosedEta: false` and `statusViewsLogged: 0`.** The pack proves "we replied four times on these dates" and nothing else. |
+| **Dispute exposure** | **$0 for all ten merchants**, with `unknownCount` = **48,180 of 48,180 orders**. The money-at-risk tile reads 100% unknown against merchants holding $24.4M of pledge value. |
+| **Day-0 baseline** | `measured: false` for all 10. `medianFrtSec: null`, `wismoPer100Orders: null`, `ticketsPerWeek: 0`. **No product path writes it.** |
+| **WISMO forecast** | `expectedMid: null` for **10 of 10.** The window is hardcoded to days 60–89 (`forecast.ts:32-33`) while these merchants run 90–240 day windows, so **9 of 10 forecast an empty cohort.** |
+| **At-risk panel** | 0 for all 10, after ingesting chargeback threats into every persona. |
+| **Outcome ledger** | Only exists because the harness hand-seeded 4 ScriptVariants per merchant. `createMerchantFromIntake` seeds none, so for a real merchant `recordReplySent()` returns null and **no `reply_sent` event is ever written.** Six shipped features are silently dead in production. |
+
+**Two real code bugs the run surfaced (both verified in source, not inferred):**
+
+1. **Stage-boundary bug** (`lib/import.ts:71-83`). `deriveInitialStage` matches half-open bands `[from, to)` against stage bands the wizard collects as **inclusive** from-to. Any wait day exactly equal to a band's `to` matches no band, falls through, and returns `stages[0]` — the **first** stage. Predicted 27 of p01's 420 orders; observed 28. **55 of 136 drafts named a production stage inconsistent with the backer's own wait clock.**
+2. **Production stage never advances** (`lib/import.ts:67-69`, admitted in-code). Stage is a snapshot stamped at import. Nothing re-derives it. Every status page and every draft describes where the order was **on the day the CSV was uploaded.**
+
+---
+
+## 4. WITH vs WITHOUT
+
+### Shared inputs — every formula uses these
+
+| Input | Value | Provenance |
+|---|---|---|
+| `compose_min` | 5–10 min/ticket | Merchant-reported WISMO handling time (Shopify Community). Corroborated at ~6 min AHT by our own CX research digest. **RESEARCH-CITED.** |
+| `approve_min` | 1–2.5 min/ticket | **ASSUMPTION.** The sim could not measure it (every draft was auto-approved by construction). This is the load-bearing input in every formula below. |
+| `saved_min/ticket` | 2.5 low · 5.75 mid · 9.0 high | Derived from the two rows above. |
+| `tickets/day` | Persona-stated | Each persona's own `withoutTideover`. **PERSONA-STATED, not sim-observed.** |
+| Labour rate | $25/h loaded support · $50/h founder opportunity cost | **ASSUMPTION.** Deliberately the cheapest defensible rates. |
+
+**Master formula:** `hours_saved/mo = tickets_per_month × (compose_min − approve_min) ÷ 60`
+
+### The economics, per ICP flavour
+
+| Persona | Orders | Tickets/mo | Hours/mo (low · **mid** · high) | Value @rate | Tier | Ratio (mid) |
+|---|---|---|---|---|---|---|
+| p01 Foldwork | 420 | 330 | 13.8 · **31.6** · 49.5 | $1,581 @$50 | $299 | 5.3× |
+| p02 Lumen Field | 18,400 | 1,560 | 65.0 · **149.5** · 234.0 | $3,738 @$25 | **NO TIER** | — |
+| p03 Hollowfell | 2,600 | 600 | 25.0 · **57.5** · 90.0 | $1,438 @$25 | $499 | 2.9× |
+| p04 Brasslight | 5,800 | 685 | 28.5 · **65.6** · 102.8 | $1,641 @$25 | $749 | **2.2×** |
+| p05 Grindhouse | 900 | 600 | 25.0 · **57.5** · 90.0 | $1,438 @$25 | $299 | 4.8× |
+| p06 Vantage | 6,400 | 1,350 | 56.3 · **129.4** · 202.5 | $3,234 @$25 | $749 | 4.3× |
+| p07 Keyframe | 1,150 | 825 | 34.4 · **79.1** · 123.8 | $3,953 @$50 | $499 | 7.9× |
+| p08 Marrow | 210 | 345 | 14.4 · **33.1** · 51.8 | $1,653 @$50 | $299 | 5.5× |
+| p09 Two Lantern | 3,300 | 1,125 | 46.9 · **107.8** · 168.8 | $2,695 @$25 | $499 | 5.4× |
+| p10 Foundry One | 9,000 | 3,750 | 156.3 · **359.4** · 562.5 | $8,984 @$25 | $749 | **12.0×** |
+
+**Aggregate:** 48,180 orders in the wait window · ~11,170 tickets/month modelled · **466 / 1,071 / 1,676 hours/month** saved (low/mid/high) · $24.4M of pledge value under management. All SIMULATED, all formula-based.
+
+### The four ROI sentences we can actually defend
+
+**A · Solo crowdfunding creator (p01, p08) — $299.** "In a 30-day simulation on your own campaign shape, every ticket arrived with a draft already written and a status link attached. At your stated 8–15 tickets/day and the merchant-reported 5–10 minutes to compose one, against an assumed 1–2.5 minutes to review and approve: `~340 tickets × 2.5–9 min ÷ 60` = **14 to 52 hours a month** — most of which you currently spend after 10pm."
+
+**B · Crowdfunding studio, 2–6k backers (p03, p04, p09) — $499/$749.** "Your BackerKit/Gamefound exports become one file with one clock per order, and the queue sorts by refund risk, not arrival time: **13 of 14 chargeback-threat tickets landed in the top 2 of the queue** the moment they arrived. `600–1,125 tickets × 2.5–9 min ÷ 60` = **25 to 169 hours a month.** The midnight reconciliation is not in that number."
+
+**C · Small-batch preorder DTC (p05, p07) — $299/$499.** "Flat fee, not per-ticket: your bill does not spike in the week a delay blows your inbox up. `600–825 tickets × 2.5–9 min ÷ 60` = **25 to 124 hours a month**, and the highest-risk ticket in the simulation sat at **rank 1** the day it arrived."
+
+**D · High-ticket hardware in a public slip (p06, p10) — $749.** "You are answering 90–160 tickets a day with nothing to paste. In simulation every one arrived pre-drafted from your own production stages, with a status link, and the queue put both risk-89 chargeback threats at **rank 1**. `3,750 tickets × 2.5–9 min ÷ 60` = **156 to 563 person-hours a month** against three seats."
+
+**Say none of these, in any tier:** deflection %, refunds prevented, disputes won, CSAT, or first-response time. The simulation produced no defensible number for any of them. (The sim's 90–135 min median FRT is set by an *authored* operator-delay table, not by the product.)
+
+### Where Tideover does NOT earn its price — name them
+
+- **p04 Brasslight — fails outright.** `28.5 h × $25 = $713` against a **$749** price. Negative at the conservative end. And 5,800 orders pushes a **2-person studio past the Growth cap (5,000) into Scale $749 for 10 seats it will never use**, to solve an EU/US split the product **cannot express** (region hardcoded `"US"`; `Order` has no wave field).
+- **p08 Marrow &amp; Mould — cannot justify it.** All 14 of her tickets scored one band (`standard`, 21–49). Zero chargeback threats, zero `watch`. The priority queue, the refund-risk score, the dispute tile and the at-risk gift gate all produced **no signal at all.** She buys the drafts and the status page: roughly 30% of the product, for 2.4% of her total campaign gross ($897 across her wait window vs $36,883 earned). **That is a $49–99 product for her, not a $299 one.**
+- **p02 Lumen Field — cannot buy it.** Second-highest hours saved in the entire set (149 h/mo) and **18,400 orders exceeds the 15,000 Scale cap.** There is no tier. That is a pricing gap, not a value gap, and it is the cheapest fix on this list.
+- **p03 Hollowfell — thin.** `25.0 h × $25 = $625` against $499 is **1.25×** at the conservative end, and his central pain (late-pledge cohort on a different clock) is unfixed.
+- **p01 Foldwork — half the model is inert.** Single pledges, median $38, so no order clears the hardcoded $500 high-LTV tier. Priority comes from risk band alone.
+
+**Three structural pricing problems the run exposed:**
+1. **The order cap, not the seat count, drives the tier — and it misprices small teams.** p07 (1 person, 1,150 orders) pays $499 for 3 seats. p04 (2 people, 5,800 orders) pays $749 for 10. Both are buying seats to buy headroom.
+2. **There is no tier above 15,000 orders**, and an 18k-backer hit campaign is the customer with the most pain, the most money and the loudest public failure.
+3. **The value ladder does not track the price ladder.** Value scales with *ticket volume and refund risk*, not order count. p05 (900 orders, $299) gets 57.5 h/mo. p04 (5,800 orders, $749) gets 65.6 h/mo. Nearly the same value at 2.5× the price.
+
+---
+
+## 5. THE DRAFTS
+
+135 of 136 came from DeepSeek. Voice is the engine's one real win: the `voice`/`tone`/`signoff` intake fields do genuine work, and the signoff was correct 136/136. Everything downstream of voice leaks.
+
+### Three that would ship as-is
+
+**1 · p01 Foldwork · refund, chargeback threat · risk 57 `watch` · rank 1**
+> Customer: *"No reply to my refund request either. That is what actually bothers me now. Not the book. The fact that nobody answers."*
+
+> Wes,
+>
+> I hear you. I read your refund request, and I should have replied sooner — that's on me. I'm one person in a small studio, and I let the quiet of the binding room get in the way of writing back.
+>
+> Right now your book is in binding and check. The signatures are folded and sewn, and I'm going through a sample from every stack to make sure the offset and registration are right. That's the stage we're in. It's slow because I'm checking each one.
+>
+> I can't give you a calendar date, but I can tell you it ships in weeks 1–3. If you still want a refund, I'll process it — just say the word and I'll send the confirmation. No need to escalate.
+>
+> — Nia, Foldwork Press
+
+**Why:** it names the miss, refuses a date, quotes the band grammatically, and **offers the refund without being asked twice.** That last clause is what closes the ticket. Only 8 of 14 chargeback-threat drafts did it.
+
+**2 · p05 Grindhouse · WISMO, anxious · the wrong-ship-date ticket his preorder app manufactured**
+> Customer: *"Your confirmation email says my order ships in 3 to 5 days. It has been six. Where is it?"*
+
+> Tomas,
+>
+> Your order #4412 is a preorder, not a standard stock item. It is currently in the assembly and grind test stage. Every unit is assembled and grind-tested. Units that fail the consistency test get pulled and rebuilt, which is why a batch never ships 100% at once. You have been waiting 79 days. Your unit ships in weeks 1–2.
+>
+> — Aiden, Grindhouse
+
+**Why:** blunt and metallic, which is Aiden. It **rebuts the false promise directly** rather than apologising around it, and it uses the stage blurb as an *explanation* rather than filler.
+
+**3 · p02 Lumen Field · refund, chargeback threat · risk 63 `watch` · rank 1**
+> Customer: *"Eight weeks becomes twelve, then it becomes a year. Refund my pledge and my add-ons."*
+
+> Owen,
+>
+> You've been waiting 64 days, and I understand the frustration that brings. You're right to be direct about it.
+>
+> Your unit is in the tooling stage — the injection moulds for the joint housing. This is the stage that is most likely to move, and it is the stage that moved. We are not giving you a date, because we don't have one that holds. What we can tell you is that your unit ships in weeks 1–3.
+>
+> If you want a refund, we will process it. Reply to this message and we'll start that. If you stay, we will ship your unit in build order as soon as the line runs.
+>
+> — Priya and Sam, Lumen Field
+
+**Why:** *"it is the stage that moved"* is the best sentence the engine produced all run. Unspun, specific, offers the refund.
+**And it is also the warning.** *"as soon as the line runs"* uses a word Lumen Field explicitly bans. **`merchant.banned` is injected into the prompt and never checked after generation** (`LlmDrafter.ts:58/70/84`; `llmDraftBlocked` tests hard dates only). Nothing in the product stops a banned phrase from shipping. The best draft in the set carries an unenforced violation.
+
+### Three that would embarrass us
+
+**1 · p09 Two Lantern · a CALM customer asking for an ADDRESS CHANGE · the deterministic floor**
+
+The customer wrote: *"I have moved twice since I backed Deepwater. Please use the address on my Saltmarsh pledge."*
+
+The LLM drafted a reply that actually handled it. The QA gate blocked that draft on `llm-lint` — a **false positive**: `DAYS_WINDOW` matched *"two moves in 105 days"* (a retrospective count, not a promise) and `GUARANTEE_VERB` matched *"ships"* — **from the engine's own confidence band.** The gate blocked a reply because the band it was told to quote contains the word "ships". The product then **discarded the blocked text entirely** (`LlmDrafter.ts:203-206` logs a reason string and returns the floor) and shipped this instead:
+
+> Owen — you've waited longer than anyone should have to, and I won't give you a canned line. Where things actually stand: Cardstock, wood tokens, and the miniatures resin are locked with the manufacturer.. Your tracking is generating and I'll have it to you in weeks 5–7. I'd rather see this through for you than have it routed to your bank — I'm on it personally.
+>
+> — Jamie, Two Lantern
+
+**Why it is the worst thing in the run.** Four failures in four sentences. (a) A canned line announcing that it is not one. (b) A double period from blurb interpolation. (c) **"Your tracking is generating" is false** — the order is in manufacturing, no tracking exists, and it is a hard-fact claim in a hard-date-free product. (d) It **volunteers the word "bank"** to a customer who never mentioned one, firing a refund-save script at a calm address change, and **never answers the address question.** This template lives at `lib/onboarding.ts:110` and is **seeded into every new merchant.** The floor is not a floor. It is a trapdoor, and it is what ships whenever the LLM is blocked, rate-limited or unconfigured. 1 in 136 is 0.7%; at Foundry One's volume that is **~26 wrong letters a month.**
+
+**2 · p10 Foundry One · chargeback threat · risk 85 `at_risk` · a customer building a consumer-law case**
+
+> You're right that we gave a date at order, and we missed it. **That's on us**... If you want to escalate to a chargeback, **that's your right.**
+
+**Why:** that is a **written admission of fault, handed to the card issuer**, plus an explicit invitation to dispute, with **no refund offered** and no evidence pack surfaced. This draft loses the chargeback. And it is not isolated: **6 of 14 chargeback-threat drafts never mention a refund at all**, including the two highest-risk tickets in the corpus. Three of them bless the chargeback. The de-escalation *tone* is credible; the de-escalation *mechanics* are absent. The engine sympathises beautifully and then fails to do the one thing that closes the ticket.
+
+**3 · p08 Marrow &amp; Mould · address change · the customer never supplied the new address**
+
+Customer: *"I typed my old flat number at checkout... I do not want it going to my ex."*
+
+> I've noted your current flat number and will make sure the parcel goes to the right place.
+
+**Why:** **Tideover has no address field on `Order` or `Customer`.** It cannot note anything. The customer never gave a new number. The parcel goes to the ex, and the merchant told her in writing that it would not. **This is the single most dangerous class of defect in the run: the LLM inventing an *action*.** The prompt forbids inventing *facts* and says nothing about inventing *actions*, so five drafts promise a system that does not exist: *"We have updated your shipping address to Ireland"* (p02), *"I can confirm it's updated in our system"* (p03), *"I've noted the address change for order VA-2211 and updated it in our system"* (p06), *"I'll update your proxy to the EU region now"* (p07).
+
+### Dishonourable mentions (the mechanical stuff that forces an edit on a third of all drafts)
+
+- **Band spliced as a raw noun phrase — 32/136 (24%) ungrammatical.** `LlmDrafter.ts:74` passes `Timing to give the buyer, verbatim: "ships in weeks 2-4"`. Result: *"your mugs ships in weeks 1–3"* · *"I'm aiming for your order to ships in weeks 2–4"* · *"The current timing band for this product is ships in weeks 6–8"*.
+- **The overdue band leaks a status-page fragment into email — 16/136 (12%).** *"It is running a little longer than planned — see the update below."* There is nothing below. It is an email. **Foundry One, the flagship crisis persona, has this in 11 of his 15 replies. Every one is unsendable.**
+- **Internal day-bands leaked in 8 drafts.** The prompt hands the model `Burn-in (days 56-78)` and never says those numbers are internal. p06: *"the next stages are Burn-in and measurement (days 56–78), then Air freight (days 79–92), then Dispatch (days 93–105)"* next to *"You are 72 days in."* **That is a hard date by arithmetic**, and it contradicts the same email's band.
+- **Invented facts, 5 drafts** — all sycophantic confirmation of a number the *customer* supplied. *"You are in block 6, and block 6 has started dispatch"* (p10). *"There are no batches ahead of you"* (p05). The engine has no batch or block data at all.
+- **The one word we ban shipped**, with the model narrating its own system prompt: *"the honest (and I know we don't use that word lightly) answer is..."* (p09).
+- **The stage blurb is mail-merge.** 13 of Lumen Field's 15 replies contain the identical string *"moulds for the joint housing. This is the stage that is most likely to move, and it is the stage that moved."* Per draft the operator sees nothing wrong. **Backers paste replies into Discord and the comments section.** Two of them comparing notes see a form letter, and the whole promise ("this reads bespoke") dies at cohort level.
+- **The stage named is often wrong anyway.** 55/136 drafts named a stage inconsistent with the customer's own wait clock. Live example: a backer **94 days** into a 90–120 day wait was told *"the uncoated stock for the interior is ordered"* — the **sourcing** blurb. He should be in freight.
+
+**The bottom line on drafting: the engine is plausible-but-mediocre, which is the churn zone.** Not sellable as-is.
+
+---
+
+## 6. WHERE IT BROKE
+
+**Nothing crashed.** Every failure below is silent, which is worse.
+
+**The one structural fact.** `package.json` carries **no email, SMS or outbound-HTTP dependency** — no Resend, no nodemailer, no Postmark, no Twilio. `GorgiasAdapter.sendReply` throws `NotImplementedError`. Every real merchant routes to `ManualAdapter`, whose `sendReply` does nothing. **Tideover cannot send a message to a customer. Its only outbound channel is the operator's clipboard.** That is fine for a 1:1 reply the operator was going to paste anyway. It is fatal for the delay announcement, the status-link push, and every proactive motion in the product. It is the root of ~15 of the 71 backlog items. (And `lib/security-content.ts:106` lists **Resend as a data subprocessor** for a capability that does not exist.)
+
+**Where an operator gets stuck, in order of how badly:**
+
+1. **The integration goes live and the queue goes silent.** Gorgias's HTTP integration offers a static `Authorization` header or OAuth2 — **it cannot compute the per-request HMAC our ingest route requires.** On the day a Gorgias merchant leaves demo mode, every ticket **401s with a bare, unlogged response.** That is p05 and p10: half the ICP, dead on arrival. Separately, **Zendesk renders `{{ticket.tags}}` as a space-separated string**, our template emits it as a one-element array, and `ingest-route.ts:103` exact-matches it, so any Zendesk ticket with 2+ tags is acked `200 {status:"discarded"}` and **never persisted.** That is p06 losing 100% of her tickets. In **both** cases the merchant sees a **calm, empty inbox — indistinguishable from a quiet week.** There is no counter, no dead-letter, no surface. Camille's stated trauma is "we lost tickets and found out from the chargeback paperwork," and **this product reproduces it with a nicer dashboard.**
+2. **Help Scout has no path in or out.** Not templatable (fixed v2 payload), signs with base64 HMAC-SHA1, tags are objects not strings. `ingest-templates.ts` exports exactly two things: Gorgias and Zendesk. **Help Scout is sold on the website and has no route.** p07's WITH column assumes an integration that does not exist.
+3. **The delay announcement writes a database row and sends nothing.** All 10 personas posted one. `POST /api/updates` returned `200 {status:"posted"}` every time. The route's own docstring says *"It fans out to every waiting backer's status page."* It does not. The only people who can see it are the handful who already wrote in. **A 5,000-backer delay announcement reaches approximately the people who did not need it.**
+4. **The status page reaches 0.3% of backers.** 136 status links delivered across 48,180 orders — and only ever appended to a reply (`service.ts:636`). **You have to write a complaint to be given the link to the page that would have prevented your complaint.** A WISMO-deflection tool that requires a WISMO to deflect.
+5. **The address change is a black hole. 10 of 10 personas hit it.** No address field exists on `Order` or `Customer`. Address tickets **rank 1957–1985 of ~2000** in the queue. Nothing is recorded. And the drafter promises to have done it anyway (§5).
+6. **Ticket type is not a risk factor at all.** A **calm refund request sorts below an anxious WISMO.** Sentiment and wait drive the score; intent does not.
+7. **Risk ranking degenerates in the crisis it was built for.** p10: zero `standard` tickets, risk floor 56, so "sort by risk" stops being triage. His **third chargeback threat (risk 74) ranked 5th of 8.**
+8. **Unmatched tickets are invisible.** A ticket from a new email or an Apple private-relay address gets `orderId: ""`, **no draft, no risk score, no clock**, is skipped by `getQueue` (`service.ts:898`), and there is **no unmatched filter anywhere.** Those are the tickets most likely to be a real customer in trouble. (The sim's 136/136 match rate is an artefact: every scripted event matched by construction.)
+9. **An empty body ingests silently.** `CanonicalIngestSchema` uses `z.string()` with no `.min(1)`. An unrendered webhook placeholder becomes an empty body, infers as `other`/`calm`, and **sorts to the bottom of the queue.** A chargeback threat arriving through a broken template is buried.
+10. **Seats are sold; assignment does not exist.** `TEAM_SEAT_CAP` and 1/3/10 pricing are shipped. There is **no assignee field on `Ticket`.** Three Vantage agents open the queue and draft the same reply.
+11. **Gifts have no budget, no cap, no cost rollup.** `DEEP_WAIT_DAYS = 45` means the "warrant" gate is **permanently open** on a 60–120 day ICP. A $3 note × 18,400 backers = **$55,200**, and nothing anywhere would stop it or total it. A "sent" gift is a tag; nothing is fulfilled.
+12. **The merchant cannot prove the product worked.** The baseline can never be captured (seeded to zeros, no writer anywhere), so the baseline report is four blank rows **and** the forecast is null. "Deflection 100%" sits next to "0 WISMO per 100 orders" (a rounding artefact) next to "Not yet measured." **That is the first screen a merchant shows anyone, and it destroys trust in every real number beside it.**
+13. **Money is understated by ~65% on pledge-manager exports.** `csv.ts:244-259` detects add-on/shipping/tax columns and **discards them.** A $60 core pledge with $180 of expansions imports as $60. So `valueExposure` (weight 0.20 in the risk score) and the money tiles understate on exactly the population where add-ons are the majority of the money — **and the most valuable backers wear a standard-tier badge, so the save gate stays shut on the people most worth saving.**
+14. **Harness-only paths that a real merchant does not get.** No ScriptVariant seeding (kills six features). No injectable `now` in the service layer (the harness had to monkey-patch `Date`). CSAT attribution lives inside an HTTP route, not the service layer (the harness had to fabricate a `Request`). `draft.riskScore` never equals the score on screen (ingest counts `ticketsLast7d` before creating the ticket: observed 53 vs 57, 60 vs 63), so the evidence pack and the exports disagree with the UI.
+
+---
+
+## 7. THE BACKLOG
+
+**71 items, 15 groups, every one verified against the code.** Tags: **[GAP]** does not exist · **[WIRING]** the type, engine and consumer all exist, only the input or the call site is missing · **[DISCOVERY]** exists, mislabelled or hard to find. Sizes: **S** ≤1 day · **M** 2–5 days · **L** 1–3 weeks. Full file: `scratchpad/sim/backlog.md`.
+
+### THE TOP 10 THAT MATTER MOST
+
+Ranked by (customer pain × frequency) ÷ effort. **Seven of ten are S. Five are [WIRING].** Tideover is not missing features. **It is missing wires.**
+
+| # | Item | Size | Unblocks | Why |
+|---|---|---|---|---|
+| 1 | **N-01** — the day-0 baseline can never be captured | **S** [WIRING] | all 10 | Four number inputs. Unlocks the baseline report, the dashboard deltas **and** the WISMO forecast. One missing number kills three shipped features. |
+| 2 | **C-01 / J-01** — `disclosedEta` never populated | **S** [WIRING] | all 10 (p05, p10 acutely) | Field, importer, alias set and evidence-pack consumer **all already exist.** No export in this market carries the column, so **ask the merchant once in onboarding** and backfill. Fixes 100%-unknown dispute exposure and the missing chargeback exhibit for every merchant. |
+| 3 | **B-08** — onboarding seeds no ScriptVariants | **S** [WIRING] | all 10 | A `for` loop. Resurrects the outcome ledger, Script Performance, CSAT attribution, reopen rate, quiet-resolution rate and the promote flow: **six shipped features, silently dead for every real merchant.** |
+| 4 | **O-01** — silent ingest drops | **S** [GAP] | p05, p06, p10 | The scariest failure mode. A broken webhook looks **exactly** like a happy week. Add a discard counter, a dead-letter and an ingest-health tile. |
+| 5 | **B-01** — Gorgias cannot produce our HMAC; every ticket 401s | **S** [GAP] | p05, p10 | Both Shopify/DTC personas are dead on arrival the day they leave demo mode. Accept a static bearer secret (`timingSafeEqual`) alongside HMAC. **Ship before a Gorgias merchant signs.** |
+| 6 | **F-01** — no deep link back to the helpdesk ticket | **S** [WIRING] | p05, p06, p07, p10 | We already store `externalId`. One settings field + one link collapses the operator's worst three steps into one click, **with no vendor API.** Best single day of work in the product. |
+| 7 | **A-01 / H-01** — the delay wave reaches nobody | **L** [GAP] | all 10 | The moment the product exists for. 14 announcements in the sim; all wrote a DB row and sent nothing. Needs the delivery seam (A-02). Expensive, unavoidable, and **it is the product.** |
+| 8 | **N-02** — forecast window hardcoded to days 60–89 | **S** [GAP] | 9 of 10 | `enteringWindow: 0` for nine personas. Derive it from the merchant's own band and a headline differentiator starts working. |
+| 9 | **K-01** — the address-change black hole | **M** [GAP] | all 10 | No address field exists anywhere. We rank it last, record nothing, and **draft promises we cannot keep.** |
+| 10 | **D-04 + N-04** — the dashboard's headline numbers are wrong | **S** [GAP] | all 10 | "100% deflection" (an answered-rate) next to "0 WISMO per 100" (rounding) next to "Not yet measured." Rename it, or fix it, but do not ship it. |
+
+**Two that would be top-10 on pain alone:** **C-02** (production stage frozen at import — every status page and draft is stale from day 1, and the fix is *to stop persisting a value that is already a pure function of elapsed days*) and **I-02** (no gift budget — the only item that can actively cost a cash-fragile merchant real money).
+
+### The full list, grouped
+
+**A · Outbound delivery (5)** — the hole everything else falls into.
+`A-01` L a posted update reaches nobody · `A-02` L **no delivery seam at all** · `A-03` L helpdesk write-back is a documented stub · `A-04` M the "sent" reply never closes the source ticket, so we *add* an inbox instead of draining one · `A-05` S the legal page promises Resend, a subprocessor we do not use.
+
+**B · Onboarding + the four integration paths (9)**
+`B-01` S Gorgias cannot HMAC · `B-02` S Zendesk multi-tag tickets silently discarded · `B-03` S Zendesk `{{ticket.description}}` is the *first* comment, not the latest, so we classify a month-old opener · `B-04` M Help Scout has no path in or out · `B-05` M BackerKit needs a 3-file hand reconcile (the obvious export has no money; another has no name, so drafts open *"Hi dana87"*) · `B-06` L no Shopify integration exists · `B-07` M the merchant must hand-derive their own stage day-bands · `B-08` S no ScriptVariant seeding · `B-09` S first-run empty state shows an empty box (onboarding already computes draft previews and **throws them away**).
+
+**C · Import data fidelity (7)**
+`C-01` S `disclosedEta` never populated · `C-02` S–M production stage freezes at import · `C-03` S region hardcoded `"US"` (the country column **is in the KS and Gamefound exports**; we read it and discard it) · `C-04` M add-ons/shipping/tax detected and discarded · `C-05` M `ltvCents` is one pledge, not lifetime value · `C-06` S `campaignName` and `wave` exist on `Order` and are never set · `C-07` S the `datelessRows` counter is load-bearing and buried (a missed date header silently anchors **every** wait clock to `now()`).
+
+**D · Queue + risk ordering (7)**
+`D-01` M ticket type is not a risk factor · `D-02` S address changes rank last · `D-03` S the dashboard risk curve plots customers you already answered · `D-04` S "deflection" is an answered-rate · `D-05` M unmatched tickets are invisible · `D-06` S the persisted draft's risk score never equals the one on screen · `D-07` S `highTicketCents` is $400 and fixed.
+
+**E · Draft rail + QA gate (5)**
+`E-01` M two of the three draft alternates are usually byte-identical · `E-02` S the gate fired once, caught a real one, and **told nobody** · `E-03` M 99.3% LLM dependence with no cost or latency surface · `E-04` S every draft is one-shot; there is no "try again" · `E-05` S the `day-89` template is fired at 68-day waiters.
+
+**F · Approve-and-copy, the operator's real loop (5)**
+`F-01` S no deep link back to the helpdesk ticket · `F-02` M approve is a one-at-a-time ceremony in a queue that arrives in waves · `F-03` S the clipboard is the only delivery record *(handled well — keep it)* · `F-04` S auto-advance is 500ms and unconditional · `F-05` S `firstResponseSec` measures **time-to-clipboard, not time-to-customer.**
+
+**G · Status pages (4)**
+`G-01` M the status link only reaches customers who already complained · `G-02` S no status link for unmatched customers · `G-03` S nothing proves the customer saw it (`statusViewsLogged: 0` on all 14 packs) · `G-04` M the confidence band is merchant-wide, so a status page cannot tell one cohort from another.
+
+**H · The delay-announcement wave (4)**
+`H-01` L telling 5,000 backers bad news writes **one database row** · `H-02` S the band move and the announcement are two unrelated actions · `H-03` L the public comment wall — **the loudest hour in every persona** — is invisible to the product (8 pile-on beats, all unrepresentable) · `H-04` M no pre-drafting for a wave the merchant just caused.
+
+**I · Gifts (4)**
+`I-01` S on a 60–120 day ICP the "warrant" gate is permanently open · `I-02` M **no budget, no cap, no cost rollup** · `I-03` M a "sent" gift is a tag; nothing is fulfilled · `I-04` S no bulk or cohort gift.
+
+**J · Chargebacks + evidence (3)**
+`J-01` S every pack ships with no disclosed ETA · `J-02` S the dispute tile reads 100% unknown for all 10 · `J-03` M the pack is per-order and pull-only.
+
+**K · Address changes + non-WISMO intents (3)**
+`K-01` M the address black hole · `K-02` S "add to my order" / upsell requests have nowhere to go · `K-03` M the VIP/reviewer ticket sorts like everyone else (a reviewer with 90k subscribers and a video slot in two weeks got two sentences of burn-in blurb; **that reviewer makes a video about it**).
+
+**L · Multi-campaign + cohorts (3)**
+`L-01` L a delay hitting one cohort cannot be expressed; announcing it panics everyone else · `L-02` M two campaigns in one merchant record are separable **only by pledge date** · `L-03` M stage day-bands are merchant-wide, so a second campaign is scored against the first one's plan.
+
+**M · Team seats (3)**
+`M-01` M seats are sold; assignment does not exist · `M-02` S escalation is a tag string, not a routing action · `M-03` S no per-seat activity or accountability.
+
+**N · Reporting a merchant would show an investor (6)**
+`N-01` S the baseline can never be captured · `N-02` S the forecast window is hardcoded · `N-03` M Script Performance shows no rates for months (a 20-response min-n ≈ 10 months) · `N-04` S `wismoPer100Orders` rounds to 0 for every large merchant · `N-05` M **there is no report a merchant would actually show an investor** · `N-06` S "hours saved" is never computed, though every persona file contains the formula.
+
+**O · Ingest health + trust (3)**
+`O-01` S a merchant whose webhook 401s sees a calm, empty queue · `O-02` S an empty body ingests silently and buries a chargeback threat · `O-03` S our Gorgias template guesses at three undocumented variables.
+
+---
+
+## 8. THE FIVE DECISIONS DYLAN OWNS
+
+### D1 · Pricing fit — the ladder is priced on the wrong axis
+
+**What the run showed.** Value scales with **tickets in the anxiety window and refund risk**, not with total orders imported. The current ladder prices on orders. So p05 (900 orders, $299) gets 57.5 h/mo and p04 (5,800 orders, $749) gets 65.6 h/mo: nearly the same value at 2.5× the price. One persona (p04) is underwater at the conservative end, one (p08) is paying $299 for ~30% of the product, and one (p02) — the second-best hours case in the set — **cannot buy any tier at all.**
+
+**Recommendation.** Four moves, in order of cost:
+1. **Add a Scale+ / custom tier above 15,000 orders.** p02 is a signature logo and there is no price for him. One line of config.
+2. **Raise Starter's cap to 1,500 orders.** Captures p07 at $299 (he is one person; today 150 orders over the cap forces him to $499 for 3 seats he will never use). Costs nothing.
+3. **Add a Maker tier, ~$99, ≤300 orders — drafts + status page only.** That is exactly what p08 uses and exactly what she can afford. It also stops us charging $299 for a triage engine that found nothing to triage.
+4. **Decouple seats from order caps.** Both p04 and p07 are buying seats to buy headroom.
+**And hold the flat fee.** p05 named usage-based support pricing as the reason he rejected the entire category: *the bill spikes exactly in the week a delay blows the inbox up, which is when a preorder brand is most cash-fragile.* Flat pricing is not a concession, **it is the pitch.**
+
+### D2 · Which integration to build — fix the two you already sell before you add a third
+
+**What the run showed.** We sell Gorgias, Zendesk, Help Scout and BackerKit. **Gorgias physically cannot produce the HMAC our ingest route demands** (their HTTP integration offers a static header or OAuth2, not per-request HMAC), so every ticket 401s the day they go live. **Zendesk renders tags as a space-separated string**, so any ticket with 2+ tags is silently discarded. **Help Scout has no adapter at all.** In every case the merchant sees a calm empty queue. We are not choosing which integration to *add*. We are choosing whether the ones on our pricing page work.
+
+**Recommendation.** Sequence, roughly one week total:
+- **Day 1: B-01** — accept a static per-merchant bearer secret alongside HMAC (`timingSafeEqual`, still a secret over TLS, the URL token is already unguessable). This unblocks p05 and p10, i.e. the entire Shopify/DTC half of the ICP.
+- **Day 1: B-02 + B-03** — split the tag string on whitespace/commas, accept `string | string[]`, and template `{{ticket.latest_comment}}` instead of `{{ticket.description}}`. Two-line and one-line fixes. Unblocks p06.
+- **Day 2: O-01** — a discard counter, a dead-letter, and an ingest-health tile. **Ship this in the same week, because the first two fixes are worthless if the next silent drop is invisible.**
+- **Then: B-04 Help Scout adapter (M, ~200 lines).** It is on the pricing page and it has no route.
+- **Do not build Shopify (B-06) yet.** Even wired, Shopify has no estimated-delivery field and no production-stage concept, so it supplies money and identity, not a wait clock. It does not move the needle this quarter.
+
+### D3 · Build the delay-broadcast? — Yes. It is the product.
+
+**What the run showed.** All 10 personas posted a delay announcement. All 10 returned `200 {status:"posted"}`. All 10 **wrote one database row and sent nothing.** The route's own docstring claims it fans out to every waiting backer. It does not. Meanwhile the status link — the one artefact that could deflect a WISMO rather than merely answer it faster — reached **136 of 48,180 orders (0.3%)**, and only as a footer on a reply. **You have to complain to be handed the link to the page that would have prevented your complaint.**
+
+Without broadcast, Tideover is a faster typewriter. Every hour in §4 comes from **reducing cost-per-ticket**. Not one comes from **reducing tickets**. The only mechanism in the product that could reduce tickets is the status page, and it is reachable only by writing a ticket.
+
+**Recommendation. Build it, and treat it as the quarter's one L-sized bet.** Scope v1 tightly:
+- **A-02, the delivery seam** — one `Deliverer` behind the existing `ChannelAdapter` contract. `EmailDeliverer` (Resend, **already named as a subprocessor in our own legal page**) and `NoopDeliverer` (today's manual paste). **Do not fabricate delivery receipts:** a manual paste stays "Copied", never "Delivered". The existing UX copy is already scrupulous here. Keep it.
+- **Push the status link on import**, not just as a reply footer (G-01). This is the change that turns the status page from a signature line into a deflection surface.
+- **On update post, enqueue a cohort send:** the update text plus each backer's own status link. Show "sent to N, opened by M."
+- **Prerequisite: a segment key.** C-03 (map the country column we already read and throw away) and C-06 (set `campaignName`/`wave`, which already exist on `Order` as "pure display"). Without these, broadcast can only shout at everyone, which is p04's and p08's original problem with a nicer button.
+- **Explicitly out of v1: the public comment wall (H-03).** It is the loudest hour in six of ten personas and it is an L on its own. Name it as a known gap, do not let it grow the bet.
+
+### D4 · The address-change gap — ship the guardrail this week, the feature later
+
+**What the run showed.** **10 of 10 personas hit it.** There is **no address field on `Order` or `Customer`.** Address tickets rank **1957–1985 of ~2000** in the queue. And the drafter **promises to have done it anyway** in five separate drafts, including one to a customer who never supplied a new address and explicitly did not want the parcel going to her ex.
+
+This is the only defect in the run with a plausible path to a **real-world harm and a legal complaint**, and it is a two-part problem: a missing capability (M) and a lying draft (S).
+
+**Recommendation. Split it and ship the safety half now.**
+- **This week (S):** (a) add an explicit prompt rule — **never claim to have performed an action; you can only describe status and offer to escalate** — plus a post-generation lint that blocks `updated|noted|changed|confirmed + address` in a draft. (b) Route address/non-WISMO intents to a **"needs a human" bucket ranked near the top**, not the bottom (D-01/D-02). The correct draft today is: *"I can't change an address from here — I've flagged this to Nia and she'll confirm before your parcel is packed."* That is truthful, it closes the loop, and it costs one template.
+- **Later (M):** the real address capture + a packing-list export. Do not build it before the delivery seam.
+**Do not leave it as-is.** Today the product writes a promise it cannot keep, to the customer least able to absorb the mistake.
+
+### D5 · Engine and prompt investment — one week of prompt-and-lint work, no fine-tune
+
+**What the run showed.** Send-as-is is **24%**. Mechanical defect flags fire on **51%**. And the operator waved all 136 through, because the drafts are **plausible**, not because they are right. The failures are almost all cheap and mechanical:
+
+| Defect | Rate | Fix |
+|---|---|---|
+| Band spliced as a raw noun phrase (*"your mugs ships in weeks 1–3"*) | 24% | Pass the band as a **rendered clause**, not a verbatim string, at `LlmDrafter.ts:74`. **S.** |
+| "see the update below" in an **email** | 12% (11 of Foundry One's 15) | Channel-aware band copy. **S.** |
+| Internal day-bands quoted to the customer | 6% | Label them internal in the prompt, and lint for `days \d+-\d+`. **S.** |
+| Invented **actions** ("I've updated your address") | 4% | Prompt rule + post-gen lint. **S.** See D4. |
+| Invented **facts** (block numbers, batch positions) | 4% | Prompt rule: never confirm a number the customer supplied that we do not hold. **S.** |
+| Banned phrases (incl. the one word we ban) | 1% observed, **0% enforced** | `merchant.banned` is injected into the prompt and **never checked after generation.** Add it to `llmDraftBlocked`. **S.** |
+| Refund tickets that never mention the refund | **6 of 14 chargeback threats** | A hard rule: a refund/chargeback ticket **must** either offer the refund or state the policy. **S–M.** This is the expensive one. |
+| Stage blurb pasted verbatim, so a cohort sees a mail-merge | 13/15 on p02 | 3–5 blurb variants per stage, rotated. **M.** |
+
+**Recommendation. Spend one focused week on prompt hardening + a real post-generation lint. Do not fine-tune, do not swap models.** The model is not the problem: voice is genuinely good and 0/136 hard dates is a real achievement. The problem is that **the QA gate catches dates and nothing else**, and that all 70 defective drafts walked straight through it.
+
+**Two things to fix in the gate itself:**
+- **It produced a false positive and destroyed the evidence.** The one block in 136 fired because `GUARANTEE_VERB` matched **"ships"** — from the engine's own confidence band — and `DAYS_WINDOW` matched a *retrospective* wait count. Then `LlmDrafter.ts:203-206` **discarded the blocked text**, logging only a reason string. `DrafterOutput` carries no `blocked`/`fallbackReason` field, so nothing downstream can tell "the QA gate blocked the model" from "the LLM was never configured." We recovered the text only by intercepting `fetch`.
+- **The deterministic floor is not a floor, it is a trapdoor.** The seeded templates (`lib/onboarding.ts`) are ticket-type-blind: `day-89` fires a refund-save script at a calm address change and fabricates *"Your tracking is generating"*; `day-7` promises *"on schedule"* (a banned phrase for two personas); `day-30` asserts *"Nothing has slipped"* (factually false for Foundry One, whose entire identity is that things slipped twice). **Rewrite the four seeded templates to be type-aware and claim nothing.** The floor is what ships whenever the LLM is blocked, rate-limited or misconfigured — it is the failure mode under degradation, and today it is worse than saying nothing.
+
+---
+
+## 9. VERDICT
+
+**Would these ten pay?** Most of them, yes — on the demo. The pitch lands: the import holds at 18,400 rows, the queue puts 13 of 14 chargeback threats in the top 2, every ticket arrives pre-drafted in their own voice with a status link attached, and the price is flat in a category that bills you hardest on your worst week. **Seven of ten clear a 4× value-to-price bar at the mid case.**
+
+**Would they renew?** Today, no. Here is precisely where we lose each of them.
+
+- **We lose p05, p06 and p10 in week one, silently.** Gorgias cannot make our HMAC and Zendesk's multi-tag ticket is discarded on arrival. They go live, their queue stays empty, they assume it is a quiet week, and they find out from a chargeback packet. **That is not churn, that is a refund and a bad review.** Fix `B-01`, `B-02`, `O-01` before a single Gorgias or Zendesk merchant signs.
+- **We lose p04 and p08 on value.** p04 is underwater at the conservative end and the EU/US split he would buy this for **cannot be expressed by the data model.** p08 got one risk band across fourteen tickets: she is paying $299 for a triage engine with nothing to triage. Both are pricing decisions (D1), not engineering ones.
+- **We never sell p02 at all.** 18,400 orders, no tier.
+- **We lose everyone at renewal, on the dashboard.** The screen that is supposed to prove the product worked reads **"100% deflection"** (an answered-rate), **"$0 dispute exposure, 100% unknown"** (no export carries an ETA column), **"WISMO forecast: —"** (null for 10 of 10) and **"Baseline: not yet measured"** (no writer exists). **A merchant cannot renew on that.** They will renew on a feeling, once, and not twice.
+- **And we lose them in their own Discord.** Backers paste replies into the comments. 13 of Lumen Field's 15 drafts share an identical sentence. Two backers comparing notes see a form letter, and the one thing the product is *for* — sounding like a person who is actually there — dies in public.
+
+**Would they tell a friend?** The crowdfunding world is small, loud, and it talks. Today the story they would tell is *"the drafts are shockingly good and then it told a backer his address was updated when it wasn't."* That story travels further than the good half.
+
+### The single highest-leverage fix
+
+**Ship the delivery seam and push the status link to every backer at import — not as a footer on a reply.**
+
+Everything else in this report makes Tideover a faster typewriter. **Every hour in §4 comes from reducing the cost of a ticket. Not one hour comes from reducing the number of tickets.** The status page is the only mechanism in the product that can do that, and today it reaches **0.3% of backers**, exclusively the ones who already complained. Wire the seam (`A-02`) and the whole product turns over: the status page becomes a deflection surface, the delay announcement stops being a database row, the WISMO cohort forecast has something to forecast against, and — for the first time — **we can measure deflection instead of asserting it.**
+
+**But do the cheap week first, because it is the price of admission, not the win.** Five S-sized wires (`N-01` baseline · `C-01/J-01` disclosed ETA · `B-08` script variants · `O-01` ingest health · `B-01`+`B-02` the two broken integrations) resurrect the baseline report, the forecast, the outcome ledger, Script Performance, CSAT attribution, the dispute tile, the evidence pack's best exhibit, and the two integrations on our own pricing page. **Roughly one week of work. Nine dead features.**
+
+**Tideover is not missing features. It is missing wires — and one channel.**
+
+### And three things we must not say until they are fixed
+
+1. **Do not sell chargeback defense.** All 14 evidence packs shipped with `hasDisclosedEta: false`. *"We told you weeks 9–11 on the day you pledged and you accepted it"* is the strongest exhibit in a card-network rebuttal and the pack **cannot produce it for a single merchant.** Fix C-01 first: it is one onboarding question and a backfill loop.
+2. **Do not quote a deflection number.** We have never observed one. `statusViewsLogged: 0` on every pack. Any deflection figure must be labelled as the cited 15–30% tier-0 ecommerce benchmark applied as an **assumption**, not as our result.
+3. **Do not quote first-response time.** The sim's 90–135 minute median is set by an authored operator-delay table in the harness, not by the product. And `firstResponseSec` measures **time to clipboard, not time to customer.**
+
+---
+
+*Sources: `scratchpad/sim/results.json` (1.14 MB) · `scratchpad/sim/verify.mjs` (independent recompute) · `scratchpad/sim/with-without.md` · `scratchpad/sim/backlog.md` (71 items) · `scratchpad/sim/AUDIT-DUMP.txt` (136 verbatim drafts) · `scratchpad/sim/classify.mjs`. Ten personas × 30 simulated days through the real Tideover code, DeepSeek drafter live, 0 errors. **Every number in this document is SIMULATED.***</script><script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script><script>try{if(window.marked){document.getElementById("c").innerHTML=marked.parse(document.getElementById("md").textContent)}}catch(e){}</script></main></body></html>

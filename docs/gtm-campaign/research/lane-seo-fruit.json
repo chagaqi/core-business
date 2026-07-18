@@ -1,0 +1,137 @@
+{
+ "items": [
+  {
+   "name": "1. Kickstarter/Crowdfunding Dispute & Chargeback Evidence Guide",
+   "what": "Definitive guide + checklist: what to keep, what to send, and how to respond when a backer disputes a charge or threatens a chargeback before a reward has shipped. Direct content mirror of Tideover's dispute-evidence-pack feature.",
+   "how": "Publish FIRST — weakest SERP found in the whole sweep. Primary target: 'kickstarter chargeback dispute evidence.' Satellites: 'chargeback while product not shipped,' 'item not received chargeback,' 'kickstarter refund policy backers,' 'how many kickstarter backers file chargebacks.' Cite only real third-party data (FTC dispute-filing windows, Visa reason code 13.1) — no fabricated stats. Link out to Tideover's actual evidence-pack feature as the payoff CTA. Founder's COVID-era gym-equipment-co chargeback experience can anchor the intro with real, human-approved detail per the proof-only rule.",
+   "evidence": "Searched 'kickstarter chargeback dispute evidence' — results were Kickstarter's own generic disputes page, a Quora thread, a Medium 'ultimate guide to refunds,' a BackerKit help article, and Kickstarter's ToS. No dedicated, structured, SEO-built guide exists anywhere in the space. 'How many kickstarter backers file chargebacks' returned no real data source at all (Quora, a BGG forum thread, a scams listicle) — a citation-light query begging for a properly sourced answer.",
+   "sources": [
+    "https://www.kickstarter.com/disputes",
+    "https://help.backerkit.com/article/384-384",
+    "https://consumer.ftc.gov/consumer-alerts/2021/11/what-do-if-your-online-order-never-arrives-how-get-your-money-back",
+    "https://kount.com/chargeback-reason-codes/visa/merchandise-services-not-received"
+   ]
+  },
+  {
+   "name": "2. Crowdfunding Delay Update Template Library",
+   "what": "Copy-paste delay/status-update templates split by platform (Kickstarter, Gamefound, BackerKit) and scenario (production delay, customs/shipping delay, quality issue, 'gone quiet' re-engagement, missed EDD) — roughly 15-20 templates total.",
+   "how": "Publish 2nd. This becomes the flagship asset for the already-planned /resources section and extends the existing WISMO teardown template rather than duplicating it. Targets: 'kickstarter fulfillment delay update template,' 'how to write a kickstarter delay update,' 'gamefound update delay backers,' 'backer update examples.' Build as a real curated library (Notion/Canva/Typeform-style), not a thin doorway page — each template gets its own anchor with the reasoning behind it, not just fill-in-the-blank text.",
+   "evidence": "'Kickstarter fulfillment delay update template' surfaces only Kickstarter's own framework post (names 5 elements a delay update needs, gives zero copy-paste text) plus generic ecommerce shipping-delay-template mills (Sendcloud, Flodesk, Outvio, Stripo) that never mention crowdfunding, pledges, or public backer comments. 'Gamefound update delay backers' returned literally zero third-party editorial content — only Gamefound's own project update pages and help center. That's a wide-open platform.",
+   "sources": [
+    "https://updates.kickstarter.com/how-to-communicate-kickstarter-delays-without-losing-backer-trust/",
+    "https://help.gamefound.com/category/104-communicating-with-backers",
+    "https://www.sendcloud.com/shipment-delay-email-template/"
+   ]
+  },
+  {
+   "name": "3. 'How Late Is Too Late' — Kickstarter Delay Data, Updated for 2026",
+   "what": "A cited stats page synthesizing real, published delay/on-time-delivery data for Kickstarter, positioned as the up-to-date successor to a stale 2012 article.",
+   "how": "Publish 3rd, timed to compound with items 1-2 (internal links). Target: 'how late is too late kickstarter,' 'kickstarter late delivery statistics,' 'is lateness failure kickstarter.' Cite Kickstarter's own 25%-on-time study, CNN's 2012 84%-late-among-top-50 finding, the UPenn 75%-late research, and the 3.6% total non-delivery rate — every number sourced, none invented, matching the proof-only rule.",
+   "evidence": "Top-ranking source for Kickstarter delay statistics today is a CNN article from December 2012 and a 2017 arxiv paper — both stale for a 2026 query, with a BoardGameGeek forum thread and a Quora answer filling the rest of page one. Stale, dated content ranking for a live pain point is exactly the 'old thread ranks = beatable' signal the task asked to look for.",
+   "sources": [
+    "https://money.cnn.com/2012/12/18/technology/innovation/kickstarter-ship-delay/index.html",
+    "https://www.kickstarter.com/blog/is-lateness-failure",
+    "https://arxiv.org/pdf/1710.04743",
+    "https://boardgamegeek.com/thread/2477408/do-kickstarter-games-ever-get-delivered-when-the-e"
+   ]
+  },
+  {
+   "name": "4. Angry Backer Response Playbook",
+   "what": "A comment-by-comment reply framework with actual scripts for 8-10 hostile-comment archetypes, tiered by severity — content mirror of Tideover's risk-scored inbox logic.",
+   "how": "Publish 4th. Target: 'how to respond to angry kickstarter backers,' 'kickstarter comments backer angry what to do,' 'how to manage toxic backers.' Structure the piece around risk tiers (mirrors the product) rather than generic 'be polite' advice, and demo the product logic in the content itself.",
+   "evidence": "Current top results are single-creator anecdote/opinion blogs — Stonemaier Games' personal 'Kickstarter Lesson' series and boardgamedesigncourse.com — useful war stories but not structured, reusable frameworks with actual reply scripts. No page currently organizes responses by comment type/severity.",
+   "sources": [
+    "https://stonemaiergames.com/kickstarter-lesson-58-how-to-manage-toxic-backers/",
+    "https://boardgamedesigncourse.com/kickstarter-lessons-always-be-professional-and-polite-even-when-your-backers-arent/"
+   ]
+  },
+  {
+   "name": "5. The Research on What Keeps Backers Calm During a Delay",
+   "what": "A practitioner synthesis translating peer-reviewed crowdfunding-trust research (communication frequency, transparency, creator self-disclosure) into an actionable guide.",
+   "how": "Publish 5th as a link-bait/E-E-A-T asset. Target: 'backer trust crowdfunding communication study,' 'why backers forgive delays.' Cite the Northwestern CSCW paper and relevant Springer journal findings directly — this is citation-heavy content, low fabrication risk, high shareability for journalists and other SaaS blogs who like linking to 'the research says' pieces.",
+   "evidence": "The entire first page for 'backer trust crowdfunding communication study' is academic papers and journal abstracts (Northwestern CSCW 2017 PDF, ACM proceedings, two Springer journals) — zero practitioner synthesis exists anywhere. Wide-open translation opportunity.",
+   "sources": [
+    "https://users.eecs.northwestern.edu/~hq/papers/cftrust-CSCW2017.pdf",
+    "https://dl.acm.org/doi/10.1145/3700794.3700805"
+   ]
+  },
+  {
+   "name": "6. BackerKit vs Gamefound vs Kickstarter: Post-Funding Backer Communication",
+   "what": "A comparison page focused specifically on which platform's built-in tools make backer communication easiest DURING delays/fulfillment — not the usual pre-campaign fee/feature comparison.",
+   "how": "Publish 6th, positioned as a natural conversion/commercial-intent page. Target: 'backerkit vs kickstarter fulfillment,' 'backerkit alternative,' satellite 'gamefound vs kickstarter delay.' Position Tideover explicitly as the support layer that sits on top of all three platforms.",
+   "evidence": "Existing comparison content (Easyship, LaunchBoom) compares pre-campaign fundraising fees and funding tools ($216.6M vs $84.5M vs $23.1M raised in 2024, feature checklists) — none address the post-funding communication/support angle, which is exactly the ICP's live pain.",
+   "sources": [
+    "https://www.easyship.com/blog/backerkit-vs-kickstarter-differences",
+    "https://www.launchboom.com/crowdfunding-guides/kickstarter-vs-gamefound-vs-backerkit/"
+   ]
+  },
+  {
+   "name": "7. WISMO for 90-Day Waits (the wedge, not the head term)",
+   "what": "Content and product positioning explicitly against the incumbent WISMO-reduction vendors: their fixes (branded tracking pages, proactive carrier notifications) assume 3-10 day parcel shipping and don't work when there's no tracking number yet.",
+   "how": "Publish 7th, once items 1-2 give it internal links. Do NOT target 'reduce wismo' or 'wismo meaning' as head terms — they're saturated. Target long-tail only: 'wismo preorder,' 'reduce wismo 90 day wait,' 'wismo when nothing has shipped.' Frame as a direct callout: 'every WISMO guide assumes you have a tracking number. Here's what to do when you don't.'",
+   "evidence": "'Reduce wismo tickets' and 'WISMO meaning' SERPs are dominated by funded logistics-tech vendors — Shopify, Salesforce, AfterShip, parcelLab (raised institutional funding), WISMOlabs, Gladly, Sendcloud, Freshworks, Decagon all rank and all publish deep, optimized content. Genuinely not beatable head-on. But every one of their fixes is branded-tracking-page/proactive-notification based — none address the pre-shipment, 60-120-day presale case, which is a real, unaddressed wedge even inside a saturated topic.",
+   "sources": [
+    "https://wismolabs.com/what-is-wismo/",
+    "https://www.salesforce.com/commerce/wismo/",
+    "https://parcellab.com/reduce-wismo-wismr/"
+   ]
+  },
+  {
+   "name": "8. Preorder 'How Long Is Too Long' — for Campaigns Already Underwater",
+   "what": "Content targeting merchants whose preorder is already late, distinct from the 'how to set up a preorder' angle that dominates today.",
+   "how": "Publish 8th (harder SERP — sequence after some domain authority exists). Target: 'shopify preorder how long is too long' (distressed-campaign angle), 'preorder cancellation policy template' (long-wait angle), 'preorder refund rate.' Explicitly differentiate from PreProduct's framing.",
+   "evidence": "PreProduct.io is a real, entrenched, well-optimized competitor already running close to Tideover's own template-library playbook — it ranks multiple times for 'preorder policy template' and 'best shopify apps for pre-order brands.' This is not a weak SERP; it's the one genuine competitor found in the whole sweep. The wedge is narrow: PreProduct writes for merchants setting a preorder UP (30-150 day windows), not merchants whose 90-120 day preorder has already blown past its window — that specific distressed-campaign angle is uncovered.",
+   "sources": [
+    "https://preproduct.io/shopify-pre-order-policy-guide-templates/",
+    "https://preproduct.io/best-shopify-apps-for-pre-order-brands/"
+   ]
+  },
+  {
+   "name": "9. Self-Serve Backer Status Pages",
+   "what": "Argument + showcase piece for giving backers a self-serve confidence-band status page instead of answering 'where is it' by hand — direct content mirror of Tideover's status-page feature.",
+   "how": "Publish 9th/10th as a low-volume, zero-competition filler once other pillars exist to link into it. Target: 'kickstarter status page for backers' (redirect the ambiguous intent toward the merchant-facing need), 'backer self-serve tracking.'",
+   "evidence": "The current SERP for 'kickstarter status page for backers' is entirely Kickstarter's own product documentation (system status API, the 'Status' column in the backer report) — nobody has written the merchant-facing case for building backers a self-serve status page. Likely low search volume, but genuinely zero competition and a direct product tie-in.",
+   "sources": [
+    "https://help.kickstarter.com/hc/en-us/articles/4402863036187-What-is-the-Status-column-on-the-backer-report-and-how-does-it-work",
+    "https://status.kickstarter.com/"
+   ]
+  },
+  {
+   "name": "10. Preorder Chargeback Prevention (satellite of item 1, combine if resourcing is tight)",
+   "what": "A second, ecommerce-flavored page on chargeback prevention specifically for preorder/long-wait brands (as opposed to item 1's crowdfunding-creator flavor).",
+   "how": "Fold into item 1 as an internal-linked satellite section rather than a standalone pillar unless traffic from item 1 justifies a split. Target: 'shopify preorder chargeback prevention,' cite FTC's 120-540 day dispute window and Visa reason code 13.1 specifics.",
+   "evidence": "Generic chargeback-prevention content is dominated by big, funded players (Shopify itself, chargebacks911, ClearSale, Downpay) — not a weak SERP on the head term. But none of them address the preorder-specific dynamic where the item legitimately hasn't shipped yet and won't for months, which is the real distinguishing case. Given the founder's ~2hrs/day budget, this is explicitly flagged as combinable rather than a 10th separate build.",
+   "sources": [
+    "https://chargebacks911.com/chargeback-types/shopify-chargebacks/shopify-chargeback-protection/",
+    "https://getdownpay.com/blog/preventing-and-winning-shopify-chargebacks"
+   ]
+  }
+ ],
+ "summary": "Real low-hanging fruit exists, but it is narrow: Tideover should target crowdfunding-specific pain points that generic, well-funded ecommerce/logistics vendors (Shopify, Salesforce, AfterShip, parcelLab, Sendcloud) don't touch — not the head terms those vendors already own. The clearest wins are dispute/chargeback evidence for creators (near-empty SERP: only Kickstarter's generic page, a Quora thread, and a Medium guide rank), a Kickstarter/Gamefound delay-update template library (Gamefound has zero third-party editorial content; Kickstarter's own post gives a framework but no copy-paste text), and a refreshed \"how late is too late\" delay-statistics page (the current top result is a 2012 CNN article — stale content is beatable). WISMO and generic shipping-delay-template terms are saturated by funded logistics-tech vendors and should be avoided as head terms; the real wedge there is the unaddressed 60-120 day presale wait, not the acronym itself. PreProduct.io is a real, entrenched competitor already running the preorder-template-library playbook Tideover would want to run — differentiate on \"already-late campaigns,\" not \"setting up a preorder.\" New-domain reality check: even on weak-SERP long-tail, realistic time-to-rank is 3-6 months minimum, with 6-18 months typical for anything moderately contested, and Ahrefs' 2025 dataset found only 1.74% of newly published pages reach top 10 within a year at any competition level — this is a 2-3 quarter bet, not a growth hack. A curated 15-25 page template library (the Notion/Canva/Typeform precedent) is a credible, non-thin programmatic play scoped to what a solo founder can hand-build; Google Search Console (free, unlimited on the owned domain, ~3-5 day average indexing with sitemap submission) plus Keyword Planner via a no-spend Ads account is the right free toolchain, since Ahrefs' free tier only covers verified-owner site analytics, not competitor gap analysis — the manual SERP-checking done in this research is the substitute.",
+ "load_bearing_claims": [
+  {
+   "claim": "For a new/low-authority domain, realistic time-to-rank is 3-6 months for low-competition long-tail keywords and 6-18 months for moderately-to-highly competitive terms; only 1.74% of newly published pages reach Google's top 10 within their first year across any competition level (Ahrefs 2025 analysis of 2M+ pages).",
+   "source": "https://peaklora.com/blog/how-long-to-rank-in-google-search/"
+  },
+  {
+   "claim": "Ahrefs' free tier is restricted to analytics on sites you can verify ownership of — it cannot be used for competitor/SERP research, which is why this task relied on manual query-by-query SERP inspection instead.",
+   "source": "https://help.ahrefs.com/en/articles/9419051-about-ahrefs-starter-plan"
+  },
+  {
+   "claim": "Only 25% of Kickstarter projects deliver rewards by their stated Estimated Delivery Date (Kickstarter's own research); a 2012 CNN investigation found 84% of the top 50 funded projects shipped late, and that CNN piece is still a top-page-one result for delay-statistics queries in 2026 — i.e., stale content is currently winning that keyword.",
+   "source": "https://www.kickstarter.com/blog/is-lateness-failure"
+  },
+  {
+   "claim": "WISMO (Where Is My Order) tickets account for roughly 25-40% of ecommerce support volume in normal periods, rising to 50-70% during peak season, and the entire ranking WISMO content ecosystem (Shopify, Salesforce, AfterShip, parcelLab, WISMOlabs) is built around branded-tracking-page and proactive-notification fixes that assume a 3-10 day parcel-shipping window, not a 60-120 day presale wait.",
+   "source": "https://wismolabs.com/what-is-wismo/"
+  },
+  {
+   "claim": "The average preorder cancellation rate is about 5.4%, versus roughly 19-20% for general ecommerce returns — preorder customers are meaningfully more committed than the average online shopper, a useful proof-only data point for preorder-focused content.",
+   "source": "https://www.opensend.com/post/return-refund-rate-ecommerce"
+  },
+  {
+   "claim": "PreProduct.io is a real, already-ranking competitor for preorder-policy-template content (e.g. 'How to Write a Shopify Pre-order Policy + Free Templates'), meaning the generic preorder-policy-template space is not a weak SERP — Tideover's wedge there must be the distressed/already-late-campaign angle specifically, not the general preorder-setup angle.",
+   "source": "https://preproduct.io/shopify-pre-order-policy-guide-templates/"
+  }
+ ]
+}

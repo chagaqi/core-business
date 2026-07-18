@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { regenerateDraft } from "@/lib/service";
+import { withApiErrorHandling } from "@/lib/api-handler";
 
 /** POST /api/draft — (re)generate the engine draft for a ticket. Idempotent. */
 const Body = z.object({ ticketId: z.string(), regenerate: z.boolean().optional() });
 
-export async function POST(req: Request) {
+async function handlePOST(req: Request) {
   const parsed = Body.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "invalid body" }, { status: 400 });
@@ -14,3 +15,5 @@ export async function POST(req: Request) {
   if (!ticket) return NextResponse.json({ error: "ticket not found" }, { status: 404 });
   return NextResponse.json({ draft: ticket.draft });
 }
+
+export const POST = withApiErrorHandling("/api/draft", handlePOST);

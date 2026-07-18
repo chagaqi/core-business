@@ -2,20 +2,35 @@
   "name": "tideover",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "seed-check": "node scripts/seed-check.mjs",
+    "seed:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-mongo.mjs",
+    "resign:status-tokens": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/resign-status-tokens.mjs",
+    "stripe:products": "node --env-file-if-exists=.env.local scripts/create-stripe-products.mjs",
+    "seed:test-account": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-test-account.mjs",
+    "seed:test-tickets": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-test-tickets.mjs",
+    "backup": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/backup.mjs",
+    "smoke:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/mongo-smoke.mjs",
+    "smoke": "node --env-file-if-exists=.env.local scripts/smoke.mjs",
     "proof-lint": "node scripts/proof-lint.mjs",
-    "test": "node --experimental-strip-types --import ./scripts/register-hooks.mjs --test \"lib/engines/__tests__/*.test.ts\"",
-    "verify": "npm run seed-check && npm run proof-lint && npm run lint && npm run build"
+    "eval": "node evals/eval.mjs",
+    "gen-goldens": "node --experimental-strip-types --import ./scripts/register-hooks.mjs evals/gen-goldens.mjs",
+    "test": "node --experimental-strip-types --import ./scripts/register-hooks.mjs --test \"lib/**/__tests__/*.test.ts\"",
+    "verify": "npm run seed-check && npm run proof-lint && npm run eval && npm run lint && npm run build"
   },
   "dependencies": {
+    "@auth0/nextjs-auth0": "^4.25.0",
     "@calcom/embed-react": "^1.5.3",
     "clsx": "^2.1.1",
     "framer-motion": "^11.18.2",
+    "mongodb": "^6.21.0",
     "nanoid": "^5.0.9",
     "next": "^14.2.30",
     "react": "^18.3.1",

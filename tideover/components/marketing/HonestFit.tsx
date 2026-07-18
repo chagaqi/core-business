@@ -1,8 +1,15 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { Button } from "@/components/ui/Button";
+import { CornerFold } from "@/components/marketing/paper/CornerFold";
 
 /**
- * Honest-fit section — two cards drawn from the sales-page who-it's-for / not-for
+ * Fit section — two cards drawn from the sales-page who-it's-for / not-for
  * lists. Calm and disqualifying on purpose: we'd rather both sides find out fast.
+ *
+ * Single source of truth for both the Home overview and the standalone
+ * /who-its-for page: pass `condensed` to render just the section header + a
+ * link to the full page (Home's teaser); omit it (default) for the full
+ * section — both fit / not-yet cards — used on /who-its-for.
  */
 const FIT: readonly string[] = [
   "You're graduating a Kickstarter, Indiegogo, or BackerKit campaign onto Shopify.",
@@ -20,20 +27,29 @@ const NOT_YET: readonly string[] = [
   "You want a bot that auto-fires delivery promises.",
 ];
 
-export function HonestFit() {
+export function HonestFit({ condensed = false }: { condensed?: boolean } = {}) {
   return (
     <section id="fit" className="section">
       <div className="wrap">
         <Reveal index={0}>
           <div className="mb-11 max-w-[640px]">
-            <span className="kicker mb-3.5">Honest fit</span>
+            <span className="kicker mb-3.5">Is it a fit?</span>
             <h2 className="m-0 text-balance">We&rsquo;d rather tell you now if this isn&rsquo;t for you.</h2>
+            {condensed && (
+              <div className="mt-6">
+                <Button href="/who-its-for" variant="quiet">
+                  Who it&rsquo;s for &rarr;
+                </Button>
+              </div>
+            )}
           </div>
         </Reveal>
 
+        {!condensed && (
         <div className="grid grid-cols-1 gap-[22px] md:grid-cols-2">
           <Reveal index={1}>
-            <div className="h-full rounded-[20px] border border-[#D6E5E0] bg-paper p-[30px] shadow-card">
+            <div className="relative h-full overflow-hidden rounded-[20px] border border-[#D6E5E0] bg-paper p-[30px] shadow-card">
+              <CornerFold corner="tr" />
               <h3 className="mb-5 font-serif text-[21px] font-semibold text-teal">A strong fit if&hellip;</h3>
               <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
                 {FIT.map((item) => (
@@ -64,6 +80,7 @@ export function HonestFit() {
             </div>
           </Reveal>
         </div>
+        )}
       </div>
     </section>
   );

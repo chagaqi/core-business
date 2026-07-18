@@ -102,7 +102,7 @@ On Shopify, inject the same iframe via a theme app extension / script tag, passi
 `vercel.json` is included and correct. **No secrets are needed for the seeded demo.**
 
 ### One-time setup (≈2 min)
-1. Vercel → **Add New… → Project** → import `chagaqi/core-business`.
+1. Vercel → **Add New… → Project** → import your GitHub repo (this app lives in the `core-business` monorepo — use `<your-org>/core-business`).
 2. **Set Root Directory = `tideover`** (this app is a subdirectory of the repo — the build
    fails without this). Framework preset auto-detects as **Next.js**.
 3. Leave env vars empty for the demo → **Deploy**. Every push to the branch redeploys; PR #1

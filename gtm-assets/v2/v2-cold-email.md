@@ -1,6 +1,6 @@
 # Tideover — Cold Email System
 
-**Venture 2 · Design-partner acquisition · Founder: Chaga Chai**
+**Venture 2 · Design-partner acquisition · Founder: Dylan**
 Built to outreach-playbook §4.1 (cold email) and §5.2 (Tideover), structure-matched to the proven scripts in `real-scripts-library.md`. Beachhead: Kickstarter / Indiegogo / BackerKit graduates moving onto Shopify, then made-to-order and drop brands.
 
 > **What this is.** Cold outbound to book the five founding-partner pilots this cohort. Separate from the nurture sequence, which warms people who already raised a hand. These go to named crowdfunding graduates and made-to-order brands who've never heard of Tideover.
@@ -11,13 +11,13 @@ Built to outreach-playbook §4.1 (cold email) and §5.2 (Tideover), structure-ma
 >
 > **The one upgrade — ARTIFACT-FIRST.** Where the real operators open with a claim ("I have some ideas," "I help businesses fix that," "I have an idea that can get your next 100 customers"), we open with the finished made-for-them thing: the free teardown or the day-stage breakdown we already built for their exact case. The artifact replaces the claim. That is the only thing we run differently from the parents, and it is called out at each section.
 >
-> **Proof-only (brand kit §8, non-negotiable).** No refund-reduction case study exists yet. A cycle takes 60 to 120 days; the proof is being made now, in these pilots. No fabricated stats, testimonials, ratings, or logos. Any external number stays the source's, cited to its name, never restated as Tideover's own result (HubSpot's "triple the run rate," anyone's revenue, all theirs). The "$2M" figure is warm-call only. In cold email the operator background is a war story: "I ran fulfillment, in-house shipping, and the where's-my-order comms for a physical-goods brand for years." Scarcity is real: five founding-partner pilots this cohort, and I run 1 to 2 at a time, because the work is done by hand.
+> **Proof-only (brand kit §8, non-negotiable).** No refund-reduction case study exists yet. A cycle takes 60 to 120 days; the proof is being made now, in these pilots. No fabricated stats, testimonials, ratings, or logos. Any external number stays the source's, cited to its name, never restated as Tideover's own result (HubSpot's "triple the run rate," anyone's revenue, all theirs). No revenue figure is claimed. The operator background is Dylan's lived gym-equipment story: "I ran a gym-equipment brand through the worst freight delays in e-commerce history and answered the where's-my-order emails myself, every morning." The only numbers are his own self-reported account ($200K in orders in week one, 60-plus-day waits, two years). Scarcity is real: five founding-partner pilots this cohort, and I run 1 to 2 at a time, because the work is done by hand.
 
 ---
 
 ## 0. How to use this
 
-**Send from Chaga's aged personal inbox**, not the fresh `tideover.app` domain (still in ~21-day warmup; reserved for next-cohort sends once warm). No verified email but a handle found? Platform DM instead (connection-note rule below).
+**Send from Dylan's aged personal inbox**, not the fresh `tideover.app` domain (still in ~21-day warmup; reserved for next-cohort sends once warm). No verified email but a handle found? Platform DM instead (connection-note rule below).
 
 **Two fields make or break every send:**
 1. `{{presaleSignal}}` — one true, specific, currently-live observation. Generic kills the send.
@@ -79,7 +79,7 @@ Want me to send it? Reply "send it" and it's yours, free, no call needed.
 
 Or just reply with the question your customers ask most while they wait, and I'll send back how I'd answer it.
 
-— Chaga
+— Dylan
 
 > **Structure: Daniel Fazio email 1 — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e** (researched observation → offer → soft ask). **Artifact-first upgrade:** Fazio claims "I've helped [#] businesses get [benefit]"; we replace that line with the finished day-stage map already built for their case ("it's already built for your case"). The operator war story is held out of A1 entirely and moved to the body of A2 onward, so strength leads. No "I'm newer / no track record" admission here.
 > **Permission-first (favored default, per outreach-proof.md tactic 10).** Touch 1 asks before it delivers; the breakdown link goes out on the "yes." **A/B variant (embedded link):** swap the "Want me to send it?" line for "Here it is, the day-stage map for your case: {{teardownLink}}." Run it as an explicit test only; the proof leans permission-first (Fazio "no link = ~3x").
@@ -104,7 +104,7 @@ The fix isn't a bigger support team. It's a script set keyed to day-in-wait, the
 
 Want it? Reply "send it" and I'll send the whole thing, free. Or if you'd rather I map it against your actual setup, say the word and I'll grab 15 minutes.
 
-— Chaga
+— Dylan
 
 > **Structure: Daniel Fazio email 2 (the value-give) — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e**, run on the most-value-dense slot. The new-information rule is Josh Braun's value-bump follow-up ("here's a thing worth seeing," never "any update") — https://joshbraun.com/how-to-write-follow-up-emails/. **Artifact-first:** the day-stage breakdown is the give, not a "case study from [client]" (Fazio's email 2 line); the war story appears here as the reason the artifact exists, not as a credential flex.
 
@@ -126,7 +126,7 @@ Almost all of it is preventable with a proactive touch around day 25, before the
 
 I wrote the day-by-day version of how to head that off into the free Presale Anxiety Playbook. Want it? Reply "playbook" and I'll send it over. Or if you'd rather I flag the dispute risk in your actual setup, say so and I'll grab 15 minutes.
 
-— Chaga
+— Dylan
 
 > **Structure: Josh Braun relevant-resource follow-up — https://joshbraun.com/how-to-write-follow-up-emails/** (a fresh, different-angle deposit each bump; the Playbook is the "thought you'd enjoy this resource" move). Cadence per outreach-proof.md tactic 4. **Artifact-first:** the give is the day-by-day Playbook built for this exact failure point, offered before any ask. The day-30 quote is the prospect's voice, not our claim; the chargeback risk is stated as theirs, no number invented as our result.
 
@@ -146,7 +146,7 @@ You're mid-fulfillment and slammed, which is the whole problem, so the silence m
 
 Good luck with the ship.
 
-— Chaga
+— Dylan
 
 > **Structure: Josh Braun shame-free ghost re-engage — https://www.linkedin.com/posts/josh-braun_heres-a-cold-email-follow-up-message-i-received-activity-7085234104606019584--Egj** (acknowledge the real thing on their plate, no guilt-trip, one low-friction ask, the give stands either way). The "I'm pretty new, here's the honest reason" tone borrows Sam Nelson's Agoge breakup #1 humility — https://blog.contactout.io/wp-content/uploads/2023/10/30MPC-x-Sam-Nelsons-Agoge-Sequence.pdf — but reframed: the honesty is "I'm doing the work by hand to build the playbook," the reason for the free sample, placed LATE, never as an opener. **Artifact-first:** the free Playbook is still the close, not a final pitch.
 
@@ -183,7 +183,7 @@ Want me to send it? Reply "send it" and it's yours, free.
 
 Or reply with the question your customers ask most while they wait, and I'll send back how I'd answer it.
 
-— Chaga
+— Dylan
 
 > **Structure: Daniel Fazio email 1 — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e** (observation → offer → soft ask). **Artifact-first upgrade:** the made-for-them day-stage map opens the value, replacing Fazio's "I've helped [#] businesses get [benefit]" claim. War story held back to B2.
 > **Permission-first (favored default, per outreach-proof.md tactic 10).** Touch 1 asks before it delivers. **A/B variant (embedded link):** swap "Want me to send it?" for "Here's the day-stage map for your case: {{teardownLink}}." Explicit test only; the proof leans permission-first.
@@ -208,7 +208,7 @@ The fix is proactive touches that match where each order actually is in producti
 
 Want it? Reply "send it" and I'll send the whole thing, free. Or if you'd rather I map it against your actual wait-window, say so and I'll grab 15 minutes.
 
-— Chaga
+— Dylan
 
 > **Structure: Daniel Fazio email 2 (the value-give) — https://medium.com/@danielfazio/the-best-b2b-cold-email-template-ive-ever-used-b28166cf709e**, on the most-value-dense slot, with Josh Braun's value-bump rule (new info, never "any update") — https://joshbraun.com/how-to-write-follow-up-emails/. **Artifact-first:** the day-stage version is the give; the war story is the reason it exists, not a credential.
 
@@ -230,7 +230,7 @@ The expensive version is when that wobble becomes a chargeback: the fee plus pro
 
 The day-by-day version of how I'd protect that revenue is in the free Presale Anxiety Playbook. Want it? Reply "playbook" and it's yours. Or if you'd rather I flag the trust wobbles in your actual wait-window, say so and I'll grab 15 minutes.
 
-— Chaga
+— Dylan
 
 > **Structure: Josh Braun relevant-resource follow-up — https://joshbraun.com/how-to-write-follow-up-emails/** (fresh different-angle deposit; the Playbook as the resource). **Artifact-first:** the Playbook built for this failure point is offered before the ask. The $15 to $25 figure is cited to card-network ranges, never restated as a Tideover result.
 
@@ -248,7 +248,7 @@ No reply on the wait-window comms usually means it's handled or you're buried. E
 
 {{brand}} is exactly that brand. Reply "founding" for the one-pager. Either way the free Playbook still stands. Reply "playbook" and it's yours.
 
-— Chaga
+— Dylan
 
 > **Structure: Josh Braun shame-free ghost re-engage — https://www.linkedin.com/posts/josh-braun_heres-a-cold-email-follow-up-message-i-received-activity-7085234104606019584--Egj** (acknowledge their reality, no guilt-trip, one ask, give stands either way), with Sam Nelson Agoge breakup humility — https://blog.contactout.io/wp-content/uploads/2023/10/30MPC-x-Sam-Nelsons-Agoge-Sequence.pdf — reframed as "doing it by hand to build the playbook," placed late. **Artifact-first:** the free Playbook is the close.
 
@@ -283,7 +283,7 @@ Two ways this could work:
 
 Want the one-pager on how the rev-share works? Reply and I'll send it. Or if it's easier to just talk, 20 min and we'll see if there's a fit: {{calLink}}
 
-— Chaga
+— Dylan
 
 > **Structure: Will Allred / Lavender "Mouse Trap with Context" — https://www.lavender.ai/blog/sales-email-frameworks** (observe a real situation on their side → "would it be helpful to..." → the bolt-on tool that solves it), combined with Marcos Ruiz's two-option soft ask — https://www.thebirdhouse.email/p/steal-this-3m-linkedin-dm-script. The "not your scope but it lands on your relationship" line is the Lavender context-frame: name the gap that's theirs to feel but not theirs to fix. **Artifact-first:** the rev-share one-pager is the made-for-them artifact, permission-gated before sending.
 > **Merge tags:** `{{firstName}}` (principal), `{{agencyClientType}}` (e.g. "hardware creators," "brands running drops"), `{{calLink}}`.
@@ -298,7 +298,7 @@ Want the one-pager on how the rev-share works? Reply and I'll send it. Or if it'
 
 **Who.** The warm-ish tail: replied with mild interest, took a call without committing, downloaded the Playbook, engaged on a post then went quiet. Not pure cold. A one-off activation nudge using honest scarcity, not a sequence.
 
-**The scarcity is real (brand kit §6).** Five founding-partner pilots this cohort, and the concurrent-live cap is genuinely small (1 to 2 at a time) because Chaga is personally in the inbox doing the concierge work by hand. Never a fake countdown.
+**The scarcity is real (brand kit §6).** Five founding-partner pilots this cohort, and the concurrent-live cap is genuinely small (1 to 2 at a time) because Dylan is personally in the inbox doing the concierge work by hand. Never a fake countdown.
 
 ---
 
@@ -326,7 +326,7 @@ If {{brand}} is mid-wait and the support load is real, reply "I'm in" and I'll s
 
 I'd rather have a few partners I can serve properly than thirty I can't.
 
-— Chaga
+— Dylan
 
 > **Structure: Nick Abraham "if I could / risk minimizer" qualifier — https://www.linkedin.com/posts/nick-abraham_coldemail-prospecting-b2bsales-activity-7119728772051832833-dVJm**, run as honest selectivity: the "five spots, 1 to 2 at a time, by hand" frame is Abraham's risk-minimizer move turned into real scarcity (he qualifies hard so only serious leads reply; we do the same with a genuine cap). The "I'd rather have a few I can serve properly than thirty I can't" close is selectivity-leads, not need-leads. **Artifact-first:** the pilot agreement and the Playbook both go out on a "yes."
 > **Merge tags:** `{{firstName}}`, `{{brand}}`, `{{playbookLink}}`, `{{calLink}}` (optional).
@@ -416,7 +416,7 @@ Goal on any reply: a call or the first pilot conversation. Never a quoted retain
 - [ ] No refund or chargeback-reduction percentage stated as Tideover's own result. (None exists yet.)
 - [ ] No external operator's number (HubSpot's run-rate triple, anyone's revenue) restated as ours. Every external stat is cited to its named source and never restated as our outcome.
 - [ ] No invented case study, testimonial, rating, client count, or logo. "Founding partners" or "a small set" only.
-- [ ] The "$2M" figure does not appear. Operator background is a war story.
+- [ ] No revenue figure is claimed. Operator background is Dylan's lived gym-equipment story, self-reported numbers only.
 - [ ] Scarcity (five founding pilots this cohort, 1 to 2 concurrent) is tied to the concierge cap, never a fake countdown.
 - [ ] No retainer or price quoted. Pilot is free; paid plan only on a call after proof.
 - [ ] Sent from the aged personal inbox, not the un-warmed `tideover.app` domain.

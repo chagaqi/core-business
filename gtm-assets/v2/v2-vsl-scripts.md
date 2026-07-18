@@ -1,8 +1,8 @@
 # Tideover — VSL / Loom Scripts
 
-> **Venture 2 (Tideover — tideover.app).** Founder: Chaga Chai. A presale-support layer for crowdfunding brands moving to Shopify. The name is the idiom "to tide someone over": Tideover carries anxious presale buyers through the wait until their order ships.
+> **Venture 2 (Tideover — tideover.app).** Founder: Dylan. A presale-support layer for crowdfunding brands moving to Shopify. The name is the idiom "to tide someone over": Tideover carries anxious presale buyers through the wait until their order ships.
 > **Voice:** warm, calm, steady. Operator to operator. The guy who answered the day-60 refund email at 11pm. No hype.
-> **PROOF-ONLY (hard rule):** No invented refund %, no case studies, no testimonials, no logos. A refund case study needs a full 60-to-120-day cycle, so it doesn't exist yet. Say so. Proof is the war story, the free pilot, and honest leading indicators. The "$2M" number is warm-call only, never in cold or public copy. External stats stay cited to their source.
+> **PROOF-ONLY (hard rule):** No invented refund %, no case studies, no testimonials, no logos. A refund case study needs a full 60-to-120-day cycle, so it doesn't exist yet. Say so. Proof is the lived gym-equipment story, the free pilot, and honest leading indicators. No revenue figure is claimed — the only numbers are Dylan's own self-reported account ($200K week one, 60-plus-day waits, two years). External stats stay cited to their source.
 
 **In this file:** four scripts plus a short appendix. Each asset gives a default hook plus one alternate, then one body.
 1. Cold Loom (under 90s)
@@ -14,7 +14,7 @@
 
 **The day-stage arc** (every asset leans on it): Curious (day 7 to 14), Restless (day 30 to 45), Frustrated (day 60 to 75), Dispute-risk (day 85 to 120). Same buyer, four answers.
 
-**The credibility line** (verbatim, every asset): *"I ran fulfillment, in-house shipping, and the 'where is my order' comms for a physical-goods brand. I've sent the day-60 refund email that works and the one that makes it worse."*
+**The credibility line** (verbatim, every asset): *"I ran a gym-equipment brand through the worst freight delays in e-commerce history and answered the 'where is my order' emails myself. I've sent the day-60 refund email that works and the one that makes it worse."*
 
 **Personalization rule (non-negotiable, per outreach-proof.md Tactic 3):** every per-prospect line a human writes. A tool pulls the raw signal (campaign-end date, angry backer thread, ship-date note); a human writes the hook. Never let AI draft the variable line. AI/token personalization now converts worse than none. The merge fields above are human-filled, not auto-generated.
 
@@ -72,14 +72,14 @@ Two lanes only (the playbook says layer one other channel, not three): the warm 
 **A/B variant — embedded link (test against the default, do not assume it wins):**
 > "{{firstName}} — saw {{brand}} graduated off {{platform}}. {{hook}}. Recorded you a 60-sec Loom on the support wave that hits during the fulfillment wait. [loom] Worth a look before your units ship."
 
-### Cold email (Chaga's aged personal inbox, not the warming tideover.app domain)
+### Cold email (Dylan's aged personal inbox, not the warming tideover.app domain)
 
 **Default — permission-ask (no link in touch 1):**
 > **Subject:** {{firstName}}, your preorder wait
 > Hi {{firstName}},
 > {{hook}}. Right after a crowdfunding move to Shopify, the "where's my order" flood hits during the {{leadTimeWeeks}}-week wait. I lived this running fulfillment for a physical-goods brand, and {{campaign}} reminded me of it.
 > I recorded you a 60-second video on it. Want me to send it?
-> — Chaga
+> — Dylan
 
 **A/B variant — embedded link + calendar (test against the default):**
 > **Subject:** 60-sec video re: {{brand}}'s preorder wait
@@ -87,7 +87,7 @@ Two lanes only (the playbook says layer one other channel, not three): the warm 
 > I recorded you a 60-second video on the support problem that ambushes crowdfunding creators right after they move to Shopify: the "where's my order" flood during the {{leadTimeWeeks}}-week wait. I lived this running fulfillment for a physical-goods brand, and {{campaign}} reminded me of it.
 > [loom]
 > If it's useful, my calendar's here for a 15-min teardown: {{calLink}}. If not, the video's yours to keep.
-> — Chaga
+> — Dylan
 
 **Send-context rules (per outreach-proof.md):**
 - **{{hook}} is human-written.** A tool surfaces the signal; a human writes the line. Never AI-drafted (Tactic 3).
@@ -109,7 +109,7 @@ Two lanes only (the playbook says layer one other channel, not three): the warm 
 > "Your presale buyers don't get cold feet. They need someone to tide them over the wait. [*ON SCREEN: that line as a title card.*] Whether a backer gets carried calmly through 90 days or files a chargeback and calls you a scam usually comes down to whether anyone said the right thing at the right moment. Let me show you where that happens."
 
 **Alternate — the operator confession:**
-> "I've answered the day-60 refund email at 11pm with no good answer, watching a customer slip toward a dispute. [*ON SCREEN: Chaga, plain background, to camera.*] If you run presales, you know the email. I'll show you why it happens, why your helpdesk can't fix it, and what actually calms that buyer down."
+> "I've answered the day-60 refund email at 11pm with no good answer, watching a customer slip toward a dispute. [*ON SCREEN: Dylan, plain background, to camera.*] If you run presales, you know the email. I'll show you why it happens, why your helpdesk can't fix it, and what actually calms that buyer down."
 
 ## Full script (word-for-word)
 
@@ -132,7 +132,7 @@ Two lanes only (the playbook says layer one other channel, not three): the warm 
 > Day 12, someone's nervous it didn't go through, so they get a calm confirmation and a clear ship window. Day 58, "I want a refund," so they get an honest read on the wait and a real production update. Day 89, "last chance before I dispute," the highest-stakes save: an honest tracking update and a real reason to wait one more day, so it goes to them and not their bank. Same inbox, different replies, because now your support knows the difference.
 >
 > **[CREDIBILITY — operator, proof-only — 2:35 to 3:00]**
-> I'm Chaga, not a CS-software salesperson. [*Deliver the credibility line.*] What calms an anxious buyer versus what makes them hit dispute, that's the whole product.
+> I'm Dylan, not a CS-software salesperson. [*Deliver the credibility line.*] What calms an anxious buyer versus what makes them hit dispute, that's the whole product.
 >
 > [*ON SCREEN: honest-proof callout box.*] And here's the straight talk. [*Deliver the honest-proof line.*] You'll know where the proof stands at every step.
 >
@@ -152,7 +152,7 @@ Two lanes only (the playbook says layer one other channel, not three): the warm 
 
 **Audience:** a warm founder who booked the teardown or a design partner who replied to the Loom. Also a "watch before our call" asset.
 **Format:** screen-share heavy. You show the concierge motion on a real or realistic inbox. Webcam bubble on.
-**On the "$2M":** lead with the war story. If asked and substantiable, the number is optional color, never the lede.
+**On revenue figures:** there aren't any to claim. Lead with the lived gym-equipment story; the only numbers are Dylan's own self-reported account ($200K week one, 60-plus-day waits, two years), never a "$2M" figure.
 **Goal:** convert to a free founding-partner pilot.
 
 ## Hooks (first 20s)
@@ -255,7 +255,7 @@ Two lanes only (the playbook says layer one other channel, not three): the warm 
 > Every sample inbox is a clearly synthetic example. Never imply a real customer or result.
 
 ## C. Proof-only guardrails (extends the header rule, check before publishing)
-- "$2M" or any revenue figure: cold and public scripts never use it (Assets 1, 2, 4). Asset 3 live only, if asked and substantiable.
+- No "$2M" or any revenue figure anywhere. The only numbers are Dylan's own self-reported account ($200K week one, 60-plus-day waits, two years), framed as such.
 - Every external stat cited to its source on screen and spoken (YepAI 2026; card-network dispute fees). Never restated as Tideover's own data.
 - Ship windows are always confidence bands ("weeks 9 to 11"), never invented hard dates.
 

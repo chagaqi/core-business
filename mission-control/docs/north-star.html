@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NORTH STAR — from here to finished</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">NORTH STAR — from here to finished</span>
+    <a class="back" href="../tideover-hq.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>NORTH STAR — from here to finished</h1>
+<p><strong>2026-07-16. The guiding light for Opus.</strong> The torch pass (<code>docs/TORCH-PASS-TO-OPUS.md</code>) is the context: what this is, why it wins, how it can die. This document is the track: from tonight's position to a <strong>finished product that reads like a funded startup, with the GTM engine executing</strong>. It was written after a six-lane gap sweep (five repo/live audits + a completeness critic, ~50 findings, every one carrying file:line evidence — raw reports in <code>docs/gap-sweep-2026-07-16/</code>). When this document and any other list disagree on sequence, this document wins. When it disagrees on <em>facts</em>, verify against the code and fix whichever is wrong — that discipline is the product.</p>
+<hr>
+<h2>1. WHAT "FINISHED" MEANS</h2>
+<p>Two tests, both must pass:</p>
+<p><strong>The funded-startup test.</strong> A skeptical merchant googles us, clicks around for four minutes, signs up without talking to anyone, and at no point hits a dead end, a lie, or a surface that whispers "one guy's demo": they find a blog with real answers, a working trial with a visible clock, a checkout that takes their card, an app with no blank flashes, replies to their tickets that never garble, and a status page their backers actually receive.</p>
+<p><strong>The executing-GTM test.</strong> The daily loop from <code>docs/gtm-campaign/GTM-CAMPAIGN-2026-07.md</code> is actually running: prospects flow in scored, outreach ships approved, content publishes weekly, the nurture sequence fires itself, and every number on the scoreboard is measured, not asserted.</p>
+<p>Tonight, neither passes. The product is demo-complete, gate-green (57,614 invariants + 55 goldens + 490 tests), live on real auth — and <strong>a stranger cannot give us money</strong>, the campaign's Day-1 actions have no plumbing, and the engine can still ship the literal string "as as" to an angry customer.</p>
+<h2>2. THE TRACK</h2>
+<p>Six phases. Each has an acceptance gate — the phase is done when the gate passes, not when the code exists. Disjoint-file lanes may run in parallel; hot files stay serialized (CONTRIBUTING.md). High-risk areas (billing, auth, migrations, engine) follow the charter: no improvising, ambiguity stops and surfaces.</p>
+<h3>P0 — LAND IT + STOP THE LIES (days, some already in flight)</h3>
+<p>The cheap, urgent truth-fixes and the go-live rituals.</p>
+<ul>
+<li><strong>Dylan:</strong> TEST1 walkthrough on app.tideover.app · D9 golden review (30 min) · the word <strong>"merge it"</strong> (main is ~45 commits behind production).</li>
+<li><strong>Fix the floor garble (P1, hot file — one serialized change):</strong> <code>lib/engines/reassurance.ts:88-90</code> hardcodes "as soon as it's ready…"; <code>stripBanned</code> mangles it to "as as it's ready" for any merchant banning "soon". The sprint's word-boundary lint covers ONLY the LLM path; the deterministic floor — the default drafter and the safety net under every LLM draft — ships unchecked (<code>lib/drafting/safe-floor.ts:164</code>). Fix: run the engine's merged text through <code>bannedPhraseIn</code> inside safeFloor; collision → escalation reply, never a mangled strip. Add a "banned word collides with engine phrasing" case to the eval so 57k invariants actually cover it (today 'soon' is in no seed fixture — the harness never exercises the collision).</li>
+<li><strong>Un-lie the pricing FAQ (P1):</strong> <code>app/pricing/page.tsx:52-53</code> promises self-serve plan changes and billing settlement that have zero code behind them. Soften the copy today; build to it in P1. The proof-only doctrine applies to our own FAQ before it applies to any AI draft.</li>
+<li><strong>Un-lie the wizard picker (P2):</strong> <code>components/product/DataSourcePicker.tsx</code> says Gorgias/Zendesk are "coming soon" and omits Help Scout — while the same wizard's ConnectPanel offers live credential UIs for all three (ADR-0021 shipped). Recategorize; name Help Scout.</li>
+<li><strong>Wire what's built but unreachable:</strong> the wizard collects none of <code>campaignName</code>/<code>promisedWindow</code>/the four baseline questions despite complete backend plumbing (<code>lib/onboarding.ts:74,86,229</code>, <code>lib/baseline.ts:242</code> — <code>recordReportedBaseline</code> has zero callers); <code>backfillDisclosedEta</code> (<code>lib/import.ts:413</code>) also has zero callers — add the wizard step + a settings action.</li>
+<li><strong>Instrument before traffic (P1):</strong> privacy-friendly analytics (Plausible or Vercel Analytics) in <code>app/layout.tsx</code> + Sentry free tier wired into <code>app/error.tsx</code> — the GTM plan drives traffic at a site that currently cannot see visitors or errors. Plus <code>app/sitemap.ts</code> + <code>app/robots.ts</code> (~30 min, independent of the blog).</li>
+</ul>
+<p><strong>Gate:</strong> merged, deployed, smoke 11/11; a merchant banning "soon" gets a clean reply; the wizard asks what the merchant promised backers; no public copy claims an unbuilt capability.</p>
+<h3>P1 — TAKE MONEY (the biggest single gap; ~1-2 weeks; ADR first)</h3>
+<p>Zero payment infrastructure exists: no Stripe SDK, no STRIPE_* env, no checkout/webhook route, no <code>plan</code> field on Merchant, no trial clock, no cancellation path, no invoices (<code>package.json</code>, <code>.env.example</code>, <code>lib/types.ts:257-352</code> all verified). The published $299/$499/$749 ladder is decorative, and the caps are plan-blind — a $299 customer gets 10 seats (<code>lib/team.ts:20</code>) and 50k imports (<code>lib/csv.ts:85</code>), the $749 allowances, free.</p>
+<p>Build, in order: <strong>ADR-0022 billing architecture</strong> (Stripe Checkout + customer portal + webhook; the tier ladder is a <strong>Fable/Dylan decision — never improvise pricing</strong>) → <code>plan</code> on Merchant, captured at checkout → trial clock derived from <code>createdAt</code> + 14d with a countdown surface and a defined expiry behavior → per-plan seat/import caps threaded through <code>lib/team-route.ts:81</code> and <code>lib/import.ts:117</code> → cancellation + the terms gap (terms currently promise "cancel any time" with no object to cancel, and say nothing about refunds on prepaid annual — <code>app/terms/page.tsx:35-44</code>). Invoices/receipts come free with the portal.</p>
+<p><strong>Gate:</strong> a stranger completes signup → trial → card → paid plan in Stripe test mode end-to-end; caps enforce per plan; the FAQ copy is true again.</p>
+<h3>P2 — THE SEND SEAM + THE GTM PLUMBING (parallel lanes; the campaign's prerequisites)</h3>
+<p>The torch pass already argues Step 1 (the <code>Deliverer</code> seam + status-link push at import + cohort sends + unsubscribe) is <em>the win</em> — unchanged, build it. This phase adds the five verified blockers between the GTM plan and its own Week 1:</p>
+<ol>
+<li><strong>Blog infra</strong>: <code>app/blog/[slug]</code> (MDX or file-based) — the 10 SEO pillars have nowhere to publish (<code>Footer.tsx</code> defers it in a comment; no route exists). Pillar #1 (chargeback-evidence guide) publishes the week the route lands.</li>
+<li><strong>The funnel plumbing</strong>: <code>app/api/playbook-lead/route.ts:7-18</code> stores a row and does nothing else, and <code>resend</code> isn't even installed. Install it; captures create contacts in a List-A audience on a dedicated marketing subdomain; build the 6-email Automation (§9.2 of the campaign doc). Never mix List A/List B/transactional lanes.</li>
+<li><strong>The Template Pack</strong>: the flagship magnet + pillar #2 in one build. Ungated library page + gated pack behind the existing capture.</li>
+<li><strong>The CASL source-log</strong>: a <code>leads</code> collection (or sheet) with mandatory <code>sourceUrl</code> + <code>discoveredAt</code> — must exist before the first address is contacted.</li>
+<li><strong>The prospect engine</strong>: the scrapers specced in campaign §4/§5b (webrobots dump filter, Apify discover, Shopify <code>/products.json</code> scan, Woo plugin dorks, contact discovery) as <code>scripts/</code> + a KPI tracking surface (reply rate, spam/domain, pilots — the ≥0.30% spam pause rule needs somewhere to be checked daily).</li>
+</ol>
+<p><strong>Gate:</strong> a new import pushes status links to real inboxes with unsubscribe; a test opt-in receives email 1 within a minute; pillar #1 is live and indexed; the prospect engine produces a scored 200-row list with source URLs.</p>
+<h3>P3 — GTM IGNITION (starts the day Dylan buys the domains; runs forever)</h3>
+<ul>
+<li><strong>Dylan unblocks:</strong> G5 purchases (3 domains + 6 mailboxes + Smartlead — the 14-day warmup clock is the critical path) · the X handle + Premium Basic · the CASL lawyer consult · begins the §4 daily calendar.</li>
+<li><strong>The AI layer runs</strong>: morning prospect run, drafts, F5Bot triage, X conversions of the 40-post bank, the weekly pillar loop, the digest.</li>
+<li><strong>Testimonial machinery from pilot #1 (P1-severity, currently nonexistent):</strong> every PR motion (Product Hunt, Show HN, BackerKit, Stonemaier) is gated on a real testimonial, and nothing captures one. Build the ask-script + consent/quote-release + storage, triggered off pilot completion or a qualifying CSAT. Proof-only needs proof <em>collected</em>, from day one.</li>
+<li><strong>Q4 is a demand event, not just an SEO horizon</strong>: November campaigns miss holiday ship dates and the ICP's pain peaks. Prep in September: a seasonal magnet ("will your campaign make its holiday ship date?"), a surge outbound list, and the pillar posts ranking by then.</li>
+</ul>
+<p><strong>Gate:</strong> first sends Week 3 at 5/mailbox/day; 3–5 pilots in motion by day 45; every pilot instrumented (editedRatio logging — the number the whole value model swings on).</p>
+<h3>P4 — THE LEARNING PRODUCT (torch pass §9A/§9B — after real pilots exist)</h3>
+<p>LRN1 (edit-distance capture first — pilots make it meaningful), DEC1 (strategy step + promises ledger), voice-engine Phase 2 (the few-shot bank — Dylan's voice is the input), Help Scout INT1 (the one integration; 2–4 weeks honest sizing). Sequence inside this phase by what the pilots' edit data says, not by the plan's guess.</p>
+<h3>P5 — THE FUNDED-LOOK LAYER (each item small; batch them between bigger lanes)</h3>
+<p>Self-serve demo sandbox (the only demo today is a static screenshot + book-a-call — a prospect who won't book has no path; read-only sample-data cockpit, zero signup) · loading skeletons for the 12 uncovered app routes · per-page OG images (pricing + case-study minimum) · <code>app/manifest.ts</code> + apple-touch-icon · footer social row (once handles exist) · help-center seed (one FAQ page beats none) · public uptime page decision (15-min free-tier win or documented no) · log drain for the structured events (<code>style_score</code>, <code>llm_lint_reject</code> currently die in Vercel's short console retention) · a11y statement · cookie-gate the Cal.com embed · constant-time compare in <code>lib/ids.ts:69</code> (timingSafeEqual exists in 3 sibling files; apply it) · rate-limit <code>api/csat/[token]</code> + both ingest webhooks (an unthrottled CSAT flood can corrupt the proof-only metrics surface) · delete or wire the three orphaned API routes (gift-catalog, social-signal-feed, orders/timeline — implemented, zero callers).</p>
+<h3>P6 — SCALE PLAYS (post-traction, in whatever order evidence demands)</h3>
+<p>Tideover MCP (build after the 2026-07-28 spec revision; design is done — torch §9C) · gifts delivery + the window-pass packaging (D8) · partnerships decision: BackerKit/pledge-manager/agency motion — an old roadmap floated rev-share and the current plan dropped it silently; decide it explicitly · merchant community (Discord) decision · currency/i18n (<code>en-US</code>/USD hardcoded against a global ICP) · Zendesk clone of the Help Scout seam when two prospects sit on it.</p>
+<h2>3. THE STANDING RULES (unchanged, non-negotiable)</h2>
+<p>The verify gate before every commit (<code>npm run verify &amp;&amp; npm test</code>) · hot-file serialization · proof-only everywhere, including our own marketing copy (P0 exists because we broke this) · never the word "honest" in customer-facing text · no fabricated founder imagery · billing/pricing/legal/data-exposure decisions belong to Fable+Dylan, never improvised by a build lane · escalation ladder per CLAUDE.md · <strong>ops debts now on record:</strong> a secrets-rotation runbook (one rotation already happened in production with no runbook — today), Auth0-tenant + Vercel-env config backups (only Mongo is backed up; the Vercel creds live on one machine), one restore drill, GDPR transfer language for the DeepSeek (PRC) subprocessor <strong>before any EU-exposed paying merchant</strong> — fold the last one into the T3b/CASL legal consult.</p>
+<h2>4. THE DYLAN REGISTER (everything only he can do, in order)</h2>
+<ol>
+<li>TEST1 walkthrough · D9 goldens · <strong>"merge it"</strong>.</li>
+<li>Stripe keys + the tier-ladder confirmation for ADR-0022.</li>
+<li>G5 purchases (starts the warmup clock — nothing in P3 moves without it) · the X handle.</li>
+<li>The CASL consult (add GDPR-transfer question) · counsel pass on terms refund language.</li>
+<li>D9-GTM: the $20K/mo-in-90-days recalibration conversation (the cited math says 1–5 customers from outbound alone; the goal needs channels or time).</li>
+<li>Voice Phase 2's few-shot bank — his voice, cannot be delegated.</li>
+<li>The testimonial asks, personally, at each pilot's first win.</li>
+</ol>
+<h2>5. THE SCOREBOARD (measured or not reported)</h2>
+<p><code>editedRatio</code> / send-as-is rate · real deflection (<code>lib/deflection.ts</code>) · stage correctness · time-to-customer (not clipboard) · pilots started · reply rate ≥3% by day 45 · spam &lt;0.10%/domain · trial→paid conversion (exists after P1) · chargeback outcomes with <code>disclosedEta</code> present. The flattering numbers stay banned (torch §5).</p>
+<hr>
+<p><strong>Pointers:</strong> <code>docs/TORCH-PASS-TO-OPUS.md</code> (context + the moat + the traps) · <code>docs/gtm-campaign/GTM-CAMPAIGN-2026-07.md</code> (the daily engine) · <code>docs/gap-sweep-2026-07-16/</code> (raw audit evidence, file:line) · <code>mission-control/tideover-hq.html</code> (the live board) · <code>CLAUDE.md</code> + <code>tideover/CONTRIBUTING.md</code> (how work moves).</p>
+<p><strong>The one-sentence version:</strong> make it true, make it paid, make it known — in that order, and never trade the first for the other two.</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

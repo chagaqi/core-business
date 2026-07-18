@@ -1,0 +1,198 @@
+{
+ "daily_actions": [
+  {
+   "action": "Pull F5Bot email digest + scan 2-3 target subreddits (rotate through r/ecommerce, r/shopify, r/tabletopgamedesign, r/smallbusiness/r/Entrepreneur promo-thread-of-the-week) for threads where a genuine, non-promotional answer fits",
+   "minutes": 5,
+   "who": "ai"
+  },
+  {
+   "action": "Draft 2-3 candidate replies: answer the actual question first; only reference Tideover if the thread is asking directly 'what do you use for this' — otherwise no mention at all",
+   "minutes": 5,
+   "who": "ai"
+  },
+  {
+   "action": "Review drafts, rewrite in Dylan's own voice, kill anything that reads promotional or would be worthless with the product mention deleted",
+   "minutes": 5,
+   "who": "ai-then-dylan-approves"
+  },
+  {
+   "action": "Post 1-3 comments personally from Dylan's own seasoned account; log which subs got a link today (cap: never the same link/text on more than 2-3 subs in one day)",
+   "minutes": 5,
+   "who": "dylan"
+  }
+ ],
+ "items": [
+  {
+   "name": "r/Kickstarter",
+   "what": "Largest generalist crowdfunding subreddit; historically the default place creators dump their own campaign links. One subreddit-stats tool flagged it as quarantined — status is UNVERIFIED (couldn't confirm directly, Reddit itself blocked WebFetch).",
+   "how": "Before allocating any daily-routine time here, manually open reddit.com/r/kickstarter logged in and confirm it isn't quarantined (quarantine = opt-in warning wall, no search/recommendation indexing, no ads). If clear: use for VOC/pain-mining (search 'no update,' 'refund,' '60 days late') rather than buyer outreach — audience is mostly other creators self-promoting, not the merchants Tideover sells to.",
+   "cost": "free",
+   "risk": "Medium — if quarantined, any time spent here is wasted (zero organic reach). If not quarantined, self-promo saturation still makes it low-signal for buyer acquisition.",
+   "sources": [
+    "https://subredditstats.com/r/kickstarter"
+   ]
+  },
+  {
+   "name": "r/Crowdfunding",
+   "what": "Small, tightly-modded discussion sub. Its own Reddit-supplied description reads: 'Forum for crowdfunding discussion (no promotion).'",
+   "how": "Read-only listening post for backer pain language. Do not post anything mentioning Tideover, ever — the sub's own tagline bans promotion.",
+   "cost": "free",
+   "risk": "Low if used read-only; a promotional post/comment here is a near-certain removal given the explicit no-promotion description.",
+   "sources": [
+    "https://subredditstats.com/r/Crowdfunding"
+   ]
+  },
+  {
+   "name": "r/boardgames",
+   "what": "One of Reddit's largest hobby subs (secondary sources conflict on size, roughly several million subscribers). Audience is players/backers, not campaign creators — wrong sub for buyer outreach.",
+   "how": "Use only to mine backer language for Tideover's copy ('kickstarter late,' 'no eta,' 'fulfillment'). The community 'absolutely rejects blatant self-promotion' from newcomers per a board-game-industry blogger's firsthand account — don't pitch here.",
+   "cost": "free",
+   "risk": "Low read-only; high (ban) if used for product posts since this is a consumer sub, not a merchant sub.",
+   "sources": [
+    "https://brandonthegamedev.com/how-to-use-reddit-as-a-board-game-dev/"
+   ]
+  },
+  {
+   "name": "r/tabletopgamedesign",
+   "what": "Smaller hobbyist-to-semi-pro tabletop designer community — closest Reddit sub to actual creators, per a board-game-industry blogger who's used it.",
+   "how": "Answer design/production/fulfillment-comms questions for weeks with zero self-promotion; only mention Tideover in direct reply to someone describing a live backer-comms problem, never as a top-level post ('come as a person, not a brand').",
+   "cost": "free",
+   "risk": "Low if value-first; explicitly rejects newcomers who show up only to promote.",
+   "sources": [
+    "https://brandonthegamedev.com/how-to-use-reddit-as-a-board-game-dev/"
+   ]
+  },
+  {
+   "name": "r/gamefound",
+   "what": "No confirmed active subreddit found — 404 on subreddit-stats tooling, no search evidence of an established community.",
+   "how": "Don't budget routine time here. If Gamefound (the crowdfunding platform) has its own creator Discord/forum, redirect this slot there instead; otherwise fold the time into BGG's crowdfunding forums.",
+   "cost": "n/a",
+   "risk": "Low — just confirm once by visiting reddit.com/r/gamefound directly before fully writing it off.",
+   "sources": []
+  },
+  {
+   "name": "BoardGameGeek (BGG) crowdfunding forums",
+   "what": "Not Reddit, but the actual hangout for tabletop crowdfunding creators (Tideover's buyers) — BGG gives every game page its own 'Crowdfunding' forum section where publishers answer their own backers directly.",
+   "how": "BGG's community rules restrict spam (one thread per project). Real opportunity is publisher-facing: watch which visibly-late campaigns' creators are active in their own BGG thread and are candidates for direct, non-Reddit outreach. Full rule text at boardgamegeek.com/community_rules was blocked on fetch — read it manually before posting anything there.",
+   "cost": "free",
+   "risk": "Medium — rule specifics not independently confirmed (fetch blocked by the site); verify manually first.",
+   "sources": [
+    "https://boardgamegeek.com/community_rules",
+    "https://boardgamegeek.com/thread/2820471/kickstarter-links-policy"
+   ]
+  },
+  {
+   "name": "r/shopify",
+   "what": "~360-450K members (sources conflict). Sidebar reportedly states it is a 'promotion-free sub' with rules 'very strictly enforced.'",
+   "how": "Answer preorder/WISMO/fulfillment-delay questions with real operational advice. Never post a link; at most a low-key mention in a comment replying to someone who directly asks 'what do you use for this' — and expect removal even then given the strict-enforcement framing.",
+   "cost": "free",
+   "risk": "Medium-high — explicitly promotion-free; treat as trust-building/VOC only, not lead-gen.",
+   "sources": [
+    "https://thehiveindex.com/communities/r-shopify/",
+    "https://www.soar.sh/blog/self-promotion-rules-by-subreddit-database"
+   ]
+  },
+  {
+   "name": "r/ecommerce",
+   "what": "~200-370K members (sources conflict). Secondary reports say moderators trust accounts that 'spent months answering merchant questions' before mentioning their own tool; one source lists a 30-day/50-karma gate and bans outright tool-pitch posts.",
+   "how": "2-4 weeks of pure Q&A answering WISMO/preorder/fulfillment questions, zero mentions. After that history exists, answer directly-relevant questions in comments only, never a top-level post.",
+   "cost": "free",
+   "risk": "Medium — secondary sources disagree on strictness; confirm current sidebar rules manually before first post.",
+   "sources": [
+    "https://www.replyagent.ai/blog/reddit-self-promotion-rules-naturally-mention-product",
+    "https://www.mediafa.st/best-subreddits-for/ecommerce"
+   ]
+  },
+  {
+   "name": "r/smallbusiness",
+   "what": "~1.5-2.5M members (sources conflict). Explicit rule: 'No business promotion posts.' A weekly 'Promote Your Business'/share-your-experience thread is the only sanctioned promo lane; one source cites a ~30-day account/~100-karma gate.",
+   "how": "Answer general small-business ops questions normally. Drop a single honest one-liner about Tideover only inside that week's promo thread — never as a standalone post.",
+   "cost": "free",
+   "risk": "Low if confined to the weekly thread; AutoMod reportedly flags SaaS URLs posted outside it.",
+   "sources": [
+    "https://www.reddit-radar-marketing.com/guides/r/smallbusiness"
+   ]
+  },
+  {
+   "name": "r/Entrepreneur",
+   "what": "~3.2-4.9M members (sources conflict, largest of the buyer-adjacent subs). Self-promo 'allowed in context' in comments, banned as a post's primary purpose. DM-bait phrasing ('comment for the link') is a cited permanent-ban trigger. Weekly 'Share Your Business' thread is the safe lane; one source cites a 10-comment-karma-in-sub minimum before starting discussions.",
+   "how": "Bank 10 in-sub comment karma through genuine replies first. Lead every mention with value, cap product mentions at 1-2/week, never ask for DMs or profile checks.",
+   "cost": "free",
+   "risk": "Medium — highest scrutiny given size; permanent ban risk for DM-bait language regardless of karma banked.",
+   "sources": [
+    "https://www.reddit-radar-marketing.com/guides/r/entrepreneur",
+    "https://redship.io/blog/reddit-self-promotion-rules"
+   ]
+  },
+  {
+   "name": "F5Bot",
+   "what": "Free email alerts when chosen keywords appear on Reddit, Hacker News, or Lobsters. Confirmed directly on f5bot.com: free tier plus optional Silver ($9.99/mo, 20 keywords, full post text) and Gold ($49.99/mo, 200 keywords, RSS/Slack/Discord integration, AI filtering) tiers.",
+   "how": "Sign up at f5bot.com. Track keyword set: 'backers haven't heard,' 'no eta kickstarter,' 'shopify preorder refund,' 'wismo,' 'tideover,' competitor names. Free tier covers Tideover's keyword count at current stage — skip paid tiers.",
+   "cost": "free (paid Silver $9.99/mo / Gold $49.99/mo not needed yet)",
+   "risk": "Low — passive listening only, no posting/ban exposure.",
+   "sources": [
+    "https://f5bot.com/"
+   ]
+  },
+  {
+   "name": "GummySearch replacement (Syften or Reddily)",
+   "what": "GummySearch — the tool most likely behind the 10-persona sim's original Reddit pain research — shut down permanently. Confirmed directly on gummysearch.com: 'GummySearch is closed as of 11/30/2025.'",
+   "how": "For sentiment/theme analysis beyond F5Bot's plain keyword alerts, trial Syften (closest like-for-like, monitors Reddit+HN+more with filtering) or Reddily (pay-per-analysis, 5 free credits) before committing spend. Do not budget for GummySearch — it no longer exists.",
+   "cost": "not independently re-confirmed this pass; evaluate free tiers first",
+   "risk": "Low — just don't plan around a dead tool.",
+   "sources": [
+    "https://gummysearch.com/",
+    "https://reddinbox.com/blog/best-gummysearch-alternative"
+   ]
+  },
+  {
+   "name": "Value-first comment/case-study/AMA playbook",
+   "what": "Every credible source converges on the same mechanic: 90/10 (or 10:1) value-to-promo ratio; a comment should be useful even with the product mention deleted; case-study posts are tolerated only after weeks of pure participation and only in subs that allow link posts at all; AMAs work as pre-launch buzz when mod-approved in advance, not self-scheduled.",
+   "how": "Comment-only for the first 4+ weeks per subreddit. Only pitch a case-study post once Dylan has a real, provable result (genuine before/after, no fabricated numbers — matches Tideover's own proof-only rule) and clear it with mods first rather than posting cold. Skip AMAs until there's a credibility anchor specific to presale/WISMO software beyond the gym-equipment story.",
+   "cost": "free (time only)",
+   "risk": "Low if disciplined — the dominant failure mode across sources is promotional volume/ratio, not any single post.",
+   "sources": [
+    "https://www.onlinemoderation.com/market-on-reddit-without-getting-banned/",
+    "https://redship.io/blog/reddit-self-promotion-rules"
+   ]
+  },
+  {
+   "name": "Account seasoning + ban-avoidance checklist",
+   "what": "No sitewide karma/age floor exists; per-subreddit AutoMod gates commonly run 7-30 day account age + 10-200 comment karma for mid-size business subs. Top cited ban triggers: cross-posting the same link to 5+ subs in a short window, astroturfing (posing as a happy customer for your own product), copy-pasted answers, and DM-bait phrasing.",
+   "how": "Use one real, human-run account (Dylan's own or a seasoned Tideover one) — never AI-authored posts published as-is. Bank 2-4 weeks of genuine comments before any product mention. Never post identical link/text to more than 2-3 subs per day. Disclose the Tideover affiliation whenever asked directly or when posting in an approved promo lane.",
+   "cost": "free (time)",
+   "risk": "Medium — a widely-repeated '89% banned within 30 days' stat traced back to unverifiable content-farm copy and is deliberately excluded from this plan's numbers; default to the conservative seasoning approach regardless of exact ban-rate figures.",
+   "sources": [
+    "https://www.subredditanalyzer.com/how-much-karma-do-you-need-to-post-on-reddit",
+    "https://postiz.com/blog/reddit-karma-requirements"
+   ]
+  }
+ ],
+ "load_bearing_claims": [
+  {
+   "claim": "GummySearch shut down permanently on 11/30/2025 after failing to secure a commercial license for Reddit's Data API — confirmed on GummySearch's own homepage, which now reads 'GummySearch is closed as of 11/30/2025.' Do not budget for it.",
+   "source": "https://gummysearch.com/"
+  },
+  {
+   "claim": "F5Bot is free for keyword alerts across Reddit/HN/Lobsters; optional paid tiers are Silver ($9.99/mo, 20 keywords) and Gold ($49.99/mo, 200 keywords + integrations) — confirmed directly on f5bot.com.",
+   "source": "https://f5bot.com/"
+  },
+  {
+   "claim": "r/Crowdfunding's own Reddit-supplied description states it is a forum for crowdfunding discussion with 'no promotion' — this is a listening-only sub, not a channel.",
+   "source": "https://subredditstats.com/r/Crowdfunding"
+  },
+  {
+   "claim": "r/smallbusiness and r/Entrepreneur both restrict self-promotion to a single sanctioned weekly thread and prohibit it in regular posts — the only compliant lane for a direct Tideover mention in either sub.",
+   "source": "https://www.reddit-radar-marketing.com/guides/r/smallbusiness"
+  },
+  {
+   "claim": "UNVERIFIED but decision-critical: one subreddit-stats tool flagged r/Kickstarter — the single most obviously relevant subreddit — as quarantined. Could not independently confirm (Reddit itself blocks automated fetch). Must be manually checked on reddit.com before any of the daily routine's time is spent there, since quarantine would make it near-worthless for reach.",
+   "source": "https://subredditstats.com/r/kickstarter"
+  },
+  {
+   "claim": "No sitewide Reddit karma/account-age minimum exists; individual subreddits set thresholds via AutoModerator, commonly 7-30 day account age and 10-200 comment karma for mid-size business communities.",
+   "source": "https://www.subredditanalyzer.com/how-much-karma-do-you-need-to-post-on-reddit"
+  }
+ ],
+ "summary": "Reddit splits into two different jobs for Tideover and conflating them is the main risk: the big backer-heavy subs (r/kickstarter, r/crowdfunding, r/boardgames) are pain-research/VOC mines, not buyer channels — their audience is backers, not the creators/merchants Tideover sells to, and r/crowdfunding's own description bans promotion outright while one source flags r/kickstarter as quarantined (unverified — confirm manually before spending any routine time there). The real buyer audience is thinner but reachable: r/shopify, r/ecommerce, r/tabletopgamedesign, BoardGameGeek's own crowdfunding forums, and the sanctioned weekly promo threads in r/smallbusiness and r/Entrepreneur. Every credible source converges on the same mechanic regardless of sub: weeks of comment-only participation before any product mention, a 90/10 value-to-promo ratio, never the same link on more than 2-3 subs a day, and never DM-bait language — deviation from this, not any single post, is what gets accounts banned. GummySearch (the tool likely behind the original 10-persona pain research) is confirmed dead as of 11/30/2025 and should not be budgeted for; F5Bot's free tier fully covers Tideover's monitoring needs at this stage. Genuine, independently-checkable named examples of SaaS founders winning customers specifically via Reddit are thin — most circulating \"case studies\" trace back to unverifiable marketing-blog content; the one solid, attributable example found is Austin (Saner.ai) on Indie Hackers. Treat Reddit as a low-cost 20-min/day bet worth taking, not as a channel with proven ROI folklore behind it."
+}

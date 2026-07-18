@@ -1,0 +1,61 @@
+{
+ "summary": "Nothing in the code contradicts the campaign doc's own numbers, but five of its literal Day-1 Week-1 actions have zero supporting infrastructure in the repo, and the §9 organic engine (SEO pillars, lead magnet, nurture) has no plumbing to run on at all — it is entirely unbuilt below the strategy-doc layer. The most load-bearing gap: the capture form the whole nurture funnel is built on top of explicitly does nothing but sit in a DB collection (own doc comment: 'sends no email and triggers nothing downstream'), and Resend isn't even an installed dependency — only a raw fetch for inbound retrieval exists, no outbound/Broadcasts/Automations/audience code anywhere. Legally, the CASL source-URL log the campaign says starts 'with row one' on Day 1 has no mechanism to write into — not even a template. The prospect-engine scraper that must produce a 200-row list the same day domains are bought is tracked conceptually (GTM2/torch-pass §9D) but has zero scaffolding and isn't sequenced as a Day-1 blocker anywhere. An X account for Dylan/Tideover is unconfirmed anywhere in the codebase, yet X cadence is also a same-day-1 action. None of this contradicts the plan — it confirms the plan's own 'unbuilt, Opus work order' framing — but it means week 1 as written cannot literally execute without these five prerequisites landing first.",
+ "gaps": [
+  {
+   "gap": "No CASL source-URL logging mechanism exists anywhere in the repo — not code, not a spreadsheet template, not a schema field — despite the campaign requiring it to start on Day 1, row one.",
+   "evidence": "Grep for CASL/sourceUrl/'source-URL' across the whole repo returns only doc mentions (docs/TORCH-PASS-TO-OPUS.md, docs/recon-2026-07-16/MCP-AGENT-RECON.md, docs/tideover-gtm-roadmap.md, gtm-assets docs) — zero code or template files. GTM-CAMPAIGN-2026-07.md:58 and §7 state the rule but define no artifact to log into.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW",
+   "fix": "Ship a lightweight prospect-log schema (CSV or a `leads`-style repository collection) with a mandatory `sourceUrl` + `discoveredAt` column before any address is contacted; wire it as the single place both the manual and future AI-scraped rows land."
+  },
+  {
+   "gap": "The prospect-engine scraper (webrobots/Apify discover, distress scoring, Shopify /products.json scan, WooCommerce plugin-footprint dork, contact discovery) has zero scaffolding — no scripts, no cron, nothing — despite Day 1 requiring it to produce the first 200-row list.",
+   "evidence": "`ls tideover/scripts` shows only seed/backup/smoke/dns/hooks scripts, nothing prospect-related. Root-level find for *prospect*/*automation* only matched two unrelated AI-ads-agency docs (22-prospect-personalization.md, 26-prospect-sample-scripts.md). GTM-CAMPAIGN-2026-07.md §3 Week-1-Day-1: 'AI engine builds the first 200-row prospect list' the same day as domain purchases.",
+   "severity": "P1-blocks-finished",
+   "tracked": "GTM2 / torch-pass §9D (concept only)",
+   "fix": "Board tracks this as an 'Opus automation work order' but doesn't size or sequence it against Day 1 — pull it forward explicitly: it must exist and run before the warmup clock (G5) finishes, or Week 3 first-sends have no list to send against."
+  },
+  {
+   "gap": "No X account for Dylan/Tideover is referenced anywhere in the codebase (no handle in Footer, no social link, no env var), yet the campaign requires X daily cadence starting the same day as domain purchases.",
+   "evidence": "Grep for x.com/twitter.com/@tideover found 44 files but every hit is either unrelated (webhook auth tests, onboarding copy about 'X of Y') or a doc reference to the plan itself — no actual handle or footer link. tideover/components/marketing/Footer.tsx has no social-link section at all.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW",
+   "fix": "Needs Dylan: confirm or create the @handle, buy X Premium Basic ($3/mo, already budgeted in §2), and drop the handle into Footer.tsx / bio before Day 1 so the AI drafting pipeline (§4 item 5) has somewhere to post."
+  },
+  {
+   "gap": "The playbook capture form explicitly does nothing downstream — no Resend SDK is even installed, and there is zero Broadcasts/Automations/audience code — so the entire §9.2/§9.3 nurture sequence and lead-magnet funnel the campaign is built on top of has no plumbing.",
+   "evidence": "tideover/app/api/playbook-lead/route.ts:7-18 (own doc comment): 'A human reads the collection and sends the playbook — this route sends no email and triggers nothing downstream.' `resend` is absent from tideover/package.json entirely; the only Resend API usage anywhere is a raw fetch to api.resend.com/emails/receiving/ for inbound retrieval (lib/inbound.ts:41). GTM-CAMPAIGN-2026-07.md §9.2 assumes 'the existing Playbook form and list — a second delivery block, not a second funnel' and the two-lists CASL rule (§9.2) needs a dedicated opt-in marketing subdomain that doesn't exist either.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW",
+   "fix": "Install the resend package, add contacts.create() to playbook-lead/route.ts writing to a dedicated List A audience on a marketing subdomain (separate from cold-outreach domains per the two-lists rule), then build the 6-email Automation flow described in §9.2 before the Monday pillar loop starts."
+  },
+  {
+   "gap": "No blog/pillar-content infrastructure exists — no route, no sitemap.ts/robots.ts, no RSS — so the 10 SEO pillars and the flagship template-pack pillar have nowhere to publish.",
+   "evidence": "Glob for tideover/**/{robots,sitemap}* returns zero matches; a full glob of tideover/app/**/*.tsx shows every marketing route that exists (case-study, how-it-works, who-its-for, pricing, security, procurement, privacy, terms, vsl/*) and no blog directory among them. GTM-CAMPAIGN-2026-07.md §9.1 (10-pillar publish order) and §9.3 (Monday pillar block) both assume a publishing surface that isn't built.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW",
+   "fix": "Stand up app/blog/[slug]/page.tsx + app/sitemap.ts + app/robots.ts (RSS optional, low priority per the doc's own 6-12mo harvest framing) before the first Monday pillar is due — pillar #1 (chargeback/dispute evidence guide) is the doc's own recommended first publish."
+  },
+  {
+   "gap": "The 'Fulfillment Update Template Pack' — the doc's flagship SEO pillar #2 AND the lead magnet, 'one build, two jobs' — does not exist anywhere, confirmed distinct from the already-built 'Presale Anxiety Playbook.'",
+   "evidence": "Grep for 'Fulfillment Update'/'template pack'/'template library' across the repo returns only the campaign doc itself and its mission-control HTML mirror — no gtm-assets file, no app route. The existing, different asset is app/vsl/playbook-promo/page.tsx + gtm-assets/v2/v2-content-bank.md ('Presale Anxiety Playbook'). GTM-CAMPAIGN-2026-07.md §9.2 explicitly confirms this asset 'does not exist yet.'",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW",
+   "fix": "Write the 5-8 templates (delay announcement, missed-EDD, gone-quiet re-engagement, refund-response, proof-of-life) from Dylan's real COVID-era comms, publish the ungated 15-20 item version as the blog-infra pillar #2 page (once that infra exists, gap above), gate the best 5-8 as the magnet PDF/paste-block behind the capture form."
+  },
+  {
+   "gap": "No campaign KPI/tracking surface exists anywhere — no sheet, no Airtable, no DB table — for reply rate, spam rate, demos, or pilots, despite §6 defining exactly those as the numbers that matter and §3's hard pause rule (any domain >0.30% spam) needing somewhere to be checked against daily.",
+   "evidence": "Grep for Airtable/Google Sheet/CRM/spreadsheet across *.md hit 24 files, none of which define an actual tracking convention for this campaign (spot-checked gtm-assets/outreach-playbook.md and v2-prospecting-sop.md — generic advice, not a repo artifact). No table in tideover/lib/repositories or mission-control/data covers these fields.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW",
+   "fix": "A minimal sheet or a `campaignMetrics` repository collection (verified prospects/week, reply rate, spam rate/domain, pilots started) is enough — it only needs to exist before Week 3 sends begin, since the spam-rate pause rule is a daily check from day one of sending."
+  },
+  {
+   "gap": "No Product Hunt / directory-submission asset kit (gallery images, tagline variants) is compiled anywhere, though existing marketing assets (opengraph-image.png, twitter-image.png, icon.svg) partially cover it.",
+   "evidence": "Glob for *producthunt*/*gallery* across the repo returns zero matches. tideover/app/opengraph-image.png, twitter-image.png, icon.svg already exist and could seed a directory kit.",
+   "severity": "P3-polish",
+   "tracked": "NEW",
+   "fix": "Low urgency — PH itself is correctly gated post-pilot per the doc's own §3/§5. The one Week-1 item (free directory layer: BetaList/AlternativeTo/SaaSHub/Uneed/MicroLaunch) mostly needs a one-liner tagline + the existing OG image, ~30 min to compile."
+  }
+ ]
+}

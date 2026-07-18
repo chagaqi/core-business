@@ -1,5 +1,13 @@
 import type { Customer, Order, RiskBandKey, RiskColor, Sentiment } from "@/lib/types";
 import { bandVariance, daysBetween } from "@/lib/time";
+import { RISK_BAND_THRESHOLDS, bandForScore } from "@/lib/engines/risk-bands";
+import { ltvPriorityBoost } from "@/lib/engines/gift";
+
+/** Escalating sentiments float a ticket to the top of the queue AND unlock the
+ *  full gift tier. Single definition reused by the queue + the gift engine. */
+export function isEscalatedSentiment(sentiment: Sentiment): boolean {
+  return sentiment === "hostile" || sentiment === "chargeback-threat";
+}
 
 /**
  * ENGINE 2 — Refund-Risk / Priority.
@@ -25,7 +33,7 @@ export const DEFAULT_PROFILE: RiskProfile = {
   weights: { value: 0.2, wait: 0.2, sentiment: 0.35, velocity: 0.15, stage: 0.1 },
   highTicketCents: 40000,
   ticketVelocityCap: 4,
-  thresholds: { atRisk: 75, watch: 50 },
+  thresholds: { atRisk: RISK_BAND_THRESHOLDS.atRisk, watch: RISK_BAND_THRESHOLDS.watch },
 };
 
 const SENTIMENT_SCORE: Record<Sentiment, number> = {
@@ -67,7 +75,7 @@ export interface RiskResult {
 }
 
 export function scoreRefundRisk(input: RiskInput, profile: RiskProfile = DEFAULT_PROFILE): RiskResult {
-  const { order, daysInWait, fulfillmentWindowMaxDays, stageCeilDay, sentiment, ticketsLast7d } = input;
+  const { order, customer, daysInWait, fulfillmentWindowMaxDays, stageCeilDay, sentiment, ticketsLast7d } = input;
   const w = profile.weights;
 
   const total = Math.max(1, daysBetween(order.fulfillmentStart, order.fulfillmentEnd));
@@ -91,18 +99,16 @@ export function scoreRefundRisk(input: RiskInput, profile: RiskProfile = DEFAULT
 
   const riskScore = Math.round(100 * raw);
 
-  const band: RiskBandKey =
-    riskScore >= profile.thresholds.atRisk
-      ? "at_risk"
-      : riskScore >= profile.thresholds.watch
-        ? "watch"
-        : "standard";
+  const band: RiskBandKey = bandForScore(riskScore, profile.thresholds);
 
   const color: RiskColor = band === "at_risk" ? "red" : band === "watch" ? "amber" : "green";
 
-  // priorityRank: escalated sentiments float to the very top, then by score.
-  const escalated = sentiment === "hostile" || sentiment === "chargeback-threat";
-  const priorityRank = (escalated ? 0 : 1000) + (1000 - riskScore);
+  // priorityRank: escalated sentiments float to the very top, then by score, then
+  // the LTV priority boost pulls higher-lifetime-value customers slightly sooner.
+  // The boost touches PRIORITY ONLY — never riskScore/band (the honest predictor)
+  // — and is 0 for crowdfunding pledges, so it never reorders current seed data.
+  const escalated = isEscalatedSentiment(sentiment);
+  const priorityRank = (escalated ? 0 : 1000) + (1000 - riskScore) - ltvPriorityBoost(order, customer);
 
   const labels: Record<keyof RiskFactors, string> = {
     valueExposure: "high order value at stake",
@@ -126,6 +132,28 @@ export function byPriority<T extends { priorityRank: number; createdAt: string }
   return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
 }
 
+/**
+ * The day the order's current stage is planned to END — the anchor `stagePressure`
+ * measures overrun against.
+ *
+ * The stage key may be "overrun" (lib/types ResolvedStageKey): the order is past
+ * EVERY band the merchant authored, so no band owns it. Stage pressure is then
+ * measured from the LAST band's ceiling — how far past the merchant's own plan
+ * this customer is — which grows smoothly the longer they wait.
+ *
+ * The old `?? 0` fallback would have measured them from day zero, pinning the
+ * factor at its maximum the instant an order crossed the final band. That is a
+ * cliff, not a measurement, and it would have flattened exactly the population
+ * Tideover exists for: our ICP is merchants who blew their window, so the MODAL
+ * customer is past the last band, and a factor that reads 1.0 for all of them
+ * discriminates between none of them. (p10 already saw this: zero `standard`
+ * tickets, a risk floor of 56, and his third chargeback threat ranked 5th of 8.)
+ *
+ * Unchanged for every authored stage, so no engine output moves.
+ */
 export function stageCeilDayFor(stages: { key: string; dayBand: { to: number } }[], stageKey: string): number {
-  return stages.find((s) => s.key === stageKey)?.dayBand.to ?? 0;
+  const hit = stages.find((s) => s.key === stageKey);
+  if (hit) return hit.dayBand.to;
+  if (stages.length === 0) return 0;
+  return stages.reduce((a, b) => (b.dayBand.to > a.dayBand.to ? b : a)).dayBand.to;
 }

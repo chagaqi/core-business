@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { getRepositories } from "@/lib/repositories";
 import { computeTimeline } from "@/lib/time";
-import { recommendGift, scoreRefundRisk, stageCeilDayFor } from "@/lib/engines";
+import { isEscalatedSentiment, recommendGift, scoreRefundRisk, stageCeilDayFor } from "@/lib/engines";
 import { ticketsLast7dFor } from "@/lib/service";
+import { activeCatalog } from "@/lib/gift-catalog";
 
 /** GET /api/gift-catalog/[customerId] — recommended gift for a customer. */
 export async function GET(_req: Request, { params }: { params: { customerId: string } }) {
@@ -17,7 +18,7 @@ export async function GET(_req: Request, { params }: { params: { customerId: str
   if (!order) return NextResponse.json({ error: "no orders" }, { status: 404 });
 
   const timeline = computeTimeline(order, merchant);
-  const catalog = await repos.gifts.listByMerchant(merchant.id);
+  const catalog = activeCatalog(merchant, await repos.gifts.listByMerchant(merchant.id));
   const ticketsLast7d = await ticketsLast7dFor(merchant.id, customer.id);
   const risk = scoreRefundRisk({
     order,
@@ -30,12 +31,10 @@ export async function GET(_req: Request, { params }: { params: { customerId: str
   });
 
   const rec = recommendGift({
-    customer,
-    order,
-    daysInWait: timeline.daysInWait,
     riskScore: risk.riskScore,
-    highTierCents: merchant.ltvTiers.high,
+    escalated: isEscalatedSentiment(customer.lastSentiment),
     catalog,
+    daysInWait: timeline.daysInWait,
   });
 
   return NextResponse.json({

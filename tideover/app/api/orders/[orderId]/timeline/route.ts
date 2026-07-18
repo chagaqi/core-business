@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getRepositories } from "@/lib/repositories";
 import { computeTimeline } from "@/lib/time";
 
-/** GET /api/orders/[orderId]/timeline — timeline + honest confidence band. */
+/** GET /api/orders/[orderId]/timeline — timeline + confidence band. */
 export async function GET(_req: Request, { params }: { params: { orderId: string } }) {
   const repos = getRepositories();
   const order = await repos.orders.findById(params.orderId);

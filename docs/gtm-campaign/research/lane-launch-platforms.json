@@ -1,0 +1,215 @@
+{
+ "daily_actions": [
+  {
+   "action": "Submit product page to evergreen free directories (BetaList, AlternativeTo, SaaSHub, Uneed, MicroLaunch, IndieHackers product page) — batch 1-2 per session",
+   "minutes": 20,
+   "who": "dylan"
+  },
+  {
+   "action": "AI drafts PH tagline, gallery copy, first-comment copy, and Show HN post text from the real founder story (gym-equipment co, 60+ day waits) — Dylan edits for voice and fact-accuracy per proof-only rule",
+   "minutes": 15,
+   "who": "ai-then-dylan-approves"
+  },
+  {
+   "action": "Chase and log one real, non-fabricated pilot testimonial/usage quote — this is the gate before Product Hunt fires",
+   "minutes": 15,
+   "who": "dylan"
+  },
+  {
+   "action": "Product Hunt launch-day comment monitoring/replies (accept partial coverage in short bursts, not the 10-14hr ideal)",
+   "minutes": 60,
+   "who": "dylan"
+  },
+  {
+   "action": "Show HN launch-day engagement window right after posting",
+   "minutes": 30,
+   "who": "dylan"
+  },
+  {
+   "action": "Write one IndieHackers milestone/story post (not just a listing) tied to the launch week",
+   "minutes": 20,
+   "who": "dylan"
+  },
+  {
+   "action": "PR outreach email to BackerKit blog / Stonemaier Games once pilot proof exists (not before)",
+   "minutes": 15,
+   "who": "dylan"
+  }
+ ],
+ "items": [
+  {
+   "name": "Product Hunt (self-submit maker launch)",
+   "what": "One-day leaderboard event; makers self-submit, no hunter required since the auto-notification boost was retired. Ranking now weights upvotes/hour over a ~20hr window plus comment depth, CTR, and share activity, not raw spike.",
+   "how": "Create a maker account, build the gallery (tagline, 3-5 screenshots, short demo), write the maker's first comment, submit for a Tue or Wed 12:01am PT slot. No need to recruit a hunter.",
+   "cost": "free",
+   "risk": "Low direct-signup yield for a narrow B2B vertical (real examples: #8-of-day SaaS tool got 564 visitors/56 signups; a top-50 AI tool got 0 signups). PH itself disqualifies ~70% of applicants for having an enterprise-leaning buyer or no self-serve stranger onboarding — Tideover's ICP profile is a partial mismatch. Links are ugc/nofollow, so no SEO value. Mitigation: launch only after one real pilot testimonial exists, treat it as a PR/credibility badge, not a pipeline channel.",
+   "sources": [
+    "https://hub.causo.ai/guides/product-hunt-launch-2026-realistic-playbook",
+    "https://www.puthusu.com/blog/is-product-hunt-worth-it",
+    "https://www.indiehackers.com/post/aftermath-of-our-disappointing-product-hunt-launch-a81fea3a52",
+    "https://www.indiehackers.com/post/5-days-post-launch-top-50-on-product-hunt-zero-signups-and-why-i-think-thats-actually-fine-77b1fc59e4"
+   ]
+  },
+  {
+   "name": "Show HN",
+   "what": "Hacker News's maker-showcase format. HN's 2026 lean is toward authenticity and technical/personal depth over polished marketing.",
+   "how": "Post title format \"Show HN: Tideover – [job-to-be-done] for [specific audience]\", lead with Dylan's real 60+ day COVID gym-equipment wait story as the origin, not a feature pitch. Monitor and reply for the first 90 minutes.",
+   "cost": "free",
+   "risk": "Self-promotional framing gets flagged/buried fast; must read as a genuine build-in-public story. No SEO value (nofollow). Best paired same week as PH, not instead of it.",
+   "sources": [
+    "https://www.mediafa.st/reddit-vs-hacker-news-for-launching-your-startup"
+   ]
+  },
+  {
+   "name": "BetaList",
+   "what": "Long-running pre-launch/launch directory with a dofollow listing.",
+   "how": "Submit via betalist.com with a tagline, description, and screenshot. Free queue publishes on a multi-week wait; $99 \"Boosted\" skips the queue to 24-72hrs.",
+   "cost": "free, or $99 Boosted",
+   "risk": "Low — mainly an indexing/backlink play, not a signup channel. Reported traffic/conversion figures for this tier come from SEO-content aggregator sites, not primary data — treat as directional only.",
+   "sources": [
+    "https://forkoff.xyz/blog/founder-growth/launch-platforms-beyond-product-hunt-2026",
+    "https://smollaunch.com/alternatives/betalist"
+   ]
+  },
+  {
+   "name": "AlternativeTo",
+   "what": "Evergreen \"alternative to X\" comparison directory that compounds traffic for years rather than spiking once.",
+   "how": "Create a free listing, tag it against generic helpdesk/support-ticket tools since Tideover doesn't have a direct 1:1 competitor yet.",
+   "cost": "free",
+   "risk": "low",
+   "sources": [
+    "https://forkoff.xyz/blog/founder-growth/launch-platforms-beyond-product-hunt-2026"
+   ]
+  },
+  {
+   "name": "SaaSHub",
+   "what": "Permanent SaaS comparison/directory site, not a launch event — steady low-volume trickle for years plus eventual placement on \"X vs Y\" pages.",
+   "how": "Submit a free listing at saashub.com; manual review before the dofollow link goes live.",
+   "cost": "free",
+   "risk": "low",
+   "sources": [
+    "https://forkoff.xyz/blog/founder-growth/launch-platforms-beyond-product-hunt-2026"
+   ]
+  },
+  {
+   "name": "Uneed",
+   "what": "Curated indie-tool launch directory, smaller and more selective audience than Product Hunt.",
+   "how": "Submit via uneed.best; one source reports roughly 1-in-3 submissions get accepted/curated (unverified, treat as directional).",
+   "cost": "free",
+   "risk": "low",
+   "sources": [
+    "https://forkoff.xyz/blog/founder-growth/launch-platforms-beyond-product-hunt-2026"
+   ]
+  },
+  {
+   "name": "MicroLaunch",
+   "what": "Narrower launch board aimed at indie hackers/solo founders who actually pay for small software tools — a better ICP-adjacent audience than broad directories.",
+   "how": "Submit a free listing at microlaunch.net; $19 optional \"Featured\" placement.",
+   "cost": "free, or $19 Featured",
+   "risk": "low",
+   "sources": [
+    "https://forkoff.xyz/blog/founder-growth/launch-platforms-beyond-product-hunt-2026",
+    "https://smollaunch.com/alternatives/microlaunch"
+   ]
+  },
+  {
+   "name": "Indie Hackers",
+   "what": "Community of bootstrapped founders/operators. Not a static listing — value comes from a product page plus real milestone/story posts, which several sources and one primary IH post cite as higher-converting than PH for authentic operator stories.",
+   "how": "Create a free product page at indiehackers.com, then post a real \"why I'm building this\" or milestone update using Dylan's actual founder story — no fabricated metrics.",
+   "cost": "free",
+   "risk": "low — best-fit channel for the proof-only, real-story angle Dylan already has",
+   "sources": [
+    "https://www.indiehackers.com/post/aftermath-of-our-disappointing-product-hunt-launch-a81fea3a52",
+    "https://awesome-directories.com/blog/indie-hackers-launch-strategy-guide-2025/"
+   ]
+  },
+  {
+   "name": "Peerlist Launchpad",
+   "what": "Weekly cohort launch arena with community voting; audience skews technical/dev/design professionals, a weak fit for a crowdfunding-ops SaaS.",
+   "how": "Submit a free listing at peerlist.io/launchpad for an open week slot.",
+   "cost": "free",
+   "risk": "low priority given audience mismatch — do only if there's spare time",
+   "sources": [
+    "https://peerlist.io/launchpad/2026/week/28"
+   ]
+  },
+  {
+   "name": "Kicktraq sponsorship",
+   "what": "Kickstarter-tracking site with a paid sponsorship/ad program aimed at campaign creators — historically the closest thing to a crowdfunding-vertical ad placement.",
+   "how": "N/A right now — checked kicktraq.com/sponsors directly: the page states they are \"currently pausing advertising on Kicktraq in preparation for changes coming soon.\" No live pricing or intake form. Revisit in a few months.",
+   "cost": "unavailable (was historically cited around $10/day when active, unverified)",
+   "risk": "low — just not actionable today; audience is backers, not creators, so fit for Tideover (which sells to creators) was always secondary",
+   "sources": [
+    "https://www.kicktraq.com/sponsors/"
+   ]
+  },
+  {
+   "name": "BackerKit blog / creator resources (PR pitch, not self-serve)",
+   "what": "BackerKit's own blog and creator-resources content is a possible feature/mention target since Tideover already imports from BackerKit campaigns — no open guest-post or directory submission form found.",
+   "how": "Direct outreach to BackerKit's marketing/partnerships contact once there's a real pilot outcome or testimonial to point to; position as a tool their creators use post-funding, not a paid placement.",
+   "cost": "free (relationship/PR effort only)",
+   "risk": "No guaranteed coverage; must have genuine proof before pitching per the proof-only rule — premature outreach with nothing to show wastes the one good first impression",
+   "sources": [
+    "https://www.backerkit.com/blog/backerkit-drivethrurpg-integration",
+    "https://help.backerkit.com/article/319-319"
+   ]
+  },
+  {
+   "name": "Stonemaier Games blog (Jamey Stegmaier)",
+   "what": "The single highest-credibility independent crowdfunding-creator blog in tabletop/games; not a directory, an earned-media target read by exactly the mid-size distressed-campaign ICP.",
+   "how": "Cold pitch once pilot proof exists — reference the real founder story and an honest description of what Tideover does; no paid submission mechanism exists.",
+   "cost": "free (earn-only, no guarantee)",
+   "risk": "Speculative reach — treat as a stretch/backlog PR target, not a scheduled deliverable",
+   "sources": [
+    "https://stonemaiergames.com/15-indispensable-tools-for-every-kickstarter-creator-and-entrepreneur/"
+   ]
+  },
+  {
+   "name": "Micro-launchpad filler stack (Fazier, Tinylaunch, Betafy, DevHunt)",
+   "what": "Second-tier free launch boards with modest per-submission traffic (low hundreds of visitors each per unverified aggregator estimates).",
+   "how": "Submit if there's spare time in weeks 2-4 post-PH; otherwise skip.",
+   "cost": "free (some have $19-29 optional boosts)",
+   "risk": "Low yield relative to Dylan's scarce 2hr/day budget — deprioritize below the direct-ICP-outreach work that actually drives pipeline",
+   "sources": [
+    "https://forkoff.xyz/blog/founder-growth/launch-platforms-beyond-product-hunt-2026"
+   ]
+  },
+  {
+   "name": "Shopify App Store",
+   "what": "Not usable yet — Tideover has no Shopify app built, only the standalone SaaS. Confirmed 2026 requirements: GraphQL Admin API only (REST is legacy), 3 GDPR webhooks, Shopify App Pricing billing integration, 2-4 week review (+2-4wk more for \"Built for Shopify\").",
+   "how": "Park for a future roadmap item if/when a Shopify preorder-app integration gets built; not actionable this sprint.",
+   "cost": "free to list, but requires building and maintaining a real embedded app first",
+   "risk": "Out of scope now — flagged only so it isn't mistakenly attempted before the app exists",
+   "sources": [
+    "https://shopify.dev/docs/apps/launch/shopify-app-store/app-store-requirements"
+   ]
+  }
+ ],
+ "load_bearing_claims": [
+  {
+   "claim": "Product Hunt retired the hunter auto-notification boost; makers now self-submit with no algorithmic advantage from having a hunter, and ranking is a composite of upvotes/hour, comment depth, CTR, and share activity rather than raw early spike.",
+   "source": "https://hub.causo.ai/guides/product-hunt-launch-2026-realistic-playbook"
+  },
+  {
+   "claim": "Real (primary-source) B2B launch outcomes are far below aggregator hype: a #8-of-day SaaS reporting tool got 564 visitors and 56 signups; a top-50 AI knowledge tool got zero signups and the founder concluded PH is 'awareness, not acquisition.'",
+   "source": "https://www.indiehackers.com/post/5-days-post-launch-top-50-on-product-hunt-zero-signups-and-why-i-think-thats-actually-fine-77b1fc59e4"
+  },
+  {
+   "claim": "Product Hunt links pass no SEO authority (rel=ugc), so the traffic spike does not compound — pair it with permanent indexed directories for lasting value.",
+   "source": "https://www.puthusu.com/blog/is-product-hunt-worth-it"
+  },
+  {
+   "claim": "Kicktraq's sponsorship/advertising program is currently paused as of this check ('pausing advertising on Kicktraq in preparation for changes coming soon'), with no live pricing or intake — it is not an actionable channel today regardless of budget.",
+   "source": "https://www.kicktraq.com/sponsors/"
+  },
+  {
+   "claim": "PH's own readiness screening reportedly tells ~70% of inquiring founders they're not ready, with an enterprise-leaning buyer or lack of self-serve stranger onboarding as the primary disqualifiers — both are partial-fit risks for Tideover's narrow B2B ICP.",
+   "source": "https://hub.causo.ai/guides/product-hunt-launch-2026-realistic-playbook"
+  },
+  {
+   "claim": "Shopify's 2026 App Store requires GraphQL Admin API only (REST is legacy), GDPR webhooks, Shopify App Pricing billing, and a 2-4 week review — confirming it is not a same-sprint option since no Shopify app exists yet.",
+   "source": "https://shopify.dev/docs/apps/launch/shopify-app-store/app-store-requirements"
+  }
+ ],
+ "summary": "Run the free evergreen directory layer now, independent of pilots: BetaList, AlternativeTo, SaaSHub, Uneed, MicroLaunch, and an Indie Hackers page take about 3 hours total, deliver near-zero direct signups, but start indexing the domain and make Tideover look real to a skeptical prospect who googles it before trialing. Hold Product Hunt and Show HN until at least one real pilot produces a genuine testimonial — Product Hunt's own screening reportedly rejects ~70% of applicants for an enterprise-leaning buyer or no self-serve stranger onboarding, both partial mismatches for Tideover's narrow ICP, and the proof-only rule means the maker comment needs a real proof point, not just the founder story alone. Primary-source outcomes (not aggregator hype) for a niche B2B tool are modest to poor: a #8-of-day SaaS tool got 564 visitors/56 signups, a top-50 tool got zero signups, and PH links carry no SEO value (nofollow) — treat PH as a one-shot credibility/PR badge, never a pipeline channel. Show HN, led with Dylan's real 60+-day-wait COVID story rather than a pitch, is plausibly the single highest-yield event given HN's taste for authentic founder narratives, but risks getting buried if it reads as marketing. Kicktraq's sponsorship program is confirmed paused on their own site right now, and BackerKit/Stonemaier-style crowdfunding press are earned-PR plays that also require pilot proof first, so both route to the post-pilot phase alongside PH. None of this circuit is a reliable growth channel for the ICP (narrow, high-intent creators of distressed mid-size campaigns don't casually browse Product Hunt) — it's a parallel credibility/backlink layer to run alongside, never instead of, direct ICP outreach."
+}

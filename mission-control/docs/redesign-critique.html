@@ -1,0 +1,117 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Redesign critique (what got fixed) — Tideover docs</title><style>body{margin:0;background:#fbf8f2;color:#11252a;font:16px/1.65 -apple-system,Segoe UI,Roboto,sans-serif}main{max-width:880px;margin:0 auto;padding:40px 24px 80px}h1,h2,h3{line-height:1.15;letter-spacing:-.01em}h1{font-size:30px}h2{margin-top:2em;border-bottom:1px solid #ebe2d0;padding-bottom:6px}a{color:#0e5366}code{background:#f4eee2;padding:1px 5px;border-radius:4px;font-size:13.5px}pre{background:#f4eee2;padding:14px;border-radius:10px;overflow-x:auto;font-size:13px}table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}th,td{border:1px solid #ebe2d0;padding:7px 10px;text-align:left;vertical-align:top}th{background:#f4eee2}blockquote{border-left:3px solid #d9762f;margin-left:0;padding-left:14px;color:#374a4f}.top{font-size:13px;margin-bottom:18px}.top a{text-decoration:none}</style></head><body><main><p class="top"><a href="../tideover-hq.html">&larr; Tideover HQ</a></p><div id="c"><pre style="white-space:pre-wrap">Verified against Swan's live site and the Tideover repo. The plan's infrastructure claims check out (`lib/proof.ts`, `.proof-placeholder`, `DemoBadge`, `SAMPLE DATA`, `Operator.tsx` all present; `/app/layout.tsx` has no auth guard, so the cockpit is already a no-auth sample-data surface — good news for S5). Critique below.
+
+---
+
+## VERDICT BY ATTACK AXIS
+- **Originality: PASS.** I re-fetched getswan.com. The drafted Tideover copy borrows Swan's *mechanics* (role personification, X-not-Y aphorisms, 3-tier belief blocks, 6-item capability grid, before/after) but the words are original. No passage reads as adapted. One hygiene note: the plan internally quotes Swan fragments ("heartbroken," "most popular," "What's a seat," "Ask Swan") as reference — fine in a plan, must not leak into shipped copy.
+- **Proof-only: TWO REAL VIOLATIONS** (see B1, B2).
+- **Quality: mostly Swan-caliber; ~5 lines drifted wordy/jargony** (see weakest lines).
+- **Feasibility: solid** — S5 embed is *more* feasible than the plan assumes (no-auth demo surface exists); minor syntax + browser-support nits.
+- **Brand: one system-integrity conflict** (B3) plus over-decoration risk.
+
+---
+
+## BLOCKERS
+
+**B1 — S9 "where most partners land after proof" implies a customer base that does not exist.** The on-page proof pledge in `Operator.tsx` literally says the case study "lands only after a real cohort completes" — i.e. cohort one hasn't run. A pricing card labeled by where "most partners land" fabricates modal behavior of customers you don't have. This is a testimonial-shaped implication and it ships dishonest. Must relabel to a self-sourced recommendation or a trigger condition (no crowd claim).
+
+**B2 — S3 integration logo row collides head-on with the committed on-page pledge "No borrowed logo."** `Operator.tsx` line 51 pledges "No invented metric. No fake testimonial. No borrowed logo." A monochrome third-party logo band sitting in the credibility slot "right after the product feels real" is *visually indistinguishable from a "trusted by" endorsement bar* — a sharp visitor reads it as contradiction. The integration/endorsement distinction is real to you, invisible to them. Fix: (a) reword the pledge to "no borrowed customer logo," AND (b) present integrations unmistakably as capability — small inline "Connects with" chips in a functional context, captioned, not a monochrome trust-band in the social-proof position. Also: only show marks for integrations that actually ship today (a logo for a planned integration is an implied-capability claim).
+
+**B3 — Terracotta as the S4 "dispute-risk" gradient endpoint breaks the single-action-accent discipline.** The plan itself commits "terracotta plays coral's exact role: every CTA + the one spot color… no fourth solid." Using terracotta to *also* mean "danger/dispute" across the tide-line means the color stops reliably signaling "click here," and it collides with the product's own red/amber/green risk pills. Warm the tide-line teal → tan/amber; reserve terracotta for actions only.
+
+---
+
+## IMPROVEMENTS
+- **Paper-device overload.** The plan stacks 7 paper mechanisms (torn edges, strata, grain, corner-folds, stacked double-edge, wave dividers, parallax) + 6 nautical objects (boat/buoy/lighthouse/tide-line/strata/anchor). That fights the "calm" register and risks theme-park-nautical kitsch. Pick ~3 signature devices; lean on tide/wave + one hero object, not lighthouse+anchor+buoy+boat all at once.
+- **S2 deep-link `#demo?scene=refund-risk` is malformed** (query after hash won't parse). Use `?scene=refund-risk#demo` or a parsed-hash client handler.
+- **Parallax/`scroll-timeline`** has Safari/Firefox gaps — make it explicit progressive enhancement over the IntersectionObserver path, off under reduced-motion (plan hedges; commit to it).
+- **`feTurbulence` grain** should be a small fixed repeating tile, not a full-viewport filter, to avoid paint cost on low-end mobile.
+- **S3 founder numbers appear outside the Operator first-person frame.** Keep "two years / 60-plus-day" explicitly attributed to Dylan in the strip, or the pledge's "only numbers on this page" logic frays.
+- **S5 embed:** `/app` is already no-auth sample-data, so the interactive embed is feasible — but it *reads* hot files (`inbox/page.tsx`, `DraftRail`, `ApprovalBar`). Serialize + verify per CLAUDE.md, and ship the labeled looping capture as the day-one fallback so the homepage never blocks on the embed.
+
+---
+
+## 5 WEAKEST LINES (with stronger originals)
+
+1. **Hero subhead** — *drifted wordy (38 words, 3 clauses + tag); Swan subheads run ~12–15.*
+   → Subhead: **"It reads each order's real production timeline and drafts the calm, no-false-promises reply — in your voice, for your approval."** Support line: **"A layer on the helpdesk you already run. Nothing to rip out."**
+
+2. **S9 "where most partners land after proof"** — *proof-only violation (B1) + weak.*
+   → **"Recommended once the pilot proves out on your own tickets."** (our recommendation, trigger-conditioned, no crowd claim)
+
+3. **S2 H2 "Six jobs off your plate before day 90."** — *"before day 90" is an implied onboarding/outcome timeline with no basis.*
+   → **"Six jobs the long wait creates — off your plate."**
+
+4. **S2 WISMO card "Route every 'where's my order?' to the presale layer, automatically."** — *"presale layer" is internal jargon a buyer doesn't think in; trailing "automatically" is limp.*
+   → **"Catch every 'where's my order?' the moment it lands, and start the reply."**
+
+5. **S6 step-5 "You approve every novel reply."** — *"novel" is engineer-speak.*
+   → **"Every reply to a worried buyer waits for your yes."** (If routine status pings actually auto-send, use "Every non-routine reply waits for your yes" — this must match the real auto-send policy; see Q2.)
+
+---
+
+## QUESTIONS FOR DYLAN
+1. **Any paying/pilot partners yet, or is cohort one still unstarted?** Governs every "partners"/social-proof word and confirms B1.
+2. **Which replies auto-send vs route for approval?** So S6/S7's "approve every reply" is accurate, not overclaiming human-in-loop.
+3. **Are all six S2 capabilities shipped today** (esp. backer/preorder digest, escalation flags)? Anything not-built becomes a roadmap treatment, not a present-tense card.
+4. **Do we have the right to display each integration mark, and is each integration actually live?** (Logo for a planned integration = implied-capability claim.)
+5. **Real portrait for S8, or ship without?** An AI-generated founder face would itself break proof-only — do not generate one.
+6. **OK to narrow the paper vocabulary to ~3 signature devices**, or do you want the fuller kit?</pre></div><script id="md" type="text/plain">Verified against Swan's live site and the Tideover repo. The plan's infrastructure claims check out (`lib/proof.ts`, `.proof-placeholder`, `DemoBadge`, `SAMPLE DATA`, `Operator.tsx` all present; `/app/layout.tsx` has no auth guard, so the cockpit is already a no-auth sample-data surface — good news for S5). Critique below.
+
+---
+
+## VERDICT BY ATTACK AXIS
+- **Originality: PASS.** I re-fetched getswan.com. The drafted Tideover copy borrows Swan's *mechanics* (role personification, X-not-Y aphorisms, 3-tier belief blocks, 6-item capability grid, before/after) but the words are original. No passage reads as adapted. One hygiene note: the plan internally quotes Swan fragments ("heartbroken," "most popular," "What's a seat," "Ask Swan") as reference — fine in a plan, must not leak into shipped copy.
+- **Proof-only: TWO REAL VIOLATIONS** (see B1, B2).
+- **Quality: mostly Swan-caliber; ~5 lines drifted wordy/jargony** (see weakest lines).
+- **Feasibility: solid** — S5 embed is *more* feasible than the plan assumes (no-auth demo surface exists); minor syntax + browser-support nits.
+- **Brand: one system-integrity conflict** (B3) plus over-decoration risk.
+
+---
+
+## BLOCKERS
+
+**B1 — S9 "where most partners land after proof" implies a customer base that does not exist.** The on-page proof pledge in `Operator.tsx` literally says the case study "lands only after a real cohort completes" — i.e. cohort one hasn't run. A pricing card labeled by where "most partners land" fabricates modal behavior of customers you don't have. This is a testimonial-shaped implication and it ships dishonest. Must relabel to a self-sourced recommendation or a trigger condition (no crowd claim).
+
+**B2 — S3 integration logo row collides head-on with the committed on-page pledge "No borrowed logo."** `Operator.tsx` line 51 pledges "No invented metric. No fake testimonial. No borrowed logo." A monochrome third-party logo band sitting in the credibility slot "right after the product feels real" is *visually indistinguishable from a "trusted by" endorsement bar* — a sharp visitor reads it as contradiction. The integration/endorsement distinction is real to you, invisible to them. Fix: (a) reword the pledge to "no borrowed customer logo," AND (b) present integrations unmistakably as capability — small inline "Connects with" chips in a functional context, captioned, not a monochrome trust-band in the social-proof position. Also: only show marks for integrations that actually ship today (a logo for a planned integration is an implied-capability claim).
+
+**B3 — Terracotta as the S4 "dispute-risk" gradient endpoint breaks the single-action-accent discipline.** The plan itself commits "terracotta plays coral's exact role: every CTA + the one spot color… no fourth solid." Using terracotta to *also* mean "danger/dispute" across the tide-line means the color stops reliably signaling "click here," and it collides with the product's own red/amber/green risk pills. Warm the tide-line teal → tan/amber; reserve terracotta for actions only.
+
+---
+
+## IMPROVEMENTS
+- **Paper-device overload.** The plan stacks 7 paper mechanisms (torn edges, strata, grain, corner-folds, stacked double-edge, wave dividers, parallax) + 6 nautical objects (boat/buoy/lighthouse/tide-line/strata/anchor). That fights the "calm" register and risks theme-park-nautical kitsch. Pick ~3 signature devices; lean on tide/wave + one hero object, not lighthouse+anchor+buoy+boat all at once.
+- **S2 deep-link `#demo?scene=refund-risk` is malformed** (query after hash won't parse). Use `?scene=refund-risk#demo` or a parsed-hash client handler.
+- **Parallax/`scroll-timeline`** has Safari/Firefox gaps — make it explicit progressive enhancement over the IntersectionObserver path, off under reduced-motion (plan hedges; commit to it).
+- **`feTurbulence` grain** should be a small fixed repeating tile, not a full-viewport filter, to avoid paint cost on low-end mobile.
+- **S3 founder numbers appear outside the Operator first-person frame.** Keep "two years / 60-plus-day" explicitly attributed to Dylan in the strip, or the pledge's "only numbers on this page" logic frays.
+- **S5 embed:** `/app` is already no-auth sample-data, so the interactive embed is feasible — but it *reads* hot files (`inbox/page.tsx`, `DraftRail`, `ApprovalBar`). Serialize + verify per CLAUDE.md, and ship the labeled looping capture as the day-one fallback so the homepage never blocks on the embed.
+
+---
+
+## 5 WEAKEST LINES (with stronger originals)
+
+1. **Hero subhead** — *drifted wordy (38 words, 3 clauses + tag); Swan subheads run ~12–15.*
+   → Subhead: **"It reads each order's real production timeline and drafts the calm, no-false-promises reply — in your voice, for your approval."** Support line: **"A layer on the helpdesk you already run. Nothing to rip out."**
+
+2. **S9 "where most partners land after proof"** — *proof-only violation (B1) + weak.*
+   → **"Recommended once the pilot proves out on your own tickets."** (our recommendation, trigger-conditioned, no crowd claim)
+
+3. **S2 H2 "Six jobs off your plate before day 90."** — *"before day 90" is an implied onboarding/outcome timeline with no basis.*
+   → **"Six jobs the long wait creates — off your plate."**
+
+4. **S2 WISMO card "Route every 'where's my order?' to the presale layer, automatically."** — *"presale layer" is internal jargon a buyer doesn't think in; trailing "automatically" is limp.*
+   → **"Catch every 'where's my order?' the moment it lands, and start the reply."**
+
+5. **S6 step-5 "You approve every novel reply."** — *"novel" is engineer-speak.*
+   → **"Every reply to a worried buyer waits for your yes."** (If routine status pings actually auto-send, use "Every non-routine reply waits for your yes" — this must match the real auto-send policy; see Q2.)
+
+---
+
+## QUESTIONS FOR DYLAN
+1. **Any paying/pilot partners yet, or is cohort one still unstarted?** Governs every "partners"/social-proof word and confirms B1.
+2. **Which replies auto-send vs route for approval?** So S6/S7's "approve every reply" is accurate, not overclaiming human-in-loop.
+3. **Are all six S2 capabilities shipped today** (esp. backer/preorder digest, escalation flags)? Anything not-built becomes a roadmap treatment, not a present-tense card.
+4. **Do we have the right to display each integration mark, and is each integration actually live?** (Logo for a planned integration = implied-capability claim.)
+5. **Real portrait for S8, or ship without?** An AI-generated founder face would itself break proof-only — do not generate one.
+6. **OK to narrow the paper vocabulary to ~3 signature devices**, or do you want the fuller kit?</script><script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script><script>try{if(window.marked){document.getElementById("c").innerHTML=marked.parse(document.getElementById("md").textContent)}}catch(e){}</script></main></body></html>

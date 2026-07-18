@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D5 — Branch protection (60 seconds)</title>
+<style>
+  :root{--teal:#0E5366;--terra:#D9762F;--sand:#FBF8F2;--ink:#11252A;--paper:#fff;--line:#E5DFD2;--muted:#5B6B70}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--sand);color:var(--ink);font:15.5px/1.6 Inter,system-ui,sans-serif;padding:32px 20px 80px}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-family:Fraunces,Georgia,serif;color:var(--teal);font-size:30px;margin-bottom:6px}
+  .meta{color:var(--muted);margin-bottom:22px}
+  ol{margin:14px 0 14px 24px}
+  ol li{padding:7px 0}
+  code{background:#F4EFE4;border-radius:5px;padding:2px 7px;font-size:13.5px}
+  .box{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin:14px 0}
+  .why{background:#F4EFE4;border-radius:10px;padding:14px 18px;font-size:14px;margin:14px 0}
+</style>
+</head>
+<body><div class="wrap">
+<h1>D5 — Turn on branch protection (you have Pro now, so this works)</h1>
+<div class="meta">One-time, ~60 seconds, in the GitHub UI</div>
+
+<div class="why"><strong>What it does:</strong> makes it physically impossible for anyone (including an AI agent following stale instructions at 3am) to push broken code to <code>main</code>. Merges require a pull request with the CI check green. This is the single highest-leverage $4 in the budget.</div>
+
+<div class="box">
+<ol>
+<li>Open <a href="https://github.com/chagaqi/core-business/settings/rules/new?target=branch" target="_blank"><strong>github.com/chagaqi/core-business → Settings → Rules → Rulesets → New branch ruleset</strong></a></li>
+<li><strong>Ruleset name:</strong> <code>protect-main</code> · <strong>Enforcement status:</strong> Active</li>
+<li><strong>Target branches:</strong> Add target → Include default branch</li>
+<li>Tick <strong>Require a pull request before merging</strong> — set required approvals to <strong>0</strong> (you're solo; CI is the reviewer)</li>
+<li>Tick <strong>Require status checks to pass</strong> → search and add <strong><code>verify + engine tests</code></strong></li>
+<li>Click <strong>Create</strong>. Done.</li>
+</ol>
+</div>
+
+<p style="color:var(--muted);font-size:14px">After this, tell Claude "ruleset is on" and the board gets updated. From then on: sprint branch accumulates work → PR → CI badge goes green → you click merge.</p>
+</div></body>
+</html>

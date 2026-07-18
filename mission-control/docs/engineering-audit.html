@@ -1,0 +1,203 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Engineering audit handoff — Tideover docs</title><style>body{margin:0;background:#fbf8f2;color:#11252a;font:16px/1.65 -apple-system,Segoe UI,Roboto,sans-serif}main{max-width:880px;margin:0 auto;padding:40px 24px 80px}h1,h2,h3{line-height:1.15;letter-spacing:-.01em}h1{font-size:30px}h2{margin-top:2em;border-bottom:1px solid #ebe2d0;padding-bottom:6px}a{color:#0e5366}code{background:#f4eee2;padding:1px 5px;border-radius:4px;font-size:13.5px}pre{background:#f4eee2;padding:14px;border-radius:10px;overflow-x:auto;font-size:13px}table{border-collapse:collapse;width:100%;font-size:14px;display:block;overflow-x:auto}th,td{border:1px solid #ebe2d0;padding:7px 10px;text-align:left;vertical-align:top}th{background:#f4eee2}blockquote{border-left:3px solid #d9762f;margin-left:0;padding-left:14px;color:#374a4f}.top{font-size:13px;margin-bottom:18px}.top a{text-decoration:none}</style></head><body><main><p class="top"><a href="../tideover-hq.html">&larr; Tideover HQ</a></p><div id="c"><pre style="white-space:pre-wrap"># Tideover — Engineering / Infrastructure Audit
+
+**Date:** 2026-07-06 · **Author:** Fable (synthesis of a verified multi-agent audit: security, data-layer, performance, architecture, ops, tests, scale)
+**Full findings:** `docs/audit-2026-07-06/engineering-findings.json` (40 confirmed, 0 refuted) + `engineering-p3-carried.json` (12 P3 hygiene, unverified). Task ids EN-01…
+**Overlap note:** the security/env P1s here are the same issues as the pilot-readiness doc — fix once. `docs/PILOT-READINESS-HANDOFF.md` owns the go-live env checklist.
+
+## Shape of it
+
+The architecture is sound — the repository seam, deterministic engines, and eval harness are genuinely good foundations. The debt is concentrated in three places: **the seam's json↔mongo parity is not actually guaranteed** (demo can behave differently from prod), **the read path doesn't scale past a small pilot** (full-collection in-memory reads), and **the prod path is under-tested** (the Mongo driver and the approve/send action have zero tests). None of it blocks a *single-merchant* pilot if the P1s are fixed; all of it bites within the first few merchants.
+
+---
+
+## P1 — fix before a pilot (7)
+
+### EN-01 · Operator auth fails open on a mistyped env var `[security]` S
+`middleware.ts:15` / `lib/auth.ts:16-17`: `if (DEMO_MODE !== "false") allow`. Any value but the exact string `false` serves the whole cockpit + PII + export unauthenticated; `DATA_DRIVER=mongo` is chosen independently with no coupling. → **Fail closed:** treat only `DEMO_MODE==="true"` as demo; add a boot assertion that refuses to serve `DATA_DRIVER=mongo` unless `DEMO_MODE==="false"`; trim/normalize the value; add a smoke check that curls an operator route and asserts 401. *(= PR-05.)*
+
+### EN-02 · CSV import does O(n²)/serial per-row DB round-trips, no batching, no timeout override `[perf]` M
+Import loops rows doing sequential finds+writes with no bulk ops; combined with the 2000-row cap (PR-04) even a legal file is slow, and the real ICP file (5k–50k) is impossible. → Batch reads (one `findByEmails` per chunk), `bulkWrite` inserts, chunked processing; raise/stream the cap (see onboarding OB-cap). *(Pairs with PR-03/PR-04 — do as one import-hardening change.)*
+
+### EN-03 · `approveSend` fabricates success; nothing distinguishes a mock send from a real one `[failure-modes]` M
+The core human-approval action returns success via `MockAdapter` (or throws `NotImplementedError`) for real channels, while the cockpit shows "Reply sent." → Depends on the PR-01 product decision (copy-to-clipboard vs outbound). Until a real delivery path exists, the UI must not claim "sent" — say "Approved — paste into {helpdesk}" (ties to UX-03). *(= PR-01.)*
+
+### EN-04 · README/prod env checklist omits AUTH_SECRET, APP_PASSWORD, WEBHOOK_ROOT_SECRET, CRON_SECRET `[env]` S
+Following the documented checklist locks Dylan out (no AUTH_SECRET/APP_PASSWORD) and silently breaks ingest + cron. → Replace with the authoritative checklist in `PILOT-READINESS-HANDOFF.md`; regenerate `.env.example` (PR-18). *(Do together with EN-01.)*
+
+### EN-05 · The MongoDB driver — the actual prod data path — has ZERO automated test coverage `[scale/tests]` L
+The eval harness + unit tests exercise only the json driver. The mongo driver (the one prod uses) could drift on any method and nothing catches it — directly enabling EN-11 (parity drift). → A `mongo-smoke` suite (spin up / connect to a scratch DB) asserting each `*Repository` method returns the same shape/order as json for a fixed fixture. This is the single highest-value missing test.
+
+### EN-06 · `approveSend` — the actual send action — has no test anywhere `[tests]` S
+The most consequential mutation in the app is untested. → Unit-test the approve/send transition (success path, the double-send guard from EN-09, ledger write from EN-13). Testable-core rule: if logic is inline in a route, lift it to `lib/`.
+
+### EN-07 · CSV import caps at 2000 rows; ICP ships 5k–50k `[onboarding/scale]` M
+`IMPORT_ROW_CAP=2000` hard-rejects the target customer's backer list. → Chunked/streamed import (with EN-02). *(= PR-04.)*
+
+---
+
+## P2 — real debt, bites soon (31) — grouped, full text in JSON
+
+### Data-layer correctness (the seam's 1:1 promise)
+- **EN-11** · json and mongo drivers **return list results in different orders** — the seam's parity promise is false; demo can behave differently from prod (queue order, dedupe). → Impose a deterministic sort in both drivers; assert in the EN-05 smoke suite.
+- **EN-09** · `approveSend`'s non-atomic send transition can send a customer **two replies** for one ticket (also PR-10). → Atomic status-guard (compare-and-set) before delivery.
+- **EN-13** · `approveSend` **swallows a failed `reply_sent` ledger write**, silently undercounting the core proof metric. → Surface/retry the failure; don't count a send as complete if the ledger write failed.
+- **EN-18** · CSV re-import **duplicates orders** when source-id absent or on concurrent submit (also PR-09). → dedupe key + unique index.
+- **EN-24** · Customer dedupe-by-email is a **check-then-act race** with no unique-index backstop (tickets have one; customers don't). → add the unique index.
+- **EN-16** · JSON/Mongo list-order mismatch (same root as EN-11; dedupe when fixing).
+- **EN-26** · Synthetic ticket built via `as Ticket` cast bypasses type safety on the **live-ingest drafting path**, untested by evals. → real type + a test.
+
+### Scale (what breaks first)
+- **EN-08** · `getQueue` does **1+3N serial Mongo round-trips over ALL historical tickets**, reused by 4 daily pages. → filter to open/recent server-side; batch the per-ticket fetches; this is the #1 latency source.
+- **EN-10** · `customers.findByEmail` has **no index** → full-collection scan on every ingest + every import row. → index `{merchantId, email}`.
+- **EN-11-scale** · `ingestTicket`'s unmatched-order fallback **fetches the merchant's entire order collection and sorts in JS on the ACK path** (also feeds PR-06 corruption). → indexed query, bounded.
+- **EN-12** · `getSetupChecklist` fans out one `statusViews.listByOrder` per order for a single yes/no. → one existence query.
+- **EN-36** · Every inbound ingest reads the merchant's **entire outcome-event ledger**. → bounded/indexed read.
+- **EN-38** · `DATA_DRIVER` defaults to the ephemeral in-memory store — wrong fail-safe for prod (also PR-05). → default safer or fail closed.
+
+### Performance
+- **EN-21** · Inbox j/k keyboard nav re-runs the **full force-dynamic page** (incl. the EN-08 N+1) on every keystroke. → client-side selection or cached queue (pairs with UX-13 loading states).
+- **EN-22** · Selected-ticket detail fetched **twice** (`getTicketView` called 2×) + `tickets.list` repeated ~4× per render, all sequential. → memoize per request.
+- **EN-23** · Every `/app/*` page is `force-dynamic` with zero caching — near-static reads refetch on every nav. → `revalidate`/`unstable_cache` where correctness holds.
+
+### Security (beyond EN-01)
+- **EN-13-sec** · Login has **no rate limiting or lockout**; one shared password guards all data + the send button; non-constant-time compare. → per-IP + global lockout, `timingSafeEqual`, min-length assertion. *(Downgraded to P2 by the verifier: unlisted URL, pre-revenue — fix before broader traffic, not necessarily day one.)*
+- **EN-14** · **No tenant isolation** on any operator route — one session reaches every merchant by id (also PR-11). → session→merchantId binding + a shared guard, before merchant #2.
+- **EN-15** · `widget-submit` is an unauthenticated abuse vector: no length cap, no rate limit, heavy per-call work. → cap + rate-limit.
+- **EN-27** · `STATUS_TOKEN_SECRET` silently falls back to a hardcoded value in prod (also PR-16). → fail closed.
+- **EN-32** · `getPublicStatus`'s PII boundary is asserted only in a **comment, never a test**. → a test that fails if a new field leaks PII to the public payload.
+- **EN-33** · `lib/session.ts` (the sole cookie auth gate) has **zero unit test**. → test sign/verify/expiry/tamper.
+
+### Ops / reliability
+- **EN-19** · `seed-mongo --force` is an **unguarded production wipe**. → refuse when `DATA_DRIVER=mongo` + a non-empty DB unless an explicit `--i-understand` flag; the audit found this is the same command used to refresh demo data, so guard it, don't remove it.
+- **EN-20** · Backups are **not restorable and no restore runbook exists** (F5b never closed). → write + test a restore path; this is the difference between "we have backups" and "we can recover."
+- **EN-28** · Most API routes have **no try/catch and no error reporting** — an unhandled throw leaves no trail. → a shared route wrapper that logs + returns a clean 500.
+- **EN-29** · `/api/health` only probes DB reachability — broken cron/ingest-auth/login still report 200. → deepen (or add sub-checks) so the dead-man switch means something.
+- **EN-30** · The daily cron has **no persisted heartbeat** — a silently broken cron is invisible (also PR-15). → write a `last-run` doc; surface staleness.
+- **EN-31** · Backup coverage depends on Dylan remembering a manual command. → schedule it (Vercel cron) or at least alert on staleness.
+- **EN-37** · Quiet-resolution cron is **O(events²) per merchant** and permanently starves merchants after the first slow one. → bound/paginate; index.
+
+### Architecture / tests
+- **EN-25** · Cockpit "Escalate" is fully decorative — no persistence, no backend (= UX-10 / OB overlap). → the escalate persistence build (owned by UX-10).
+- **EN-34** · Security-critical logic inline in `route.ts` is structurally untestable by the harness. → lift to `lib/` (testable-core rule).
+- **EN-35** · All **55 golden fixtures are `reviewed:false`** — the harness's correctness claim is regression-only, not human-verified. → Dylan/Fable review pass to flip them to `reviewed:true` (this was D9, still open).
+
+---
+
+## P3 — hygiene (14 total; `engineering-p3-carried.json` + 2 verified)
+- **EN-39** · `lib/service.ts` is a 938-line, 15-function god-module under every hot file but not itself serialization-listed. → split by concern (queue / dashboard / ticket-view) — do opportunistically, not as a big-bang.
+- **EN-40** · `verifyStatusToken` (public status auth) has no direct unit test / no driver-parity test.
+- Plus 12 carried P3s (naming drift, dead exports, minor duplication) in the JSON — batch during other work, don't schedule standalone.
+
+---
+
+## Recommended sequencing (fits "polished tomorrow" realistically)
+
+1. **Security/env P1 batch** (EN-01, EN-04, EN-27, EN-38 + PR env checklist) — small, high-value, unblocks a *safe* deploy. Half a day.
+2. **Import hardening** (EN-02, EN-07, PR-03, PR-04, EN-18, EN-10 index) — one coherent change; unblocks onboarding the real ICP.
+3. **Send-path truth** (EN-03/PR-01 + EN-09 guard + EN-13 ledger) — gated on your PR-01 decision; pairs with UX-03.
+4. **Test the prod path** (EN-05 mongo smoke, EN-06 approveSend) — do alongside, it's how you keep the above green.
+5. Everything else P2 → the week after the pilot merchant is live. P3 → opportunistic.
+
+Do not attempt all 40 tomorrow. The P1s + the import batch + the send-path decision are what make it *safe and usable*; the rest is hardening you do with a live merchant in hand.
+</pre></div><script id="md" type="text/plain"># Tideover — Engineering / Infrastructure Audit
+
+**Date:** 2026-07-06 · **Author:** Fable (synthesis of a verified multi-agent audit: security, data-layer, performance, architecture, ops, tests, scale)
+**Full findings:** `docs/audit-2026-07-06/engineering-findings.json` (40 confirmed, 0 refuted) + `engineering-p3-carried.json` (12 P3 hygiene, unverified). Task ids EN-01…
+**Overlap note:** the security/env P1s here are the same issues as the pilot-readiness doc — fix once. `docs/PILOT-READINESS-HANDOFF.md` owns the go-live env checklist.
+
+## Shape of it
+
+The architecture is sound — the repository seam, deterministic engines, and eval harness are genuinely good foundations. The debt is concentrated in three places: **the seam's json↔mongo parity is not actually guaranteed** (demo can behave differently from prod), **the read path doesn't scale past a small pilot** (full-collection in-memory reads), and **the prod path is under-tested** (the Mongo driver and the approve/send action have zero tests). None of it blocks a *single-merchant* pilot if the P1s are fixed; all of it bites within the first few merchants.
+
+---
+
+## P1 — fix before a pilot (7)
+
+### EN-01 · Operator auth fails open on a mistyped env var `[security]` S
+`middleware.ts:15` / `lib/auth.ts:16-17`: `if (DEMO_MODE !== "false") allow`. Any value but the exact string `false` serves the whole cockpit + PII + export unauthenticated; `DATA_DRIVER=mongo` is chosen independently with no coupling. → **Fail closed:** treat only `DEMO_MODE==="true"` as demo; add a boot assertion that refuses to serve `DATA_DRIVER=mongo` unless `DEMO_MODE==="false"`; trim/normalize the value; add a smoke check that curls an operator route and asserts 401. *(= PR-05.)*
+
+### EN-02 · CSV import does O(n²)/serial per-row DB round-trips, no batching, no timeout override `[perf]` M
+Import loops rows doing sequential finds+writes with no bulk ops; combined with the 2000-row cap (PR-04) even a legal file is slow, and the real ICP file (5k–50k) is impossible. → Batch reads (one `findByEmails` per chunk), `bulkWrite` inserts, chunked processing; raise/stream the cap (see onboarding OB-cap). *(Pairs with PR-03/PR-04 — do as one import-hardening change.)*
+
+### EN-03 · `approveSend` fabricates success; nothing distinguishes a mock send from a real one `[failure-modes]` M
+The core human-approval action returns success via `MockAdapter` (or throws `NotImplementedError`) for real channels, while the cockpit shows "Reply sent." → Depends on the PR-01 product decision (copy-to-clipboard vs outbound). Until a real delivery path exists, the UI must not claim "sent" — say "Approved — paste into {helpdesk}" (ties to UX-03). *(= PR-01.)*
+
+### EN-04 · README/prod env checklist omits AUTH_SECRET, APP_PASSWORD, WEBHOOK_ROOT_SECRET, CRON_SECRET `[env]` S
+Following the documented checklist locks Dylan out (no AUTH_SECRET/APP_PASSWORD) and silently breaks ingest + cron. → Replace with the authoritative checklist in `PILOT-READINESS-HANDOFF.md`; regenerate `.env.example` (PR-18). *(Do together with EN-01.)*
+
+### EN-05 · The MongoDB driver — the actual prod data path — has ZERO automated test coverage `[scale/tests]` L
+The eval harness + unit tests exercise only the json driver. The mongo driver (the one prod uses) could drift on any method and nothing catches it — directly enabling EN-11 (parity drift). → A `mongo-smoke` suite (spin up / connect to a scratch DB) asserting each `*Repository` method returns the same shape/order as json for a fixed fixture. This is the single highest-value missing test.
+
+### EN-06 · `approveSend` — the actual send action — has no test anywhere `[tests]` S
+The most consequential mutation in the app is untested. → Unit-test the approve/send transition (success path, the double-send guard from EN-09, ledger write from EN-13). Testable-core rule: if logic is inline in a route, lift it to `lib/`.
+
+### EN-07 · CSV import caps at 2000 rows; ICP ships 5k–50k `[onboarding/scale]` M
+`IMPORT_ROW_CAP=2000` hard-rejects the target customer's backer list. → Chunked/streamed import (with EN-02). *(= PR-04.)*
+
+---
+
+## P2 — real debt, bites soon (31) — grouped, full text in JSON
+
+### Data-layer correctness (the seam's 1:1 promise)
+- **EN-11** · json and mongo drivers **return list results in different orders** — the seam's parity promise is false; demo can behave differently from prod (queue order, dedupe). → Impose a deterministic sort in both drivers; assert in the EN-05 smoke suite.
+- **EN-09** · `approveSend`'s non-atomic send transition can send a customer **two replies** for one ticket (also PR-10). → Atomic status-guard (compare-and-set) before delivery.
+- **EN-13** · `approveSend` **swallows a failed `reply_sent` ledger write**, silently undercounting the core proof metric. → Surface/retry the failure; don't count a send as complete if the ledger write failed.
+- **EN-18** · CSV re-import **duplicates orders** when source-id absent or on concurrent submit (also PR-09). → dedupe key + unique index.
+- **EN-24** · Customer dedupe-by-email is a **check-then-act race** with no unique-index backstop (tickets have one; customers don't). → add the unique index.
+- **EN-16** · JSON/Mongo list-order mismatch (same root as EN-11; dedupe when fixing).
+- **EN-26** · Synthetic ticket built via `as Ticket` cast bypasses type safety on the **live-ingest drafting path**, untested by evals. → real type + a test.
+
+### Scale (what breaks first)
+- **EN-08** · `getQueue` does **1+3N serial Mongo round-trips over ALL historical tickets**, reused by 4 daily pages. → filter to open/recent server-side; batch the per-ticket fetches; this is the #1 latency source.
+- **EN-10** · `customers.findByEmail` has **no index** → full-collection scan on every ingest + every import row. → index `{merchantId, email}`.
+- **EN-11-scale** · `ingestTicket`'s unmatched-order fallback **fetches the merchant's entire order collection and sorts in JS on the ACK path** (also feeds PR-06 corruption). → indexed query, bounded.
+- **EN-12** · `getSetupChecklist` fans out one `statusViews.listByOrder` per order for a single yes/no. → one existence query.
+- **EN-36** · Every inbound ingest reads the merchant's **entire outcome-event ledger**. → bounded/indexed read.
+- **EN-38** · `DATA_DRIVER` defaults to the ephemeral in-memory store — wrong fail-safe for prod (also PR-05). → default safer or fail closed.
+
+### Performance
+- **EN-21** · Inbox j/k keyboard nav re-runs the **full force-dynamic page** (incl. the EN-08 N+1) on every keystroke. → client-side selection or cached queue (pairs with UX-13 loading states).
+- **EN-22** · Selected-ticket detail fetched **twice** (`getTicketView` called 2×) + `tickets.list` repeated ~4× per render, all sequential. → memoize per request.
+- **EN-23** · Every `/app/*` page is `force-dynamic` with zero caching — near-static reads refetch on every nav. → `revalidate`/`unstable_cache` where correctness holds.
+
+### Security (beyond EN-01)
+- **EN-13-sec** · Login has **no rate limiting or lockout**; one shared password guards all data + the send button; non-constant-time compare. → per-IP + global lockout, `timingSafeEqual`, min-length assertion. *(Downgraded to P2 by the verifier: unlisted URL, pre-revenue — fix before broader traffic, not necessarily day one.)*
+- **EN-14** · **No tenant isolation** on any operator route — one session reaches every merchant by id (also PR-11). → session→merchantId binding + a shared guard, before merchant #2.
+- **EN-15** · `widget-submit` is an unauthenticated abuse vector: no length cap, no rate limit, heavy per-call work. → cap + rate-limit.
+- **EN-27** · `STATUS_TOKEN_SECRET` silently falls back to a hardcoded value in prod (also PR-16). → fail closed.
+- **EN-32** · `getPublicStatus`'s PII boundary is asserted only in a **comment, never a test**. → a test that fails if a new field leaks PII to the public payload.
+- **EN-33** · `lib/session.ts` (the sole cookie auth gate) has **zero unit test**. → test sign/verify/expiry/tamper.
+
+### Ops / reliability
+- **EN-19** · `seed-mongo --force` is an **unguarded production wipe**. → refuse when `DATA_DRIVER=mongo` + a non-empty DB unless an explicit `--i-understand` flag; the audit found this is the same command used to refresh demo data, so guard it, don't remove it.
+- **EN-20** · Backups are **not restorable and no restore runbook exists** (F5b never closed). → write + test a restore path; this is the difference between "we have backups" and "we can recover."
+- **EN-28** · Most API routes have **no try/catch and no error reporting** — an unhandled throw leaves no trail. → a shared route wrapper that logs + returns a clean 500.
+- **EN-29** · `/api/health` only probes DB reachability — broken cron/ingest-auth/login still report 200. → deepen (or add sub-checks) so the dead-man switch means something.
+- **EN-30** · The daily cron has **no persisted heartbeat** — a silently broken cron is invisible (also PR-15). → write a `last-run` doc; surface staleness.
+- **EN-31** · Backup coverage depends on Dylan remembering a manual command. → schedule it (Vercel cron) or at least alert on staleness.
+- **EN-37** · Quiet-resolution cron is **O(events²) per merchant** and permanently starves merchants after the first slow one. → bound/paginate; index.
+
+### Architecture / tests
+- **EN-25** · Cockpit "Escalate" is fully decorative — no persistence, no backend (= UX-10 / OB overlap). → the escalate persistence build (owned by UX-10).
+- **EN-34** · Security-critical logic inline in `route.ts` is structurally untestable by the harness. → lift to `lib/` (testable-core rule).
+- **EN-35** · All **55 golden fixtures are `reviewed:false`** — the harness's correctness claim is regression-only, not human-verified. → Dylan/Fable review pass to flip them to `reviewed:true` (this was D9, still open).
+
+---
+
+## P3 — hygiene (14 total; `engineering-p3-carried.json` + 2 verified)
+- **EN-39** · `lib/service.ts` is a 938-line, 15-function god-module under every hot file but not itself serialization-listed. → split by concern (queue / dashboard / ticket-view) — do opportunistically, not as a big-bang.
+- **EN-40** · `verifyStatusToken` (public status auth) has no direct unit test / no driver-parity test.
+- Plus 12 carried P3s (naming drift, dead exports, minor duplication) in the JSON — batch during other work, don't schedule standalone.
+
+---
+
+## Recommended sequencing (fits "polished tomorrow" realistically)
+
+1. **Security/env P1 batch** (EN-01, EN-04, EN-27, EN-38 + PR env checklist) — small, high-value, unblocks a *safe* deploy. Half a day.
+2. **Import hardening** (EN-02, EN-07, PR-03, PR-04, EN-18, EN-10 index) — one coherent change; unblocks onboarding the real ICP.
+3. **Send-path truth** (EN-03/PR-01 + EN-09 guard + EN-13 ledger) — gated on your PR-01 decision; pairs with UX-03.
+4. **Test the prod path** (EN-05 mongo smoke, EN-06 approveSend) — do alongside, it's how you keep the above green.
+5. Everything else P2 → the week after the pilot merchant is live. P3 → opportunistic.
+
+Do not attempt all 40 tomorrow. The P1s + the import batch + the send-path decision are what make it *safe and usable*; the rest is hardening you do with a live merchant in hand.
+</script><script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script><script>try{if(window.marked){document.getElementById("c").innerHTML=marked.parse(document.getElementById("md").textContent)}}catch(e){}</script></main></body></html>

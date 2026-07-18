@@ -1,0 +1,67 @@
+{
+ "summary": "Keep the existing LinkedIn account and do not remake it — edit headline/About in place and let the 40 banked posts carry the vertical pivot; no evidence supports purging history or connections, and doing so forfeits the one real cold-start advantage (warm connections) a new account can't buy. LinkedIn should be the primary channel: personal profiles get 5-10x the reach of company pages, a 2-5x/week cadence is the documented reach inflection point, and content has a 48-72hr lifespan that fits a low, batched time budget. Add X as a light secondary channel via cross-posted (not identical) rewrites of the same LinkedIn drafts, because DTC/ecommerce founder discourse genuinely concentrates on X in a way LinkedIn's doesn't. Neither channel meaningfully reaches the crowdfunding-creator half of the ICP, especially the tabletop/Gamefound-heavy segment, whose community infrastructure is BoardGameGeek, Discord, Reddit, and Facebook — that's a real gap this decision doesn't close. Expect a short, self-correcting reach dip on LinkedIn as the algorithm recategorizes the account's topic signal from the pivot; this is evidenced as temporary, not a reason to rebuild. Use document/carousel format for the teardown/playbook content (highest engagement format), plain text for founder-story posts, and keep the lead-magnet link out of the post body given the disputed-but-real external-link reach penalty.",
+ "items": [
+  {
+   "name": "Keep the existing LinkedIn account — do not remake it",
+   "what": "Edit the account in place (headline, About section, pinned/featured content) to point at the new vertical; do not create a new profile or purge history/connections.",
+   "how": "Rewrite headline + About to frame Dylan as 'ran a $2M gym-equipment company through COVID-era 60+ day waits, now builds presale-support tooling.' Pin 1-2 of the strongest banked posts. Do NOT mass-delete old posts or disconnect non-vertical connections — only remove individual old posts that directly contradict the new positioning (rare). Accept a short reach dip on the first 1-2 weeks of new-topic posts while LinkedIn's algorithm recategorizes the profile's 'Topic DNA' — this is described as temporary and self-correcting with consistent on-topic posting, not permanent damage.",
+   "evidence": "Practitioner sources converge: 'if your account is your name, you shouldn't start anew... determine based on goals if you need to delete old content that isn't aligned' (buffer.com pivot guide); 'the decision should be strategic rather than blanket... focus on removing content that directly contradicts your new niche' (search synthesis across blockpartyapp/redactai/buffer). No source found recommending full rebuild for a moderate vertical pivot — only for a 'radical pivot to a completely different industry.' Separately, existing connections are a structural cold-start advantage a new account cannot replicate: 'people LinkedIn can already see that you're connected to will be prioritized' in the algorithm's first-hour distribution window (sproutsocial/hootsuite algorithm summaries)."
+  },
+  {
+   "name": "LinkedIn is the higher-leverage primary channel, not X",
+   "what": "Run LinkedIn as the main organic channel given the existing account, the 40-post bank, and the reach mechanics — X becomes a secondary, lower-effort add, not a replacement.",
+   "how": "Post 2-3x/week on LinkedIn to start (the documented inflection point where reach 'flips a switch') using the banked posts, then hold or increase cadence — no evidenced upper-frequency penalty exists. Reserve X for a lighter secondary cadence (companion post same/next day) rather than a primary content program.",
+   "evidence": "Personal LinkedIn profiles get ~70% more reach than company pages by conservative estimates and 5-10x more by others, with median engagement ~4.7% (personal) vs 1-2% (company) per Sprout Social's Q1 2026 Index of 52M+ posts (digitalapplied.com, meet-lea.com). Buffer's analysis of 2M+ posts found moving from 1x/week to 2-5x/week adds +1,182 impressions/post, and there's no penalty for posting more (6-10x/week: +5,001 impressions/post). LinkedIn content also has a 48-72hr lifespan vs 2-6hrs on X, meaning a fixed low-time budget produces more cumulative reach per post on LinkedIn."
+  },
+  {
+   "name": "Add X, but scope it to the DTC/ecommerce-operator half of the ICP only",
+   "what": "Use X as a secondary channel specifically because DTC/ecommerce founder discourse genuinely concentrates there — but recognize it does not reach the crowdfunding-creator half of the ICP any better than LinkedIn does.",
+   "how": "Cross-post banked LinkedIn content to X with a platform-native rewrite (sharper hook, tighter structure, shorter) rather than identical copy. Budget ~5 min/day for replies/engagement on days a post goes out, since X's algorithm weights replies (~27x a like) and conversations (~150x a like) far more than LinkedIn's does — meaning X requires more real-time presence per unit of reach, not less.",
+   "evidence": "DTC/ecommerce founder culture is concretely X-native: self-described 'Mayor of DTC Twitter,' multiple curated 'DTC founders to follow on Twitter' and 'ecommerce influencers on X' lists, explicit 'build in public' norms (storetasker.com, triplewhale.com, mobiloud.com). No comparable named LinkedIn DTC-founder community surfaced in search, though LinkedIn does have some Shopify-merchant interest groups (~9,200-member 'Shopify Product Community'). A 2026 platform-comparison source frames it directly: developer/PLG-style audiences skew X, enterprise/service-trust audiences skew LinkedIn — Tideover's preorder-store operators sit closer to the X-native crowd."
+  },
+  {
+   "name": "Flag: crowdfunding creators (esp. tabletop/Gamefound) are not meaningfully on LinkedIn or X",
+   "what": "Neither channel is a strong fit for the crowdfunding-creator half of the ICP — their community infrastructure is BoardGameGeek, Discord, Reddit, and Facebook groups, which is out of scope for this LinkedIn-vs-X decision but should inform overall channel strategy.",
+   "how": "No action within this decision; surfaced as a gap. If crowdfunding-creator acquisition matters as much as preorder-store acquisition, LinkedIn/X posting alone under-serves it and a Discord/BGG/Reddit motion would be needed separately — a different budget conversation.",
+   "evidence": "BackerKit's own creator-facing crowdfunding roadmap tells tabletop creators to build via 'newsletters, social media, Discord servers, and playtesting groups,' engage 'BoardGameGeek forums, Reddit, and Discord communities,' and calls BGG 'the undisputed hub of the board game world... non-negotiable' — LinkedIn is absent from this guidance (backerkit.com). Kickstarter's own creator lessons treat LinkedIn/Instagram/Pinterest as a distinct, secondary tier from core promotion channels (stonemaiergames.com Kickstarter Lesson #208)."
+  },
+  {
+   "name": "Format and link-placement rules for the content itself",
+   "what": "Use document/carousel format for the WISMO teardown and Presale Anxiety Playbook excerpts; use plain text for founder-story/narrative posts; keep the lead-magnet link out of the post body.",
+   "how": "Convert teardown/playbook content into native LinkedIn document (PDF carousel) posts — highest-engagement format. Post the COVID gym-equipment founder story as plain text (150-300 words, strong first-line hook) since text posts still hit the highest raw-reach ceilings. Put the lead-magnet link in the Featured section / profile rather than the post body or a manufactured 'link in comments' bridge — both are now suppressed.",
+   "evidence": "2026 format data: document/carousel posts average 6.6-7.0% engagement (highest of any format, up 14% YoY) vs text posts ~2-4.2% and video down 36% YoY (growwithghost.io, dataslayer.ai, authoredup.com). External links in post body: 'a single link in the body costs you some reach, the precise figure is unknowable' — blogs cite up to -60%, but LinkedIn's own Senior Director of Product has publicly denied an algorithmic penalty exists, so treat the number as directional, not exact (gromming.com vs writio.ai). The 'link in first comment' workaround is now identified as 'bridge behavior' and penalized similarly (gromming.com)."
+  },
+  {
+   "name": "Time budget: this fits inside the existing 2hrs/day GTM allocation without a new tool spend",
+   "what": "LinkedIn primary (~2hrs/week batched, i.e., ~15-20 min/day equivalent) + X companion posts (~5 min/day on posting days) stays within Dylan's stated ~2hrs/day total GTM time and doesn't require new paid tooling.",
+   "how": "Batch-write/schedule LinkedIn posts from the 40-post bank in one weekly session; same-session or same-day X rewrites. No new subscription needed — realistic solo-founder benchmarks put full LinkedIn-only management under 2hrs/week, and cross-posting tools/manual rewriting are the standard low-cost approach.",
+   "evidence": "A dedicated genre of solo-founder guidance exists around a '15-minute/day LinkedIn strategy' (medium.com/minimalist-social) and Buffer-style solo-founder stacks estimate 'under 2 hours per week' total including biweekly batching (velocity.li synthesis). Cross-posting practitioner guidance: 'write the core idea in one sentence... generate the LinkedIn version... generate the X version' as a lightweight repurposing workflow, not a second content-creation effort (multiple cross-posting guides: contentradar.ai, kubbco.com)."
+  }
+ ],
+ "load_bearing_claims": [
+  {
+   "claim": "Personal LinkedIn profiles get roughly 5-10x the organic reach of company pages, with median engagement ~4.7% vs 1-2%, per Sprout Social's Q1 2026 Index of 52M+ posts.",
+   "source": "digitalapplied.com/blog/linkedin-personal-profiles-vs-company-pages-8x-engagement; meet-lea.com/en/blog/linkedin-algorithm-growth"
+  },
+  {
+   "claim": "LinkedIn's algorithm assigns a profile a 'Topic DNA' and temporarily suppresses reach when new posts don't match established topic history; effect is described as temporary/recoverable with consistent on-topic posting, not permanent.",
+   "source": "contentin.io/blog/linkedin-algorithm-2025-the-complete-content-format-strategy-guide; growleads.io/blog/linkedin-algorithm-2026-text-vs-video-reach"
+  },
+  {
+   "claim": "2-5 LinkedIn posts/week is the reach inflection point (+1,182 impressions/post vs 1x/week), with no evidenced upper-frequency penalty; document/carousel posts average 6.6-7.0% engagement, the highest of any format.",
+   "source": "buffer.com/resources/how-often-to-post-on-linkedin (analysis of 2M+ posts); growwithghost.io/blog/linkedin-post-formats-ranked-text-vs-carousel-vs-video-vs-polls-2026"
+  },
+  {
+   "claim": "DTC/ecommerce founder culture concentrates on X ('DTC Twitter,' build-in-public norms, multiple curated founder-follow lists) with no comparable named LinkedIn equivalent found.",
+   "source": "resources.storetasker.com/12-dtc-founders-to-follow-on-twitter; triplewhale.com/blog/dtc-people-on-twitter"
+  },
+  {
+   "claim": "Tabletop/crowdfunding creator community infrastructure is BoardGameGeek, Discord, Reddit, and Facebook — BackerKit's own creator roadmap omits LinkedIn as a community hub.",
+   "source": "backerkit.com/blog/tabletop-games-crowdfunding-roadmap/community/discover-join-like-minded-online-communities-groups"
+  },
+  {
+   "claim": "External links placed in a LinkedIn post body reduce reach, but the magnitude is contested — blog estimates of ~60% conflict with LinkedIn's own Senior Director of Product publicly denying any algorithmic link penalty exists.",
+   "source": "gromming.com/blog/linkedin-external-links-penalty; writio.ai/blog/how-linkedin-algorithm-changed-2026-what-to-do"
+  }
+ ]
+}

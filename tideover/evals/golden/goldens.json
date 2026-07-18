@@ -1,0 +1,1542 @@
+[
+  {
+    "id": "gld_tkt_rs3h4pcto9v4",
+    "input": {
+      "ticketId": "tkt_rs3h4pcto9v4",
+      "orderId": "ord_wr09l1jy00n1",
+      "customerId": "cus_if41gzk729hc",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "chargeback-threat",
+      "ticketsLast7d": 2,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Sofia"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_vhr8h6ipojzf",
+    "input": {
+      "ticketId": "tkt_vhr8h6ipojzf",
+      "orderId": "ord_mswlvthzm2x4",
+      "customerId": "cus_11qsr6h79wjc",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "high order value at stake",
+      "giftId": null,
+      "mustContain": [
+        "Greta"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_rb59e63uipi9",
+    "input": {
+      "ticketId": "tkt_rb59e63uipi9",
+      "orderId": "ord_780fgzueixzk",
+      "customerId": "cus_pq4i5jasd94t",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 3,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "normal",
+      "riskBand": "watch",
+      "topDriver": "high order value at stake",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Chen"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_bo404yhm2upi",
+    "input": {
+      "ticketId": "tkt_bo404yhm2upi",
+      "orderId": "ord_c3l20wplsuau",
+      "customerId": "cus_pt6pa1a6rxev",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "hostile",
+      "ticketsLast7d": 5,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Aisha"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_aw52xggdbdt7",
+    "input": {
+      "ticketId": "tkt_aw52xggdbdt7",
+      "orderId": "ord_iogartf6w2yp",
+      "customerId": "cus_7nty2dy6kqbu",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Greta"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_lold1lw7um75",
+    "input": {
+      "ticketId": "tkt_lold1lw7um75",
+      "orderId": "ord_c3l20wplsuau",
+      "customerId": "cus_pt6pa1a6rxev",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 5,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": null,
+      "mustContain": [
+        "Aisha"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_jsh1jesewrlu",
+    "input": {
+      "ticketId": "tkt_jsh1jesewrlu",
+      "orderId": "ord_mx4s8st5zaeq",
+      "customerId": "cus_p9l4ma3fgp2e",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "chargeback-threat",
+      "ticketsLast7d": 7,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Mara"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_9vmejsqsnt9u",
+    "input": {
+      "ticketId": "tkt_9vmejsqsnt9u",
+      "orderId": "ord_3w6zwgaxuf9q",
+      "customerId": "cus_x28v6eyzaqcl",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 2,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-60",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Tomás"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_n2d1nl4rimbv",
+    "input": {
+      "ticketId": "tkt_n2d1nl4rimbv",
+      "orderId": "ord_c3l20wplsuau",
+      "customerId": "cus_pt6pa1a6rxev",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 5,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "asking repeatedly",
+      "giftId": null,
+      "mustContain": [
+        "Aisha"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_oi0uhjr076uo",
+    "input": {
+      "ticketId": "tkt_oi0uhjr076uo",
+      "orderId": "ord_1vyly8e86mha",
+      "customerId": "cus_hde7ct87fwk9",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "watch",
+      "topDriver": "high order value at stake",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Noor"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_b90a628pjna8",
+    "input": {
+      "ticketId": "tkt_b90a628pjna8",
+      "orderId": "ord_kx26oc9a099v",
+      "customerId": "cus_mxcv4gb20j9k",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 2,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-60",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Chen"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_wrrqgvdm8ksa",
+    "input": {
+      "ticketId": "tkt_wrrqgvdm8ksa",
+      "orderId": "ord_chncb2tlutov",
+      "customerId": "cus_7nty2dy6kqbu",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "normal",
+      "riskBand": "watch",
+      "topDriver": "long time already waiting",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Greta"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_idyf6sxe91yr",
+    "input": {
+      "ticketId": "tkt_idyf6sxe91yr",
+      "orderId": "ord_xftv0b8sj4qu",
+      "customerId": "cus_hde7ct87fwk9",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "hostile",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Noor"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_4r5pu3ii9cod",
+    "input": {
+      "ticketId": "tkt_4r5pu3ii9cod",
+      "orderId": "ord_kx26oc9a099v",
+      "customerId": "cus_mxcv4gb20j9k",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 2,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-60",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Chen"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_n3vvurn511l2",
+    "input": {
+      "ticketId": "tkt_n3vvurn511l2",
+      "orderId": "ord_c3l20wplsuau",
+      "customerId": "cus_pt6pa1a6rxev",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 5,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "asking repeatedly",
+      "giftId": null,
+      "mustContain": [
+        "Aisha"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_sf3eeq8h7sv8",
+    "input": {
+      "ticketId": "tkt_sf3eeq8h7sv8",
+      "orderId": "ord_3w6zwgaxuf9q",
+      "customerId": "cus_x28v6eyzaqcl",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "hostile",
+      "ticketsLast7d": 2,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-60",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Tomás"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_34q8o67hxf4h",
+    "input": {
+      "ticketId": "tkt_34q8o67hxf4h",
+      "orderId": "ord_jn2po6s6pnb1",
+      "customerId": "cus_imixidctka8l",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 3,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": null,
+      "mustContain": [
+        "Greta"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_35lhl54rgk3a",
+    "input": {
+      "ticketId": "tkt_35lhl54rgk3a",
+      "orderId": "ord_chncb2tlutov",
+      "customerId": "cus_7nty2dy6kqbu",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "normal",
+      "riskBand": "watch",
+      "topDriver": "long time already waiting",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Greta"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_qhbr4narfmwj",
+    "input": {
+      "ticketId": "tkt_qhbr4narfmwj",
+      "orderId": "ord_xftv0b8sj4qu",
+      "customerId": "cus_hde7ct87fwk9",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "chargeback-threat",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Noor"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_5409zynp5nf7",
+    "input": {
+      "ticketId": "tkt_5409zynp5nf7",
+      "orderId": "ord_a2y81ats3y4z",
+      "customerId": "cus_fv0oaf32uwqy",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "hostile",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Dana"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_irc3cu5tb3wy",
+    "input": {
+      "ticketId": "tkt_irc3cu5tb3wy",
+      "orderId": "ord_780fgzueixzk",
+      "customerId": "cus_pq4i5jasd94t",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 3,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "normal",
+      "riskBand": "watch",
+      "topDriver": "high order value at stake",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Chen"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_t27y3mq9wo5g",
+    "input": {
+      "ticketId": "tkt_t27y3mq9wo5g",
+      "orderId": "ord_yguwoox4us0p",
+      "customerId": "cus_3gnlolqycs15",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-60",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "high order value at stake",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Rosa"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_9xmktikkwcdy",
+    "input": {
+      "ticketId": "tkt_9xmktikkwcdy",
+      "orderId": "ord_wr09l1jy00n1",
+      "customerId": "cus_if41gzk729hc",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 2,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "high order value at stake",
+      "giftId": null,
+      "mustContain": [
+        "Sofia"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_ein69dt3p31x",
+    "input": {
+      "ticketId": "tkt_ein69dt3p31x",
+      "orderId": "ord_zm35g6r6iacc",
+      "customerId": "cus_g0k6wt9hpq4k",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "hostile",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Liam"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_04mketon6ac0",
+    "input": {
+      "ticketId": "tkt_04mketon6ac0",
+      "orderId": "ord_zm35g6r6iacc",
+      "customerId": "cus_g0k6wt9hpq4k",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "asking repeatedly",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Liam"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_sve0jhmz4kjz",
+    "input": {
+      "ticketId": "tkt_sve0jhmz4kjz",
+      "orderId": "ord_mx4s8st5zaeq",
+      "customerId": "cus_p9l4ma3fgp2e",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 7,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Mara"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_gqo7ndujo7bz",
+    "input": {
+      "ticketId": "tkt_gqo7ndujo7bz",
+      "orderId": "ord_7vzpm6h2ql35",
+      "customerId": "cus_p9l4ma3fgp2e",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 7,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "watch",
+      "topDriver": "high order value at stake",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Mara"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_ongs7ao0xb2j",
+    "input": {
+      "ticketId": "tkt_ongs7ao0xb2j",
+      "orderId": "ord_mx4s8st5zaeq",
+      "customerId": "cus_p9l4ma3fgp2e",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "chargeback-threat",
+      "ticketsLast7d": 7,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Mara"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_eata2zf084l4",
+    "input": {
+      "ticketId": "tkt_eata2zf084l4",
+      "orderId": "ord_chncb2tlutov",
+      "customerId": "cus_7nty2dy6kqbu",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "long time already waiting",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Greta"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_ssclznolot09",
+    "input": {
+      "ticketId": "tkt_ssclznolot09",
+      "orderId": "ord_1vyly8e86mha",
+      "customerId": "cus_hde7ct87fwk9",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "chargeback-threat",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "at_risk",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Noor"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_yp7cx6a2ot57",
+    "input": {
+      "ticketId": "tkt_yp7cx6a2ot57",
+      "orderId": "ord_l5m7768s7eay",
+      "customerId": "cus_k7dwlxc65eg7",
+      "merchantId": "mch_atelier02",
+      "sentiment": "chargeback-threat",
+      "ticketsLast7d": 2,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_3nrvh9dolwps",
+      "mustContain": [
+        "Kwame"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_3pz915p24gye",
+    "input": {
+      "ticketId": "tkt_3pz915p24gye",
+      "orderId": "ord_34mp17i7q1zv",
+      "customerId": "cus_wl5xj8vj4h5k",
+      "merchantId": "mch_atelier02",
+      "sentiment": "calm",
+      "ticketsLast7d": 3,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-60",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "high order value at stake",
+      "giftId": "gft_uz7g4lx577xh",
+      "mustContain": [
+        "Mara"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_npumsi7by6k5",
+    "input": {
+      "ticketId": "tkt_npumsi7by6k5",
+      "orderId": "ord_l5m7768s7eay",
+      "customerId": "cus_k7dwlxc65eg7",
+      "merchantId": "mch_atelier02",
+      "sentiment": "hostile",
+      "ticketsLast7d": 2,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_3nrvh9dolwps",
+      "mustContain": [
+        "Kwame"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_xo0jasbxtvel",
+    "input": {
+      "ticketId": "tkt_xo0jasbxtvel",
+      "orderId": "ord_k3erk4jp4e0p",
+      "customerId": "cus_cuivgjr7qszl",
+      "merchantId": "mch_atelier02",
+      "sentiment": "hostile",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_3nrvh9dolwps",
+      "mustContain": [
+        "Greta"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_1yhf0d1fbdsl",
+    "input": {
+      "ticketId": "tkt_1yhf0d1fbdsl",
+      "orderId": "ord_b65odfvl14he",
+      "customerId": "cus_jrzy3b618bmu",
+      "merchantId": "mch_atelier02",
+      "sentiment": "anxious",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": null,
+      "mustContain": [
+        "Otto"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_j2d616ons9hu",
+    "input": {
+      "ticketId": "tkt_j2d616ons9hu",
+      "orderId": "ord_34mp17i7q1zv",
+      "customerId": "cus_wl5xj8vj4h5k",
+      "merchantId": "mch_atelier02",
+      "sentiment": "chargeback-threat",
+      "ticketsLast7d": 3,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-60",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_3nrvh9dolwps",
+      "mustContain": [
+        "Mara"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_budj38b9hy8l",
+    "input": {
+      "ticketId": "tkt_budj38b9hy8l",
+      "orderId": "ord_q34i4lkk0lqs",
+      "customerId": "cus_ngqf4ymywb3d",
+      "merchantId": "mch_atelier02",
+      "sentiment": "chargeback-threat",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "escalated",
+      "riskBand": "at_risk",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_3nrvh9dolwps",
+      "mustContain": [
+        "Tomás"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_62ee27racdgd",
+    "input": {
+      "ticketId": "tkt_62ee27racdgd",
+      "orderId": "ord_34mp17i7q1zv",
+      "customerId": "cus_wl5xj8vj4h5k",
+      "merchantId": "mch_atelier02",
+      "sentiment": "hostile",
+      "ticketsLast7d": 3,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-60",
+      "overdue": false,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_3nrvh9dolwps",
+      "mustContain": [
+        "Mara"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_ttiz6haxpeye",
+    "input": {
+      "ticketId": "tkt_ttiz6haxpeye",
+      "orderId": "ord_7a85ix2fg2c4",
+      "customerId": "cus_twb07xf6mh7t",
+      "merchantId": "mch_atelier02",
+      "sentiment": "chargeback-threat",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "escalated",
+      "riskBand": "watch",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_3nrvh9dolwps",
+      "mustContain": [
+        "Greta"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_2o3hlcroeq9f",
+    "input": {
+      "ticketId": "tkt_2o3hlcroeq9f",
+      "orderId": "ord_oyo5uimf5ah3",
+      "customerId": "cus_n4t53zh85i1g",
+      "merchantId": "mch_atelier02",
+      "sentiment": "anxious",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": null,
+      "mustContain": [
+        "Noor"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_pux3jt2kh3v9",
+    "input": {
+      "ticketId": "tkt_pux3jt2kh3v9",
+      "orderId": "ord_ikmpfn3yt32j",
+      "customerId": "cus_mq968avavbwk",
+      "merchantId": "mch_atelier02",
+      "sentiment": "calm",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "normal",
+      "riskBand": "watch",
+      "topDriver": "high order value at stake",
+      "giftId": "gft_3nrvh9dolwps",
+      "mustContain": [
+        "Otto"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_5e7tfp06vygu",
+    "input": {
+      "ticketId": "tkt_5e7tfp06vygu",
+      "orderId": "ord_k18tpnqg9jsi",
+      "customerId": "cus_ph2tklfdc8bf",
+      "merchantId": "mch_atelier02",
+      "sentiment": "calm",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "long time already waiting",
+      "giftId": "gft_uz7g4lx577xh",
+      "mustContain": [
+        "Hassan"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_h5y7633vpta5",
+    "input": {
+      "ticketId": "tkt_h5y7633vpta5",
+      "orderId": "ord_jaues8ssc7sm",
+      "customerId": "cus_4eg63sjv1821",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "chargeback-threat",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "escalated",
+      "riskBand": "at_risk",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Dana"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_d1veefqxoxgo",
+    "input": {
+      "ticketId": "tkt_d1veefqxoxgo",
+      "orderId": "ord_pu8z6itg6s8n",
+      "customerId": "cus_pt6pa1a6rxev",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 5,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": null,
+      "mustContain": [
+        "Aisha"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_467zixiivhl3",
+    "input": {
+      "ticketId": "tkt_467zixiivhl3",
+      "orderId": "ord_oaoizbqal569",
+      "customerId": "cus_c8wfjheeea9a",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 1,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "high order value at stake",
+      "giftId": null,
+      "mustContain": [
+        "Wes"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_mt0r81wobqx9",
+    "input": {
+      "ticketId": "tkt_mt0r81wobqx9",
+      "orderId": "ord_7vzpm6h2ql35",
+      "customerId": "cus_p9l4ma3fgp2e",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 7,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "watch",
+      "topDriver": "high order value at stake",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Mara"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_lrzn86ggk7zw",
+    "input": {
+      "ticketId": "tkt_lrzn86ggk7zw",
+      "orderId": "ord_mx4s8st5zaeq",
+      "customerId": "cus_p9l4ma3fgp2e",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "anxious",
+      "ticketsLast7d": 7,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "frustrated tone",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Mara"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_nxxoo7gq15qf",
+    "input": {
+      "ticketId": "tkt_nxxoo7gq15qf",
+      "orderId": "ord_7vzpm6h2ql35",
+      "customerId": "cus_p9l4ma3fgp2e",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 7,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "high order value at stake",
+      "giftId": null,
+      "mustContain": [
+        "Mara"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_5aiqn4xgvqok",
+    "input": {
+      "ticketId": "tkt_5aiqn4xgvqok",
+      "orderId": "ord_jn2po6s6pnb1",
+      "customerId": "cus_imixidctka8l",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 3,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "asking repeatedly",
+      "giftId": null,
+      "mustContain": [
+        "Greta"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_wz2t7yyv4726",
+    "input": {
+      "ticketId": "tkt_wz2t7yyv4726",
+      "orderId": "ord_zm35g6r6iacc",
+      "customerId": "cus_g0k6wt9hpq4k",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "asking repeatedly",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Liam"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_jbvzqp0nay9f",
+    "input": {
+      "ticketId": "tkt_jbvzqp0nay9f",
+      "orderId": "ord_t6ksfinenw78",
+      "customerId": "cus_xe4zvtvvv4x9",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 2,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "asking repeatedly",
+      "giftId": null,
+      "mustContain": [
+        "Marcus"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_8m5eftgfssz3",
+    "input": {
+      "ticketId": "tkt_8m5eftgfssz3",
+      "orderId": "ord_780fgzueixzk",
+      "customerId": "cus_pq4i5jasd94t",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 3,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": true,
+      "priority": "normal",
+      "riskBand": "watch",
+      "topDriver": "high order value at stake",
+      "giftId": "gft_wj9bznuqh5q1",
+      "mustContain": [
+        "Chen"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_hpv7nk9yk32o",
+    "input": {
+      "ticketId": "tkt_hpv7nk9yk32o",
+      "orderId": "ord_t6ksfinenw78",
+      "customerId": "cus_xe4zvtvvv4x9",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 2,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-7",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "asking repeatedly",
+      "giftId": null,
+      "mustContain": [
+        "Marcus"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_syi328to8769",
+    "input": {
+      "ticketId": "tkt_syi328to8769",
+      "orderId": "ord_zm35g6r6iacc",
+      "customerId": "cus_g0k6wt9hpq4k",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 4,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-89",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "asking repeatedly",
+      "giftId": "gft_c3ox3a0gfjib",
+      "mustContain": [
+        "Liam"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  },
+  {
+    "id": "gld_tkt_61p6p2l8896n",
+    "input": {
+      "ticketId": "tkt_61p6p2l8896n",
+      "orderId": "ord_jn2po6s6pnb1",
+      "customerId": "cus_imixidctka8l",
+      "merchantId": "mch_lumen0001",
+      "sentiment": "calm",
+      "ticketsLast7d": 3,
+      "now": "2026-07-03T12:00:00.000Z"
+    },
+    "expected": {
+      "reviewed": false,
+      "stageKey": "day-30",
+      "overdue": false,
+      "priority": "normal",
+      "riskBand": "standard",
+      "topDriver": "asking repeatedly",
+      "giftId": null,
+      "mustContain": [
+        "Greta"
+      ],
+      "mustNotContain": [
+        "{",
+        "}"
+      ]
+    }
+  }
+]

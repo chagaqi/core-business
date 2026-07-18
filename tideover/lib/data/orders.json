@@ -5,13 +5,20 @@
     "customerId": "cus_p9l4ma3fgp2e",
     "group": "ks-backer",
     "orderValueCents": 11728,
-    "createdAt": "2026-04-07T06:50:00.684Z",
-    "fulfillmentStart": "2026-04-08T06:50:00.684Z",
-    "fulfillmentEnd": "2026-07-12T06:50:00.684Z",
+    "createdAt": "2026-04-20T03:40:55.995Z",
+    "fulfillmentStart": "2026-04-21T03:40:55.995Z",
+    "fulfillmentEnd": "2026-07-25T03:40:55.995Z",
     "productionStage": "freight",
     "region": "UK",
     "statusToken": "dflvtbcslipuv80vdkkg17us.bf07a04f58",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 12–14",
+      "source": "campaign-page",
+      "disclosedAt": "2026-04-20T03:40:55.995Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 2 — EU hub"
   },
   {
     "id": "ord_7vzpm6h2ql35",
@@ -19,13 +26,18 @@
     "customerId": "cus_p9l4ma3fgp2e",
     "group": "new-preorder",
     "orderValueCents": 37781,
-    "createdAt": "2026-06-14T06:50:00.684Z",
-    "fulfillmentStart": "2026-06-15T06:50:00.684Z",
-    "fulfillmentEnd": "2026-09-25T06:50:00.684Z",
+    "createdAt": "2026-06-27T03:40:55.999Z",
+    "fulfillmentStart": "2026-06-28T03:40:55.999Z",
+    "fulfillmentEnd": "2026-10-08T03:40:55.999Z",
     "productionStage": "sourcing",
     "region": "AU",
     "statusToken": "aki3gb5k7t5k5f793hgv1clm.a97820bf0a",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 13–15",
+      "source": "checkout",
+      "disclosedAt": "2026-06-27T03:40:55.999Z"
+    }
   },
   {
     "id": "ord_yguwoox4us0p",
@@ -33,13 +45,20 @@
     "customerId": "cus_3gnlolqycs15",
     "group": "late-pledge",
     "orderValueCents": 31828,
-    "createdAt": "2026-05-03T06:50:00.684Z",
-    "fulfillmentStart": "2026-05-04T06:50:00.684Z",
-    "fulfillmentEnd": "2026-08-16T06:50:00.684Z",
+    "createdAt": "2026-05-16T03:40:55.999Z",
+    "fulfillmentStart": "2026-05-17T03:40:55.999Z",
+    "fulfillmentEnd": "2026-08-29T03:40:55.999Z",
     "productionStage": "production",
     "region": "AU",
     "statusToken": "9bp79dfovhjpzp94xi832bq4.6ccaac7688",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 13–15",
+      "source": "update",
+      "disclosedAt": "2026-05-16T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 3 — APAC hub"
   },
   {
     "id": "ord_pu8z6itg6s8n",
@@ -47,13 +66,20 @@
     "customerId": "cus_pt6pa1a6rxev",
     "group": "ks-backer",
     "orderValueCents": 27664,
-    "createdAt": "2026-06-11T06:50:00.684Z",
-    "fulfillmentStart": "2026-06-12T06:50:00.684Z",
-    "fulfillmentEnd": "2026-10-05T06:50:00.684Z",
+    "createdAt": "2026-06-24T03:40:55.999Z",
+    "fulfillmentStart": "2026-06-25T03:40:55.999Z",
+    "fulfillmentEnd": "2026-10-18T03:40:55.999Z",
     "productionStage": "sourcing",
     "region": "EU",
     "statusToken": "tf7na43gx8di7bxz87ss6umt.8a6e53a1cb",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 14–16",
+      "source": "campaign-page",
+      "disclosedAt": "2026-06-24T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 2 — EU hub"
   },
   {
     "id": "ord_c3l20wplsuau",
@@ -61,13 +87,20 @@
     "customerId": "cus_pt6pa1a6rxev",
     "group": "late-pledge",
     "orderValueCents": 12146,
-    "createdAt": "2026-05-31T06:50:00.684Z",
-    "fulfillmentStart": "2026-06-01T06:50:00.684Z",
-    "fulfillmentEnd": "2026-09-12T06:50:00.684Z",
+    "createdAt": "2026-06-13T03:40:55.999Z",
+    "fulfillmentStart": "2026-06-14T03:40:55.999Z",
+    "fulfillmentEnd": "2026-09-25T03:40:55.999Z",
     "productionStage": "tooling",
     "region": "EU",
     "statusToken": "6gfq8tvy5jekd3ehqmlt0ufm.72ac938350",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 13–15",
+      "source": "checkout",
+      "disclosedAt": "2026-06-13T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 2 — EU hub"
   },
   {
     "id": "ord_a2y81ats3y4z",
@@ -75,13 +108,18 @@
     "customerId": "cus_fv0oaf32uwqy",
     "group": "new-preorder",
     "orderValueCents": 12214,
-    "createdAt": "2026-05-29T06:50:00.684Z",
-    "fulfillmentStart": "2026-05-30T06:50:00.684Z",
-    "fulfillmentEnd": "2026-09-15T06:50:00.684Z",
+    "createdAt": "2026-06-11T03:40:55.999Z",
+    "fulfillmentStart": "2026-06-12T03:40:55.999Z",
+    "fulfillmentEnd": "2026-09-28T03:40:55.999Z",
     "productionStage": "tooling",
     "region": "CA",
     "statusToken": "a306osjtzqdssuwwy31p3qsf.088fd929d8",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 14–15",
+      "source": "update",
+      "disclosedAt": "2026-06-11T03:40:55.999Z"
+    }
   },
   {
     "id": "ord_1vyly8e86mha",
@@ -89,13 +127,20 @@
     "customerId": "cus_hde7ct87fwk9",
     "group": "ks-backer",
     "orderValueCents": 33232,
-    "createdAt": "2026-04-02T06:50:00.684Z",
-    "fulfillmentStart": "2026-04-03T06:50:00.684Z",
-    "fulfillmentEnd": "2026-07-27T06:50:00.684Z",
+    "createdAt": "2026-04-15T03:40:55.999Z",
+    "fulfillmentStart": "2026-04-16T03:40:55.999Z",
+    "fulfillmentEnd": "2026-08-09T03:40:55.999Z",
     "productionStage": "freight",
     "region": "AU",
     "statusToken": "49p861krrdbaky59mx3qsqqi.90d327cbb1",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 14–16",
+      "source": "campaign-page",
+      "disclosedAt": "2026-04-15T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 3 — APAC hub"
   },
   {
     "id": "ord_xftv0b8sj4qu",
@@ -103,13 +148,18 @@
     "customerId": "cus_hde7ct87fwk9",
     "group": "new-preorder",
     "orderValueCents": 28054,
-    "createdAt": "2026-06-15T06:50:00.684Z",
-    "fulfillmentStart": "2026-06-16T06:50:00.684Z",
-    "fulfillmentEnd": "2026-10-07T06:50:00.684Z",
+    "createdAt": "2026-06-28T03:40:55.999Z",
+    "fulfillmentStart": "2026-06-29T03:40:55.999Z",
+    "fulfillmentEnd": "2026-10-20T03:40:55.999Z",
     "productionStage": "sourcing",
     "region": "AU",
     "statusToken": "weskzrtysil1rpk9pf0ogeh3.478972284c",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 14–16",
+      "source": "checkout",
+      "disclosedAt": "2026-06-28T03:40:55.999Z"
+    }
   },
   {
     "id": "ord_oaoizbqal569",
@@ -117,13 +167,20 @@
     "customerId": "cus_c8wfjheeea9a",
     "group": "late-pledge",
     "orderValueCents": 31794,
-    "createdAt": "2026-05-29T06:50:00.684Z",
-    "fulfillmentStart": "2026-05-30T06:50:00.684Z",
-    "fulfillmentEnd": "2026-09-09T06:50:00.684Z",
+    "createdAt": "2026-06-11T03:40:55.999Z",
+    "fulfillmentStart": "2026-06-12T03:40:55.999Z",
+    "fulfillmentEnd": "2026-09-22T03:40:55.999Z",
     "productionStage": "tooling",
     "region": "AU",
     "statusToken": "j673attr0vgaq6jl3aq4pghv.0bd09104c8",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 13–15",
+      "source": "update",
+      "disclosedAt": "2026-06-11T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 3 — APAC hub"
   },
   {
     "id": "ord_780fgzueixzk",
@@ -131,13 +188,20 @@
     "customerId": "cus_pq4i5jasd94t",
     "group": "ks-backer",
     "orderValueCents": 56232,
-    "createdAt": "2026-03-04T06:50:00.685Z",
-    "fulfillmentStart": "2026-03-05T06:50:00.685Z",
-    "fulfillmentEnd": "2026-06-22T06:50:00.685Z",
+    "createdAt": "2026-03-17T03:40:55.999Z",
+    "fulfillmentStart": "2026-03-18T03:40:55.999Z",
+    "fulfillmentEnd": "2026-07-05T03:40:55.999Z",
     "productionStage": "dispatch",
     "region": "AU",
     "statusToken": "hcrb8r94k1fqxoypuodo961u.bc14d80530",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 14–16",
+      "source": "campaign-page",
+      "disclosedAt": "2026-03-17T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 3 — APAC hub"
   },
   {
     "id": "ord_zmg5fjryy2rr",
@@ -145,13 +209,20 @@
     "customerId": "cus_pq4i5jasd94t",
     "group": "ks-backer",
     "orderValueCents": 33738,
-    "createdAt": "2026-03-16T06:50:00.685Z",
-    "fulfillmentStart": "2026-03-17T06:50:00.685Z",
-    "fulfillmentEnd": "2026-06-22T06:50:00.685Z",
+    "createdAt": "2026-03-29T03:40:55.999Z",
+    "fulfillmentStart": "2026-03-30T03:40:55.999Z",
+    "fulfillmentEnd": "2026-07-05T03:40:55.999Z",
     "productionStage": "dispatch",
     "region": "EU",
     "statusToken": "w78hhjom7vfjpd2xw25bmuou.4ed74c611e",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 12–14",
+      "source": "checkout",
+      "disclosedAt": "2026-03-29T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 2 — EU hub"
   },
   {
     "id": "ord_zm35g6r6iacc",
@@ -159,13 +230,20 @@
     "customerId": "cus_g0k6wt9hpq4k",
     "group": "ks-backer",
     "orderValueCents": 9541,
-    "createdAt": "2026-04-08T06:50:00.685Z",
-    "fulfillmentStart": "2026-04-09T06:50:00.685Z",
-    "fulfillmentEnd": "2026-07-17T06:50:00.685Z",
+    "createdAt": "2026-04-21T03:40:55.999Z",
+    "fulfillmentStart": "2026-04-22T03:40:55.999Z",
+    "fulfillmentEnd": "2026-07-30T03:40:55.999Z",
     "productionStage": "freight",
     "region": "CA",
     "statusToken": "s79pz8zel1ov24266lvs2cy4.458bfe251d",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 12–14",
+      "source": "update",
+      "disclosedAt": "2026-04-21T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 1 — US hub"
   },
   {
     "id": "ord_wr09l1jy00n1",
@@ -173,13 +251,20 @@
     "customerId": "cus_if41gzk729hc",
     "group": "late-pledge",
     "orderValueCents": 83730,
-    "createdAt": "2026-05-25T06:50:00.685Z",
-    "fulfillmentStart": "2026-05-26T06:50:00.685Z",
-    "fulfillmentEnd": "2026-09-03T06:50:00.685Z",
+    "createdAt": "2026-06-07T03:40:55.999Z",
+    "fulfillmentStart": "2026-06-08T03:40:55.999Z",
+    "fulfillmentEnd": "2026-09-16T03:40:55.999Z",
     "productionStage": "tooling",
     "region": "CA",
     "statusToken": "hunsgkbm6uucneyj7cntkxoy.09bad4aaa4",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 13–14",
+      "source": "campaign-page",
+      "disclosedAt": "2026-06-07T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 1 — US hub"
   },
   {
     "id": "ord_84sthgbsrre9",
@@ -187,13 +272,20 @@
     "customerId": "cus_mxcv4gb20j9k",
     "group": "ks-backer",
     "orderValueCents": 27988,
-    "createdAt": "2026-02-27T06:50:00.685Z",
-    "fulfillmentStart": "2026-02-28T06:50:00.685Z",
-    "fulfillmentEnd": "2026-06-16T06:50:00.685Z",
+    "createdAt": "2026-03-12T03:40:55.999Z",
+    "fulfillmentStart": "2026-03-13T03:40:55.999Z",
+    "fulfillmentEnd": "2026-06-29T03:40:55.999Z",
     "productionStage": "dispatch",
     "region": "EU",
     "statusToken": "j6rru3znk0ot1cblyelws7a7.f943dabf66",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 14–15",
+      "source": "checkout",
+      "disclosedAt": "2026-03-12T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 2 — EU hub"
   },
   {
     "id": "ord_kx26oc9a099v",
@@ -201,13 +293,20 @@
     "customerId": "cus_mxcv4gb20j9k",
     "group": "late-pledge",
     "orderValueCents": 20322,
-    "createdAt": "2026-05-05T06:50:00.685Z",
-    "fulfillmentStart": "2026-05-06T06:50:00.685Z",
-    "fulfillmentEnd": "2026-08-18T06:50:00.685Z",
+    "createdAt": "2026-05-18T03:40:55.999Z",
+    "fulfillmentStart": "2026-05-19T03:40:55.999Z",
+    "fulfillmentEnd": "2026-08-31T03:40:55.999Z",
     "productionStage": "production",
     "region": "EU",
     "statusToken": "du1rzdsb7i8zdrtzve0eszap.c2dec67ad1",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 13–15",
+      "source": "update",
+      "disclosedAt": "2026-05-18T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 2 — EU hub"
   },
   {
     "id": "ord_chncb2tlutov",
@@ -215,13 +314,18 @@
     "customerId": "cus_7nty2dy6kqbu",
     "group": "new-preorder",
     "orderValueCents": 28661,
-    "createdAt": "2026-03-13T06:50:00.685Z",
-    "fulfillmentStart": "2026-03-14T06:50:00.685Z",
-    "fulfillmentEnd": "2026-06-22T06:50:00.685Z",
+    "createdAt": "2026-03-26T03:40:55.999Z",
+    "fulfillmentStart": "2026-03-27T03:40:55.999Z",
+    "fulfillmentEnd": "2026-07-05T03:40:55.999Z",
     "productionStage": "dispatch",
     "region": "AU",
     "statusToken": "3bawzch4c0ag41th7pdubxz1.c6233bf05c",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 13–14",
+      "source": "campaign-page",
+      "disclosedAt": "2026-03-26T03:40:55.999Z"
+    }
   },
   {
     "id": "ord_iogartf6w2yp",
@@ -229,13 +333,18 @@
     "customerId": "cus_7nty2dy6kqbu",
     "group": "new-preorder",
     "orderValueCents": 7924,
-    "createdAt": "2026-04-05T06:50:00.685Z",
-    "fulfillmentStart": "2026-04-06T06:50:00.685Z",
-    "fulfillmentEnd": "2026-07-27T06:50:00.685Z",
+    "createdAt": "2026-04-18T03:40:55.999Z",
+    "fulfillmentStart": "2026-04-19T03:40:55.999Z",
+    "fulfillmentEnd": "2026-08-09T03:40:55.999Z",
     "productionStage": "freight",
     "region": "CA",
     "statusToken": "pwtp9iuo4i508vjqccap773g.d570957fd1",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 14–16",
+      "source": "checkout",
+      "disclosedAt": "2026-04-18T03:40:55.999Z"
+    }
   },
   {
     "id": "ord_3w6zwgaxuf9q",
@@ -243,13 +352,20 @@
     "customerId": "cus_x28v6eyzaqcl",
     "group": "ks-backer",
     "orderValueCents": 30625,
-    "createdAt": "2026-05-02T06:50:00.685Z",
-    "fulfillmentStart": "2026-05-03T06:50:00.685Z",
-    "fulfillmentEnd": "2026-08-15T06:50:00.685Z",
+    "createdAt": "2026-05-15T03:40:55.999Z",
+    "fulfillmentStart": "2026-05-16T03:40:55.999Z",
+    "fulfillmentEnd": "2026-08-28T03:40:55.999Z",
     "productionStage": "production",
     "region": "EU",
     "statusToken": "yv5m9d5ymj3my4hx2ecmo9nz.a0db7a5c8b",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 13–15",
+      "source": "update",
+      "disclosedAt": "2026-05-15T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 2 — EU hub"
   },
   {
     "id": "ord_jn2po6s6pnb1",
@@ -257,13 +373,18 @@
     "customerId": "cus_imixidctka8l",
     "group": "new-preorder",
     "orderValueCents": 10900,
-    "createdAt": "2026-05-27T06:50:00.685Z",
-    "fulfillmentStart": "2026-05-28T06:50:00.685Z",
-    "fulfillmentEnd": "2026-09-12T06:50:00.685Z",
+    "createdAt": "2026-06-09T03:40:55.999Z",
+    "fulfillmentStart": "2026-06-10T03:40:55.999Z",
+    "fulfillmentEnd": "2026-09-25T03:40:55.999Z",
     "productionStage": "tooling",
     "region": "AU",
     "statusToken": "7qomq8wc3k4hbgu81uduxabr.94ff2dc737",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 13–15",
+      "source": "campaign-page",
+      "disclosedAt": "2026-06-09T03:40:55.999Z"
+    }
   },
   {
     "id": "ord_t6ksfinenw78",
@@ -271,13 +392,20 @@
     "customerId": "cus_xe4zvtvvv4x9",
     "group": "late-pledge",
     "orderValueCents": 11139,
-    "createdAt": "2026-06-17T06:50:00.685Z",
-    "fulfillmentStart": "2026-06-18T06:50:00.685Z",
-    "fulfillmentEnd": "2026-09-23T06:50:00.685Z",
+    "createdAt": "2026-06-30T03:40:55.999Z",
+    "fulfillmentStart": "2026-07-01T03:40:55.999Z",
+    "fulfillmentEnd": "2026-10-06T03:40:55.999Z",
     "productionStage": "sourcing",
     "region": "AU",
     "statusToken": "48me9qbmhpm77wscw3kgvn11.aae3d18d28",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 12–14",
+      "source": "checkout",
+      "disclosedAt": "2026-06-30T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 3 — APAC hub"
   },
   {
     "id": "ord_mswlvthzm2x4",
@@ -285,13 +413,20 @@
     "customerId": "cus_11qsr6h79wjc",
     "group": "late-pledge",
     "orderValueCents": 111990,
-    "createdAt": "2026-06-12T06:50:00.685Z",
-    "fulfillmentStart": "2026-06-13T06:50:00.685Z",
-    "fulfillmentEnd": "2026-09-30T06:50:00.685Z",
+    "createdAt": "2026-06-25T03:40:55.999Z",
+    "fulfillmentStart": "2026-06-26T03:40:55.999Z",
+    "fulfillmentEnd": "2026-10-13T03:40:55.999Z",
     "productionStage": "sourcing",
     "region": "AU",
     "statusToken": "bkwhdomwi985p1u775ev03ej.3d5f4b66cc",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 14–16",
+      "source": "update",
+      "disclosedAt": "2026-06-25T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 3 — APAC hub"
   },
   {
     "id": "ord_2ky4ik4v0alj",
@@ -299,13 +434,20 @@
     "customerId": "cus_11qsr6h79wjc",
     "group": "ks-backer",
     "orderValueCents": 13507,
-    "createdAt": "2026-06-11T06:50:00.685Z",
-    "fulfillmentStart": "2026-06-12T06:50:00.685Z",
-    "fulfillmentEnd": "2026-10-05T06:50:00.685Z",
+    "createdAt": "2026-06-24T03:40:55.999Z",
+    "fulfillmentStart": "2026-06-25T03:40:55.999Z",
+    "fulfillmentEnd": "2026-10-18T03:40:55.999Z",
     "productionStage": "sourcing",
     "region": "US",
     "statusToken": "gv2ngqufav4qiv931lf8vipv.bddeca071a",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 14–16",
+      "source": "campaign-page",
+      "disclosedAt": "2026-06-24T03:40:55.999Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 1 — US hub"
   },
   {
     "id": "ord_d41k77u6slxu",
@@ -313,13 +455,18 @@
     "customerId": "cus_e10ung3tisqc",
     "group": "new-preorder",
     "orderValueCents": 26261,
-    "createdAt": "2026-04-04T06:50:00.685Z",
-    "fulfillmentStart": "2026-04-05T06:50:00.685Z",
-    "fulfillmentEnd": "2026-07-13T06:50:00.685Z",
+    "createdAt": "2026-04-17T03:40:55.999Z",
+    "fulfillmentStart": "2026-04-18T03:40:56.000Z",
+    "fulfillmentEnd": "2026-07-26T03:40:56.000Z",
     "productionStage": "freight",
     "region": "AU",
     "statusToken": "7m6wtxptlw0ts13eo6ee3mc6.0981a911f3",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 12–14",
+      "source": "checkout",
+      "disclosedAt": "2026-04-17T03:40:55.999Z"
+    }
   },
   {
     "id": "ord_y66xco0nj52r",
@@ -327,13 +474,18 @@
     "customerId": "cus_b6tuhu714vrh",
     "group": "new-preorder",
     "orderValueCents": 13738,
-    "createdAt": "2026-06-17T06:50:00.685Z",
-    "fulfillmentStart": "2026-06-18T06:50:00.685Z",
-    "fulfillmentEnd": "2026-09-16T06:50:00.685Z",
+    "createdAt": "2026-06-30T03:40:56.000Z",
+    "fulfillmentStart": "2026-07-01T03:40:56.000Z",
+    "fulfillmentEnd": "2026-09-29T03:40:56.000Z",
     "productionStage": "sourcing",
     "region": "US",
     "statusToken": "8v6v7j1oep9h6o5lawuzp7el.3ebbf34f13",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 11–13",
+      "source": "update",
+      "disclosedAt": "2026-06-30T03:40:56.000Z"
+    }
   },
   {
     "id": "ord_oyo5uimf5ah3",
@@ -341,13 +493,20 @@
     "customerId": "cus_n4t53zh85i1g",
     "group": "late-pledge",
     "orderValueCents": 18556,
-    "createdAt": "2026-06-17T06:50:00.685Z",
-    "fulfillmentStart": "2026-06-18T06:50:00.685Z",
-    "fulfillmentEnd": "2026-09-22T06:50:00.685Z",
+    "createdAt": "2026-06-30T03:40:56.000Z",
+    "fulfillmentStart": "2026-07-01T03:40:56.000Z",
+    "fulfillmentEnd": "2026-10-05T03:40:56.000Z",
     "productionStage": "sourcing",
     "region": "UK",
     "statusToken": "7quvmvc59rx1a32l38bvjx4q.55fe0ffadf",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 12–14",
+      "source": "campaign-page",
+      "disclosedAt": "2026-06-30T03:40:56.000Z"
+    },
+    "campaignName": "Nordic Weekender — Kickstarter",
+    "wave": "Wave 2 — EU hub"
   },
   {
     "id": "ord_azyrzo8efgli",
@@ -355,13 +514,20 @@
     "customerId": "cus_a7pkcsvwq3ba",
     "group": "late-pledge",
     "orderValueCents": 11221,
-    "createdAt": "2026-03-15T06:50:00.685Z",
-    "fulfillmentStart": "2026-03-16T06:50:00.685Z",
-    "fulfillmentEnd": "2026-05-25T06:50:00.685Z",
+    "createdAt": "2026-03-28T03:40:56.000Z",
+    "fulfillmentStart": "2026-03-29T03:40:56.000Z",
+    "fulfillmentEnd": "2026-06-07T03:40:56.000Z",
     "productionStage": "dispatch",
     "region": "EU",
     "statusToken": "frygsvvidqgjd9nksxbovqlc.0ca408c33a",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 9–10",
+      "source": "checkout",
+      "disclosedAt": "2026-03-28T03:40:56.000Z"
+    },
+    "campaignName": "Nordic Weekender — Kickstarter",
+    "wave": "Wave 2 — EU hub"
   },
   {
     "id": "ord_q7drkaiaaw2f",
@@ -369,13 +535,18 @@
     "customerId": "cus_a7pkcsvwq3ba",
     "group": "new-preorder",
     "orderValueCents": 18664,
-    "createdAt": "2026-06-16T06:50:00.685Z",
-    "fulfillmentStart": "2026-06-17T06:50:00.685Z",
-    "fulfillmentEnd": "2026-09-19T06:50:00.685Z",
+    "createdAt": "2026-06-29T03:40:56.000Z",
+    "fulfillmentStart": "2026-06-30T03:40:56.000Z",
+    "fulfillmentEnd": "2026-10-02T03:40:56.000Z",
     "productionStage": "sourcing",
     "region": "EU",
     "statusToken": "hlf3xa0yl94rvqumc0xqqmd0.252fdf581e",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 12–13",
+      "source": "update",
+      "disclosedAt": "2026-06-29T03:40:56.000Z"
+    }
   },
   {
     "id": "ord_k3erk4jp4e0p",
@@ -383,13 +554,20 @@
     "customerId": "cus_cuivgjr7qszl",
     "group": "ks-backer",
     "orderValueCents": 37888,
-    "createdAt": "2026-04-02T06:50:00.685Z",
-    "fulfillmentStart": "2026-04-03T06:50:00.685Z",
-    "fulfillmentEnd": "2026-06-30T06:50:00.685Z",
+    "createdAt": "2026-04-15T03:40:56.000Z",
+    "fulfillmentStart": "2026-04-16T03:40:56.000Z",
+    "fulfillmentEnd": "2026-07-13T03:40:56.000Z",
     "productionStage": "dispatch",
     "region": "UK",
     "statusToken": "2p1wuekeb7kk289pkj45i82c.f60acd1785",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 11–13",
+      "source": "campaign-page",
+      "disclosedAt": "2026-04-15T03:40:56.000Z"
+    },
+    "campaignName": "Nordic Weekender — Kickstarter",
+    "wave": "Wave 2 — EU hub"
   },
   {
     "id": "ord_9zapxp27rm0k",
@@ -397,13 +575,20 @@
     "customerId": "cus_64fknw279h0g",
     "group": "late-pledge",
     "orderValueCents": 16438,
-    "createdAt": "2026-05-26T06:50:00.685Z",
-    "fulfillmentStart": "2026-05-27T06:50:00.685Z",
-    "fulfillmentEnd": "2026-08-06T06:50:00.685Z",
+    "createdAt": "2026-06-08T03:40:56.000Z",
+    "fulfillmentStart": "2026-06-09T03:40:56.000Z",
+    "fulfillmentEnd": "2026-08-19T03:40:56.000Z",
     "productionStage": "production",
     "region": "US",
     "statusToken": "lx4nyu6ipvhcy8h9ih2mukyb.c4f6cca674",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 9–10",
+      "source": "checkout",
+      "disclosedAt": "2026-06-08T03:40:56.000Z"
+    },
+    "campaignName": "Nordic Weekender — Kickstarter",
+    "wave": "Wave 1 — US hub"
   },
   {
     "id": "ord_ungveel4mo6x",
@@ -411,13 +596,18 @@
     "customerId": "cus_64fknw279h0g",
     "group": "new-preorder",
     "orderValueCents": 57978,
-    "createdAt": "2026-04-02T06:50:00.685Z",
-    "fulfillmentStart": "2026-04-03T06:50:00.685Z",
-    "fulfillmentEnd": "2026-06-20T06:50:00.685Z",
+    "createdAt": "2026-04-15T03:40:56.000Z",
+    "fulfillmentStart": "2026-04-16T03:40:56.000Z",
+    "fulfillmentEnd": "2026-07-03T03:40:56.000Z",
     "productionStage": "dispatch",
     "region": "US",
     "statusToken": "cibnfrc5nttx7wu2lnck9jvv.48a6a92c2e",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 10–11",
+      "source": "update",
+      "disclosedAt": "2026-04-15T03:40:56.000Z"
+    }
   },
   {
     "id": "ord_7a85ix2fg2c4",
@@ -425,13 +615,20 @@
     "customerId": "cus_twb07xf6mh7t",
     "group": "ks-backer",
     "orderValueCents": 6739,
-    "createdAt": "2026-03-13T06:50:00.685Z",
-    "fulfillmentStart": "2026-03-14T06:50:00.685Z",
-    "fulfillmentEnd": "2026-06-21T06:50:00.685Z",
+    "createdAt": "2026-03-26T03:40:56.000Z",
+    "fulfillmentStart": "2026-03-27T03:40:56.000Z",
+    "fulfillmentEnd": "2026-07-04T03:40:56.000Z",
     "productionStage": "dispatch",
     "region": "AU",
     "statusToken": "4dxayswqxo96y5goqs9zsn80.101fd2494f",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 12–14",
+      "source": "campaign-page",
+      "disclosedAt": "2026-03-26T03:40:56.000Z"
+    },
+    "campaignName": "Nordic Weekender — Kickstarter",
+    "wave": "Wave 3 — APAC hub"
   },
   {
     "id": "ord_34mp17i7q1zv",
@@ -439,13 +636,18 @@
     "customerId": "cus_wl5xj8vj4h5k",
     "group": "new-preorder",
     "orderValueCents": 35637,
-    "createdAt": "2026-05-01T06:50:00.685Z",
-    "fulfillmentStart": "2026-05-02T06:50:00.685Z",
-    "fulfillmentEnd": "2026-07-24T06:50:00.685Z",
+    "createdAt": "2026-05-14T03:40:56.000Z",
+    "fulfillmentStart": "2026-05-15T03:40:56.000Z",
+    "fulfillmentEnd": "2026-08-06T03:40:56.000Z",
     "productionStage": "qc",
     "region": "UK",
     "statusToken": "akcx9h6fp4oej1rtje0iclfj.e6da8c3658",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 10–12",
+      "source": "checkout",
+      "disclosedAt": "2026-05-14T03:40:56.000Z"
+    }
   },
   {
     "id": "ord_ca4n3tbfhydr",
@@ -453,13 +655,20 @@
     "customerId": "cus_jrzy3b618bmu",
     "group": "ks-backer",
     "orderValueCents": 21646,
-    "createdAt": "2026-04-02T06:50:00.685Z",
-    "fulfillmentStart": "2026-04-03T06:50:00.685Z",
-    "fulfillmentEnd": "2026-06-15T06:50:00.685Z",
+    "createdAt": "2026-04-15T03:40:56.000Z",
+    "fulfillmentStart": "2026-04-16T03:40:56.000Z",
+    "fulfillmentEnd": "2026-06-28T03:40:56.000Z",
     "productionStage": "dispatch",
     "region": "AU",
     "statusToken": "nn0gr3seb6yy46lymhj8ytdt.fd65afc469",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 9–10",
+      "source": "update",
+      "disclosedAt": "2026-04-15T03:40:56.000Z"
+    },
+    "campaignName": "Nordic Weekender — Kickstarter",
+    "wave": "Wave 3 — APAC hub"
   },
   {
     "id": "ord_b65odfvl14he",
@@ -467,13 +676,20 @@
     "customerId": "cus_jrzy3b618bmu",
     "group": "late-pledge",
     "orderValueCents": 19981,
-    "createdAt": "2026-06-14T06:50:00.685Z",
-    "fulfillmentStart": "2026-06-15T06:50:00.685Z",
-    "fulfillmentEnd": "2026-09-21T06:50:00.685Z",
+    "createdAt": "2026-06-27T03:40:56.000Z",
+    "fulfillmentStart": "2026-06-28T03:40:56.000Z",
+    "fulfillmentEnd": "2026-10-04T03:40:56.000Z",
     "productionStage": "sourcing",
     "region": "AU",
     "statusToken": "s9q5gw8o1b9dr4ujhhjscj57.98310d90f4",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 12–14",
+      "source": "campaign-page",
+      "disclosedAt": "2026-06-27T03:40:56.000Z"
+    },
+    "campaignName": "Nordic Weekender — Kickstarter",
+    "wave": "Wave 3 — APAC hub"
   },
   {
     "id": "ord_k18tpnqg9jsi",
@@ -481,13 +697,18 @@
     "customerId": "cus_ph2tklfdc8bf",
     "group": "new-preorder",
     "orderValueCents": 9099,
-    "createdAt": "2026-03-18T06:50:00.685Z",
-    "fulfillmentStart": "2026-03-19T06:50:00.685Z",
-    "fulfillmentEnd": "2026-06-12T06:50:00.685Z",
+    "createdAt": "2026-03-31T03:40:56.000Z",
+    "fulfillmentStart": "2026-04-01T03:40:56.000Z",
+    "fulfillmentEnd": "2026-06-25T03:40:56.000Z",
     "productionStage": "dispatch",
     "region": "EU",
     "statusToken": "3zgmk8ivfysehbsdtjoq157c.c83ccd7d06",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 11–12",
+      "source": "checkout",
+      "disclosedAt": "2026-03-31T03:40:56.000Z"
+    }
   },
   {
     "id": "ord_b3htzmn68kcr",
@@ -495,13 +716,20 @@
     "customerId": "cus_ph2tklfdc8bf",
     "group": "late-pledge",
     "orderValueCents": 6058,
-    "createdAt": "2026-04-05T06:50:00.685Z",
-    "fulfillmentStart": "2026-04-06T06:50:00.685Z",
-    "fulfillmentEnd": "2026-07-14T06:50:00.685Z",
+    "createdAt": "2026-04-18T03:40:56.000Z",
+    "fulfillmentStart": "2026-04-19T03:40:56.000Z",
+    "fulfillmentEnd": "2026-07-27T03:40:56.000Z",
     "productionStage": "freight",
     "region": "AU",
     "statusToken": "fcyn6yqb1y4aqfc97b2o6ebk.7a87577a98",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 12–14",
+      "source": "update",
+      "disclosedAt": "2026-04-18T03:40:56.000Z"
+    },
+    "campaignName": "Nordic Weekender — Kickstarter",
+    "wave": "Wave 3 — APAC hub"
   },
   {
     "id": "ord_ikmpfn3yt32j",
@@ -509,13 +737,18 @@
     "customerId": "cus_mq968avavbwk",
     "group": "new-preorder",
     "orderValueCents": 50418,
-    "createdAt": "2026-02-27T06:50:00.685Z",
-    "fulfillmentStart": "2026-02-28T06:50:00.685Z",
-    "fulfillmentEnd": "2026-05-31T06:50:00.685Z",
+    "createdAt": "2026-03-12T03:40:56.000Z",
+    "fulfillmentStart": "2026-03-13T03:40:56.000Z",
+    "fulfillmentEnd": "2026-06-13T03:40:56.000Z",
     "productionStage": "dispatch",
     "region": "EU",
     "statusToken": "0xxe15p3eqwwgro9srkya6lk.51938b66b9",
-    "preorderEtaSource": "preorder-app"
+    "preorderEtaSource": "preorder-app",
+    "disclosedEta": {
+      "value": "weeks 12–13",
+      "source": "campaign-page",
+      "disclosedAt": "2026-03-12T03:40:56.000Z"
+    }
   },
   {
     "id": "ord_q34i4lkk0lqs",
@@ -523,13 +756,20 @@
     "customerId": "cus_ngqf4ymywb3d",
     "group": "late-pledge",
     "orderValueCents": 219678,
-    "createdAt": "2026-03-04T06:50:00.685Z",
-    "fulfillmentStart": "2026-03-05T06:50:00.685Z",
-    "fulfillmentEnd": "2026-06-13T06:50:00.685Z",
+    "createdAt": "2026-03-17T03:40:56.001Z",
+    "fulfillmentStart": "2026-03-18T03:40:56.001Z",
+    "fulfillmentEnd": "2026-06-26T03:40:56.001Z",
     "productionStage": "dispatch",
     "region": "US",
     "statusToken": "wlu0jlpwl1jvdu4zq6r9i5vz.ef7b9134de",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 13–14",
+      "source": "checkout",
+      "disclosedAt": "2026-03-17T03:40:56.001Z"
+    },
+    "campaignName": "Nordic Weekender — Kickstarter",
+    "wave": "Wave 1 — US hub"
   },
   {
     "id": "ord_gmsivk93i696",
@@ -537,13 +777,18 @@
     "customerId": "cus_ohzqotu0r5fl",
     "group": "new-preorder",
     "orderValueCents": 25169,
-    "createdAt": "2026-04-06T06:50:00.685Z",
-    "fulfillmentStart": "2026-04-07T06:50:00.685Z",
-    "fulfillmentEnd": "2026-07-03T06:50:00.685Z",
+    "createdAt": "2026-04-19T03:40:56.001Z",
+    "fulfillmentStart": "2026-04-20T03:40:56.001Z",
+    "fulfillmentEnd": "2026-07-16T03:40:56.001Z",
     "productionStage": "dispatch",
     "region": "EU",
     "statusToken": "mhlli15e0m970356b9ljgklo.054538c306",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 11–12",
+      "source": "update",
+      "disclosedAt": "2026-04-19T03:40:56.001Z"
+    }
   },
   {
     "id": "ord_8rcz3j619s6v",
@@ -551,13 +796,20 @@
     "customerId": "cus_4duncsay2531",
     "group": "ks-backer",
     "orderValueCents": 95364,
-    "createdAt": "2026-05-29T06:50:00.686Z",
-    "fulfillmentStart": "2026-05-30T06:50:00.686Z",
-    "fulfillmentEnd": "2026-08-24T06:50:00.686Z",
+    "createdAt": "2026-06-11T03:40:56.001Z",
+    "fulfillmentStart": "2026-06-12T03:40:56.001Z",
+    "fulfillmentEnd": "2026-09-06T03:40:56.001Z",
     "productionStage": "tooling",
     "region": "CA",
     "statusToken": "mup6jjyggah037fz7dht8ncu.8e8c30db6a",
-    "preorderEtaSource": "manual"
+    "preorderEtaSource": "manual",
+    "disclosedEta": {
+      "value": "weeks 11–12",
+      "source": "campaign-page",
+      "disclosedAt": "2026-06-11T03:40:56.001Z"
+    },
+    "campaignName": "Nordic Weekender — Kickstarter",
+    "wave": "Wave 1 — US hub"
   },
   {
     "id": "ord_l5m7768s7eay",
@@ -565,13 +817,18 @@
     "customerId": "cus_k7dwlxc65eg7",
     "group": "new-preorder",
     "orderValueCents": 16311,
-    "createdAt": "2026-06-17T06:50:00.686Z",
-    "fulfillmentStart": "2026-06-18T06:50:00.686Z",
-    "fulfillmentEnd": "2026-09-22T06:50:00.686Z",
+    "createdAt": "2026-06-30T03:40:56.001Z",
+    "fulfillmentStart": "2026-07-01T03:40:56.001Z",
+    "fulfillmentEnd": "2026-10-05T03:40:56.001Z",
     "productionStage": "sourcing",
     "region": "US",
     "statusToken": "qc36bu5mtsw1nz78ium6svpn.f4f1052f41",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 12–14",
+      "source": "checkout",
+      "disclosedAt": "2026-06-30T03:40:56.001Z"
+    }
   },
   {
     "id": "ord_jaues8ssc7sm",
@@ -579,12 +836,19 @@
     "customerId": "cus_4eg63sjv1821",
     "group": "ks-backer",
     "orderValueCents": 48000,
-    "createdAt": "2026-02-23T06:50:00.687Z",
-    "fulfillmentStart": "2026-02-24T06:50:00.687Z",
-    "fulfillmentEnd": "2026-06-14T06:50:00.687Z",
+    "createdAt": "2026-03-08T03:40:56.001Z",
+    "fulfillmentStart": "2026-03-09T03:40:56.001Z",
+    "fulfillmentEnd": "2026-06-27T03:40:56.001Z",
     "productionStage": "dispatch",
     "region": "US",
     "statusToken": "j0fu6h5sh4t0e4un4ees75rc.77c0ac89c6",
-    "preorderEtaSource": "metafield"
+    "preorderEtaSource": "metafield",
+    "disclosedEta": {
+      "value": "weeks 14–16",
+      "source": "update",
+      "disclosedAt": "2026-03-08T03:40:56.001Z"
+    },
+    "campaignName": "Aurora Lantern — Kickstarter",
+    "wave": "Wave 1 — US hub"
   }
 ]

@@ -1,12 +1,13 @@
 import { clsx } from "clsx";
 import { StageDot } from "@/components/status/StageDot";
+import { readableAccent } from "@/lib/color";
 import type { OrderTimeline as OrderTimelineData } from "@/lib/types";
 
 /**
  * Vertical production timeline built from PublicStatus.timeline.stages. Each row
  * is a dot + label + relative day band ("days 32–72", NEVER a calendar date) +
  * blurb. The active stage is highlighted. The day bands are relative to order
- * placement, so they read as honest progress markers, not promised dates.
+ * placement, so they read as relative progress markers, not promised dates.
  */
 export function OrderTimeline({
   timeline,
@@ -17,6 +18,8 @@ export function OrderTimeline({
   accent?: string;
   compact?: boolean;
 }) {
+  // Contrast-safe accent for the pill TEXT; the pill's tint fill keeps raw brand.
+  const textAccent = accent ? readableAccent(accent) : undefined;
   return (
     <ol className="relative flex flex-col">
       {timeline.stages.map((stage, i) => {
@@ -48,13 +51,20 @@ export function OrderTimeline({
                 >
                   {stage.label}
                 </span>
-                <span className="text-[12px] font-medium text-ink-mute">
-                  days {stage.dayBand.from}&ndash;{stage.dayBand.to}
-                </span>
+                {/* UX-39: WaitProgress is the single canonical "day N of ~lo-hi"
+                    number for the order. A static per-stage day band on every
+                    row here could visibly disagree with it, so only the active
+                    stage — which is the one being compared against — keeps a
+                    day band; done/upcoming rows stay qualitative only. */}
+                {isActive ? (
+                  <span className="text-[12px] font-medium text-ink-mute">
+                    days {stage.dayBand.from}&ndash;{stage.dayBand.to}
+                  </span>
+                ) : null}
                 {isActive ? (
                   <span
                     className="inline-flex items-center rounded-full bg-terracotta/10 px-2 py-0.5 text-[11px] font-semibold text-terracotta-600"
-                    style={accent ? { color: accent, background: `${accent}1a` } : undefined}
+                    style={accent ? { color: textAccent, background: `${accent}1a` } : undefined}
                   >
                     in progress now
                   </span>

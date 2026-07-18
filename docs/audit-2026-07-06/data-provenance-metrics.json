@@ -1,0 +1,442 @@
+[
+ {
+  "metric": "Customer.ltvCents (LTV — trigger case)",
+  "consumedBy": "gift.ts:31 high-value gate (ltvCents>=highTierCents) + gift.ts:47 minLtv eligibility; via engines/index.ts:68-75 and app/api/gift-catalog/[customerId]/route.ts:32 — drives the cockpit gift/save suggestion",
+  "currentSource": "csv-import (import.ts:69 ltvCents = row.orderValueCents ?? 5000, set at customer CREATE only); seed (gen-seed.mjs:263 sum of a customer's random order values; hero hardcoded 96000); onboarding preview hardcoded 60000 (onboarding.ts:112, not persisted)",
+  "realSource": "shopify-api Customer.total_spent / Admin-GraphQL customer.amountSpent; for a Kickstarter-only merchant NONE-EXISTS as true lifetime value — only summed pledges from the backer export",
+  "retrievalStatus": "MISSING",
+  "gap": "No live path. CSV sets LTV to ONE row's order value (not a lifetime sum) and never refreshes it: import.ts:127-129 appends orderIds on a customer's 2nd+ order but never touches ltvCents, and unparseable rows peg LTV at $50. So the gift high-value gate compares a first-order value / $50 default to a hardcoded threshold. Needs a Shopify customer sync (amountSpent) or an importer that sums all rows per email and updates on re-import."
+ },
+ {
+  "metric": "Merchant.ltvTiers.high (highTierCents threshold)",
+  "consumedBy": "engines/index.ts:73 + gift-catalog route:37 -> gift.ts highTierCents — the LTV threshold the high-value gate compares against",
+  "currentSource": "hardcoded (onboarding.ts:92 {standard:0,high:50000,vip:200000}; seed gen-seed.mjs:187/212 same shape)",
+  "realSource": "merchant-onboarding (wizard should collect it) or computed from the merchant's imported order-value distribution",
+  "retrievalStatus": "MISSING",
+  "gap": "Onboarding IntakeData has no ltvTiers field and hardwires high=$500 for every merchant; no UI to edit, no calibration to real price points. Combined with the broken ltvCents, the entire gift high-value gate is a defaulted number vs a defaulted threshold."
+ },
+ {
+  "metric": "Order.orderValueCents",
+  "consumedBy": "refund-risk.ts:77 valueExposure factor (risk score + priority queue); dispute-exposure.ts:90 GMV-in-dispute tile (app/app/page.tsx money-at-risk)",
+  "currentSource": "csv-import (import.ts:101 row.orderValueCents ?? 5000 floor, parsed by csv.ts:199 parseMoneyToCents); seed (gen-seed.mjs:263 random int(6000,38000) x maybe6); onboarding preview hardcoded 30000 (not persisted)",
+  "realSource": "shopify-api Order.total_price (Admin REST /orders.json); csv pledge column (KS 'pledge amount' / BackerKit 'order total')",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Real value flows in ONLY through a one-time CSV parse; unparseable rows silently default to $50 (import.ts:101) polluting risk + GMV math, value is never refreshed, and no live Shopify order webhook/API creates ongoing orders — orders.create exists solely in import.ts."
+ },
+ {
+  "metric": "Order.group (ks-backer / late-pledge / new-preorder)",
+  "consumedBy": "dispute-exposure.ts:50 rail split into kickstarter vs shopify $ buckets; status.ts:109 status-page label",
+  "currentSource": "csv-import (import.ts:99 row.group ?? 'ks-backer', where row.group = csv.ts:213 groupFromTier keyword regex); seed (gen-seed.mjs:274 pick(GROUPS) RANDOM); onboarding preview hardcoded 'new-preorder'",
+  "realSource": "computed from the source integration (KS export->ks-backer, BackerKit->late-pledge, Shopify order->new-preorder); authoritative Shopify tagging NONE-EXISTS",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Import infers group from a regex on the tier string or falls to a blanket ks-backer default; any row without pre-order/late/pledge-manager keywords is misclassified. The dispute $ rail split (dispute-exposure.ts:92) rides entirely on this guess — no code reads a real payment rail."
+ },
+ {
+  "metric": "Order.createdAt",
+  "consumedBy": "dispute-exposure.ts:74 Visa 13.1 transaction anchor (computeDisputeWindow — window open + 540-day cap)",
+  "currentSource": "csv-import stamps import time (import.ts:104 nowIso); seed = iso(wait+1)",
+  "realSource": "shopify-api Order.created_at; csv pledge-date column; preorder-app order date",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Import records NOW, not the real pledge/purchase date — the CSV mapper (csv.ts MappedRow) captures no order-date column, so every imported backer looks placed today and the dispute-window anchor is wrong even though the date exists in the export."
+ },
+ {
+  "metric": "Order.campaignName / Order.wave",
+  "consumedBy": "status page + types.ts:143-145 pure display labels; no engine reads them",
+  "currentSource": "seed only (gen-seed.mjs:126-131 applyLabels: hardcoded CAMPAIGN_BY_MERCHANT map + WAVE_BY_REGION)",
+  "realSource": "csv (KS campaign-name column) for campaign; merchant-onboarding for the fulfillment-wave plan",
+  "retrievalStatus": "MISSING",
+  "gap": "csv.ts MappedRow has no campaign/wave fields and import.ts never sets them, so every real (imported) order has campaignName/wave undefined. Pure seed decoration for the demo."
+ },
+ {
+  "metric": "Customer.email",
+  "consumedBy": "service.ts:403 ingest join key (findByEmail matches an inbound webhook ticket to a customer)",
+  "currentSource": "csv-import (import.ts:53,68 from row.email via csv.ts email aliases); seed synthetic @example.com",
+  "realSource": "csv (backer-export email column); shopify-api Customer.email",
+  "retrievalStatus": "WIRED",
+  "gap": "Genuinely carries the merchant's real email through CSV import and is the ingest match key — but CSV-only: no live customer sync, so a webhook ticket from anyone absent from the last import cannot match and falls back to an arbitrary order (service.ts:413-418)."
+ },
+ {
+  "metric": "Customer.firstName",
+  "consumedBy": "reassurance.ts:93 {first_name} template merge (drafted reply); status.ts:97 status-page greeting",
+  "currentSource": "csv-import (import.ts:68 firstToken of row name, email-localpart fallback); seed FIRST-name list",
+  "realSource": "csv (backer name column); shopify-api Customer.first_name",
+  "retrievalStatus": "WIRED",
+  "gap": "Real via CSV, but CSV-only with no live refresh; falls back to the email local-part when the name column is blank (import.ts:68), so a draft can address a customer as e.g. 'dana87'."
+ },
+ {
+  "metric": "Customer.orderIds",
+  "consumedBy": "service.ts:409 ingest order fallback (orders.listByCustomer linkage); gift-catalog route:15 order lookup",
+  "currentSource": "csv-import (import.ts:127-129 appended on each order create); seed",
+  "realSource": "computed from the order->customer linkage (csv or shopify order sync)",
+  "retrievalStatus": "WIRED",
+  "gap": "Maintained correctly by the importer as real orders are created, but only ever grows via CSV import — no live order source keeps it current."
+ },
+ {
+  "metric": "Customer.ticketCount",
+  "consumedBy": "service.ts:480 incremented per ingested ticket; surfaced on customer/at-a-glance views",
+  "currentSource": "webhook (service.ts:480 increment on each ingest); seed initializes to 0",
+  "realSource": "helpdesk-webhook (each forwarded ticket); computed",
+  "retrievalStatus": "WIRED",
+  "gap": "Genuinely live — the webhook ingest path increments it per inbound ticket. Honest derived counter, no gap beyond depending on the webhook being connected."
+ },
+ {
+  "metric": "Customer.lastSentiment",
+  "consumedBy": "app/api/gift-catalog/[customerId]/route.ts:28 — sentiment input to risk scoring for the standalone gift endpoint",
+  "currentSource": "webhook (service.ts:481 = inbound ticket sentiment); seed",
+  "realSource": "helpdesk-webhook (sentiment field on the normalized ticket)",
+  "retrievalStatus": "WIRED",
+  "gap": "Write path is live on ingest; its accuracy inherits from how the inbound ticket's sentiment is classified upstream (ingest-cluster concern), but the customer field itself is refreshed for real per ticket."
+ },
+ {
+  "metric": "Ingest identity match (orderRef + email join)",
+  "consumedBy": "service.ts:403 findByEmail + service.ts:406 orders.findById(orderRef) — resolves a webhook ticket to a customer+order; the whole cockpit (risk/gift/reassurance) runs off this pairing",
+  "currentSource": "webhook payload fields (n.customerEmail, n.orderRef) matched against csv-imported customers/orders",
+  "realSource": "helpdesk-webhook (customer email + order ref parsed from the ticket) matched to csv/shopify records",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Match only works if the customer/order was previously CSV-imported; on a miss the code silently attaches the ticket to the merchant's oldest open order and THAT order's customer (service.ts:413-418), so risk/gift/reassurance then run against the wrong customer's LTV and order value. No live provisioning keeps the match set complete."
+ },
+ {
+  "metric": "Order.importKey (re-import dedupe key)",
+  "consumedBy": "import.ts:79-91 re-import dedupe — prevents duplicating a merchant's backer list on a repeat upload",
+  "currentSource": "csv-import (import.ts:79 `${merchantId}:${row.sourceKey}`, sourceKey = csv.ts id aliases: backer number / order id)",
+  "realSource": "csv (source-row id column); shopify-api Order.id",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Only set when the export carries an id column (csv.ts id aliases). With no id column importKey is undefined and re-import dedupe degrades to none (import.ts:80), so a double-upload duplicates the merchant's entire backer list."
+ },
+ {
+  "metric": "GMV-in-dispute / orders-in-window (dispute-exposure inputs)",
+  "consumedBy": "dispute-exposure.ts:90-98 totalCents + kickstarter/shopify rail split (money-at-risk tile, app/app/page.tsx:176-202)",
+  "currentSource": "computed-from Order.orderValueCents + group + disclosedEta + createdAt (all csv-import/seed sourced)",
+  "realSource": "computed from real order value + real order date + real disclosed ETA + real payment rail",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Inherits every upstream gap: createdAt=import-time skews the Visa 13.1 window (dispute-exposure.ts:74,88); the rail is a group guess not a real payment method (dispute-exposure.ts:50); orders lacking disclosedEta drop to unknownCount (dispute-exposure.ts:69). The dollar figure is real summed GMV but computed over mis-dated, mis-railed orders."
+ },
+ {
+  "metric": "Order.fulfillmentStart (canonical wait-clock anchor)",
+  "consumedBy": "time.ts:19 daysInWait + time.ts:65 computeTimeline total → feeds dayStageFor (reassurance.ts:72), forecast.ts:94/136 day-60 crossing, refund-risk.ts:73 stageLag, status.ts:84 customer status page, service.ts:416 ingest fallback sort. Drives the ENTIRE wait clock: day-stage template, cockpit timeline, customer status page, forecast, risk.",
+  "currentSource": "DEMO = seed (orders.json, realistically staggered dates from scripts/gen-seed.mjs). REAL merchant = hardcoded to nowIso at import.ts:103 (reset to import day). Onboarding preview = computed sample offsets (throwaway, not persisted).",
+  "realSource": "csv (a pledge/collection/order-date column from the KS or BackerKit export) OR shopify-api Orders endpoint order.created_at / preorder-app expected-ship anchor",
+  "retrievalStatus": "MISSING",
+  "gap": "csv.ts AliasSet reads no date column, and import.ts:103 hardcodes fulfillmentStart=now. So every imported order's wait clock starts at 0 on import day → daysInWait≈0, dayStageFor always returns day-7, forecast/risk/overdue all wrong. Need: add a pledge/order-date alias to csv.ts + parse it into fulfillmentStart, or build a Shopify Orders API pull. This is the central import bug."
+ },
+ {
+  "metric": "Order.fulfillmentEnd (total-window denominator, overdue)",
+  "consumedBy": "time.ts:65 total-window denominator + time.ts:78 overdue flag, refund-risk.ts:73 total→variance→stageLag, reassurance via computeTimeline. Drives confidence-band width, overdue flag, risk stageLag.",
+  "currentSource": "DEMO = seed. REAL merchant = hardcoded now + merchant.fulfillmentWindowDays.max (import.ts:39,104). Onboarding preview = computed.",
+  "realSource": "computed-from fulfillmentStart + merchant.fulfillmentWindowDays.max (no external per-order 'end' exists); or a preorder-app promised-ship date",
+  "retrievalStatus": "PARTIAL",
+  "gap": "The formula (start + windowMax) is sound, but it is anchored to import `now`, so the window is right-sized yet wrong-placed for every imported order — it inherits the fulfillmentStart bug. Once fulfillmentStart is real, recompute end = realStart + windowMax."
+ },
+ {
+  "metric": "Order.productionStage (sourcing/tooling/production/qc/freight/dispatch)",
+  "consumedBy": "reassurance.ts:75 playbook byStage lookup + reassurance.ts:96 stageBlurb, refund-risk.ts:82 stageLag (via stageCeilDay service.ts:639), time.ts:70/84/98 timeline active-stage, status.ts:113 stageBlurb on customer status page. Drives which stage blurb the customer sees, risk stageLag, and the timeline active marker.",
+  "currentSource": "DEMO = seed (varied stages). REAL merchant = hardcoded literal \"production\" for EVERY imported order (import.ts:105). Onboarding preview = sample stages (throwaway).",
+  "realSource": "NONE-EXISTS as a live feed — no order/customer system knows manufacturing progress. Closest real sources: merchant manual/onboarding control to set+advance a cohort's stage, a preorder-app production milestone webhook, OR computed-from daysInWait against merchant.stages[].dayBand (the data already exists)",
+  "retrievalStatus": "MISSING",
+  "gap": "Two holes: (1) it is hardcoded on import, and (2) NO surface/route ever updates an order's productionStage afterward — grep confirms the only writes are import.create, seed, and the throwaway preview; there is no orders.update(productionStage) call anywhere. So a real merchant's every order is frozen at 'production' forever regardless of actual manufacturing stage, and the 'stage-aware' engine silently always uses the production/base branch. Simplest real fix: derive stage from daysInWait vs merchant.stages[].dayBand — but that derivation is not wired (time.ts reads stored order.productionStage, not a day-band lookup)."
+ },
+ {
+  "metric": "Order.disclosedEta{value,source,disclosedAt} (Visa 13.1 dispute anchor)",
+  "consumedBy": "dispute-exposure.ts:69 (excluded if absent) + dispute-exposure.ts:74 window anchor, evidence.ts assembleEvidencePack. Drives the dispute-exposure money-at-risk tile and the dispute evidence pack. NOT read by reassurance/status/timeline.",
+  "currentSource": "DEMO = seed (e.g. 'weeks 12–14'). REAL merchant = captured from the export's 'estimated delivery' column when present (import.ts:113-121 via csv.ts eta aliases) — value+source are honest merchant data; BUT disclosedAt is set to import nowIso (import.ts:118), not the real disclosure date.",
+  "realSource": "csv (KS campaign-page estimated-delivery / BackerKit checkout estimate column) OR a Shopify preorder-app disclosed ship estimate",
+  "retrievalStatus": "PARTIAL",
+  "gap": "value/source ARE wired from the CSV when the export carries an ETA column, but: (a) many KS exports have no 'estimated delivery' column → disclosedEta undefined → dispute-exposure.ts:69 buckets the order as unknownCount (zero money-at-risk, silently under-reporting exposure); (b) disclosedAt is import time, not the real disclosure date, which skews the Visa-13.1 window that legally runs from expected delivery; (c) Shopify-only merchants have no import path at all."
+ },
+ {
+  "metric": "Order.createdAt (transaction anchor)",
+  "consumedBy": "dispute-exposure.ts:74 → evidence.computeDisputeWindow 540-day-cap anchor, refund-risk.ts:126 byPriority queue tiebreak. Drives the Visa-13.1 540-day cap-from-transaction and queue ordering.",
+  "currentSource": "DEMO = seed. REAL merchant = hardcoded nowIso at import.ts:102. Onboarding preview = computed.",
+  "realSource": "shopify-api order.created_at OR the KS/BackerKit pledge/transaction-date column (csv)",
+  "retrievalStatus": "MISSING",
+  "gap": "Hardcoded to import time; csv.ts reads no transaction-date column. So the Visa-13.1 540-day cap is anchored to import day, not the real charge — badly wrong for a backer who pledged a year before onboarding. Needs a date-column alias in csv.ts or a Shopify pull."
+ },
+ {
+  "metric": "computed daysInWait / OrderTimeline (band, overdue, stage state)",
+  "consumedBy": "time.ts:18-101 computeTimeline; consumed by reassurance.ts:72 dayStageFor, status.ts:84-85 customer status page, cockpit. Drives day-stage selection, confidenceBand, daysRemainingUpper, overdue.",
+  "currentSource": "computed-from Order.fulfillmentStart + fulfillmentEnd + now (pure, correct arithmetic in time.ts)",
+  "realSource": "computed (this derivation is the right approach and needs no external source)",
+  "retrievalStatus": "PARTIAL",
+  "gap": "The computation is correct and pure, but it is only as good as its inputs: because fulfillmentStart is hardcoded to import-now for real merchants, daysInWait≈0 for every imported order → dayStageFor always returns day-7, confidenceBand shows near-full window, overdue never fires. Structurally sound, fed wrong data — fix the fulfillmentStart source and this self-corrects."
+ },
+ {
+  "metric": "day-7/30/60/89 stage thresholds (DayStageKey selection)",
+  "consumedBy": "reassurance.ts:15-21 dayStageFor(<=7/<=30/<=60/<=89) → reassurance.ts:72 picks the playbook template, status.ts:85 stageKey on customer status page. Drives which of the 4 reassurance cadence templates is used.",
+  "currentSource": "hardcoded product constants in reassurance.ts:16-20 (not merchant data)",
+  "realSource": "computed — legitimately a product-defined reassurance cadence, not a retrieved field; but the 89-day horizon should scale to merchant.fulfillmentWindowDays",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Fine as a hardcoded product constant, but two issues: (1) it is fed by the broken daysInWait, so in practice every real imported order lands in the day-7 bucket; (2) the fixed 89-day ceiling does not scale to a merchant with a 120-200 day window — a long-wait merchant's orders all collapse into day-89/overdue late in the wait. No merchant-config input."
+ },
+ {
+  "metric": "Merchant.stages[]{dayBand,blurb} (production-stage definitions)",
+  "consumedBy": "time.ts:70 stageDef lookup + time.ts:74 stageRemaining, refund-risk.ts:129-131 stageCeilDayFor (via service.ts:639) → stageLag, status/cockpit timeline rows. Drives stage-ceiling for risk and the per-stage timeline blurbs.",
+  "currentSource": "onboarding-config (onboarding.ts:63-68 from intake.stages, else DEFAULT_STAGES onboarding.ts:27-34) for real merchants; seed for demo",
+  "realSource": "merchant-onboarding — the merchant declares their own production stages + day bands (legitimately merchant-owned config, with sensible defaults)",
+  "retrievalStatus": "WIRED",
+  "gap": "Genuinely captured from the onboarding wizard with sensible defaults — a real path. Caveat: it is never reconciled with the order's actual productionStage (which is hardcoded), and the natural 'derive current stage from daysInWait vs dayBand' path is defined but unused, so these bands only drive the visual timeline and stageCeil, not the stage the customer is actually told."
+ },
+ {
+  "metric": "Merchant.fulfillmentWindowDays{min,max}",
+  "consumedBy": "refund-risk.ts:78 waitPressure denominator (via service.ts:638), import.ts:38-39 to size fulfillmentEnd. Drives risk waitPressure and imported-order window length.",
+  "currentSource": "onboarding-config (onboarding.ts:89 from intake.windowMinDays/MaxDays) for real merchants; seed for demo",
+  "realSource": "merchant-onboarding — a merchant-declared fulfillment window, not an API pull",
+  "retrievalStatus": "WIRED",
+  "gap": "Real path — the onboarding wizard captures it and it is genuinely merchant-owned config needing no live refresh. Minor caveats: static (no per-cohort/per-campaign override) and never validated against actual observed delivery times."
+ },
+ {
+  "metric": "Merchant.baseline{medianFrtSec,wismoPer100Orders,ticketsPerWeek,repeatWismoPct}",
+  "consumedBy": "forecast.ts:107-108 (wismoPer100Orders → ratePerOrder → expected ticket volume), proof.ts proof deltas, service.ts dashboard. Drives cohort-forecast sizing and every proof-delta denominator.",
+  "currentSource": "onboarding-config sets baseline to ALL ZEROS (onboarding.ts:95-101: medianFrtSec:0, wismoPer100Orders:0, ticketsPerWeek:0, repeatWismoPct:0). Demo = seed with real numbers.",
+  "realSource": "computed from the merchant's pre-Tideover helpdesk history (their own historical ticket volume/FRT) OR merchant-declared at onboarding",
+  "retrievalStatus": "MISSING",
+  "gap": "For a real onboarded merchant baseline is hardcoded to zero. forecast.ts:107 explicitly returns null expected* when wismoPer100Orders is 0, so the WISMO forecast sizing silently disables itself, and proof deltas run against a zero denominator. Need to either ask the merchant for these numbers at onboarding or compute them from an initial helpdesk-history import; nothing populates them today."
+ },
+ {
+  "metric": "Ticket.channel (#27)",
+  "consumedBy": "service.ts:529 getSendAdapter(channel) send-routing; setup.ts:111,166 helpdeskConnected + lastInboundAt (channel!=='mock'). Drives inbox send + setup checklist.",
+  "currentSource": "webhook: ingest-schema.ts:56 coerces EVERY canonical webhook to channel='email'; native surface sets 'mock' (MockAdapter.ts:82); seed per-ticket.",
+  "realSource": "helpdesk-webhook (the merchant's actual channel).",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Canonical ingest flattens all real inbound to 'email', losing the true helpdesk; and service.ts:529 getSendAdapter routes email/gorgias/tidio/intercom to NotImplementedError stubs (GorgiasAdapter/EmailAdapter.sendReply), so a real merchant's approved reply cannot be sent back out through any non-mock channel."
+ },
+ {
+  "metric": "Ticket.externalId (#28)",
+  "consumedBy": "service.ts:398-401,474 findByExternalId ingest idempotency (vendor redelivery dedupe).",
+  "currentSource": "webhook payload external_id (ingest-schema.ts:19,46); native surface derives a content SHA-256 (MockAdapter.ts:65-71); seed per-ticket.",
+  "realSource": "helpdesk-webhook field (ticket.id, mapped in the body template ingest-templates.ts:53).",
+  "retrievalStatus": "WIRED",
+  "gap": "Real path exists; depends only on the merchant pasting the provided body template so external_id maps to their ticket id."
+ },
+ {
+  "metric": "Ticket.subject / Ticket.body (#29)",
+  "consumedBy": "inbox/queue display; and the keyword classifiers inferType/inferSentiment (ingest-schema.ts:52-53). Feeds type, sentiment, draft.",
+  "currentSource": "webhook payload subject/body (ingest-schema.ts:46); seed per-ticket.",
+  "realSource": "helpdesk-webhook (subject + messages.last.body_text, ingest-templates.ts:55-56).",
+  "retrievalStatus": "WIRED",
+  "gap": "Real path exists via the merchant's body template. Body is only the last message text, not the full thread — long histories are truncated to one message for classification."
+ },
+ {
+  "metric": "Ticket.type wismo/refund/deposit/other (#30)",
+  "consumedBy": "service.ts:705-706 wismoPer100Orders (live dashboard); service.ts:460 presale:{type} tag; queue filters.",
+  "currentSource": "computed at ingest by inferType keyword match over subject+body (MockAdapter.ts:21-27).",
+  "realSource": "computed (keyword classifier) — no merchant/helpdesk category field is ingested to override it.",
+  "retrievalStatus": "WIRED",
+  "gap": "Deterministically computed from real subject/body, but it is a 3-list literal keyword match (WISMO/REFUND/DEPOSIT); anything outside those words falls to 'other', so wismoPer100Orders undercounts non-templated phrasing. No merchant category, no ML."
+ },
+ {
+  "metric": "Ticket.sentiment calm/anxious/hostile/chargeback-threat (#31)",
+  "consumedBy": "refund-risk.ts:79 sentiment factor (weight 0.35); reassurance.ts:105 escalation; sla.ts:63-65 escalated SLA tier; service.ts:461,481 dispute-risk tag + lastSentiment.",
+  "currentSource": "computed at ingest by inferSentiment regex over subject+body (MockAdapter.ts:29-35).",
+  "realSource": "computed (keyword classifier). No external/helpdesk sentiment signal is ingested.",
+  "retrievalStatus": "WIRED",
+  "gap": "Input (subject/body) is real, but classification is ~15 regex keywords with no negation handling; misses drive the single heaviest risk factor AND SLA escalation, so a mislabeled 'calm' silently de-prioritizes a real dispute. Quality-limited, not seed-limited."
+ },
+ {
+  "metric": "Ticket.status open/drafted/sent/resolved (#32)",
+  "consumedBy": "service.ts:703 sent filter; 715-716 deflectionPct (sent||resolved / total); queue filters.",
+  "currentSource": "state machine: 'drafted' at ingest (service.ts:451), 'sent' at approveSend (service.ts:538); seed sets varied statuses incl. 'resolved'.",
+  "realSource": "computed (Tideover-owned workflow lifecycle).",
+  "retrievalStatus": "PARTIAL",
+  "gap": "'drafted'->'sent' is real, but NO code path ever writes status:'resolved' (only seed data has it). So deflectionPct's 'resolved' bucket is seed-only; a live merchant only ever accrues 'sent', and 'sent' itself only advances via the mock send adapter (real adapters stubbed)."
+ },
+ {
+  "metric": "Ticket.tags (#33)",
+  "consumedBy": "service.ts:709-713 savesCount (dispute-risk sent OR gift-sent tag); queue/inbox chips.",
+  "currentSource": "Tideover-derived at ingest: ['presale', 'presale:{type}', +'presale:dispute-risk' when chargeback-threat] (service.ts:460-462); 'gift-sent:{kind}' written on gift send (app/api/gift-send/route.ts:22).",
+  "realSource": "computed (Tideover-derived from type/sentiment + operator gift action).",
+  "retrievalStatus": "WIRED",
+  "gap": "Derived from real ingest fields + real operator gift-send. Note the merchant's OWN helpdesk tags are deliberately NOT carried onto the ticket (ingest-schema.ts:41; used only for drop-at-edge), so Ticket.tags never reflect the merchant's taxonomy."
+ },
+ {
+  "metric": "Ticket.draft {text,confidenceBand,priority,riskScore,recommendedGiftId,variantId} (#34)",
+  "consumedBy": "inbox DraftRail/ApprovalBar; approveSend reads draft.text (service.ts:525), draft.variantId (service.ts:273).",
+  "currentSource": "computed at ingest by engines: intelToDraft + drafter.draft (service.ts:452-459); draftedBy='deterministic' (LlmDrafter env-gated off, LlmDrafter.ts:40).",
+  "realSource": "computed (deterministic engines over the real order/customer/merchant).",
+  "retrievalStatus": "WIRED",
+  "gap": "Computed from real records; but text quality is fixed templates (LLM drafter is a documented stub) and the embedded riskScore/stageKey inherit the daysInWait/orderValue input weaknesses noted under RiskResult/ReassuranceResult."
+ },
+ {
+  "metric": "Ticket.sent {text,approvedBy,sentAt,externalId} (#35)",
+  "consumedBy": "service.ts:537-541 persisted send record; feeds editedRatio via recordReplySent (service.ts:284) and setup firstReplySent (setup.ts:115).",
+  "currentSource": "approveSend: text=operator input, sentAt/externalId from adapter.sendReply (service.ts:530), approvedBy=env DEMO_OPERATOR_NAME ?? 'Dylan' (service.ts:539).",
+  "realSource": "helpdesk send API (real sentAt/externalId) + authenticated operator identity for approvedBy.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Only MockAdapter.sendReply returns a value (fabricated externalId 'mock_send_*' and sentAt=now, MockAdapter.ts:46-52); Gorgias/Email/Tidio/Intercom sendReply throw NotImplementedError. approvedBy is a hardcoded env name, not a real logged-in operator. So sent.* is not truly wired for any real channel."
+ },
+ {
+  "metric": "ticketsLast7d velocity count (#36)",
+  "consumedBy": "refund-risk.ts:80 velocity factor (cap 4); computed by ticketsLast7dFor (service.ts:41-46), passed at ingest (service.ts:425).",
+  "currentSource": "computed: count of this customer's tickets with createdAt >= now-7d (service.ts:43-45).",
+  "realSource": "computed from the merchant's own ingested tickets.",
+  "retrievalStatus": "WIRED",
+  "gap": "Fully derived from real per-customer ticket rows; only as complete as the ingest feed (a merchant answering in their own helpdesk without a webhook contributes no tickets, so velocity reads low)."
+ },
+ {
+  "metric": "StatusView {orderId,viewedAt,ipPrefix,userAgent} (#37)",
+  "consumedBy": "status.ts:73-81 dispute-evidence log; setup.ts:121 statusVisible; evidence export.",
+  "currentSource": "written fire-and-forget on each real /status/[token] render or /api/status hit (per-request); seed status-views.json for demo.",
+  "realSource": "computed (server logs one row per real customer status-page visit).",
+  "retrievalStatus": "WIRED",
+  "gap": "Real write path exists; population depends on the merchant distributing the status link and customers opening it. ipPrefix truncated to 2 octets by design."
+ },
+ {
+  "metric": "MerchantUpdate {text,imageUrl,hidden,createdAt} (#38)",
+  "consumedBy": "status.ts:89 status-page feed; setup.ts:121 statusVisible.",
+  "currentSource": "merchant-authored via /app/updates (manual entry); imageUrl = merchant-supplied external URL (no upload); seed merchant-updates.json.",
+  "realSource": "merchant-onboarding/manual (the update is by definition merchant-written broadcast copy).",
+  "retrievalStatus": "WIRED",
+  "gap": "Manual by design and correctly so. Only caveat: imageUrl is an externally-hosted URL with no upload pipeline, so image persistence depends on the merchant's own host."
+ },
+ {
+  "metric": "Merchant.slaWindows {amStart,pmStart,tz} (#22)",
+  "consumedBy": "sla.ts:177 slaTarget; service.ts:739 computeSlaAttainment; dashboard slaAttainment + inbox SLA chips.",
+  "currentSource": "onboarding HARDCODES { amStart:'9:00', pmStart:'15:00', tz:'ET' } for every real merchant (onboarding.ts:94); seed merchants carry realistic values.",
+  "realSource": "merchant-onboarding (should be a wizard question per merchant timezone/hours).",
+  "retrievalStatus": "MISSING",
+  "gap": "IntakeData has no slaWindows field; createMerchantFromIntake writes the same ET 9:00/15:00 to every onboarded merchant and there is no update path. A CET/PT merchant gets wrong SLA targets, wrong breach flags, and wrong attainment. Needs an onboarding capture field + an edit surface."
+ },
+ {
+  "metric": "Ticket.createdAt SLA/FRT clock start (#23)",
+  "consumedBy": "sla.ts:179 slaTarget basis; service.ts:534 firstResponseSec = sentAt-createdAt; ingest (service.ts:449).",
+  "currentSource": "webhook payload created_at (ingest-schema.ts:54), defaults to now() when omitted; native surface sets now.",
+  "realSource": "helpdesk-webhook created_at (ticket.created_datetime, ingest-templates.ts:58).",
+  "retrievalStatus": "WIRED",
+  "gap": "Real path exists; but silently defaults to ingest-time now() if the merchant's template omits created_at (ingest-schema.ts:54), which would zero the SLA clock and FRT start. Depends on the optional template field being mapped."
+ },
+ {
+  "metric": "Ticket.firstResponseSec measured FRT (#24)",
+  "consumedBy": "service.ts:703-704 medianFrtSec (live dashboard); sla.ts:253 answered branch; service.ts:739 computeSlaAttainment.",
+  "currentSource": "null at ingest (service.ts:450); computed at approveSend = sentAt-createdAt (service.ts:532-535); seed sets 12 of ~55 tickets.",
+  "realSource": "computed from the real outbound-send timestamp minus ticket createdAt.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Only populated when the reply is sent THROUGH Tideover's approveSend, and sentAt only comes back from MockAdapter (real send adapters throw NotImplementedError). Replies the merchant sends inside their own helpdesk are invisible, so medianFrtSec/attainment reflect only mock-mediated sends."
+ },
+ {
+  "metric": "Merchant.baseline {medianFrtSec,wismoPer100Orders,ticketsPerWeek,repeatWismoPct,capturedOn} (#26)",
+  "consumedBy": "baseline.ts:74 formatBaseline (Day-0 report M4); forecast.ts:107 ratePerOrder (cohort sizing); service.ts:725 dashboard baseline block.",
+  "currentSource": "onboarding HARDCODES ALL ZEROS with capturedOn=now (onboarding.ts:95-101); seed merchants have real numbers in merchants.json.",
+  "realSource": "merchant-onboarding capture of pre-Tideover support stats, OR computed from an imported ticket-history export. No such capture exists.",
+  "retrievalStatus": "MISSING",
+  "gap": "IntakeData has no baseline fields; every real onboarded merchant gets 0/0/0/0. Consequence: the Day-0 Baseline report renders all zeros, AND the cohort forecast is permanently uncalibrated (wismoPer100Orders=0 -> ratePerOrder null -> expectedMid/Low/High all null). Needs an onboarding intake field or a ticket-history import to seed real baselines."
+ },
+ {
+  "metric": "RiskResult {riskScore,band,color,priorityRank,factors,topDriver} (#39)",
+  "consumedBy": "service.ts:718-721 riskCurve; service.ts:734 atRisk queue; refund-risk.ts:69 scoreRefundRisk.",
+  "currentSource": "computed by scoreRefundRisk (refund-risk.ts:76-92) over its RiskInput factors.",
+  "realSource": "computed; realness = min(realness of inputs): orderValueCents, daysInWait, sentiment, ticketsLast7d, stageCeil/windowMax.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "valueExposure (refund-risk.ts:77) uses orderValueCents, which CSV import defaults to DEFAULT_ORDER_VALUE_CENTS when the export has no value; waitPressure + stageLag + daysInWait (refund-risk.ts:78,81-82) anchor on fulfillmentStart, which importBackerRows hardcodes to now (import.ts:103) so every freshly-imported backer scores waitPressure~0 regardless of true campaign age. Sentiment/velocity inputs are wired. Net: the score is real only after real fulfillment dates/values are set."
+ },
+ {
+  "metric": "ReassuranceResult {draftText,confidenceBand,priority,stageKey,overdue,managerNote,variantKey} (#42)",
+  "consumedBy": "service.ts:426-433 computeTicketIntelligence -> draft; inbox DraftRail; outcome-ledger variant attribution (service.ts:206,436).",
+  "currentSource": "computed by draftReassurance (reassurance.ts:68) over merchant.playbook + firstName + sentiment + timeline.",
+  "realSource": "computed; inputs: merchant.playbook (onboarding-generated, real), firstName (CSV/webhook, real), sentiment (regex, wired), daysInWait/stageKey (from fulfillmentStart).",
+  "retrievalStatus": "PARTIAL",
+  "gap": "stageKey selection via dayStageFor(daysInWait) (reassurance.ts:72) and productionStage byStage lookup depend on fulfillmentStart + productionStage, both of which CSV import hardcodes (fulfillmentStart=now, productionStage='production', import.ts:103,105). So every imported backer drafts as an early 'day-7 / production' message regardless of true wait/stage until real dates are set. Template text itself is wired from onboarding."
+ },
+ {
+  "metric": "SlaAttainment {answered,met,rate} + SlaChip (#44)",
+  "consumedBy": "service.ts:739 getDashboard slaAttainment; inbox per-ticket SLA chips (sla.ts:340 slaChip).",
+  "currentSource": "computed by computeSlaAttainment/ticketSlaState (sla.ts:290,244) over tickets.firstResponseSec + merchant.slaWindows.",
+  "realSource": "computed from real FRT vs real support windows.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Rests on two weak inputs: firstResponseSec only populates on Tideover mock-sends (real send adapters stubbed) and slaWindows is hardcoded ET for every onboarded merchant (onboarding.ts:94). Rate is also gated null below ATTAINMENT_MIN_N=10 answered (sla.ts:29,304), so a real merchant sees no % until >=10 Tideover-sent replies measured against possibly-wrong windows."
+ },
+ {
+  "metric": "CohortForecast {enteringWindow,ratePerOrder,expectedMid/Low/High} (#45)",
+  "consumedBy": "app/app/forecast/page.tsx:61 computeCohortForecast (staffing forecast surface).",
+  "currentSource": "computed by computeCohortForecast (forecast.ts:78) over orders.fulfillmentStart + baseline.wismoPer100Orders.",
+  "realSource": "computed; cohort from real fulfillment dates, rate from real baseline WISMO rate.",
+  "retrievalStatus": "MISSING",
+  "gap": "The sized forecast (expectedMid/Low/High) is null for EVERY real merchant because baseline.wismoPer100Orders is hardcoded 0 at onboarding (forecast.ts:107-111 short-circuit to null). And enteringWindow anchors on fulfillmentStart, which CSV import sets to now for all backers (import.ts:103), so day-60 crossings cluster ~60 days post-import instead of tracking the real campaign timeline. Only a timeline-distorted raw cohort count survives; the actual staffing number is never produced."
+ },
+ {
+  "metric": "DashboardView.live.medianFrtSec (#46)",
+  "consumedBy": "service.ts:703-704, rendered app/app/page.tsx dashboard 'live' block.",
+  "currentSource": "computed: median of firstResponseSec over status==='sent' tickets (service.ts:703-704).",
+  "realSource": "computed from real FRTs.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Inherits the firstResponseSec gap: only tickets sent via Tideover's mock adapter carry a firstResponseSec, so the live median reflects mock-mediated sends only, never replies the merchant makes in their own helpdesk."
+ },
+ {
+  "metric": "DashboardView.live.wismoPer100Orders (#46)",
+  "consumedBy": "service.ts:705-706, dashboard 'live' block (vs baseline).",
+  "currentSource": "computed = (tickets type==='wismo') / orders.length * 100 (service.ts:705-706).",
+  "realSource": "computed from real ticket types / real order count.",
+  "retrievalStatus": "WIRED",
+  "gap": "Numerator depends on the keyword type classifier (undercounts non-templated WISMO phrasing); denominator is the merchant's order count (CSV/seed). Both are real once tickets flow, so the metric itself is wired."
+ },
+ {
+  "metric": "DashboardView.live.sentCount (#46)",
+  "consumedBy": "service.ts:729, dashboard 'live' block.",
+  "currentSource": "computed: count of status==='sent' tickets with firstResponseSec!=null (service.ts:703,729).",
+  "realSource": "computed from real sends.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "A ticket only reaches 'sent' via approveSend, whose real send adapters are NotImplementedError stubs; only mock sends advance, so sentCount counts mock-mediated sends only."
+ },
+ {
+  "metric": "DashboardView.live.savesCount (#46)",
+  "consumedBy": "service.ts:709-713, dashboard 'live' block.",
+  "currentSource": "computed: dispute-risk-tagged tickets that reached 'sent', OR tickets carrying a 'gift-sent:*' tag (service.ts:709-713).",
+  "realSource": "computed from real dispute-risk sends + real operator gift sends.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "gift-sent branch is genuinely wired (app/api/gift-send/route.ts:22 real operator action). The dispute-risk branch requires a chargeback-threat ticket reaching 'sent', which only happens via the mock send path (real send adapters stubbed)."
+ },
+ {
+  "metric": "DashboardView.live.deflectionPct (#46)",
+  "consumedBy": "service.ts:715-716, dashboard 'live' block.",
+  "currentSource": "computed = (status 'sent' || 'resolved') / total tickets * 100 (service.ts:715-716).",
+  "realSource": "computed from real ticket resolution outcomes.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "The 'resolved' half is dead: no code ever sets status:'resolved' (only seed). The 'sent' half only advances via mock sends. So for a live merchant deflectionPct == share of tickets sent through Tideover's mock adapter, not a true deflection/resolution measure."
+ },
+ {
+  "metric": "ScriptPerformanceRow sends + avgEditedRatio (#47)",
+  "consumedBy": "app/app/scripts/page.tsx:102 Script Performance panel; aggregateScriptPerformance (service.ts:840-846).",
+  "currentSource": "computed from reply_sent outcome events + meta.editedRatio; reply_sent written by recordReplySent at approveSend (service.ts:285-296); editedRatio = Levenshtein(draft,sent) (service.ts:216).",
+  "realSource": "computed/event-sourced from real approved sends.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "editedRatio is a genuine measured fact, but reply_sent only fires when the send goes through Tideover approveSend (mock adapter only; real send adapters stubbed). avgEditedRatio is null until any send exists, and the surface needs SCRIPT_PERF_MIN_N=20 sends (service.ts:789) before showing derived rates."
+ },
+ {
+  "metric": "ScriptPerformanceRow customer-side: customerReplies / calmResponseRate / reopens / reopenRate (#47)",
+  "consumedBy": "app/app/scripts/page.tsx panel; aggregateScriptPerformance (service.ts:847-853,878-883).",
+  "currentSource": "computed from customer_replied/reopened events emitted by recordReplyAttribution at ingest when a new inbound lands within 7d of a reply_sent (service.ts:324,351-372); respondedSentiment=ticket.sentiment (service.ts:354).",
+  "realSource": "computed/event-sourced from real inbound follow-ups on the same order.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Attribution path is real, but (a) it requires the original reply to have gone through Tideover (mock send) to exist as a reply_sent to attribute to; (b) calmResponseRate keys off respondedSentiment which is Tideover's OWN keyword regex, NOT 'the channel's own sentiment inference' the type comment (types.ts:339-341) claims; (c) rates gate null below n=20."
+ },
+ {
+  "metric": "ScriptPerformanceRow csatResponses / csatRate (#47)",
+  "consumedBy": "app/app/scripts/page.tsx panel; aggregateScriptPerformance (service.ts:854-857,884-885).",
+  "currentSource": "computed from csat_up/csat_down events written by the public /api/csat/[token] route on a real customer status-page tap (route.ts:42,51-61); seed has 7 up / 2 down.",
+  "realSource": "computed from real customer CSAT taps on the status page.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Real end-to-end path exists (status token -> attribute to order's latest reply_sent). But it requires (a) a prior Tideover reply_sent to attribute to, (b) the status page surfacing the CSAT tap, (c) enough taps to clear csat n>=20. So real csatRate is realistically unattainable early; it is a wired-but-thin signal, not seed-only."
+ },
+ {
+  "metric": "ScriptPerformanceRow resolvedQuiet / quietResolutionRate (#47)",
+  "consumedBy": "app/app/scripts/page.tsx panel; aggregateScriptPerformance (service.ts:860-862,889-890).",
+  "currentSource": "computed from resolved_quiet events emitted by the daily cron sweep (sweepResolvedQuiet outcome-sweep.ts:45; recorded app/api/cron/sweep-outcomes/route.ts:69-72; scheduled vercel.json '0 8 * * *').",
+  "realSource": "computed from the absence of a comeback 7d after a real send.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "Sweep + cron schedule are genuinely wired (needs CRON_SECRET set in prod, route.ts:47-51). But it derives from reply_sent events, which only exist for Tideover mock-mediated sends; and quietResolutionRate gates null below n=20 sends. Real path, thin real input."
+ },
+ {
+  "metric": "SocialSignal scoring {signalScore,flagged,matchedKeywords,suggestedOutreach} (#48)",
+  "consumedBy": "app/app/social/page.tsx:33 + app/api/social-signal-feed/route.ts:13 scoreFeed; social monitor surface.",
+  "currentSource": "computed by scoreSignal (social-signal.ts:33-52) over SocialSignal posts; posts come ONLY from seed lib/data/social-feed.json (repos.socialSignals). mentionsBrand/mentionsCampaign are seed booleans.",
+  "realSource": "a Twitter/X, Reddit, or Instagram search/streaming integration feeding SocialSignal records + real brand/campaign matching.",
+  "retrievalStatus": "MISSING",
+  "gap": "The scoring engine is real, but it has NO real input feed: there is no code path that fetches or ingests real social posts (no social-platform API client anywhere), and mentionsBrand/mentionsCampaign are seeded flags, not computed. For any real merchant the social monitor shows seed data only."
+ },
+ {
+  "metric": "OutcomeEvent {kind,sentimentAtSend,meta.editedRatio,meta.respondedSentiment} (#49)",
+  "consumedBy": "service.ts:840 aggregateScriptPerformance; CSAT route; sweep; the whole Script Performance + outcome ledger.",
+  "currentSource": "reply_sent via recordReplySent (service.ts:285); customer_replied/reopened via recordReplyAttribution (service.ts:351,371); csat_up/down via /api/csat route; resolved_quiet via cron sweep; seed outcome-events.json has all kinds.",
+  "realSource": "event-sourced from real send/ingest/CSAT/sweep actions; refund_requested/chargeback would need a helpdesk or payment-processor webhook.",
+  "retrievalStatus": "PARTIAL",
+  "gap": "reply_sent (the ledger's spine) depends on Tideover-mediated sends (mock-only working adapter). refund_requested and chargeback kinds are DEFINED but NEVER WRITTEN by any code (service.ts:864 default-skips them; only seed has them) — real refund/chargeback outcomes are not captured, needing a payment/helpdesk webhook. sentimentAtSend/respondedSentiment are keyword-regex derived, not a real sentiment source."
+ }
+]

@@ -7,18 +7,18 @@ import { CalButton } from "@/components/booking/CalButton";
 export const metadata: Metadata = {
   title: "Partner-pitch demo — Tideover",
   description:
-    "The 5–6 minute partner demo: the problem on a real setup, the same message answered two ways, how the concierge pilot works, the honest proof, and the founding terms.",
+    "The 5–6 minute partner demo: the problem on a real setup, the same message answered two ways, how the concierge pilot works, the proof, and the founding terms.",
 };
 
 const TITLE = "Partner-pitch / demo video (5–6 min)";
 
-function HonestProofBox() {
+function ProofBox() {
   return (
     <div className="rounded-2xl border border-border bg-sand-2 p-7">
       <h3 className="mb-2.5 font-serif text-[19px] font-semibold text-ink">The straight talk on proof</h3>
       <p className="m-0 text-[15px] leading-relaxed text-slate">
         A &ldquo;we cut refunds by X percent&rdquo; case study needs a full presale cycle, 60 to 120 days, so it
-        doesn&rsquo;t exist yet and we won&rsquo;t fake one. What a pilot shows you first are the honest leading
+        doesn&rsquo;t exist yet and we won&rsquo;t fake one. What a pilot shows you first are the leading
         indicators: faster replies, fewer repeat tickets. The refund numbers come after a first cohort finishes its wait.
         No invented metrics, no testimonials, no logos.
       </p>
@@ -83,33 +83,33 @@ export default function PartnerDemoPage() {
             low-risk. No software to install, no bot to bet on. I run your presale support by hand, inside your existing
             inbox. Three steps. One: you give me read access and your real production schedule, and I map what a buyer
             should hear at each stage. No generic templates. Two: I draft every presale reply in your brand voice,
-            timeline-accurate, and you approve it before it goes out. Nothing autonomous. Replies stay inside honest
+            timeline-accurate, and you approve it before it goes out. Nothing autonomous. Replies stay inside
             confidence bands like &ldquo;ships in weeks 9 to 11,&rdquo; never invented hard dates. I&rsquo;ve watched one
             bad timeline promise turn a backer into a chargeback. That&rsquo;s designed out. Three: I baseline your
             first-response time and your &ldquo;where&rsquo;s my order&rdquo; volume before I touch anything, then show
             you the before and after.
           </p>
           <p>
-            <strong>5. Honest proof:</strong> Now the proof, straight. A &ldquo;we cut refunds by X percent&rdquo; case
+            <strong>5. The proof:</strong> Now the proof, straight. A &ldquo;we cut refunds by X percent&rdquo; case
             study needs a full presale cycle, 60 to 120 days, so it doesn&rsquo;t exist yet and I won&rsquo;t fake one.
-            What a pilot shows you first are the honest leading indicators: faster replies, fewer repeat tickets. The
+            What a pilot shows you first are the leading indicators: faster replies, fewer repeat tickets. The
             refund numbers come after a first cohort finishes its wait. That&rsquo;s exactly why the pilot is free and run
             by hand: I&rsquo;d rather build the proof on your real inbox than claim it.
           </p>
           <p>
             <strong>6. The ask + founding terms:</strong> So the ask is simple. A free concierge pilot for one cycle. No
             software fee, no setup fee, no card. You approve every reply, you keep the entire reassurance library we
-            build, and you lock the lowest price I&rsquo;ll ever offer if you continue. After the pilot, the founding
-            intro is a hundred-ninety-nine to two-ninety-nine a month, and the productized version runs two-ninety-nine to
-            four-ninety-nine, with no performance fee until a real case study exists. In exchange, I learn from your real
-            inbox, and only if you&rsquo;re genuinely happy, an honest testimonial. You&rsquo;re a strong fit, with real
+            build, and you lock the lowest price I&rsquo;ll ever offer if you continue. After the pilot, plans run $299
+            to $749 a month, sized by seats and the presale orders in your wait window, and every plan opens with a
+            14-day free trial &mdash; no card required. In exchange, I learn from your real
+            inbox, and only if you&rsquo;re genuinely happy, a testimonial. You&rsquo;re a strong fit, with real
             buyers in the wait window right now. If you want in, I can send the one-page pilot agreement today and capture
             your baseline this week. Want me to send it?
           </p>
         </div>
       </TranscriptToggle>
 
-      <HonestProofBox />
+      <ProofBox />
 
       <EmailCapture />
 

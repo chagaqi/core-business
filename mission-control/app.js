@@ -12,7 +12,6 @@
   var META = MC.meta || {};
   var VENTURES = MC.ventures || {};
   var V1 = VENTURES.v1 || {};
-  var V2 = VENTURES.v2 || {};
   var CAD = MC.cadence || {};
   var KPIS = arr(MC.kpis);
   var FRAMEWORKS = arr(MC.frameworks);
@@ -794,9 +793,7 @@
     }
     html += '<div class="hero-split">' +
               pill("V1 " + pctOnly(phase.v1Share || ""), "accent-v1") +
-              pill("V2 " + pctOnly(phase.v2Share || ""), "accent-v2") +
             "</div>";
-    if (phase.v2Mode) html += '<div class="muted hero-mode">' + escapeHtml(phase.v2Mode) + "</div>";
     html += "</div>"; // hero-left
 
     html += '<div class="hero-right">';
@@ -857,7 +854,7 @@
   }
 
   /* ============================================================= *
-   *  6. VENTURE VIEW (v1 / v2)                                   *
+   *  6. VENTURE VIEW (v1)                                        *
    * ============================================================= */
   function ventureStageProgress(v) {
     var stages = arr(v.stages);
@@ -1037,7 +1034,7 @@
         (gate.modeA ? '<div class="gate-row"><b>Mode A:</b> <span class="muted">' + escapeHtml(gate.modeA) + "</span></div>" : "") +
         (gate.modeB ? '<div class="gate-row"><b>Mode B:</b> <span class="muted">' + escapeHtml(gate.modeB) + "</span></div>" : "") +
         (gate.trigger ? '<div class="gate-row gate-trigger"><b>Trigger:</b> <span class="muted">' + escapeHtml(gate.trigger) + "</span></div>" : "");
-      html += card("The gate (V1↔V2 capacity split)", gateBody, { accent: accent, open: false });
+      html += card("The gate (capacity guard)", gateBody, { accent: accent, open: false });
     }
 
     /* offer ladder */
@@ -1073,8 +1070,7 @@
           '<div class="phase-name">' + (current ? badge("NOW", "badge-now") + " " : "") + escapeHtml(p.name) + "</div>" +
           '<div class="muted phase-window">' + escapeHtml(p.window) + "</div>" +
           '<div class="phase-trigger"><b>Trigger:</b> <span class="muted">' + escapeHtml(p.trigger) + "</span></div>" +
-          '<div class="phase-split">' + pill("V1 " + pctOnly(p.v1Share || ""), "accent-v1") + pill("V2 " + pctOnly(p.v2Share || ""), "accent-v2") + "</div>" +
-          (p.v2Mode ? '<div class="muted phase-mode">' + escapeHtml(p.v2Mode) + "</div>" : "") +
+          '<div class="phase-split">' + pill("V1 " + pctOnly(p.v1Share || ""), "accent-v1") + "</div>" +
         "</div>"
       );
     }).join("");
@@ -1106,7 +1102,7 @@
     var dayISO = todayISO();
     var items = [];
     arr(CAD.weekly).forEach(function (w, i) {
-      [["v1", "accent-v1"], ["v2", "accent-v2"], ["shared", "accent-both"]].forEach(function (pair) {
+      [["v1", "accent-v1"], ["shared", "accent-both"]].forEach(function (pair) {
         var key = pair[0], accent = pair[1];
         var val = str(w[key]);
         if (!val || val === "—") {
@@ -1146,8 +1142,6 @@
         '<div class="timeline-row' + (isNow ? " now" : "") + '">' +
           '<div class="tl-day">' + escapeHtml(t.day) + "<small>" + escapeHtml(t.date) + "</small></div>" +
           '<div class="tl-v1 ' + engineClass("V1") + '"><b>V1:</b> ' + escapeHtml(t.v1) + "</div>" +
-          '<div class="tl-v2 ' + engineClass("V2") + '"><b>V2:</b> ' + escapeHtml(t.v2) + "</div>" +
-          '<div class="tl-split">' + pill(str(t.split), "accent-both") + "</div>" +
         "</div>"
       );
     }).join("");
@@ -1303,10 +1297,9 @@
     var phase = arr(CAD.phases)[pIdx] || {};
     var remaining = Math.max(0, TOTAL_DAYS - dayN);
     var v1 = pctOnly(phase.v1Share || "");
-    var v2 = pctOnly(phase.v2Share || "");
     strip.textContent =
       "Day " + dayN + " · " + (phase.name || "Pre-launch") +
-      " · V1 " + v1 + "% / V2 " + v2 + "% · " +
+      " · V1 " + v1 + "% · " +
       remaining + " days to Sep 15";
     strip.setAttribute("title", "Window " + DAY0 + " → " + DAY90);
   }
@@ -1328,7 +1321,7 @@
   /* ============================================================= *
    *  11. NAV                                                     *
    * ============================================================= */
-  var VIEWS = ["sprint", "deliverables", "mission", "v1", "v2", "cadence", "kpis", "frameworks"];
+  var VIEWS = ["sprint", "deliverables", "mission", "v1", "cadence", "kpis", "frameworks"];
 
   function showView(view) {
     if (VIEWS.indexOf(view) === -1) view = "mission";
@@ -1478,7 +1471,6 @@
         // refresh venture progress bar (re-render that venture)
         var vid = sKey.split(":")[1];
         if (vid === "v1") renderVenture("view-v1", V1);
-        else if (vid === "v2") renderVenture("view-v2", V2);
         return;
       }
     });
@@ -1707,7 +1699,6 @@
     safe(renderDeliverables);
     safe(renderMission);
     safe(function () { renderVenture("view-v1", V1); });
-    safe(function () { renderVenture("view-v2", V2); });
     safe(renderCadence);
     safe(renderKpis);
     safe(renderFrameworks);

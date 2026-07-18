@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
-import { getPublicStatus } from "@/lib/status";
+import { headers } from "next/headers";
+import { getPublicStatus, viewMetaFromHeaders } from "@/lib/status";
 import { ConfidenceBand } from "@/components/status/ConfidenceBand";
+import { WaitProgress } from "@/components/status/WaitProgress";
 import { OrderTimeline } from "@/components/status/OrderTimeline";
+import { WorkshopFeed } from "@/components/status/WorkshopFeed";
 import { AskBox } from "@/components/status/AskBox";
 import { WidgetFrame } from "@/components/status/WidgetFrame";
+import { ContactLink } from "./ContactLink";
 
 // Generic, non-indexed — this lives inside a merchant's <iframe>.
 export const metadata: Metadata = {
@@ -18,7 +22,7 @@ export const metadata: Metadata = {
  * iframe can size itself. Renders ONLY PublicStatus fields.
  */
 export default async function WidgetPage({ params }: { params: { token: string } }) {
-  const status = await getPublicStatus(params.token);
+  const status = await getPublicStatus(params.token, viewMetaFromHeaders(headers()));
 
   if (!status) {
     return (
@@ -29,6 +33,7 @@ export default async function WidgetPage({ params }: { params: { token: string }
             <p className="mt-1 text-[13px] leading-relaxed text-ink-mute">
               Check the link in your confirmation email, or reach out to the store.
             </p>
+            <ContactLink />
           </div>
         </div>
       </WidgetFrame>
@@ -41,10 +46,11 @@ export default async function WidgetPage({ params }: { params: { token: string }
     <WidgetFrame>
       <div className="bg-sand p-4">
         <div className="flex flex-col gap-4">
-          <div>
-            <p className="mb-2 text-[13px] text-ink-mute">
+          <div className="flex flex-col gap-3">
+            <p className="text-[13px] text-ink-mute">
               Hi {status.firstName} — here&rsquo;s where your {status.merchant.name} order is.
             </p>
+            <WaitProgress timeline={status.timeline} accent={accent} compact />
             <ConfidenceBand timeline={status.timeline} accent={accent} compact />
           </div>
 
@@ -52,7 +58,18 @@ export default async function WidgetPage({ params }: { params: { token: string }
             <OrderTimeline timeline={status.timeline} accent={accent} compact />
           </div>
 
+          <WorkshopFeed updates={status.updates} accent={accent} compact />
+
           <AskBox token={params.token} accent={accent} compact />
+
+          {status.merchant.isDemo && (
+            <p
+              className="mx-auto rounded-full border border-border bg-sand px-2.5 py-0.5 text-center text-[10px] font-semibold uppercase tracking-wider text-ink-mute"
+              aria-label="Sample data — demo environment"
+            >
+              Sample data
+            </p>
+          )}
 
           <p className="text-center text-[11px] text-ink-mute">
             Powered by{" "}

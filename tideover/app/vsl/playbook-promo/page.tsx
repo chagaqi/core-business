@@ -7,7 +7,7 @@ import { CalButton } from "@/components/booking/CalButton";
 export const metadata: Metadata = {
   title: "Presale Anxiety Playbook promo — Tideover",
   description:
-    "An under-90-second promo for the free Presale Anxiety Playbook: what to say to a presale buyer at day 7, 30, 60, and 89, and how to keep ship windows honest.",
+    "An under-90-second promo for the free Presale Anxiety Playbook: what to say to a presale buyer at day 7, 30, 60, and 89, and how to keep ship windows realistic.",
 };
 
 const TITLE = "“Presale Anxiety Playbook” promo (under 90s)";
@@ -46,7 +46,7 @@ export default function PlaybookPromoPage() {
               before I dispute&rdquo; message, the hardest one to get right.
             </li>
             <li>
-              The confidence-band trick for honest ship windows without promising a hard date you can&rsquo;t keep.
+              The confidence-band trick for realistic ship windows without promising a hard date you can&rsquo;t keep.
             </li>
             <li>A simple way to tell preorder tickets apart from in-stock ones so your support stops guessing.</li>
           </ul>

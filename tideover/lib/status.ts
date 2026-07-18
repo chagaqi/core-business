@@ -12,16 +12,47 @@ import type { CustomerGroup, DayStageKey, OrderTimeline } from "@/lib/types";
  */
 export interface PublicStatus {
   firstName: string;
-  merchant: { name: string; logoText: string; colors: { primary: string; bg: string; ink: string }; signoff: string };
+  merchant: { name: string; logoText: string; colors: { primary: string; bg: string; ink: string }; signoff: string; isDemo: boolean };
   orderRef: string;
   group: CustomerGroup;
   region: string;
   timeline: OrderTimeline;
   stageKey: DayStageKey;
   stageBlurb: string;
+  /**
+   * The merchant's most recent public workshop updates (ADR-0009), hidden ones
+   * excluded, newest-first. Merchant-level, so one post reaches every waiting
+   * backer. This is the merchant's OWN public message — the only new field
+   * crossing the PII boundary, and it carries no customer data (never id,
+   * merchantId, or the hidden flag — only what the customer should see).
+   */
+  updates: Array<{ text: string; imageUrl?: string; createdAt: string }>;
 }
 
-export async function getPublicStatus(token: string): Promise<PublicStatus | null> {
+/** Request context for the view log — captured at the call site from headers. */
+export interface ViewMeta {
+  ipPrefix?: string;
+  userAgent?: string;
+}
+
+/**
+ * Derive view-log metadata from request headers, PII-minimized: only the first
+ * two octets of the client IP (never the full address) and a truncated UA.
+ * Accepts anything header-like (Request.headers or next/headers' headers()).
+ */
+export function viewMetaFromHeaders(h: { get(name: string): string | null }): ViewMeta {
+  const firstIp = (h.get("x-forwarded-for") ?? "").split(",")[0]?.trim() ?? "";
+  const octets = firstIp.match(/^(\d{1,3})\.(\d{1,3})\./);
+  const ipPrefix = octets ? `${octets[1]}.${octets[2]}` : undefined;
+  const ua = h.get("user-agent");
+  const userAgent = ua ? ua.slice(0, 200) : undefined;
+  return { ipPrefix, userAgent };
+}
+
+export async function getPublicStatus(
+  token: string,
+  viewMeta?: ViewMeta,
+): Promise<PublicStatus | null> {
   const key = verifyStatusToken(token);
   if (!key) return null;
 
@@ -34,8 +65,33 @@ export async function getPublicStatus(token: string): Promise<PublicStatus | nul
   ]);
   if (!merchant || !customer) return null;
 
+  // Fire-and-forget view log (ADR-0005). Only reached AFTER the token verifies
+  // and the order/merchant/customer resolve — never for an invalid/expired
+  // token. A logging failure must never break or alter the customer render, so
+  // the promise is voided and any rejection swallowed.
+  if (viewMeta) {
+    const view: Parameters<typeof repos.statusViews.record>[0] = {
+      orderId: order.id,
+      merchantId: order.merchantId,
+      token: order.statusToken,
+      viewedAt: new Date().toISOString(),
+    };
+    if (viewMeta.ipPrefix) view.ipPrefix = viewMeta.ipPrefix;
+    if (viewMeta.userAgent) view.userAgent = viewMeta.userAgent;
+    void repos.statusViews.record(view).catch(() => {});
+  }
+
   const timeline = computeTimeline(order, merchant);
   const stage = dayStageFor(timeline.daysInWait);
+
+  // Merchant-level workshop feed (ADR-0009): the 3 most recent public updates,
+  // curated down to only the customer-facing fields (never id/merchantId/hidden).
+  const recent = await repos.merchantUpdates.listRecentPublic(order.merchantId, 3);
+  const updates = recent.map((u) => ({
+    text: u.text,
+    createdAt: u.createdAt,
+    ...(u.imageUrl ? { imageUrl: u.imageUrl } : {}),
+  }));
 
   return {
     firstName: customer.firstName,
@@ -44,6 +100,10 @@ export async function getPublicStatus(token: string): Promise<PublicStatus | nul
       logoText: merchant.brand.logoText,
       colors: merchant.brand.colors,
       signoff: merchant.brand.signoff,
+      // Not PII: a merchant-level flag so the customer status page can mark a
+      // SEEDED DEMO merchant's page as sample data (per-merchant, correct on any
+      // deployment). Never leaks customer data.
+      isDemo: merchant.isDemo,
     },
     orderRef: order.id,
     group: order.group,
@@ -51,5 +111,6 @@ export async function getPublicStatus(token: string): Promise<PublicStatus | nul
     timeline,
     stageKey: stage.key,
     stageBlurb: stageBlurb(merchant, order.productionStage),
+    updates,
   };
 }

@@ -1,20 +1,36 @@
 import { cookies } from "next/headers";
+import { resolveModeFromRequest } from "@/lib/request-mode";
 
 /**
- * DEMO auth only. The product surfaces (/app/*) are gated by a single demo
- * operator cookie set on first visit — enough to demonstrate the product without
- * a login wall. PRODUCTION must replace this with real auth (NextAuth/Clerk) +
- * per-merchant RBAC (an operator may only see merchants they're assigned to).
- * Documented as a flagged follow-up in TIDEOVER-PLAN.md.
+ * Mode + operator identity (ADR-0004, ADR-0017). Mode is now derived from the
+ * request host (the demo surface vs the real app subdomain); the demo surface
+ * keeps every surface open on seeded data, while the real app requires the
+ * signed session cookie (lib/session.ts) minted by /login. DEMO_MODE=false still
+ * forces the real (gated) mode for backcompat. Single shared password —
+ * per-operator identity/RBAC is a documented seam, post-revenue.
  */
-const COOKIE = "tideover_demo_operator";
+const DEMO_OPERATOR_COOKIE = "tideover_demo_operator";
 
-export function getDemoOperator(): string {
-  const c = cookies().get(COOKIE);
-  return c?.value || process.env.DEMO_OPERATOR_NAME || "Chaga";
+/**
+ * Display name for the signed-in operator. Resolution order:
+ *   1. an explicit `tideover_demo_operator` cookie (used to relabel the demo),
+ *   2. an env override (`APP_OPERATOR_NAME`, or the legacy `DEMO_OPERATOR_NAME`),
+ *   3. the demo default "Dylan" — ONLY on the demo surface,
+ *   4. the caller-supplied fallback (the merchant's own brand name) or a generic
+ *      "Operator" in real mode.
+ * The founder's name must never surface to a real paying merchant, so "Dylan" is
+ * gated behind demo mode; a real pilot shows its own brand name (threaded in by
+ * the app layout) or a neutral label.
+ */
+export function getDemoOperator(fallbackName?: string): string {
+  const c = cookies().get(DEMO_OPERATOR_COOKIE);
+  if (c?.value) return c.value;
+  const configured = process.env.APP_OPERATOR_NAME || process.env.DEMO_OPERATOR_NAME;
+  if (configured) return configured;
+  if (isDemoMode()) return "Dylan";
+  return fallbackName?.trim() || "Operator";
 }
 
 export function isDemoMode(): boolean {
-  // Always true in this seeded build; kept as a seam so production can flip it.
-  return true;
+  return resolveModeFromRequest() === "demo";
 }

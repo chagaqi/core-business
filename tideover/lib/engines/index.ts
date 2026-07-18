@@ -3,16 +3,23 @@ import { computeTimeline } from "@/lib/time";
 import { draftReassurance, type ReassuranceResult } from "@/lib/engines/reassurance";
 import {
   DEFAULT_PROFILE,
+  isEscalatedSentiment,
   scoreRefundRisk,
   stageCeilDayFor,
   type RiskProfile,
   type RiskResult,
 } from "@/lib/engines/refund-risk";
-import { recommendGift, type GiftResult } from "@/lib/engines/gift";
+import {
+  giftAvailability,
+  recommendGift,
+  type GiftAvailabilityEntry,
+  type GiftResult,
+} from "@/lib/engines/gift";
 
 export * from "@/lib/engines/reassurance";
 export * from "@/lib/engines/refund-risk";
 export * from "@/lib/engines/gift";
+export * from "@/lib/engines/risk-bands";
 export * from "@/lib/engines/social-signal";
 
 /**
@@ -24,6 +31,14 @@ export interface TicketIntelligence {
   risk: RiskResult;
   reassurance: ReassuranceResult;
   gift: GiftResult;
+  /**
+   * UX-86: per-gift availability across the WHOLE catalog (band-only unlock +
+   * escalation), so the cockpit "Gifts available" panel can show the ladder — the
+   * best-unlocked recommendation (`gift`) plus every other gift, unlocked or
+   * locked-with-reason. Additive to the engine output: `risk`/`reassurance`/`gift`
+   * are unchanged, so the goldens + invariant sweep stay byte-stable.
+   */
+  availability: GiftAvailabilityEntry[];
 }
 
 export interface IntelInput {
@@ -65,14 +80,25 @@ export function computeTicketIntelligence(input: IntelInput): TicketIntelligence
     now,
   });
 
+  const escalated = isEscalatedSentiment(ticket.sentiment);
   const gift = recommendGift({
-    customer,
-    order,
-    daysInWait: timeline.daysInWait,
     riskScore: risk.riskScore,
-    highTierCents: merchant.ltvTiers.high,
+    escalated,
     catalog,
+    daysInWait: timeline.daysInWait,
   });
 
-  return { risk, reassurance, gift };
+  // Full-catalog availability for the ticket gift panel — same band-only unlock
+  // model the /api/gift-send server re-derives, so what the panel offers as
+  // unlocked is exactly what the server will authorize.
+  const availability = giftAvailability({
+    catalog,
+    riskScore: risk.riskScore,
+    escalated,
+    ltvCents: customer.ltvCents,
+    daysInWait: timeline.daysInWait,
+    orderValueCents: order.orderValueCents,
+  });
+
+  return { risk, reassurance, gift, availability };
 }

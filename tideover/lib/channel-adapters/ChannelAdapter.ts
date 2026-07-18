@@ -35,12 +35,20 @@ export interface ChannelAdapter {
   readonly name: Channel;
   /** read tickets (baseline snapshot + live queue) */
   listTickets(merchantId: string, range?: DateRange): Promise<Ticket[]>;
-  /** send an approved reply out through the channel */
-  sendReply(ticketId: string, text: string): Promise<{ externalId: string; sentAt: string }>;
+  /**
+   * Send an approved reply out through the channel. `externalId` is the vendor's
+   * id for the delivered message, or null when the strategy assigns none (the
+   * ManualAdapter — the operator pastes the reply into their own helpdesk).
+   */
+  sendReply(ticketId: string, text: string): Promise<{ externalId: string | null; sentAt: string }>;
   /** normalize an inbound webhook payload to our shape */
   normalizeInbound(raw: unknown): NormalizedTicket;
-  /** verify a webhook signature (HMAC per vendor) */
-  verifyWebhook(req: Request): Promise<boolean>;
+  /**
+   * Verify a webhook signature (HMAC per vendor). `rawBody` MUST be the exact
+   * bytes the vendor sent — re-serialized JSON breaks the HMAC — so the route
+   * reads the body once as text and passes it here before any parsing.
+   */
+  verifyWebhook(rawBody: string, headers: Headers): Promise<boolean>;
   /** OAuth begin (optional; stubbed for third parties) */
   authStartUrl?(merchantId: string): string;
   /** OAuth code exchange (optional; stubbed for third parties) */

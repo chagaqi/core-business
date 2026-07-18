@@ -1,10 +1,16 @@
 import { clsx } from "clsx";
+import { relativeLuminance } from "@/lib/color";
 
 /**
- * The timeline dot for a single production stage. Three states:
+ * The timeline dot for a single production stage. Four states:
  *  - done: filled teal with a check
  *  - active: terracotta with a soft pulse (current stage)
  *  - upcoming: hollow, muted
+ *  - unknown: hollow, muted — the order is past every band the merchant authored,
+ *             so their plan cannot say whether this stage is finished. Renders
+ *             exactly like "upcoming" (claims nothing) rather than marking every
+ *             stage done through Dispatch, which would tell a customer whose
+ *             order does not exist yet that it has shipped.
  * `accent` lets the merchant's primary color tint the active state so the page
  * still feels like the merchant's own.
  */
@@ -12,15 +18,21 @@ export function StageDot({
   state,
   accent,
 }: {
-  state: "done" | "active" | "upcoming";
+  state: "done" | "active" | "upcoming" | "unknown";
   accent?: string;
 }) {
   if (state === "done") {
+    // UX-37: the check glyph sits directly on the raw accent fill. Hardcoding
+    // a light glyph (text-ink-inverse) goes illegible on a pale merchant color
+    // (pastel/gold/mint) — pick ink vs inverse-ink by the accent's own
+    // luminance instead. The default teal fill (no accent) is dark enough that
+    // inverse-ink stays correct.
+    const glyphColor = accent && relativeLuminance(accent) > 0.5 ? "var(--ink)" : "var(--ink-inverse)";
     return (
       <span
         aria-hidden
-        className="relative z-10 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-teal text-[12px] font-semibold text-ink-inverse"
-        style={accent ? { background: accent } : undefined}
+        className="relative z-10 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-teal text-[12px] font-semibold"
+        style={{ background: accent, color: glyphColor }}
       >
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none">
           <path d="M5 12.5l4 4L19 7" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />

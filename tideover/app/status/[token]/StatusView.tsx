@@ -1,8 +1,13 @@
 import { Tag } from "@/components/ui/Badge";
+import { DemoBadge } from "@/components/ui/DemoBadge";
 import { ConfidenceBand } from "@/components/status/ConfidenceBand";
+import { WaitProgress } from "@/components/status/WaitProgress";
 import { OrderTimeline } from "@/components/status/OrderTimeline";
 import { ReassuranceCard } from "@/components/status/ReassuranceCard";
+import { CsatTap } from "@/components/status/CsatTap";
+import { WorkshopFeed } from "@/components/status/WorkshopFeed";
 import { AskBox } from "@/components/status/AskBox";
+import { readableAccent, relativeLuminance } from "@/lib/color";
 import type { PublicStatus } from "@/lib/status";
 
 const GROUP_LABEL: Record<PublicStatus["group"], string> = {
@@ -18,16 +23,29 @@ const GROUP_LABEL: Record<PublicStatus["group"], string> = {
  * as the merchant's own page, inside Tideover's calm layout.
  */
 export function StatusView({ status, token }: { status: PublicStatus; token: string }) {
+  // Raw brand color for large fills/tints; a contrast-safe variant for any accent
+  // used as TEXT or a thin edge on the sand/paper background (see lib/color).
   const accent = status.merchant.colors.primary;
+  const textAccent = readableAccent(accent);
+  // UX-37: the header avatar glyph sits directly on the raw brand fill (not the
+  // sand/paper background readableAccent guards), so a hardcoded light glyph
+  // goes illegible on a pale brand color (pastel/gold/mint). Pick ink vs
+  // inverse-ink by the accent's own luminance instead of assuming it's dark.
+  const avatarGlyph = relativeLuminance(accent) > 0.5 ? "var(--ink)" : "var(--ink-inverse)";
 
   return (
     <div className="min-h-screen bg-sand">
+      {/* Per-merchant SAMPLE DATA marker: shown only for a seeded demo merchant,
+          so a real merchant's customer page is never marked. Fixed corner pill,
+          pointer-events:none — tasteful but present on this customer surface. */}
+      {status.merchant.isDemo && <DemoBadge />}
+
       {/* merchant-branded header */}
       <header className="border-b border-border bg-paper">
         <div className="wrap flex items-center gap-3 py-5">
           <span
-            className="flex h-9 w-9 items-center justify-center rounded-lg text-[15px] font-bold text-white"
-            style={{ background: accent }}
+            className="flex h-9 w-9 items-center justify-center rounded-lg text-[15px] font-bold"
+            style={{ background: accent, color: avatarGlyph }}
             aria-hidden
           >
             {status.merchant.logoText.slice(0, 1).toUpperCase()}
@@ -43,17 +61,21 @@ export function StatusView({ status, token }: { status: PublicStatus; token: str
             Hi {status.firstName} — here&rsquo;s exactly where your {status.merchant.name} order is
           </h1>
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <Tag>Order {status.orderRef}</Tag>
+            {/* UX-26: status.orderRef is the internal order id (order.id) — an
+                internal nanoid, never a customer-facing reference. Showing it
+                here read like a data leak, so it's dropped rather than shown. */}
             <Tag>{GROUP_LABEL[status.group]}</Tag>
             <Tag>{status.region}</Tag>
           </div>
         </div>
 
         <div className="flex flex-col gap-7">
+          <WaitProgress timeline={status.timeline} accent={accent} />
+
           <ConfidenceBand timeline={status.timeline} accent={accent} />
 
           <section className="panel p-6 md:p-7">
-            <p className="kicker mb-5" style={{ color: accent }}>
+            <p className="kicker mb-5" style={{ color: textAccent }}>
               Production timeline
             </p>
             <OrderTimeline timeline={status.timeline} accent={accent} />
@@ -68,13 +90,22 @@ export function StatusView({ status, token }: { status: PublicStatus; token: str
             accent={accent}
           />
 
+          <CsatTap token={token} accent={accent} />
+
+          <WorkshopFeed updates={status.updates} accent={accent} />
+
           <AskBox token={token} accent={accent} />
         </div>
 
         {/* subtle powered-by */}
         <footer className="mt-12 text-center text-[12px] text-ink-mute">
           Powered by{" "}
-          <a href="/" className="font-semibold text-ink-mute underline decoration-border underline-offset-2">
+          <a
+            href="/"
+            target="_blank"
+            rel="noreferrer"
+            className="font-semibold text-ink-mute underline decoration-border underline-offset-2"
+          >
             Tideover
           </a>
         </footer>

@@ -7,7 +7,7 @@ import { assertNoHardDate } from "@/lib/proof";
  *
  * Maps an order's days-in-wait to a day-stage (7/30/60/89), selects the
  * merchant's playbook template (stage-specific override or base), and merges in
- * the order's honest confidence band + production-stage blurb in the merchant's
+ * the order's confidence band + production-stage blurb in the merchant's
  * voice. Output is a draft only — never auto-sent. The band is guaranteed to be
  * a relative window (assertNoHardDate), never a calendar date.
  */
@@ -35,6 +35,13 @@ export interface ReassuranceResult {
   stageKey: DayStageKey;
   overdue: boolean;
   managerNote: string | null;
+  /**
+   * Outcome-ledger attribution key (ADR-0007). Pure metadata identifying which
+   * playbook template produced this draft: "<stageKey>:<productionStage|base>".
+   * "base" when the stage has no byStage override for the order's production
+   * stage. Never affects draftText/band/priority/escalation.
+   */
+  variantKey: string;
 }
 
 function mergeFields(
@@ -51,9 +58,26 @@ function mergeFields(
 
 function stripBanned(text: string, banned: string[]): string {
   let out = text;
+  let stripped = false;
   for (const word of banned) {
     const re = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "gi");
-    out = out.replace(re, "").replace(/\s{2,}/g, " ");
+    const next = out.replace(re, "");
+    if (next !== out) {
+      stripped = true;
+      out = next.replace(/\s{2,}/g, " ");
+    }
+  }
+  // A banned word deleted from the MIDDLE of authored prose leaves a scar: the overdue
+  // eta_band "as soon as it's ready" collapses to "as as it's ready" when a merchant
+  // bans "soon" — the exact garble that reached a real customer in the ten-merchant run
+  // (docs/sim-2026-07-12, backlog D1). The sprint's word-boundary lint only covered the
+  // LLM path; the deterministic engine is the default drafter AND the floor under every
+  // LLM draft, so this shipped unchecked. Collapse the strip-induced doubled word and any
+  // space stranded before punctuation. GATED on an actual strip, so clean templates are
+  // never rewritten and no golden moves (no seed merchant bans a word its templates use).
+  if (stripped) {
+    out = out.replace(/\b(\w+)(\s+\1\b)+/gi, "$1");
+    out = out.replace(/\s+([,.!?;:])/g, "$1");
   }
   return out.trim();
 }
@@ -67,10 +91,16 @@ export function draftReassurance(input: ReassuranceInput): ReassuranceResult {
   const stage = merchant.playbook[stageKey];
   const template = stage.byStage[order.productionStage] ?? stage.base;
 
+  // Outcome-ledger variant identity (ADR-0007): the selection identity above IS
+  // the variant. Pure metadata — computed from the same lookup, changes nothing.
+  const variantKey = `${stageKey}:${
+    stage.byStage[order.productionStage] !== undefined ? order.productionStage : "base"
+  }`;
+
   // next reassurance window from the merchant's SLA (e.g. "the afternoon update")
   const nextWindow = "the next update window";
 
-  // For overdue orders the confidence band is a full honest sentence, which reads
+  // For overdue orders the confidence band is a full sentence, which reads
   // awkwardly when merged mid-template — substitute a grammatically-neutral phrase.
   const etaBand = timeline.overdue
     ? "as soon as it's ready, and I'll update you the moment it moves"
@@ -100,5 +130,6 @@ export function draftReassurance(input: ReassuranceInput): ReassuranceResult {
     managerNote: escalated
       ? "High-risk customer — prioritize human approval this window before it routes to a dispute."
       : null,
+    variantKey,
   };
 }

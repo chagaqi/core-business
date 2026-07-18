@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { CalButton } from "@/components/booking/CalButton";
@@ -6,7 +7,12 @@ import { CalButton } from "@/components/booking/CalButton";
 /**
  * Shared chrome for the /vsl pages: a minimal header (Logo + back-to-home link),
  * a centered .wrap content column, and a footer CTA to /book. Renders children.
+ *
+ * RC2: these pages are UNLINKED (footer Resources column removed) and NOINDEXED
+ * until real walkthrough videos replace the placeholder players — the
+ * transcripts double as internal outreach scripts and must not rank.
  */
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 export default function VslLayout({ children }: { children: ReactNode }) {
   return (
     <>

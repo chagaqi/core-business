@@ -1,0 +1,37 @@
+{
+ "verdicts": [
+  {
+   "claim": "Typefully bundles X + LinkedIn (+Threads/Bluesky) into one billable 'Social Set' for a single founder; Free = 1 set/15 posts-month, Pro ≈ $8/mo (annual) or $15-19/mo (monthly) per set for unlimited posts.",
+   "verdict": "REFUTED",
+   "evidence": "support.typefully.com confirms Social Sets bundle X, LinkedIn, Threads, Bluesky, and Mastodon per person/brand, and Free = 1 social set / 15 posts-month (confirmed via typefully.com/pricing render + 3 independent secondary sources: checkthat.ai, aiproductivity.ai, smartchunks.com). But the Pro monthly (non-annual) price is $10/mo, not '$15-19/mo' — that figure appears to be stale/outdated data from an older pricing structure or a conflation with a different tool. Also Pro is capped at 1,000 posts/month (Business at 1,500/month) per typefully.com/pricing itself — not 'unlimited' as claimed. Annual price of ~$8/mo per set is correct.",
+   "corrected": "Bundling and Free-tier numbers are accurate. Pro is $10/mo per social set billed monthly, or $8/mo per social set billed annually (~20% off) — not $15-19/mo monthly. Pro includes 1,000 posts/month (Business 1,500/month), not unlimited posts."
+  },
+  {
+   "claim": "Resend Broadcasts (marketing/newsletter sending) is a separate billing track from Resend's transactional plans, free up to 1,000 contacts with unlimited broadcast sends.",
+   "verdict": "CONFIRMED",
+   "evidence": "Direct fetch of resend.com/pricing: marketing/Broadcasts is priced by contact count (Free = 1,000 contacts) separately from transactional email (priced by volume, Free = 3,000 emails/mo, 100/day). Page states 'Marketing plans are not limited by the number of emails sent — only by the number of contacts,' i.e. unlimited broadcast sends to the free 1,000-contact cap. Corroborated by independent secondary sources (coldletter.com, nuntly.com, thatmarketingbuddy.com, tiergauge.com) all describing the same free 1,000-contacts/unlimited-sends structure, with paid tiers starting at $40/mo for 5,000 contacts."
+  },
+  {
+   "claim": "Reddit's formal 90/10 self-promotion rule was retired in 2026 in favor of moderators judging accounts on overall genuine-participant behavior rather than a fixed value/promo ratio.",
+   "verdict": "REFUTED",
+   "evidence": "The cited source itself (gleam.io/faq/.../reddit-90-10-rule-explained) describes the 90/10 rule as an 'unspoken rule' / community norm — never characterizing it as a formal policy in the first place — and contains no statement that it was retired in 2026. A follow-up search for any 2026 retirement announcement found none; multiple 2026-dated Reddit self-promotion guides (redship.io, getupvotes.com) still present the 90/10 ratio as current, active guidance. No official Reddit source (reddit.com/reddithelp.com) surfaced confirming or even discussing a formal rule or its retirement.",
+   "corrected": "No evidence the 90/10 guideline was ever a formal Reddit rule, nor that it was retired in 2026; 2026-dated third-party guides still cite it as live practical guidance."
+  },
+  {
+   "claim": "A named, cross-posted example of a Reddit value post that worked with zero direct promotion: 'Analyzed 100 SaaS pricing pages—here's what converts,' posted to r/SaaS, r/Entrepreneur, and r/startups.",
+   "verdict": "REFUTED",
+   "evidence": "Fetched the cited subredditsignals.com article directly and searched it specifically for this post title and subreddit combination. The article contains no such post, title, or cross-posting example — its only concrete case studies are named 'Healthread,' 'EIT Campus,' and 'Narrative Nooks,' none matching the claimed 'Analyzed 100 SaaS pricing pages' post. The claim's example appears fabricated / not present in the cited source.",
+   "corrected": "No such post or subreddit cross-post is documented at the cited URL."
+  },
+  {
+   "claim": "Justin Welsh's documented repurposing practice: takes one pillar's derived spokes and staggers roughly six of them over six weeks (not same-day dumping), adjusting wording per platform.",
+   "verdict": "CONFIRMED",
+   "evidence": "growthinreverse.com/justin-welsh/ directly describes the hub-and-spoke model: Welsh 'creates 6 to 8 pieces of other content' derived from a pillar newsletter issue and staggers 'his content out across 4-6 weeks' rather than posting same-day, matching the claim's 'roughly six... over six weeks' characterization closely (source's actual ranges are 6-8 pieces / 4-6 weeks)."
+  },
+  {
+   "claim": "Repurpose.io and comparable 'AI repurposing' tools are video/audio distribution automation (podcast/YouTube clips to 15+ platforms) that do not generate copy — wrong tool category for text-to-text B2B repurposing.",
+   "verdict": "CONFIRMED",
+   "evidence": "bestfreeaitools.io/ai-tools/repurpose-ai-review/ explicitly states Repurpose.io 'pulls video, Reels, Shorts, Stories, and podcast content from your source platform and automatically resizes, removes watermarks, and publishes to 15+ destinations,' and explicitly frames it as 'a distribution tool, not a creation tool. It moves and resizes content you already produce' — directly matching the claim that it is video/audio distribution automation, not a text-copy generator."
+  }
+ ]
+}

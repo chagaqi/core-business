@@ -1,0 +1,34 @@
+{
+ "verdicts": [
+  {
+   "claim": "Kickstarter had 35,512 successful projects in 2024, raising $706,446,298.66 total — its biggest year to date.",
+   "verdict": "CONFIRMED",
+   "evidence": "tubefilter.com (2025/03/07 article) states verbatim: '35,512 projects' were funded, creators raised '$706,446,298.66 total,' and confirms '2024 was Kickstarter's biggest year yet.' Exact match on all three figures."
+  },
+  {
+   "claim": "Only 4.2% of successful Kickstarter projects raise over $100K (Statista distribution, lifetime/cumulative — applied here as an annual-rate proxy, flagged as an assumption).",
+   "verdict": "CONFIRMED",
+   "evidence": "searchlogistics.com states verbatim: 'just 4.2% of successful projects raise over $100k,' drawn from a breakdown of 272,205 successfully funded projects 'to date' (i.e., lifetime/cumulative, as the claim itself flags). The 4.2% figure and its cumulative nature both check out. One correction: the page's own citation for this table links to kickstarter.com/help/stats (Kickstarter's own official stats page), not Statista — I could not confirm a Statista attribution for this specific number despite Statista hosting similar Kickstarter funding-distribution pages. Minor misattribution; the number itself is accurate at the stated source."
+  },
+  {
+   "claim": "Ethan Mollick's Wharton study found over 75% of funded Kickstarter design/tech projects (n=471) deliver late; a separate, larger Kickstarter-commissioned survey of 47,188 backers across 30,323 campaigns, released the same month (Dec 2015), found ~9% of funded projects fail to deliver at all (range 5-14%). Both stats are a decade old — no larger-scale replication found since.",
+   "verdict": "CONFIRMED",
+   "evidence": "Both underlying stats check out via independent sourcing: (1) Mollick, 'The Dynamics of Crowdfunding: An Exploratory Study' (Journal of Business Venturing, 2014; SSRN abstract_id=2088298) analyzed 471 successful Kickstarter Design/Technology projects with promised delivery dates and found 'over 75%' delivered late. (2) Mollick, 'Delivery Rates on Kickstarter' (Dec 4, 2015; SSRN abstract_id=2699251 — confirmed via search snippet, direct fetch got HTTP 403) analyzed a Kickstarter-commissioned survey of 47,188 backers across successfully funded projects and found ~9% failure to deliver, range 5-14%. Caveat: the single 'stated source' URL given (abstract_id=2699251) only actually supports the SECOND (9%/backer-survey) stat — the 75%/n=471 stat comes from a different, earlier Mollick paper (abstract_id=2088298) that the prompt didn't cite. Facts are accurate; the citation conflates two distinct papers under one link. 'Decade old, no replication found' is a negative claim I could not fully verify (Kickstarter's own 'Fulfillment Report' page at kickstarter.com/fulfillment returned 403 and couldn't be checked), but no evidence of a larger-scale successor study turned up in searches."
+  },
+  {
+   "claim": "81,585 active Shopify Plus stores exist worldwide (43,764 US, 5,804 UK), per Builtwith data.",
+   "verdict": "CONFIRMED",
+   "evidence": "backtofrontshow.com states verbatim: 'According to Builtwith, there are currently 81,585 active Shopify Plus stores worldwide. Of these, 43,764 are based in the US, and 5,804 are in the UK.' Exact match, correctly attributed to Builtwith."
+  },
+  {
+   "claim": "A 534,514-store scan found only 1.18% of Shopify stores (6,293) run a detectable preorder app overall, but 2.56% of Shopify Plus stores do vs 0.17% of standard stores — and the scan covered only 5 apps, undercounting high-install apps like Amai (5,400+ stores) and STOQ (2,942 reviews).",
+   "verdict": "REFUTED",
+   "evidence": "storeinspect.com confirms the core scan numbers verbatim: '534,514 Shopify storefront snapshots... found only 6,293 stores, or 1.18%... Shopify Plus stores are about 14.9x more likely... 2.56% versus 0.17%.' But the '5 apps' and 'STOQ (2,942 reviews)' parts are false: full-text search of the entire article shows the detection table covers 9 distinct apps (Notify Me!, PreOrder Globo, Pre-Order Manager, PreProduct, Purple Dot, Preorderly, Ez Preorder, Preorder Guru, Snap Preorder Backorder), not 5. 'STOQ' and '2,942' do not appear anywhere on the page at all — STOQ is not mentioned. Amai is mentioned (rank 6, 'best legacy option') but with no store-count figure on this page; the '5,400+ stores' number does not appear in the source (it does appear via other web sources describing Amai's Shopify App Store listing, but the cited storeinspect article does not state it or frame Amai as excluded/undercounted — it's in the leaderboard). Core percentages true; the '5 apps' and STOQ details are fabricated relative to the cited source."
+  },
+  {
+   "claim": "2026 B2B cold-email benchmarks: 3.43% average reply rate industry-wide, 5-8% for well-targeted SaaS campaigns; a 'good' meeting-booked rate is 0.8-1.5% of sends; cold-outbound opportunities close at roughly 10-25%.",
+   "verdict": "REFUTED",
+   "evidence": "instantly.ai/cold-email-benchmark-report-2026 confirms only the first figure verbatim: 'The overall average reply rate is 3.43%.' A full-text search of the entire page for '5-8%', 'SaaS', 'meeting booked', '0.8', '1.5%', 'close rate', and '10-25%' returned zero matches — none of those three additional figures appear anywhere on the cited page. The page's only other benchmarks are reply-rate tiers (10.7%+ top 10%, 5.5%+ top 25%), bounce-rate/warm-up guidance, and touchpoint counts — no SaaS-specific reply rate, no meeting-booked rate, no opportunity close rate. Those three sub-claims are unsupported by the stated source."
+  }
+ ]
+}

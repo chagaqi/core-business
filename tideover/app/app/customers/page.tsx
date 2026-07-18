@@ -2,10 +2,13 @@ import Link from "next/link";
 import { getQueue } from "@/lib/service";
 import { getRepositories } from "@/lib/repositories";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
+import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { RiskBadge } from "@/components/ui/Badge";
 import type { RiskColor, Sentiment } from "@/lib/types";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Customers — Tideover" };
 
 const SENTIMENT_LABEL: Record<Sentiment, string> = {
   calm: "Calm",
@@ -24,7 +27,7 @@ export default async function CustomersPage({
   const repos = getRepositories();
   const merchants = await repos.merchants.list();
   if (merchants.length === 0) {
-    return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
+    return <NoMerchantState />;
   }
   const merchantId =
     searchParams.merchant && merchants.some((m) => m.id === searchParams.merchant)
@@ -36,10 +39,10 @@ export default async function CustomersPage({
     getQueue(merchantId),
   ]);
 
-  // highest live risk + a linkable open ticket, keyed by customer.
+  // highest live risk + a linkable open ticket + its order, keyed by customer.
   const riskByCustomer = new Map<
     string,
-    { score: number; color: RiskColor; ticketId: string }
+    { score: number; color: RiskColor; ticketId: string; orderId: string }
   >();
   for (const r of queue) {
     const prev = riskByCustomer.get(r.customer.id);
@@ -48,6 +51,7 @@ export default async function CustomersPage({
         score: r.riskScore,
         color: r.color as RiskColor,
         ticketId: r.ticket.id,
+        orderId: r.order.id,
       });
     }
   }
@@ -64,24 +68,57 @@ export default async function CustomersPage({
           <h1 className="font-serif text-[34px] leading-tight text-ink">
             {customers.length} on file
           </h1>
-          <p className="text-[13px] text-ink-mute">Sorted by live refund-risk.</p>
+          <p className="text-[13px] text-ink-mute">
+            Sorted by live refund-risk.{" "}
+            <Link
+              href={`/app/baseline?merchant=${merchantId}`}
+              className="text-ink-mute no-underline hover:text-teal"
+              title="Day-0 support baseline — this merchant's own starting numbers, captured before Tideover"
+            >
+              View day-0 baseline
+            </Link>
+          </p>
         </div>
-        <MerchantSwitcher
-          merchants={merchants.map((m) => ({ id: m.id, name: m.name }))}
-          current={merchantId}
-        />
+        <div className="flex flex-col items-end gap-2">
+          <MerchantSwitcher
+            merchants={merchants.map((m) => ({ id: m.id, name: m.name }))}
+            current={merchantId}
+          />
+          <div className="text-right">
+            <a
+              href={`/api/export?merchant=${merchantId}`}
+              download
+              className="text-[13px] font-semibold text-teal no-underline hover:underline"
+              title="Download all of this merchant's data as one open JSON file"
+            >
+              Export all data
+            </a>
+            <p className="text-[11px] text-ink-mute">No lock-in — your data, any time.</p>
+          </div>
+        </div>
       </header>
 
+      {customers.length === 0 ? (
+        <div className="proof-placeholder">
+          No customers yet — import your backer list to populate this page.
+        </div>
+      ) : (
       <section className="panel overflow-hidden">
         <table className="w-full text-left text-[14px]">
           <thead>
             <tr className="border-b border-border text-[11px] uppercase tracking-wider text-ink-mute">
               <th className="px-5 py-2.5 font-semibold">Customer</th>
               <th className="px-5 py-2.5 font-semibold">Email</th>
-              <th className="px-5 py-2.5 text-right font-semibold">LTV</th>
+              <th
+                className="px-5 py-2.5 text-right font-semibold"
+                title="Pledge value — total this backer has spent"
+              >
+                Pledge value
+              </th>
               <th className="px-5 py-2.5 text-right font-semibold">Tickets</th>
               <th className="px-5 py-2.5 font-semibold">Last sentiment</th>
               <th className="px-5 py-2.5 text-right font-semibold">Risk</th>
+              <th className="px-5 py-2.5 text-right font-semibold">Evidence</th>
             </tr>
           </thead>
           <tbody>
@@ -119,11 +156,28 @@ export default async function CustomersPage({
                     <span className="text-[12px] text-ink-mute">no open ticket</span>
                   )}
                 </td>
+                <td className="px-5 py-3 text-right">
+                  {(() => {
+                    const evidenceOrderId = risk?.orderId ?? customer.orderIds[0];
+                    return evidenceOrderId ? (
+                      <Link
+                        href={`/app/orders/${evidenceOrderId}/evidence`}
+                        className="text-[12px] text-ink-mute no-underline hover:text-teal"
+                        title="Dispute evidence pack for this order"
+                      >
+                        Evidence pack
+                      </Link>
+                    ) : (
+                      <span className="text-[12px] text-ink-mute">—</span>
+                    );
+                  })()}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </section>
+      )}
     </div>
   );
 }

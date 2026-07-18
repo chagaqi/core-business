@@ -1,11 +1,15 @@
 "use client";
 
+import { useTransition } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { clsx } from "clsx";
 import { Select } from "@/components/ui/Field";
 
 /**
  * Merchant selector. Navigates to ?merchant=<id> on the current path so every
- * surface re-reads its data for the chosen merchant.
+ * surface re-reads its data for the chosen merchant. Wrapped in useTransition
+ * (UX-13) so the select visibly dims/disables while the new merchant's data
+ * loads instead of looking like the click did nothing.
  */
 export function MerchantSwitcher({
   merchants,
@@ -16,6 +20,7 @@ export function MerchantSwitcher({
 }) {
   const router = useRouter();
   const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
 
   return (
     <label className="inline-flex items-center gap-2.5">
@@ -25,8 +30,14 @@ export function MerchantSwitcher({
       <Select
         value={current}
         aria-label="Select merchant"
-        className="w-auto min-w-[180px] py-2 text-[14px]"
-        onChange={(e) => router.push(`${pathname}?merchant=${e.target.value}`)}
+        className={clsx("w-auto min-w-[180px] py-2 text-[14px]", isPending && "opacity-50")}
+        disabled={isPending}
+        onChange={(e) => {
+          const next = e.target.value;
+          startTransition(() => {
+            router.push(`${pathname}?merchant=${next}`);
+          });
+        }}
       >
         {merchants.map((m) => (
           <option key={m.id} value={m.id}>

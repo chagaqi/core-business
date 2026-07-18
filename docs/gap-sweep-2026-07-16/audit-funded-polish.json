@@ -1,0 +1,82 @@
+{
+ "summary": "Tideover's engineering has real depth (proof-only doctrine, hardened auth, a genuinely fresh /security page, well-built custom 404/500), but the outside-the-app surfaces that make a product 'read funded' are thin: zero web analytics or error tracking anywhere in the stack, no blog/content route despite the GTM plan requiring 10 SEO pillar posts, no robots.txt/sitemap.xml, and loading-state coverage on only 2 of 14 app routes. Several other gaps (help center, per-page OG cards, PWA manifest, footer social links, a public uptime page) are smaller polish items, some already self-aware in code comments as deliberately deferred but never actually scoped onto a board. None of the 11 items below appear in mission-control/tideover-hq.html's TASKS array, docs/TORCH-PASS-TO-OPUS.md, or docs/gtm-campaign/GTM-CAMPAIGN-2026-07.md as scoped work — the closest thing is one un-scoped bullet, 'Queue the content engine,' with no spec, owner, or priority.",
+ "gaps": [
+  {
+   "gap": "No web analytics (GA/Plausible/Fathom/Vercel Analytics) is wired anywhere — the founder is about to run paid + organic GTM with zero visibility into visits, signups, or trial conversion.",
+   "evidence": "tideover/package.json has no analytics dependency; tideover/app/layout.tsx has no tracking script/Script tag; repo-wide grep for plausible|gtag|posthog|analytics found no injected tracking code.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW — not mentioned in mission-control/tideover-hq.html, TORCH-PASS-TO-OPUS.md, or the GTM doc; the GTM plan discusses reply/close rates but has no instrumentation plan to measure them on-site.",
+   "fix": "Add a privacy-friendly analytics snippet (Plausible or Vercel Analytics) to app/layout.tsx before any paid traffic runs."
+  },
+  {
+   "gap": "No blog/article/resources route or CMS exists in the app, but the GTM plan is built around 10 SEO pillar posts and organic domain authority.",
+   "evidence": "find over tideover/app found no blog/article/resource route; docs/gtm-campaign/GTM-CAMPAIGN-2026-07.md lines 155-159 list ranked pillar topics assuming a place to publish them; components/marketing/Footer.tsx comment explicitly defers 'a Resources blog' as build-next; mission-control/tideover-hq.html's only reference is the un-scoped bullet 'Queue the content engine' with no spec/owner/priority.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW (partially acknowledged) — the Footer.tsx comment and the bare mission-control bullet show awareness, but neither is a scoped engineering task with an owner or acceptance criteria, so it will not get built without one.",
+   "fix": "Scope a minimal MDX or file-based blog route (app/blog/[slug]) as its own task before the first pillar post is written."
+  },
+  {
+   "gap": "No error tracking (Sentry or equivalent) anywhere — production JS/server errors are invisible unless a user happens to report them.",
+   "evidence": "tideover/package.json has no @sentry/nextjs or similar dependency; tideover/app/error.tsx only does `console.error(error)` client-side with no reporting call.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW — not in either backlog doc.",
+   "fix": "Add @sentry/nextjs (free tier) wired into app/error.tsx and a server instrumentation hook; low effort, closes a real operational blind spot for a solo founder."
+  },
+  {
+   "gap": "No app/robots.ts or app/sitemap.ts — the site currently has no machine-readable sitemap for Google to crawl, which undermines the GTM doc's SEO strategy even before content ships.",
+   "evidence": "find over tideover/app for robots*/sitemap* returned no matches.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW.",
+   "fix": "Add app/sitemap.ts (enumerate marketing routes) and app/robots.ts pointing at it; ~30 min of work, independent of the blog build."
+  },
+  {
+   "gap": "Loading-skeleton coverage is 2 of 14 page.tsx routes under app/app; the other 12 (customers, forecast, gifts, orders/[orderId]/evidence, scripts, settings, setup, social, status, team, updates) have no route-specific loading.tsx and fall back to app/app/loading.tsx, whose own comment says it 'mirrors app/app/page.tsx's layout' (header + 6-tile metric grid + GMV panel) — a dashboard-shaped skeleton, not a match for whichever of those 12 pages is actually loading.",
+   "evidence": "find tideover/app/app -iname loading.tsx → only app/app/loading.tsx and app/app/inbox/loading.tsx; app/app/loading.tsx:1-4 comment states it mirrors the dashboard page specifically.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW — UX-13 (cited in the loading.tsx comment) was scoped for the dashboard + inbox only and never extended to the other 12 routes.",
+   "fix": "Add route-specific loading.tsx for at least the customer-facing/high-traffic pages (customers, orders detail, settings) so the skeleton shape matches the content."
+  },
+  {
+   "gap": "No help center / product docs route for merchants once they're self-serving a trial — footer explicitly defers it alongside the blog, with no scoped build task.",
+   "evidence": "components/marketing/Footer.tsx comment: '...a help center...are documented as build-next, never linked before they exist'; no /help, /docs, or /support route found under tideover/app; not itemized as a scoped task in either backlog doc.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW (acknowledged in a code comment only, not scoped).",
+   "fix": "Not urgent pre-first-customer, but should get a scoped slot once onboarding self-serve volume exists — even a single FAQ page beats none."
+  },
+  {
+   "gap": "Every marketing page shares one root-level OG/Twitter card image (app/opengraph-image.png, app/twitter-image.png) — sharing /pricing, /security, /case-study, or /how-it-works on LinkedIn/X/Slack all render the identical generic card.",
+   "evidence": "find tideover/app for opengraph-image*/twitter-image* returned only the two root files; no per-route image files or metadata overrides found for pricing/security/case-study/how-it-works/who-its-for.",
+   "severity": "P3-polish",
+   "tracked": "NEW.",
+   "fix": "Add route-level opengraph-image.tsx for pricing and case-study at minimum — the two pages most likely to get shared directly."
+  },
+  {
+   "gap": "No web app manifest and a minimal favicon set (just favicon.ico + one 32x32 icon.svg, no apple-touch-icon) — Android 'add to home screen' and iOS bookmark icons fall back to unbranded defaults.",
+   "evidence": "public/ contains only public/auth-logo.svg; find over tideover/app for manifest*/*.webmanifest returned no matches.",
+   "severity": "P3-polish",
+   "tracked": "NEW.",
+   "fix": "Add app/manifest.ts (Next 14 supports this natively) and a 180x180 apple-icon.png; low effort."
+  },
+  {
+   "gap": "No branded HTML email template exists anywhere in the repo for any outbound message (not just the already-tracked reply-send stub) — no email SDK (Resend/Postmark/SES/nodemailer) in package.json and no template file for team invites, onboarding, or status-link notifications.",
+   "evidence": "tideover/package.json has no email-sending dependency; lib/channel-adapters/EmailAdapter.ts:26-29 sendReply throws NotImplementedError (already tracked in TORCH-PASS-TO-OPUS.md as 'replies don't send' — not re-listing that fact); repo-wide search found no HTML email template file for any other message type.",
+   "severity": "P3-polish",
+   "tracked": "Overlaps a tracked P1 (send capability) but the templating/branding question is distinct and untracked — flagging narrowly: even once send works, there's no branded template to send.",
+   "fix": "Once EmailAdapter.sendReply is built (tracked elsewhere), pair it with one branded HTML template shell reused across reply/invite/notification emails."
+  },
+  {
+   "gap": "Footer has no social links (X/LinkedIn) row — no live handle referenced anywhere in the repo.",
+   "evidence": "components/marketing/Footer.tsx defines only Product/Company/Help/Legal columns with no social icon row; repo-wide grep for twitter.com/x.com/linkedin.com/company found no live handle, only unrelated word matches.",
+   "severity": "P3-polish",
+   "tracked": "NEW — likely intentional under the proof-only 'no vanity metrics' doctrine, but a quiet link with no follower count would still cost nothing and read as more real.",
+   "fix": "Add a minimal social row (X, LinkedIn) with no counts/badges if accounts exist; skip if they don't exist yet rather than link a dead handle."
+  },
+  {
+   "gap": "No public status/uptime page for tideover.app itself (distinct from the in-app customer-order status pages, which do exist and work) — explicitly, deliberately omitted per a Footer.tsx code comment, but never turned into a scoped yes/no decision with a date.",
+   "evidence": "components/marketing/Footer.tsx comment: '...and no public uptime page; /status/[token] is customer order status'; docs/gtm-campaign/GTM-CAMPAIGN-2026-07.md notes status pages are a $9/mo commodity (StatusPro) — i.e. cheap to add; no scoped task in either backlog doc.",
+   "severity": "P3-polish",
+   "tracked": "NEW (a conscious restraint call documented only as a code comment, not a scoped roadmap decision).",
+   "fix": "A free-tier Better Uptime/Statuspage page pointed at www.tideover.app is a 15-minute, zero-app-change win if Dylan wants the signal; otherwise leave as a documented deliberate omission."
+  }
+ ]
+}

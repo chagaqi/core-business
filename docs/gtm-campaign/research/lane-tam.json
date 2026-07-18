@@ -1,0 +1,99 @@
+{
+ "summary": "Bottom-up cited estimate: TAM ≈ $17M-$28M/yr (mid ~$21M/yr), SAM ≈ $8M-$13M/yr (mid ~$10M/yr), SOM (90 days of solo founder-led cold outbound, no ads budget) ≈ $500-$2,500 MRR / 1-5 new customers (mid ~2, ~$1,000 MRR) — roughly 5% of the $20K/mo-in-90-days goal on this channel alone. Full arithmetic below; every external number is sourced, every multiplier is flagged as an assumption.\n\nTAM — merchants/yr entering a genuine 60-120+ day wait window, × $500/mo blended ACV ($6,000/yr, weighted toward the $499 mid-size-distressed tier):\n• Crowdfunding $100K+ raises: Kickstarter had 35,512 successful projects in 2024 [Tubefilter, citing Kickstarter]. Statista's lifetime distribution says 4.2% of successful projects clear $100K → 35,512 × 4.2% ≈ 1,490/yr [ASSUMPTION: applying a lifetime cross-sectional rate to one year's flow — may undercount given rising average raise sizes]. Gamefound launched 496 campaigns in 2025 [Stonemaier Games/Gamefound blog]; assumed 40% clear $100K given its tabletop-specialist, high-raise skew (8 of the top 10 funded 2024 board games were on Gamefound) [ASSUMPTION, no direct % source] → ~200/yr. Subtotal 1,690/yr. Indiegogo (~800K campaigns lifetime, ~$3B lifetime, no reliable annual $100K+ breakdown found) and BackerKit's own crowdfunding platform (growing \"5x YoY\" off a base of ~40 creators in 2022 — too speculative to count) are EXCLUDED as upside, not counted. Apply 85% for \"genuinely 60-120+ day wait\" — physical-goods categories (games/tech/design) dominate this raise tier, and Mollick's Wharton study found 75%+ of funded design/tech projects ship late [ASSUMPTION] → ~1,440/yr.\n• Shopify preorder (manufacturing-scale, long-wait): use Shopify Plus (81,585 active stores worldwide, 43,764 US + 5,804 UK, per Builtwith data) as the \"real manufacturing-scale\" proxy. A 534,514-store scan found 2.56% of Plus stores run a DETECTABLE preorder app vs 0.17% of standard stores — but the scan fingerprinted only 5 apps and missed high-install ones (Amai: 5,400+ stores; STOQ: 2,942 reviews) [flagged undercount]. Applying a 2.5x correction for missed apps → ~6.4% effective Plus adoption → 81,585 × 6.4% ≈ 5,220 [ASSUMPTION on the correction factor]. Assuming 40% of those run long (60+ day) manufacturing preorders vs short restock windows [ASSUMPTION, unsourced %] → ~2,090/yr.\n• TAM population ≈ 1,440 + 2,090 ≈ 3,530/yr → × $6,000 ACV ≈ $21.2M/yr (range $17M-$28M given the stacked assumptions).\n\nSAM — English-speaking (reachable by solo cold-email/DM, zero ads budget) + the exact \"distressed mid-size\" filter (800-1,500 backers, $100K+ raised, visibly late already):\n• Crowdfunding: 1,440 × ~60% English-speaking-creator share [US alone runs 46-56% of backers per campaign per two independent trackers; +UK/Canada/Australia] × ~40% land in the 800-1,500-backer band at $100K+ (typical tabletop/tech average pledge is $80-150, so $100K-$180K raised ≈ 800-1,500 backers — this is the LOWER slice of the $100K+ tier, not most of it) [ASSUMPTION, unsourced %] ≈ 345/yr.\n• Shopify preorder: 2,090 × 65% English-speaking (Plus stores are 53.6% US + 7.1% UK by store count alone, +Canada/Australia) ≈ 1,360/yr.\n• SAM population ≈ 1,700/yr → × $6,000 ACV ≈ $10.2M/yr (range $8M-$13M).\n\nSOM — 90 days of solo, founder-led cold outreach (2 hrs/day, no paid channel):\n• List: ~200-400 verified prospects buildable in 90 days at that pace — sourcing requires manually confirming the \"visibly late\" signal from campaign comments/updates, not a pure scrape — midpoint 300.\n• Reply rate: 3.4-8% (2026 B2B SaaS cold-email benchmark; well-targeted/personalized end, since the outreach references a real lateness trigger) → 10-24 replies.\n• Reply→real conversation: ×40-60% [ASSUMPTION, no direct source found] → 4-14 conversations.\n• Conversation→paid close: ×15-25% (published cold-outbound close-rate range) → 1-5 new customers.\n• SOM ≈ 1-5 customers in 90 days (midpoint ~2) → ~$500-$2,500 MRR by day 90 at $500/mo blended ACV (midpoint ~$1,000 MRR).\nGAP FLAG: that midpoint is ~5% of the $20K/mo-in-90-days target on cold-outbound alone. Closing it needs higher list throughput than one founder can hand-verify at 2hrs/day, a higher-ACV mix (upsell to $749), or a second channel (App Store organic, referral, agency layer) — a decision for Fable, not resolved by this research.\n\nCAVEAT — campaign-shaped demand: the crowdfunding half of TAM/SAM is a FLOW, not a stock. A campaign's wait phase runs ~3-4 months before backers receive goods (often longer — 75%+ ship late) and the anxiety-support need ends when the product ships or the creator's next campaign starts. Customer lifetime on that segment is inherently ~3-4 months unless the merchant is a serial creator who re-ups, so the pipeline must be re-sourced every quarter just to hold flat MRR from that segment — this behaves like a media-buy/book-refill model, not classic SaaS net-revenue-retention. The Shopify preorder segment (ongoing preorder cycles) is the more SaaS-shaped, stable anchor long-term, even though it's the harder-to-size half of the estimate today.",
+ "items": [
+  {
+   "name": "Gorgias",
+   "what": "Incumbent e-commerce helpdesk SaaS — the closest adjacent tool budget line Tideover's ICP already has.",
+   "how": "Reference-only willingness-to-pay anchor, not a tool Dylan installs.",
+   "cost": "$10/mo (Starter, 50 tickets) to $900/mo (Advanced, 5,000 tickets); plus $0.32-$0.40 per extra ticket and $0.90-$1.00 per AI resolution. Unlimited agents, priced per ticket volume.",
+   "risk": "low — public list price only, negotiated enterprise pricing not captured.",
+   "sources": [
+    "https://www.gorgias.com/pricing"
+   ]
+  },
+  {
+   "name": "Zendesk",
+   "what": "Larger-merchant helpdesk incumbent, per-agent pricing model.",
+   "how": "Reference-only anchor for how much bigger merchants already pay for support tooling.",
+   "cost": "$19-$155/agent/mo base tiers; realistic all-in cost with Copilot/QA/AI-resolution add-ons runs $165-$265/agent/mo.",
+   "risk": "low on the number itself; medium on comparability — per-agent pricing doesn't map cleanly to Tideover's flat-fee model, which is a positioning point in Tideover's favor (predictable flat fee vs. per-agent/per-resolution scaling).",
+   "sources": [
+    "https://www.zendesk.com/pricing/"
+   ]
+  },
+  {
+   "name": "StatusPro (Shopify app)",
+   "what": "Direct-adjacent competitor: a narrow order-status/tracking-page app already selling into the same Shopify merchant base.",
+   "how": "Reference-only anchor showing the LOW end of what Shopify merchants already pay for just a status page (no AI replies, no risk-scored inbox).",
+   "cost": "$9/mo (200 orders) to $99/mo (highest tier, ~2,000+ orders).",
+   "risk": "real anchor risk — proves merchants will pay only ~$9-99/mo for a bare status page; Tideover's $299-$749/mo must clearly justify the AI-reply + risk-inbox + dispute-evidence delta or merchants will price-anchor low.",
+   "sources": [
+    "https://apps.shopify.com/statuspro"
+   ]
+  },
+  {
+   "name": "VA/BPO customer support (Philippines)",
+   "what": "The human-labor alternative merchants use instead of any software today.",
+   "how": "Reference-only anchor, not a tool Dylan buys.",
+   "cost": "$800-$2,400/mo for one full-time Philippines-based support VA (typical market range); informal/part-time arrangements as low as ~$300-500/mo exist but come with multiple clients and low accountability.",
+   "risk": "the ~$300/mo figure often cited as 'the VA alternative' is the informal/gray-market floor, not the typical market rate — real full-time VA cost is 2-8x that, which argues FOR Tideover's ACV rather than against it.",
+   "sources": [
+    "https://smartoutsourcingsolution.com/resource/virtual-assistant-eor-hourly-rates-philippines/",
+    "https://www.hireoverseas.com/blogs/virtual-assistant-cost"
+   ]
+  }
+ ],
+ "daily_actions": [
+  {
+   "action": "Source and verify 3-6 qualifying leads/day (crowdfunding: $100K+ raised, 800-1,500 backers, visibly late per comments/updates; OR Shopify Plus long-wait manufacturing preorder brand)",
+   "who": "ai",
+   "minutes": 45
+  },
+  {
+   "action": "Draft a personalized cold email/DM per new lead referencing the specific lateness signal found during sourcing",
+   "who": "ai-then-dylan-approves",
+   "minutes": 20
+  },
+  {
+   "action": "Send approved outreach at a 15-30/week pace and log replies",
+   "who": "dylan",
+   "minutes": 15
+  },
+  {
+   "action": "Have real conversations / demo calls with interested prospects",
+   "who": "dylan",
+   "minutes": 20
+  },
+  {
+   "action": "Weekly pipeline refresh — re-source since crowdfunding customer lifetime is ~3-4 months and requires continuous replenishment, not one-time list-building",
+   "who": "ai-then-dylan-approves",
+   "minutes": 15
+  }
+ ],
+ "load_bearing_claims": [
+  {
+   "claim": "Kickstarter had 35,512 successful projects in 2024, raising $706,446,298.66 total — its biggest year to date.",
+   "source": "https://www.tubefilter.com/2025/03/07/2024-was-kickstarters-biggest-year-yet-here-are-the-creators-who-raised-706-million/"
+  },
+  {
+   "claim": "Only 4.2% of successful Kickstarter projects raise over $100K (Statista distribution, lifetime/cumulative — applied here as an annual-rate proxy, flagged as an assumption).",
+   "source": "https://www.searchlogistics.com/learn/statistics/kickstarter-stats-facts/"
+  },
+  {
+   "claim": "Ethan Mollick's Wharton study found over 75% of funded Kickstarter design/tech projects (n=471) deliver late; a separate, larger Kickstarter-commissioned survey of 47,188 backers across 30,323 campaigns, released the same month (Dec 2015), found ~9% of funded projects fail to deliver at all (range 5-14%). Both stats are a decade old — no larger-scale replication found since.",
+   "source": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2699251"
+  },
+  {
+   "claim": "81,585 active Shopify Plus stores exist worldwide (43,764 US, 5,804 UK), per Builtwith data.",
+   "source": "https://backtofrontshow.com/shopify-statistics/"
+  },
+  {
+   "claim": "A 534,514-store scan found only 1.18% of Shopify stores (6,293) run a detectable preorder app overall, but 2.56% of Shopify Plus stores do vs 0.17% of standard stores — and the scan covered only 5 apps, undercounting high-install apps like Amai (5,400+ stores) and STOQ (2,942 reviews).",
+   "source": "https://storeinspect.com/blog/best-shopify-preorder-apps"
+  },
+  {
+   "claim": "2026 B2B cold-email benchmarks: 3.43% average reply rate industry-wide, 5-8% for well-targeted SaaS campaigns; a 'good' meeting-booked rate is 0.8-1.5% of sends; cold-outbound opportunities close at roughly 10-25%.",
+   "source": "https://instantly.ai/cold-email-benchmark-report-2026"
+  }
+ ]
+}

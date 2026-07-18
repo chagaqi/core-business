@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTM Campaign — the daily operating plan (2026-07-16)</title>
+<style>
+  :root{
+    --page:#f7f7f5; --card:#ffffff; --ink:#1c1b18; --muted:#6b6862;
+    --line:#e6e3dd; --accent:#7a5b34; --accent-soft:#b08a55;
+    --code-bg:#f2f1ee; --quote-bg:#faf9f6; --th-bg:#f4f2ee; --zebra:#fbfaf8;
+    --serif:Georgia,"Times New Roman",Cambria,"Source Serif Pro",serif;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--page); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.65;
+  }
+  /* sticky top bar */
+  .topbar{
+    position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem 1.2rem; background:rgba(247,247,245,.92);
+    backdrop-filter:saturate(180%) blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .doc-title{
+    font-family:var(--serif); font-weight:600; font-size:.98rem;
+    color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .topbar a.back{
+    font-size:.85rem; font-weight:600; color:var(--accent);
+    text-decoration:none; white-space:nowrap; flex:none;
+  }
+  .topbar a.back:hover{ text-decoration:underline; }
+  /* centered readable column on a white card */
+  main{
+    max-width:780px; margin:2rem auto; background:var(--card);
+    border:1px solid var(--line); border-radius:12px;
+    padding:3rem 3.4rem; box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  /* headings — serif */
+  h1,h2,h3,h4,h5,h6{
+    font-family:var(--serif); color:var(--ink); line-height:1.25;
+    margin:2rem 0 .8rem; font-weight:600;
+  }
+  h1{ font-size:2rem; margin-top:.4rem; letter-spacing:-.01em; }
+  h2{ font-size:1.5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); }
+  h3{ font-size:1.22rem; }
+  h4{ font-size:1.05rem; }
+  h5{ font-size:.95rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  h6{ font-size:.88rem; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  p{ margin:0 0 1rem; }
+  a{ color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+  a:hover{ color:var(--accent-soft); }
+  strong{ font-weight:700; }
+  em{ font-style:italic; }
+  /* lists */
+  ul,ol{ margin:0 0 1rem; padding-left:1.5rem; }
+  li{ margin:.3rem 0; }
+  li > ul, li > ol{ margin:.3rem 0; }
+  /* inline code + code blocks */
+  code{
+    font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    font-size:.86em; background:var(--code-bg); padding:.12em .4em;
+    border-radius:4px; border:1px solid var(--line);
+  }
+  pre{
+    background:var(--code-bg); border:1px solid var(--line); border-radius:8px;
+    padding:1rem 1.1rem; overflow:auto; margin:0 0 1.2rem; line-height:1.5;
+  }
+  pre code{ background:none; border:none; padding:0; font-size:.85em; }
+  /* blockquote — left accent border */
+  blockquote{
+    margin:0 0 1.2rem; padding:.6rem 1.1rem; background:var(--quote-bg);
+    border-left:3px solid var(--accent-soft); color:#3a382f; border-radius:0 6px 6px 0;
+  }
+  blockquote > :last-child{ margin-bottom:0; }
+  /* horizontal rule */
+  hr{ border:none; border-top:1px solid var(--line); margin:2.2rem 0; }
+  /* tables — hairline borders, subtle header bg, zebra */
+  table{
+    width:100%; border-collapse:collapse; margin:0 0 1.4rem;
+    font-size:.92rem; display:block; overflow-x:auto;
+  }
+  thead th{
+    background:var(--th-bg); font-family:var(--serif); font-weight:600;
+    text-align:left; vertical-align:bottom;
+  }
+  th,td{
+    border:1px solid var(--line); padding:.5rem .7rem; vertical-align:top;
+  }
+  tbody tr:nth-child(even){ background:var(--zebra); }
+  /* footer */
+  footer{
+    max-width:780px; margin:1rem auto 3rem; padding:0 .4rem;
+    color:var(--muted); font-size:.8rem; text-align:center;
+  }
+  /* responsive */
+  @media (max-width:820px){
+    body{ font-size:16px; }
+    main{ margin:1rem; padding:1.6rem 1.4rem; border-radius:10px; }
+    h1{ font-size:1.65rem; }
+    h2{ font-size:1.32rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="topbar">
+    <span class="doc-title">GTM Campaign — the daily operating plan (2026-07-16)</span>
+    <a class="back" href="../tideover-hq.html">&larr; Mission Control</a>
+  </div>
+  <main>
+<h1>TIDEOVER GTM CAMPAIGN — the daily operating plan</h1>
+<p><strong>2026-07-16.</strong> Built from a 12-agent research workflow (6 lanes, each independently fact-checked with fresh fetches; 7 of 36 load-bearing claims were refuted and corrected before anything below was written — the corrections are marked). This is the plan Dylan runs at ~2 hours/day with the AI layer doing the rest. It extends, and does not replace, the assets that already exist: the sequences in <code>gtm-assets/v2/v2-cold-email.md</code>, the trigger engine in <code>gtm-assets/v2/v2-prospecting-sop.md</code>, the copy rules in <code>gtm-assets/copy-standard.md</code>, and the positioning verdict in <code>docs/recon-2026-07-10/MARKET-RECON.md</code>.</p>
+<hr>
+<h2>0. THE VERDICT IN ONE PAGE</h2>
+<p><strong>The honest math first.</strong> Ninety days of solo founder-led cold outbound at 2 hrs/day models to <strong>1–5 new customers (~$500–$2,500 MRR)</strong> — reply rates for B2B SaaS run 2–4% (3–5% with a tight trigger-event ICP, which ours is), a good meeting rate is a fraction of that, and cold-outbound conversations close at maybe 15–25%. That is ~5% of the $20K/mo-in-90-days goal. No channel in this plan changes that arithmetic alone. What changes it: the Shopify preorder segment (customers that renew instead of churning at ship-day), tier mix toward $749, the window-pass packaging (torch pass D8), pilot referrals, and frankly more runway than 90 days. <strong>This plan's real job in 90 days is 3–5 instrumented pilots and a repeatable engine — the $20K/mo target needs a recalibration conversation</strong> (added to the decision list as D9-GTM).</p>
+<p><strong>Channel roles — each does one job:</strong></p>
+<table>
+<thead>
+<tr><th>Channel</th><th>Job</th><th>NOT its job</th></tr>
+</thead>
+<tbody>
+<tr><td>Prospect engine + cold email</td><td>The pipeline. Trigger-led outreach to visibly-late campaigns</td><td>Volume spray. 30–90/day max, personalized</td></tr>
+<tr><td>Reddit</td><td>Credibility + voice-of-customer mining where the ICP complains</td><td>Lead gen. Most subs ban promotion; play the long game</td></tr>
+<tr><td>X</td><td>Founder presence, creator-peer relationships, build-in-public</td><td>Backer reach (tabletop discovery lives on YouTube/BGG/Discord, not X)</td></tr>
+<tr><td>Directories (free layer)</td><td>Indexing + looking real when a prospect googles us</td><td>Signups. Near-zero direct yield, ~3 hrs one-time</td></tr>
+<tr><td>Product Hunt + Show HN</td><td>One-shot PR badge, <strong>after</strong> first pilot proof exists</td><td>Pipeline. Verified outcomes for niche B2B: 56 signups at #8-of-day; 0 signups at top-50</td></tr>
+<tr><td>BackerKit blog / Stonemaier PR</td><td>The earned-media jackpot, post-pilot only</td><td>Anything before a real testimonial exists</td></tr>
+</tbody>
+</table>
+<p><strong>The one structural truth to plan around:</strong> crowdfunding demand is a <strong>flow, not a stock</strong>. A campaign customer's wait ends in 3–4 months and the need ends with it. The pipeline must re-source itself weekly forever, or MRR sags — this is why the prospect engine is automated and why the Shopify segment is the long-term anchor.</p>
+<hr>
+<h2>1. TAM / SAM / SOM (cited; every multiplier flagged)</h2>
+<p>All external stats verified by an independent second agent against primary sources. Assumptions are labeled — this doc obeys the same proof-only rule as the product.</p>
+<p><strong>TAM ≈ $17M–$28M/yr (mid ~$21M).</strong> Kickstarter funded 35,512 projects in 2024, its biggest year ($706.4M total) [Tubefilter, citing Kickstarter]. 4.2% of successful projects clear $100K [Kickstarter's own stats via SearchLogistics — note: lifetime rate applied to one year's flow, ASSUMPTION] → ~1,490/yr. Gamefound: 496 campaigns in 2025, assumed 40% clear $100K given its high-raise tabletop skew [ASSUMPTION] → ~200/yr. ~85% of that raise tier are physical goods with genuine 60–120+ day waits (Mollick's Wharton study: &gt;75% of funded design/tech projects ship late; the ~9% never-deliver stat is from a separate Kickstarter-commissioned 47k-backer survey — both a decade old, no larger replication exists) → <strong>~1,440 crowdfunding merchants/yr</strong>. Shopify: 81,585 Plus stores [BuiltWith]; a 534k-store scan found 2.56% of Plus stores run a <em>detectable</em> preorder app (9 apps fingerprinted; enterprise tools like Purple Dot confirmed undercounted) — with a correction factor for undetected apps [the SHAKIEST assumption in this doc] → <strong>~2,090 long-wait preorder brands</strong>. Total ~3,530/yr × $6,000 blended ACV → <strong>~$21M/yr</strong>.</p>
+<p><strong>SAM ≈ $8M–$13M/yr (mid ~$10M).</strong> English-speaking creator share (~60–65%) × the 800–1,500-backer mid-size band (~40% of the $100K+ tier — at $80–150 avg pledges, $100–180K raised ≈ 800–1,500 backers) → ~345 crowdfunding + ~1,360 Shopify ≈ <strong>1,700 reachable merchants/yr</strong>.</p>
+<p><strong>SOM (90 days, this plan) ≈ 1–5 customers, ~$500–$2,500 MRR.</strong> 300 hand-verified prospects × 2–4% reply (stretch 3–5% on trigger-event personalization [Instantly 2026 benchmark report: 3.43% avg; top-quartile 5.5%+]) × conversation and close rates → midpoint ~2 customers. <strong>Gap to $20K/mo: stated at the top; not solvable inside this plan's channels.</strong></p>
+<hr>
+<h2>2. THE STACK — shopping list (all prices fetched from live pricing pages this week)</h2>
+<table>
+<thead>
+<tr><th>Item</th><th>Price</th><th>Why</th></tr>
+</thead>
+<tbody>
+<tr><td>3 outreach domains (Porkbun) — e.g. tideoverhq.com, gettideover.com</td><td>~$33/yr (~$3/mo)</td><td>Cold sends NEVER from tideover.app. <strong>Corrected ratio: ~1 domain per 30–40 daily sends</strong> (the 1-per-100-150 claim was refuted 3–5x optimistic)</td></tr>
+<tr><td>6 Google Workspace Starter mailboxes (2/domain)</td><td>~$43–59/mo</td><td>Gmail-backed deliverability; 15–20 sends/box/day ceiling</td></tr>
+<tr><td>Smartlead Base</td><td>$39/mo</td><td>Sending + warmup + rotation; unlimited mailboxes/warmup confirmed on live pricing (beats Instantly's $47 at this tier)</td></tr>
+<tr><td>X Premium Basic</td><td>$3/mo</td><td>Non-Premium reach is now near-zero for link posts (verified: Buffer's 18.8M-post analysis — free accounts &lt;100 impressions/post, Premium ~600). Includes native scheduling</td></tr>
+<tr><td>Typefully (start free)</td><td>$0, Pro $10/mo later</td><td>One "Social Set" bundles X + LinkedIn scheduling; free tier = 15 posts/mo which covers the §9 loop; Pro ($10/mo monthly, $8 annual — verified live) only when volume demands. Earlier $19 figure was stale — corrected</td></tr>
+<tr><td>Apify (KS discover actor $20/1k results + $9.99 email actor)</td><td>~$15–35/mo usage</td><td>The automated prospect engine</td></tr>
+<tr><td>Hunter.io free (50 credits/mo) + F5Bot free</td><td>$0</td><td>Contact verification + Reddit/HN keyword alerts. <strong>GummySearch is DEAD (closed 11/30/2025, confirmed on their homepage) — do not budget it</strong></td></tr>
+<tr><td>Google Postmaster Tools + mail-tester.com</td><td>$0</td><td>The deliverability dead-man switch</td></tr>
+<tr><td><strong>Core total</strong></td><td><strong>~$120–160/mo</strong></td><td>StoreLeads ($75–250/mo) DEFERRED — mine Purple Dot/PreProduct case-study pages + app-review counts free first; buy one Pro month later if the Shopify lane needs bulk</td></tr>
+<tr><td>One-time: CASL legal spot-check</td><td>~CA$150–300</td><td>See §7 — the single largest legal exposure; cheap insurance</td></tr>
+</tbody>
+</table>
+<hr>
+<h2>3. THE 30-DAY RAMP</h2>
+<p><strong>Week 1 (days 1–7) — infrastructure + seasoning. No cold sends.</strong><br>
+Buy domains, provision mailboxes, SPF/DKIM/DMARC (p=none suffices for Google's rule), register Postmaster Tools, start Smartlead warmup day 1 (<strong>14 days minimum before any cold send</strong> — corrected from "3 weeks"; we plan 21 for margin). Start X daily cadence + Reddit comment-only seasoning the same day (both need weeks of history before they pay). Submit the free directory layer (BetaList, AlternativeTo, SaaSHub, Uneed, MicroLaunch, IndieHackers page — ~3 hrs total, one-time). AI engine builds the first 200-row prospect list. F5Bot keywords live. CASL sourcing log starts with row one.</p>
+<p><strong>Week 2 (days 8–14) — list + voice.</strong><br>
+Warmup continues. List to 300+ verified rows with distress tags. Personalization-hook bank built (the specific lateness signal per prospect — this is what moves reply rate from 2% to 4%+). Founder-story beats running on X. Reddit karma accruing. Book the CASL consult.</p>
+<p><strong>Week 3 (days 15–21) — first sends.</strong><br>
+Cold sends begin at 5/mailbox/day (30/day total), sequence A1/B1 from <code>v2-cold-email.md</code>, every email citing the prospect's real trigger. Hard rule: any domain crossing 0.30% spam rate pauses immediately (Google's own threshold; target &lt;0.10%). First replies → Dylan personally, same day.</p>
+<p><strong>Week 4 (days 22–30) — ramp + read the data.</strong><br>
+Ramp toward 15/mailbox/day (~90/day) only if spam &lt;0.1% and bounces &lt;2%. First weekly promo-thread one-liners (r/smallbusiness "Promote Your Business", r/Entrepreneur "Thank You Thursday" — the ONLY sanctioned lanes, verified against both subs' live rules). Compare reply rate against the 2–4% benchmark; iterate hooks, not volume.</p>
+<p><strong>Post-pilot (gate: first real testimonial, whenever it lands):</strong> Product Hunt (self-submit — the hunter boost is retired; expectations set by verified outcomes above) + Show HN led with the real founder story + BackerKit blog and Stonemaier Games PR pitches. <strong>None of these fire before proof exists</strong> — premature PR wastes the one good first impression.</p>
+<hr>
+<h2>4. THE DAILY CALENDAR — Dylan's ~2 hours</h2>
+<table>
+<thead>
+<tr><th>Block</th><th>Min</th><th>What</th></tr>
+</thead>
+<tbody>
+<tr><td>Outreach approvals</td><td>15</td><td>Review AI-drafted personalization hooks + approve the day's batch. No AI email ships unedited</td></tr>
+<tr><td>Replies</td><td>20</td><td>Personally answer every prospect reply, same day — this block grows; steal from others when it does</td></tr>
+<tr><td>Deliverability + pipeline glance</td><td>10</td><td>Smartlead dashboard daily; Postmaster 2x/week; pause anything trending wrong</td></tr>
+<tr><td>Distress verification</td><td>15</td><td>Open the top-10 AI-scored campaigns, read the comment wall, tag hard-late vs just-slow</td></tr>
+<tr><td>X</td><td>20</td><td>3-sentence raw note → approve 1 of 3 AI drafts (7 min); reply-first engagement into 5–8 hub threads (12 min) — replies outrank posts in the ranking code, links are penalized</td></tr>
+<tr><td>Reddit</td><td>20</td><td>Review AI-triaged threads + drafted replies; rewrite in own voice; post 1–3 genuine comments. Rules: 90/10 value ratio, never the same link on 3+ subs/day, never DM-bait ("comment for link" = permaban trigger), product mention only when directly asked</td></tr>
+<tr><td>Flex / demos</td><td>20</td><td>Early: directory submissions, BGG forum reading, IndieHackers milestone post. Later: demo calls (each demo displaces everything except replies)</td></tr>
+</tbody>
+</table>
+<p><strong>The AI layer (runs before Dylan wakes up — this is the Opus automation spec):</strong></p>
+<ol>
+<li>Pull/refresh prospect sources (webrobots monthly dump deltas; Apify discover run 2x/week; the §5b store-side scan — SERP-dork discovery → <code>/products.json</code> + plugin-footprint qualification) → distress-score = comments_count / max(updates_count,1) + days-past-estimate for crowdfunding, ship-window-weeks × AOV for stores → ranked shortlist.</li>
+<li>Contact discovery (Hunter + Apify email actor) with <strong>source-URL logged per address</strong> (the CASL due-diligence record).</li>
+<li>Draft the day's outreach batch from the sequence library, each with the prospect's specific trigger cited.</li>
+<li>F5Bot digest triage → candidate threads + drafted value-first replies.</li>
+<li>X: 3 post variants from yesterday's raw note, rotated across the 5 formats (anonymized before/after reply, founder-story beat, build log, composite WISMO pattern — <strong>never a named struggling creator: they are the customer, not the content</strong>, and the HBR evidence says public engagement with complaints backfires anyway).</li>
+<li>Pipeline digest: replies, spam rates, list health, today's suggested focus.</li>
+</ol>
+<hr>
+<h2>5. CHANNEL RULES THAT CAME OUT OF VERIFICATION (the corrections that matter)</h2>
+<ul>
+<li><strong>r/Kickstarter is NOT quarantined</strong> — a stats tool's flag was checked by live browse and is false. It's usable, but it's backers + creator self-promo noise; treat as VOC mine, not a channel. r/Crowdfunding bans promotion outright (listening only). The buyer subs are r/shopify, r/ecommerce, r/tabletopgamedesign + BGG's own crowdfunding forums (read BGG's community rules manually before posting — fetch was blocked).</li>
+<li><strong>Kickstarter's real ToS clause</strong> bans crawling/spidering (the florid "bulk harvest" quote circulating is fabricated — it's from other sites' ToS). Direct scripted fetches 403 anyway. Use webrobots.io's dataset (free, monthly, since 2016) and Apify actors as tolerated-not-sanctioned, modest volumes, never republish.</li>
+<li><strong>Cold email numbers to plan on:</strong> 2–4% reply (not the 5–8% the first sweep claimed — its own source didn't support it), 14-day minimum warmup, ~30–40 daily sends per domain ceiling, spam &lt;0.30% or Google rejects outright (their published rule at 5k/day scale; the discipline applies at any volume).</li>
+<li><strong>X without Premium is pointless in 2026</strong> (link-post reach for free accounts has collapsed to near-zero — worse than the "50–90% penalty" the first sweep reported). $3/mo solves it. The 150x reply-weight figure is 2023 leaked-code vintage (current weights are redacted) — directionally right: reply-first, link-averse.</li>
+<li><strong>Product Hunt is a badge, not a channel.</strong> Ranking mechanics are unverifiable (accounts contradict each other on early-velocity weighting), links are rel=ugc (zero SEO), and the "PH screens out 70% of founders" stat is actually a launch agency's client intake, not PH. Launch it once, post-pilot, for the credibility line, and go back to outreach.</li>
+</ul>
+<hr>
+<h2>5b. THE STORE-SIDE ENGINE — Shopify + WooCommerce detection (added same day; Dylan's push, mechanics proven live before writing)</h2>
+<p>The first sweep leaned on StoreLeads ($75–250/mo) for the Shopify lane and skipped WooCommerce entirely. Dylan's instinct — scrape the stores themselves for preorder apps and preorder language — is better, cheaper, and fresher. The mechanics, each verified live on 2026-07-16:</p>
+<p><strong>Shopify: the <code>/products.json</code> scan.</strong> Every Shopify store publicly serves <code>GET /&lt;domain&gt;/products.json?limit=250</code> (paginated) — full product titles, tags, descriptions, and prices as machine-readable JSON. Proven live on a real preorder brand's store: 250 products per call, no auth, no scraping gymnastics. The scanner regexes title + body_html + tags for <code>pre-order / presale / ships in N weeks / estimated ship</code> and qualifies <strong>AOV from the price fields in the same call</strong>. Second probe, also proven necessary: the store's preorder <em>policy page</em> (<code>/pages/pre-order*</code>, discoverable via <code>/sitemap.xml</code>) — the test store had the policy page but <strong>zero currently-flagged products</strong>, which surfaces the qualification rule this engine runs on: <strong>preorder infrastructure ≠ an active long-wait preorder.</strong> Only live products carrying ship-window language of ~6+ weeks are ICP; a store between drops goes on a re-check list, not the outreach list.</p>
+<p><strong>Discovery of candidate domains</strong> (what feeds the scanner):</p>
+<ol>
+<li><strong>SERP dorks via a real SERP API</strong> — <code>inurl:/products/ "pre-order" "ships in"</code> and month/week-window variants. Verified caveat: generic search wrappers mangle exact-phrase + <code>inurl:</code> operators; this requires a Serper.dev-class API that passes operators verbatim (~$10–30/mo at our volumes, replaces most of what StoreLeads charged $75+ for).</li>
+<li><strong>App footprints in page HTML</strong> — preorder apps inject identifiable script/CSS assets; fingerprint candidate lists cheaply.</li>
+<li><strong>App-vendor case-study pages</strong> (already in §2 — Purple Dot/PreProduct client logos are a free pre-qualified shortlist).</li>
+<li><strong>Cross-lane</strong>: Kickstarter campaigns' linked stores (a KS graduate with a live Shopify preorder is the double-signal, highest-intent row in the whole system).</li>
+</ol>
+<p><strong>WooCommerce: the plugin-footprint lane (new segment — the first sweep missed it).</strong> Woo sites leak installed plugins in page source as <code>/wp-content/plugins/&lt;slug&gt;/</code> asset URLs, so a SERP dork like <code>inurl:"wp-content/plugins/preorders-for-woocommerce"</code> enumerates installs directly. Scale check (fetched from wordpress.org today): <strong>Pre-Orders for WooCommerce alone reports 7,000+ active installations</strong> — before counting YITH Pre-Order, the official WooCommerce Pre-Orders extension, and the other majors. Product pages use the <code>/product/</code> URL pattern for the text-dork variant. Caveat: Woo skews smaller/DIY than Shopify Plus, so filter harder on AOV and traffic — but the product is platform-agnostic (CSV import + email works anywhere), so Woo is real pipeline, likely at a lower tier mix.</p>
+<p><strong>Rules of the road:</strong> public pages, polite rates, a real User-Agent, respect robots.txt where present — the same tolerated-not-sanctioned posture as the Kickstarter rules in §5. Contact discovery unchanged from §7: business-context addresses only, source URL logged per row. Net effect on the stack: StoreLeads deferral hardens (the scan sees what a store is selling <strong>today</strong>, which beats an install-date database for our trigger), and the Shopify/Woo lane becomes self-serve at SERP-API + Apify prices.</p>
+<hr>
+<h2>6. KPIs — measured, or not reported (the product's rule, applied to its GTM)</h2>
+<p><strong>Track:</strong> verified prospects added/week · reply rate (target ≥3% by day 45) · positive replies → conversations · demos/week · pilots started (the only number that matters) · spam rate per domain (&lt;0.10%) · Reddit comment karma + inbound DMs · X profile visits/DMs (directional only).<br>
+<strong>Do not report:</strong> open rates (Apple MPP noise), impressions, follower counts, directory listing counts. Vanity is the GTM version of the fake-deflection metric we just killed in the product.</p>
+<hr>
+<h2>7. THE LEGAL FLOOR (Dylan is a Canadian sender — CASL binds, and it's stricter than CAN-SPAM)</h2>
+<p>CASL applies to anything sent from Canada regardless of recipient location. The lane we operate in: <strong>implied consent via conspicuous publication</strong> — the address was publicly posted in a business context, with no "no unsolicited email" notice nearby, and the message is relevant to the recipient's business role (all verified against the CRTC's own guide). Operating rules: only business-context addresses (campaign pages, store contact pages — never guessed patterns, never personal Gmail scraped out of context); log the source URL of every address (the due-diligence record); identify sender + working unsubscribe honored promptly in every message; the one-time lawyer spot-check before scaling past the pilot list. Penalties are real: up to $10M/violation CASL (directors personally liable), $53,088/email CAN-SPAM.</p>
+<hr>
+<h2>8. HANDOFF WIRING</h2>
+<p>The AI layer in §4 is an Opus work order: the prospect engine (scrape→score→enrich→log), the drafting pipelines (outreach, X, Reddit), and the morning digest are all buildable as scheduled automations. Board card <strong>GTM2</strong> tracks the campaign; the daily calendar starts the day Dylan says go on the domain purchases (the 2-week warmup clock is the critical path — G5 called this in June and it's still true). Everything customer-facing that ships through this campaign passes the same copy standard and proof-only gate as the product.</p>
+<hr>
+<h2>9. THE ORGANIC ENGINE — content, SEO, lead magnet, funnel (added 2026-07-16, second research wave: 4 lanes + 4 independent fact-checkers; the corrections are marked)</h2>
+<p><strong>The framing:</strong> this is the slow layer. Corrected time-to-rank reality for a ~6-week-old domain is <strong>6–12 months</strong> for anything contested (Ahrefs' own data: only 1.74% of new pages reach top-10 within a year — the widely-circulated "2025, 2M pages" version of that stat is a conflation; the real figure is their Sept 2023 1M-URL cohort). Plant now, harvest in Q4 — nothing here competes with outreach for this month's pipeline. Everything below runs off <strong>one production loop</strong>, so the marginal cost of each surface is a rewrite, not a rewrite of Dylan's week.</p>
+<h3>9.1 SEO — the observed low-hanging fruit (every SERP below was actually searched, not tool-guessed)</h3>
+<p>The head terms are dead on arrival: WISMO and generic shipping-delay content is owned by funded vendors (Shopify, Salesforce, AfterShip, parcelLab), and PreProduct.io — the one real content competitor found — already runs the preorder-template playbook for the <em>setup</em> stage. The wedge that is genuinely open: <strong>the already-late campaign.</strong> Publish order, weakest SERP first:</p>
+<table>
+<thead>
+<tr><th>#</th><th>Pillar</th><th>Target queries</th><th>Why it's beatable (observed)</th></tr>
+</thead>
+<tbody>
+<tr><td>1</td><td>Crowdfunding chargeback/dispute evidence guide</td><td>"kickstarter chargeback dispute evidence" + satellites</td><td>Weakest SERP in the sweep: KS's generic page, a Quora thread, a Medium listicle. No structured guide exists. Mirrors the evidence-pack feature</td></tr>
+<tr><td>2</td><td><strong>Fulfillment-update template library</strong> (the flagship — see §9.2, it's also the lead magnet)</td><td>"kickstarter fulfillment delay update template", "backer update examples", Gamefound variants</td><td>KS's own post gives a framework but zero paste-ready text; Gamefound has literally no third-party editorial content</td></tr>
+<tr><td>3</td><td>"How late is too late" — delay stats, 2026 edition</td><td>"kickstarter late delivery statistics"</td><td>The #1 result is a CNN article from 2012 (verified still ranking today). Cite KS's own 25%-on-time study + the UPenn 75%-late research</td></tr>
+<tr><td>4</td><td>Angry-backer response playbook</td><td>"how to respond to angry kickstarter backers"</td><td>Only single-creator anecdote blogs rank; nobody organizes replies by severity tier (mirrors the risk-scored inbox)</td></tr>
+<tr><td>5</td><td>What the research says keeps backers calm</td><td>"why backers forgive delays"</td><td>SERP is 100% academic PDFs; zero practitioner translation exists</td></tr>
+<tr><td>6</td><td>KS vs BackerKit vs Gamefound: post-funding comms</td><td>"backerkit vs kickstarter fulfillment"</td><td>All existing comparisons are pre-campaign fee tables; the post-funding angle is empty. Commercial intent</td></tr>
+<tr><td>7</td><td>WISMO for 90-day waits</td><td>"wismo preorder", long-tail only</td><td>Every ranking WISMO fix assumes a tracking number exists. Ours is the no-tracking-number case. Never target the head term</td></tr>
+<tr><td>8–10</td><td>Already-late preorder angle · self-serve status pages · preorder chargebacks</td><td>long-tail</td><td>Sequenced after domain authority exists; #10 folds into #1</td></tr>
+</tbody>
+</table>
+<p>Tooling: Google Search Console + Keyword Planner (free) + manual SERP checks (which is what produced this table). Ahrefs' <em>free</em> product is owner-verified-sites only; the $29/mo Starter does SERP research — optional, later. Data hygiene per proof-only: the 5.4% preorder-cancellation stat is real but belongs to <strong>PreProduct's own 1M-preorder dataset</strong> (cite them, not the miscited aggregator); the "WISMO = 25–40% of tickets" figure is uncited industry lore — never publish it as measured.</p>
+<h3>9.2 The lead magnet + funnel (built on what exists — no new pages, no new vendors)</h3>
+<p><strong>The magnet: a paste-ready Fulfillment Update Template Pack</strong> (5–8 templates: delay announcement, missed-EDD notice, gone-quiet re-engagement, refund-request response, proof-of-life update), seeded from Dylan's real COVID-era comms and the WISMO teardown. A founder drowning in angry backers wants text to paste <em>today</em>, not a PDF to read — the templates-beat-ebooks folklore is directionally supported but poorly sourced (one "case study" the research cited turned out to be a mismatched citation; flagged, not repeated), so this choice rests on the buyer logic, not the folklore. The Presale Anxiety Playbook stays live as the nurture companion. <strong>The same asset is SEO pillar #2</strong>: the ungated library page (15–20 templates with per-template anchors and reasoning) ranks and links; the gated pack (the best 5–8, formatted) captures. One build, two jobs.</p>
+<p><strong>Capture:</strong> the existing Playbook form and list — a second delivery block, not a second funnel.</p>
+<p><strong>Nurture: 6 emails over ~14 days, then monthly.</strong> The buyer is a flow, not a stock — their pain has an end date, so the sequence resolves fast: deliver + use-it-today (day 0) → the silence-is-the-wound insight (day 2) → the founder story as proof (day 5) → objection handler: never promises a hard date (day 8) → the private pilot ask, "reply and I'll set it up with you personally" (day 11) → last nudge for non-clickers (day 14) → monthly check-in. A pilot-CTA click exits to a booked call. The terminal CTA is the <strong>private pilot, never self-serve signup</strong> — matches the buyer and the bandwidth.</p>
+<p><strong>Tooling — Resend, which we already pay for (verified live):</strong> Broadcasts free to 1,000 contacts with unlimited sends, and <strong>Automations (shipped April 2026)</strong> does event-triggered sequences with delays and branching. MailerLite just cut its free tier to 250 subs, Buttondown gates automation behind $29/mo, Beehiiv is a publishing platform — all would be new vendors for capability Resend gives us at $0.</p>
+<p><strong>The two-lists rule (CASL, non-negotiable):</strong> List A = opt-in (express consent, documented per contact) on a dedicated Resend marketing subdomain. List B = cold outreach (implied consent, §7) on its own purchased domains and tool. Three sending lanes total (transactional / marketing / cold), never crossed — and a cold reply never auto-joins List A.</p>
+<h3>9.3 The weekly production loop (~60–70 min authored, inside the existing daily budget)</h3>
+<p><strong>Monday (~30 min, Dylan):</strong> one 500–800-word pillar, drawn from what exists — the template library, playbook chapters, founder-story installments, build-log notes. <strong>AI (same day):</strong> one saved repurposing prompt derives the four spokes: an X thread + an X single-post variant (checked against the 40-post bank first — four weeks of fuel is already written, converted X-native per §9.4), an optional LinkedIn mirror, a Reddit value post, a newsletter blurb. <strong>Tuesday (~15 min, Dylan):</strong> one edit/approval pass — kill anything hard-date-shaped, run the copy standard. <strong>Then:</strong> X + LinkedIn spokes staggered through Typefully (the Welsh precedent, confirmed: 6–8 spokes over 4–6 weeks, never same-day dumped); the newsletter blurb through Resend; <strong>Reddit posted manually, never scheduled</strong> — native posting + first-hour replies are what carry it. The Reddit value-post shape (from consistent guidance; the one named "case study" the research offered was fabricated and is not repeated here): self-text, a specific finding in the title, method in two sentences, 3–6 concrete findings, one honest caveat, a real question, <strong>no link in the body</strong>, one sub at a time, every 1–2 weeks. The 90/10 discipline stands — the claim that Reddit retired it was checked and is false.</p>
+<h3>9.4 The channel verdict — X-primary (Dylan's call, 2026-07-16), LinkedIn optional mirror</h3>
+<p><strong>X is the feed channel; the 40-post LinkedIn bank gets repurposed to X-native form.</strong> Dylan's read — founders and ecom operators are easier to find on X — matches the one channel-location finding that survived verification: "DTC Twitter" is a real, documented genre (curated founder-follow lists, build-in-public norms) with no LinkedIn equivalent surfaced. Meanwhile the strongest pro-LinkedIn statistic in circulation (a "Sprout Social Q1 2026 Index of 52M posts") <strong>turned out not to exist</strong> — Sprout's own archive has no such report. So the evidence tolerates either channel; the founder's conviction picks X, and conviction is worth real minutes in a 2-hour day.</p>
+<p>Execution: the AI layer converts the banked posts X-native — tighter first line, METHOD posts become short threads, war-story and contrarian posts become single posts, all through the same approval pass. That's 4+ weeks of X fuel already written. Cadence rides the existing §4 X block (post daily from the bank + the weekly pillar spokes; reply-first engagement unchanged — replies are what the ranking rewards, and X Premium at $3/mo is already in the stack because free-account link reach is near-zero). Keep the magnet link in the bio/pinned post, not in post bodies.</p>
+<p><strong>LinkedIn: don't remake it, don't delete anything — and don't invest either.</strong> The account question dissolves once X is primary: no source supports purging history or connections for a vertical pivot, so the account stays as-is at zero effort. Since the engine drafts every spoke anyway, mirroring the LinkedIn-format version there costs ~5 minutes a week through the same Typefully Social Set — do it if it's free-feeling, skip it without guilt. If it ever gets promoted back to a real channel, the playbook is on file: headline/About rewrite around the real story, 2–5 posts/week (the Buffer 2M-post frequency finding was the one LinkedIn claim that verified cleanly), carousels for teardowns.</p>
+<p>The caveat that outranks the whole channel debate: <strong>neither X nor LinkedIn reaches tabletop/crowdfunding creators</strong> — BackerKit's own creator roadmap names BGG, Discord, Reddit, and Facebook and omits both. That half of the ICP is carried by outreach, BGG forums, and Reddit, which the plan already covers. The feed channel is for the Shopify/DTC half and for credibility-when-googled.</p>
+<h3>9.5 What this adds to the stack and the calendar</h3>
+<p>Stack delta: <strong>$0.</strong> Typefully free tier, Resend free tier, GSC free. (Typefully Pro $10/mo and Ahrefs Starter $29/mo are the only likely future adds.) Calendar delta: the Monday pillar block (~30 min) + Tuesday approval (~15 min) — funded by the flex block on those days; X/Reddit/reply time is already budgeted in §4. The AI layer gains three jobs: the repurposing prompt run, the nurture-sequence maintenance, and a monthly SEO check (GSC queries → which pillar to write next).</p>
+<hr>
+<p><strong>Sources:</strong> every price/rule/stat above carries its verification in <code>docs/gtm-campaign/research/</code> (the 12 raw agent reports from wave 1, plus the 8 organic-engine reports from wave 2, JSON). Refuted-claim records are kept deliberately in the lane files — including two fabricated case studies and one nonexistent analytics report caught in wave 2 — so the next reader knows what was checked and what fell.</p>
+  </main>
+  <footer>Adwield / Tideover &middot; Mission Control deliverable &middot; generated offline</footer>
+</body>
+</html>

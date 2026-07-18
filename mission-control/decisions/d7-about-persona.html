@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>D7 — About page rewrite (persona fix)</title>
+<style>
+  :root{--teal:#0E5366;--terra:#D9762F;--sand:#FBF8F2;--ink:#11252A;--paper:#fff;--line:#E5DFD2;--muted:#5B6B70}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--sand);color:var(--ink);font:15.5px/1.6 Inter,system-ui,sans-serif;padding:32px 20px 80px}
+  .wrap{max-width:860px;margin:0 auto}
+  h1,h2{font-family:Fraunces,Georgia,serif;color:var(--teal)}
+  h1{font-size:30px;margin-bottom:6px}
+  h2{font-size:20px;margin:28px 0 10px}
+  .meta{color:var(--muted);margin-bottom:22px}
+  .box{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin:14px 0}
+  .box.old{border-left:5px solid #B42318}
+  .box.new{border-left:5px solid #1F7A45}
+  .lbl{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
+  .old .lbl{color:#B42318}.new .lbl{color:#1F7A45}
+  .approve{background:var(--teal);color:#F2EFE7;border-radius:12px;padding:18px 22px;margin-top:26px}
+  .approve strong{color:#fff}
+  p+p{margin-top:10px}
+  ul{margin:8px 0 8px 22px}
+  blockquote{font-family:Fraunces,Georgia,serif;font-size:19px;line-height:1.4;color:var(--ink);border-left:3px solid var(--terra);padding-left:16px;margin:10px 0}
+  .why{background:#F4EFE4;border-radius:10px;padding:14px 18px;font-size:14px;margin:14px 0}
+</style>
+</head>
+<body><div class="wrap">
+<h1>D7 — Kill the Chaga persona, rewrite the ABOUT honestly</h1>
+<div class="meta">Decision needed from Dylan · affects sales page, live site, cold emails, onboarding kit, VSL scripts, app defaults, seed data</div>
+
+<div class="why"><strong>Why this blocks outreach:</strong> the current copy claims a founder named Chaga who "built a physical-goods brand doing ~$2M/yr" and personally answered day-60 emails. That story is unverifiable. One "which brand was it?" reply from a prospect and the entire proof-only positioning collapses. The honest version below is actually a <em>stronger</em> pitch, because it makes the software the hero instead of a resume.</div>
+
+<h2>My recommendation on the name</h2>
+<p>Sign as <strong>Dylan</strong>, first name only. A nameless "we" from a one-person company reads corporate-fake and undercuts the founding-partner offer ("I do the work personally" needs an I). No last name, no bio page, no LinkedIn required. Cold email signoffs become "— Dylan".</p>
+
+<h2>1 · The website quote block (live site, "The operator behind it" section)</h2>
+<div class="box old"><div class="lbl">Current — unverifiable war story</div>
+<blockquote>"I ran a physical-goods company that did around $2M a year — our own warehouse, our own shipping, our own fulfillment. I spent years in the inbox writing the 'where's my order?' replies during long waits…"</blockquote></div>
+<div class="box new"><div class="lbl">Proposed — honest, and it bites harder</div>
+<blockquote>"I won't sell you a war story. I never ran your warehouse. What I did was read the dispute rules, the platform guidance, and the QA playbooks real support teams run — and build them into software that can't overpromise. Judge Tideover the way it judges itself: against your own baseline."</blockquote>
+<p style="font-size:13.5px;color:var(--muted)">Section kicker changes from "The operator behind it" to "The founder behind it". The proof-pledge box below it stays exactly as is — it was already honest.</p></div>
+
+<h2>2 · The ABOUT section (sales page, long version)</h2>
+<div class="box new"><div class="lbl">Proposed replacement</div>
+<p>I'm Dylan, the founder of Tideover. Let me tell you what I am and what I'm not, because trust is the entire product here.</p>
+<p>I'm not an ex-support manager, and I've never shipped a Kickstarter. I'm a technical founder who spent months studying why presale support fails: the card-network dispute rules most merchants have never read (the clock runs 120 days past your <em>expected delivery date</em>, not your sale date), Kickstarter's own creator guidance on delay communication, and the QA scorecards professional support teams grade themselves with. Then I built all of it into software instead of a slide deck.</p>
+<p>So Tideover's reassurance scripts aren't my war stories, and that's the point. They operationalize what's documented to work: the platform's published guidance (update steadily — silence, not delay, is what breaks backer trust), the support industry's own quality standards, and your real inbox once we start. And the software audits every reply before it sends: it physically cannot promise a hard delivery date. I didn't trust instinct with your customers, so I built a system that doesn't need it.</p>
+<p>Now the part most vendors skip. Tideover is new. A real "we cut refunds X%" case study needs a complete 60–120 day presale cycle to even exist. It doesn't exist yet, and I won't fake one. No invented stats, no borrowed logos, no fictional testimonials. If I'd lie about my own proof, you couldn't trust me with your customers.</p>
+<p>What you get in the pilot are the honest leading indicators, measured against your own captured baseline: faster first responses on presale tickets, fewer repeat "where's my order" messages, and every save logged with the actual ticket. The full refund case study lands after your first cohort finishes its wait — and you'll never pay for proof that isn't there yet. That's the founding-partner deal: you get the work free while I earn the case study, on your real orders.</p></div>
+
+<h2>3 · Everything else that gets swept (no approval needed per-item)</h2>
+<ul>
+<li>Cold-email + DM signoffs: "— Chaga" → "— Dylan" (9+ instances)</li>
+<li>Onboarding kit: <code>chaga@tideover.app</code> → <code>dylan@tideover.app</code>; "Chaga, Founder" → "Dylan, Founder"</li>
+<li>VSL scripts: founder references + on-screen directions rewritten to the honest register (no "I lived it" lines)</li>
+<li>App: operator default "Chaga" → "Dylan"; seed data "approvedBy" → "Dylan"</li>
+<li>Voice definition in the content bank: "ex-operator war stories" → "plain, honest, technical founder; proof-only"</li>
+</ul>
+
+<div class="approve"><strong>To approve:</strong> tell Claude <strong>"approve D7"</strong> (or "approve D7 but…" with your edits). The sweep then runs as sprint task G1 — every file above, plus a final grep proving zero "Chaga" strings remain anywhere.</div>
+</div></body>
+</html>

@@ -18,17 +18,26 @@
   --terracotta: #d9762f;
   --terracotta-600: #c25c29;
   --terracotta-300: #e0833d;
+  /* darkest terracotta — still the action hue, but dark enough to clear WCAG AA
+     (~4.8:1 on white) as small text; used where terracotta sits as a 12px label
+     (e.g. the sidebar Sign out link). */
+  --terracotta-700: #b85422;
   --tan: #e9b486;
+
+  /* caution / watch — a warm gold, deliberately distinct from terracotta (which
+     means clickable action, per design rule D1). The suggested #C99A2E failed
+     WCAG AA on sand (2.43:1), so this is darkened to clear 4.5:1 as text. */
+  --amber-status: #8a6612;
 
   --ink: #11252a;
   --slate: #374a4f;
   --ink-inverse: #f4f9f9;
-  --ink-mute: #6a7b80;
+  --ink-mute: #5a6b70;
 
   --border: #ebe2d0;
   --risk-red: #c0463b;
-  --risk-amber: #d9762f;
-  --risk-green: #3e8e6e;
+  --risk-amber: var(--amber-status);
+  --risk-green: #2c7a57;
 
   --maxw: 1160px;
 }
@@ -39,6 +48,14 @@
   }
   body {
     background: var(--sand);
+    /* Crumpled-paper page sheet (locked 52°/0.010/2.2, baked once by
+       PaperTexture.tsx into --paper-crumple-soft). The tile is a white-lit
+       relief, so multiply-blending it with the base color crumples the sand
+       behind ALL content while text painted on top stays crisp. Until the
+       client bake sets the var, background-image is invalid and the plain
+       sand renders — progressive, zero CLS. */
+    background-image: var(--paper-crumple-soft);
+    background-blend-mode: multiply;
     color: var(--ink);
     font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-size: 17px;
@@ -89,6 +106,9 @@
   /* generic card surface */
   .panel {
     background: var(--paper);
+    /* Soft crumple on card sheets (see body note) — behind content, text crisp. */
+    background-image: var(--paper-crumple-soft);
+    background-blend-mode: multiply;
     border: 1px solid var(--border);
     border-radius: 14px;
     box-shadow: 0 1px 2px rgba(17, 37, 42, 0.04), 0 8px 24px -16px rgba(17, 37, 42, 0.18);
@@ -131,14 +151,17 @@
     padding: 17px 28px;
     font-size: 16px;
   }
+  /* AA-safe terracotta: white 15-16px/600 text needs ≥4.5:1 at BOTH gradient
+     stops — #B85422 = 4.85:1, #A54A1D = 5.84:1 (computed, not eyeballed). The
+     old #E0833D→#C25C29 pair sat at 2.81:1/4.32:1 and failed across the range. */
   .btn-primary {
-    background: linear-gradient(135deg, var(--terracotta-300), var(--terracotta-600));
+    background: linear-gradient(135deg, var(--terracotta-700), #a54a1d);
     color: #fff;
-    box-shadow: 0 10px 24px -12px rgba(217, 118, 47, 0.5);
+    box-shadow: 0 10px 24px -12px rgba(184, 84, 34, 0.5);
   }
   .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 16px 30px -14px rgba(217, 118, 47, 0.6);
+    box-shadow: 0 16px 30px -14px rgba(184, 84, 34, 0.6);
   }
   .btn-ghost {
     background: transparent;
@@ -156,6 +179,13 @@
     transform: translateY(-2px);
     box-shadow: 0 16px 30px -14px rgba(0, 0, 0, 0.35);
   }
+  /* disabled affordance (UX-25) — a blocked/busy button must not read as active */
+  .btn:disabled,
+  .btn[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
 
   .link-quiet {
     color: var(--teal);
@@ -165,6 +195,11 @@
   }
   .link-quiet:hover {
     border-bottom-color: var(--teal);
+  }
+  .link-quiet:disabled,
+  .link-quiet[disabled] {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   /* section rhythm */
@@ -201,9 +236,9 @@
     border-color: rgba(192, 70, 59, 0.25);
   }
   .pill-amber {
-    color: var(--terracotta-600);
-    background: rgba(217, 118, 47, 0.1);
-    border-color: rgba(217, 118, 47, 0.25);
+    color: var(--amber-status);
+    background: rgba(138, 102, 18, 0.1);
+    border-color: rgba(138, 102, 18, 0.3);
   }
   .pill-green {
     color: var(--risk-green);
@@ -230,5 +265,674 @@
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   Dispute Evidence Pack (M2) — sober, documentary, print-first.
+   Uses the brand tokens above; no marketing flourish. window.print()
+   / "Save as PDF" must yield a clean one-to-two page document with no
+   PDF library. Print isolation hides the app chrome and shows only .evpack.
+   ============================================================ */
+.evpack {
+  position: relative;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 28px 26px 72px;
+  color: var(--ink);
+}
+.evpack .ev-doc-title {
+  font-family: var(--font-fraunces), "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 27px;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.ev-card {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+.ev-card.p-0 {
+  padding: 0;
+}
+.ev-eta {
+  border-left: 3px solid var(--teal);
+  background: var(--accent-card);
+}
+.ev-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.ev-meta {
+  font-size: 11.5px;
+  color: var(--ink-mute);
+}
+.ev-entry {
+  border-bottom: 1px solid var(--border);
+}
+.ev-entry:last-child {
+  border-bottom: 0;
+}
+/* SAMPLE DATA overlay — a screenshot/PDF-leak guard for demo merchants. */
+.ev-watermark {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+.ev-watermark span {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 112px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: rgba(192, 70, 59, 0.08);
+  transform: rotate(-27deg);
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* SAMPLE DATA corner pill — the persistent, unobtrusive marker for the
+   INTERACTIVE demo surfaces (dashboard, cockpit, customers, social, scripts, and
+   demo-merchant status pages). Distinct from the big diagonal .ev-watermark
+   print overlay above: a small fixed bottom-right pill that never blocks
+   interaction (pointer-events:none) yet stays clearly legible in a screenshot.
+   Rendered by <DemoBadge/>; gated by the caller (DEMO_MODE / merchant.isDemo). */
+.demo-badge {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 11px;
+  border-radius: 999px;
+  background: rgba(17, 37, 42, 0.86);
+  color: var(--ink-inverse);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  line-height: 1;
+  border: 1px solid rgba(244, 249, 249, 0.28);
+  box-shadow: 0 6px 18px -8px rgba(17, 37, 42, 0.55);
+  pointer-events: none;
+  user-select: none;
+}
+.demo-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--terracotta);
+  box-shadow: 0 0 0 3px rgba(217, 118, 47, 0.28);
+}
+@media print {
+  /* Print artifacts carry the .ev-watermark overlay instead; hide the pill. */
+  .demo-badge {
+    display: none !important;
+  }
+}
+
+/* ============================================================
+   Day-0 Baseline Report (M4) — the cold-outreach proof-of-method artifact.
+   Reuses the .evpack print isolation + .ev-* documentary styles above; adds a
+   four-up stat grid. PROOF-ONLY: the merchant's OWN before-picture — never a
+   Tideover result, never a projected improvement, never a hard date.
+   ============================================================ */
+.bl-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.bl-stat {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+}
+.bl-stat-value {
+  font-family: var(--font-fraunces), "Iowan Old Style", Palatino, Georgia, serif;
+  font-size: 32px;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--ink);
+}
+.bl-hero {
+  border-left: 3px solid var(--teal);
+  background: var(--accent-card);
+}
+@media (max-width: 560px) {
+  .bl-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media print {
+  @page {
+    margin: 14mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  /* Isolate the pack: hide everything, then reveal only .evpack. */
+  body * {
+    visibility: hidden !important;
+  }
+  .evpack,
+  .evpack * {
+    visibility: visible !important;
+  }
+  .evpack {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .ev-card {
+    border-color: #d7d7d7;
+    border-radius: 0;
+  }
+  .ev-eta {
+    background: #f4f7f8;
+  }
+  .ev-section,
+  .ev-entry {
+    break-inside: avoid;
+  }
+  .ev-watermark span {
+    color: rgba(192, 70, 59, 0.1);
+  }
+  /* Baseline report: keep each stat tile whole; neutralize screen fills. */
+  .bl-grid {
+    gap: 10px;
+  }
+  .bl-stat {
+    border-color: #d7d7d7;
+    border-radius: 0;
+    break-inside: avoid;
+  }
+  .bl-hero {
+    background: #f4f7f8;
+  }
+}
+
+/* ============================================================
+   Marketing paper/tide layer (redesign — marketing surfaces only).
+   Utilities the new components/marketing/paper/* primitives depend on.
+   Kept out of @layer components so it never overrides product styles, and
+   fully governed by the global prefers-reduced-motion kill above (which uses
+   `animation: none !important`, so all drift below is static for those users).
+   Tokens already exist in :root (--sand, --sand-2, --accent-card, --tan,
+   --amber-status, --terracotta*); nothing new is added there.
+   ============================================================ */
+
+/* Paper-fiber grain: a tiny (180px) seamless feTurbulence tile, desaturated,
+   tiled by CSS at ~4.5% opacity. This is a repeating background-image, NOT a
+   full-viewport CSS filter — the noise is rasterized once, then cheaply tiled.
+   Usage: place `<div class="paper-grain" aria-hidden>` as the FIRST child of a
+   `position: relative` section; content in the section paints above it. */
+.paper-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+}
+
+/* PaperStrata drift — tiny, slow, offset ease-in-out loops (calm, not springy).
+   Amplitudes stay ≤14px; the strata paths overrun their viewBox so no edge
+   shows. Disabled wholesale under prefers-reduced-motion by the global rule. */
+@keyframes paper-strata-drift-a {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-14px, 0, 0);
+  }
+}
+@keyframes paper-strata-drift-b {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(10px, 0, 0);
+  }
+}
+@keyframes paper-strata-drift-c {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-8px, 0, 0);
+  }
+}
+/* Features mega-menu entry: the panel UNFOLDS from its top edge (a slight
+   rotateX + scaleY under perspective) rather than fading — a sheet of paper
+   dropping open. Governed by the global prefers-reduced-motion kill above
+   (animation: none !important → the panel simply appears). */
+@keyframes tv-menu-in {
+  from {
+    opacity: 0;
+    transform: perspective(900px) rotateX(-9deg) scaleY(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(900px) rotateX(0) scaleY(1);
+  }
+}
+.tv-menu-in {
+  transform-origin: top center;
+  animation: tv-menu-in 180ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.paper-strata-drift-1 {
+  animation: paper-strata-drift-a 26s ease-in-out infinite alternate;
+}
+.paper-strata-drift-2 {
+  animation: paper-strata-drift-b 32s ease-in-out infinite alternate;
+}
+.paper-strata-drift-3 {
+  animation: paper-strata-drift-c 38s ease-in-out infinite alternate;
+}
+
+/* ============================================================
+   Bold-pass marketing utilities (hero above-the-fold — HEADER-IA-SPEC §2).
+   Additive and opt-in by class, so the product app and every other marketing
+   page keep their current type/CTA treatment; nothing global is retuned here.
+   ============================================================ */
+
+/* Display type — the hero headline scale jump. Fraunces at the weight it shines
+   (600), tight leading + negative tracking for the "funded company" read. Scoped
+   to the .display class (applied only on the hero H1), so the global h1 clamp and
+   every other page's headings are untouched. Unlayered → always beats @layer base
+   h1 without a global override. */
+.display {
+  font-family: var(--font-fraunces), "Iowan Old Style", Palatino, Georgia, serif;
+  /* Sized for the full-bleed ocean hero: a large centred manifesto headline over
+     the sky. Resolves to ~3 lines on desktop and settles to the 40px floor on
+     phones, where the ocean drops to give the headline room. */
+  font-size: clamp(38px, 6vw, 74px);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+/* Fully-round marketing CTA pill + a trailing-arrow nudge on hover. Product-app
+   buttons keep their 10px radius; this only applies where .btn-pill is added.
+   Unlayered, so it overrides the @layer components .btn radius. */
+.btn-pill {
+  border-radius: 999px;
+}
+.btn-pill .cta-arrow {
+  display: inline-block;
+  transition: transform 0.16s ease;
+}
+.btn-pill:hover .cta-arrow {
+  transform: translateX(3px);
+}
+
+/* Hero backdrop push — a soft top wash (warm + a faint teal shoreline glow) that
+   deepens the top of the fold so the PaperStrata tide below reads with more
+   contrast: crafted, not flat. Sits above the strata (-z-10) and below content
+   (z-10). Kept low-opacity so the enlarged headline stays fully legible. Pair it
+   with the existing .paper-grain overlay for fiber texture. */
+.hero-wash {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(130% 72% at 50% -18%, rgba(14, 83, 102, 0.08), rgba(14, 83, 102, 0) 56%),
+    linear-gradient(180deg, rgba(228, 238, 240, 0.55), rgba(251, 248, 242, 0) 40%);
+}
+
+/* ============================================================
+   Motion + depth pass (marketing) — the origami LIFT system.
+   One 3-level paper-elevation scale plus the interaction states the paper
+   primitives share, so elevation is systematic, not per-card improvisation.
+   Everything here is transform / opacity / box-shadow only, and is fully
+   governed by the global prefers-reduced-motion kill above (which zeroes every
+   animation + transition, leaving the resting state visible and static).
+   The matching JS <FoldCard> reveal (framer-motion) mirrors these same shadow
+   values and is separately gated with useReducedMotion().
+   ============================================================ */
+
+:root {
+  /* 3-level paper elevation: resting → hover → lifted. Warm ink-tinted, never
+     a pure-black drop shadow. --elev-3 is reserved for the hero/demo anchors. */
+  --elev-1: 0 1px 2px rgba(17, 37, 42, 0.05), 0 12px 28px -18px rgba(17, 37, 42, 0.2);
+  --elev-2: 0 2px 6px rgba(17, 37, 42, 0.06), 0 24px 46px -22px rgba(17, 37, 42, 0.28);
+  --elev-3: 0 4px 10px rgba(17, 37, 42, 0.07), 0 34px 60px -26px rgba(17, 37, 42, 0.34);
+}
+
+/* CSS lift for cards that are NOT framer motion elements (e.g. the pricing
+   tiers): rests at --elev-1, rises 4px to --elev-2 on hover, settles on press.
+   Pair with a `group` parent so a CornerFold can grow in the same gesture. */
+.lift {
+  box-shadow: var(--elev-1);
+  transition: transform 0.34s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.34s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--elev-2);
+}
+.lift:active {
+  transform: translateY(-1px);
+}
+
+/* Terracotta CTA press — the pill pushes into the page on click, its shadow
+   collapsing, so the primary action feels physical. Hover-lift lives on
+   .btn-primary above; these are the down-states. Unlayered → beats the
+   @layer components `.btn:active` translate. */
+.btn-primary:active {
+  transform: translateY(1px) scale(0.985);
+  box-shadow: 0 4px 12px -8px rgba(184, 84, 34, 0.5);
+}
+.btn-ondark:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+/* FAQ answer reveal — a short rise-and-fade as the native <details> opens.
+   Transform/opacity only; the height change is left to the browser and never
+   animated. Disabled wholesale under prefers-reduced-motion by the global kill,
+   so the answer simply appears. */
+@keyframes tv-faq-open {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+details[open] .faq-answer {
+  animation: tv-faq-open 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ============================================================
+   Origami hero scene (OrigamiScene.tsx + Hero.tsx) — a FULL-BLEED papercraft
+   ocean that ROLLS. This seascape IS the page's one ambient element: waves roll
+   forward like a treadmill (seamless user-unit loops, all same direction, front
+   fastest) with a vertical swell carry, a boat sails across bobbing + pitching,
+   and white cut-paper edges stack the sheets. All transform/opacity, zero filters
+   on anything that moves. The four ~250-path treadmill loops ride HTML wrapper
+   divs (.oc-roll) — not inner SVG <g>s — because Safari repaints inner-SVG
+   transforms on the main thread; only the small boat bob/pitch and sun-ray spin
+   (a handful of paths each) stay on inner <g>s. Every resting style is the
+   finished visible state, so under the global
+   prefers-reduced-motion kill the whole landscape renders static with all copy
+   visible and the boat parked at its base position.
+   ============================================================ */
+
+/* Layer primitives. Each wave band is an outer WRAPPER div (does the CSS-px
+   vertical swell carry, and clips) holding an oversized ROLL div (.oc-roll —
+   the horizontal treadmill) that carries one strip SVG whose viewBox is one
+   viewport span + one period wide (preserveAspectRatio="none"). The roll is an
+   HTML element on purpose: Safari repaints transforms on inner SVG <g>s on the
+   main thread every frame, but composites a div transform like everything else.
+   The boat + distant boat are their own small SVGs that sail across. Heights
+   are svh; z stacks back → boat → front. */
+.oc-band {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  overflow: hidden;
+  will-change: transform;
+}
+.oc-roll {
+  height: 100%;
+  will-change: transform;
+}
+.oc-roll > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* Hero sky — the FULL-strength crumpled paper (locked 52°/0.010/2.2), laid as a
+   static overlay that multiplies over the hero's sky color. Static layer: it
+   never animates, so the one-time baked raster costs nothing per frame. */
+.oc-sky-paper {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 72svh;
+  z-index: 0;
+  background: var(--paper-crumple);
+  mix-blend-mode: multiply;
+  pointer-events: none;
+  /* Fade the sheet out before it reaches the water — a hard-edged rectangle of
+     texture ending mid-sky reads as a seam (it did). The fade also keeps the
+     creases lightest exactly where the headline sits. */
+  -webkit-mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.85) 46%, rgba(0, 0, 0, 0.35) 78%, transparent 100%);
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.85) 46%, rgba(0, 0, 0, 0.35) 78%, transparent 100%);
+}
+
+/* Baked-crumple overlays for the MOVING sky objects (sun disc, clouds): the
+   raster rides INSIDE the animated element (composited with it — zero per-frame
+   cost, per the no-live-filters-on-movers rule), masked to the object's shape. */
+.oc-crumple {
+  position: absolute;
+  inset: 0;
+  background: var(--paper-crumple);
+  mix-blend-mode: multiply;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.oc-crumple-disc {
+  -webkit-mask: radial-gradient(circle at 50% 50%, #000 29%, transparent 30.5%);
+  mask: radial-gradient(circle at 50% 50%, #000 29%, transparent 30.5%);
+}
+.oc-crumple-cloud {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 74'%3E%3Ccircle cx='44' cy='46' r='22'/%3E%3Ccircle cx='76' cy='34' r='28'/%3E%3Ccircle cx='110' cy='46' r='20'/%3E%3Crect x='42' y='46' width='70' height='22' rx='11'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 74'%3E%3Ccircle cx='44' cy='46' r='22'/%3E%3Ccircle cx='76' cy='34' r='28'/%3E%3Ccircle cx='110' cy='46' r='20'/%3E%3Crect x='42' y='46' width='70' height='22' rx='11'/%3E%3C/svg%3E") 0 0/100% 100% no-repeat;
+}
+/* Band wrappers: height + z + the vertical swell carry (CSS px, own duration NOT
+   a multiple of the band's roll duration, stepped delay so the swell travels). */
+.oc-band-a { height: 46svh; z-index: 1; --carry: -8px; animation: oc-carry 6.8s ease-in-out 0s infinite; }
+.oc-band-b { height: 40svh; z-index: 1; --carry: -8px; animation: oc-carry 6.3s ease-in-out -0.5s infinite; }
+.oc-band-c { height: 34svh; z-index: 1; --carry: -9px; animation: oc-carry 5.7s ease-in-out -1s infinite; }
+.oc-band-front { height: 30svh; z-index: 4; --carry: -9px; animation: oc-carry 5s ease-in-out -1.5s infinite; }
+
+/* Treadmill roll (.oc-roll div): each band's strip SVG is (1200+P)/1200 of the
+   band's width (P = that band's period in user units — a:632 b:660 c:580 d:612),
+   and one cycle translates the div by P/(1200+P) OF ITS OWN WIDTH — i.e. exactly
+   one period in rendered px at every viewport width, so the wrap seam always
+   lands on identical periodic geometry. Linear/infinite, ALL same direction,
+   front fastest → back slowest (~2:1), negative delays so the layers never
+   sync-lock. Durations are unchanged from the old user-unit version → same
+   speeds. HTML-element transform → composited in Safari too. */
+.oc-roll-a { width: calc(100% * 1832 / 1200); animation: oc-roll-a 20s linear -7s infinite; }
+.oc-roll-b { width: calc(100% * 1860 / 1200); animation: oc-roll-b 15s linear -5s infinite; }
+.oc-roll-c { width: calc(100% * 1780 / 1200); animation: oc-roll-c 12s linear -3s infinite; }
+.oc-roll-d { width: calc(100% * 1812 / 1200); animation: oc-roll-d 9s linear -1.5s infinite; }
+@keyframes oc-roll-a { to { transform: translate3d(calc(-100% * 632 / 1832), 0, 0); } }
+@keyframes oc-roll-b { to { transform: translate3d(calc(-100% * 660 / 1860), 0, 0); } }
+@keyframes oc-roll-c { to { transform: translate3d(calc(-100% * 580 / 1780), 0, 0); } }
+@keyframes oc-roll-d { to { transform: translate3d(calc(-100% * 612 / 1812), 0, 0); } }
+@keyframes oc-carry {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, var(--carry, -8px), 0); }
+}
+
+/* Boat sails L→R (traverse), bobbing + pitching. Base left is the reduced-motion
+   resting spot; the traverse holds empty sea 80–100% then snaps back off-screen.
+   Pitch leads bob by a quarter cycle so the bow rises into swells. */
+/* The carry wrapper shares the FRONT band's exact swell (same oc-carry duration,
+   delay, and --carry) so the boat and the wave it sits in rise/fall together —
+   the hull-vs-front-crest overlap is a fixed margin, not an oscillation. */
+.oc-boat-carry {
+  position: absolute;
+  left: 58%;
+  bottom: 11svh;
+  width: clamp(286px, 34vw, 506px);
+  z-index: 3;
+  will-change: transform;
+  --carry: -9px;
+  animation: oc-carry 5s ease-in-out -1.5s infinite;
+}
+.oc-boat {
+  display: block;
+  width: 100%;
+  will-change: transform;
+  animation: oc-traverse 52s linear -16s infinite;
+}
+.oc-dist {
+  position: absolute;
+  left: 30%;
+  bottom: 27svh;
+  width: clamp(30px, 3.4vw, 50px);
+  opacity: 0.6;
+  z-index: 2;
+  will-change: transform;
+  animation: oc-traverse 74s linear -45s infinite;
+}
+/* Boat bob + pitch are phase-tied to band 2's (band-c) swell — same 5.7s Y
+   family + phase, pitch leading a quarter cycle so the bow rises INTO the swell:
+   the boat visibly rides that wave rather than floating on its own clock. */
+.oc-boat-bob { transform-box: fill-box; transform-origin: 50% 68%; animation: oc-bob 5.3s ease-in-out -1s infinite; }
+.oc-boat-pitch { transform-box: fill-box; transform-origin: 50% 86%; animation: oc-pitch 5s ease-in-out -2.75s infinite; }
+.oc-dist-bob { transform-box: fill-box; transform-origin: 50% 68%; animation: oc-bob 6.3s ease-in-out infinite; }
+.oc-dist-pitch { transform-box: fill-box; transform-origin: 50% 86%; animation: oc-pitch 6.3s ease-in-out -1.6s infinite; }
+@keyframes oc-traverse {
+  0% { transform: translate3d(-82vw, 0, 0); }
+  80% { transform: translate3d(82vw, 0, 0); }
+  100% { transform: translate3d(82vw, 0, 0); }
+}
+@keyframes oc-bob {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -2px, 0); }
+}
+@keyframes oc-pitch {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+/* Sky objects — a slowly-turning rayed cut-paper sun (upper-left, clear of the
+   headline) and cut-paper clouds drifting across the top strip and wrapping off
+   both edges. Both join the reduced-motion static composition (the global kill
+   freezes them, still visible). */
+.oc-sun {
+  position: absolute;
+  top: clamp(74px, 9vh, 128px);
+  left: clamp(14px, 4vw, 82px);
+  width: clamp(58px, 6vw, 96px);
+  z-index: 1;
+  pointer-events: none;
+}
+.oc-sun svg,
+.oc-cloud svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.oc-sun-rays {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: oc-sun-spin 200s linear infinite;
+}
+@keyframes oc-sun-spin {
+  to { transform: rotate(360deg); }
+}
+.oc-cloud {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform;
+}
+/* base `left` spreads the clouds so the reduced-motion static state (transform
+   killed) reads as a scattered sky rather than a stack at the left edge. */
+.oc-cloud-1 { top: 3vh; left: 10%; width: clamp(76px, 8.5vw, 118px); animation: oc-cloud-drift 96s linear -14s infinite; }
+.oc-cloud-2 { top: 6vh; left: 45%; width: clamp(56px, 6.5vw, 92px); opacity: 0.92; animation: oc-cloud-drift 122s linear -74s infinite; }
+.oc-cloud-3 { top: 1vh; left: 70%; width: clamp(66px, 7.5vw, 104px); animation: oc-cloud-drift 82s linear -42s infinite; }
+@keyframes oc-cloud-drift {
+  from { transform: translate3d(-20vw, 0, 0); }
+  to { transform: translate3d(122vw, 0, 0); }
+}
+
+/* Copy rise — the sub/CTA/meta lift on load. Stagger via inline delay. */
+.oc-rise {
+  animation: oc-rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes oc-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* LCP-safe rise for the headline ONLY: transform, never opacity. The h1 is the
+   homepage's LCP element — Chrome excludes opacity:0 content from LCP, so the
+   headline must be fully visible at first paint. It waits a few px low during
+   the entrance delay, then lifts into place; the fade stagger stays on the
+   secondary copy (.oc-rise). Do not add opacity here. */
+.oc-rise-lcp {
+  animation: oc-rise-lcp 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@keyframes oc-rise-lcp {
+  from { transform: translateY(12px); }
+  to { transform: translateY(0); }
+}
+@keyframes oc-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Scroll cue — fades in, then bobs; stays horizontally centred throughout. */
+.oc-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  z-index: 6;
+  transform: translateX(-50%);
+  color: #e8f1f1;
+  opacity: 0.85;
+  animation: oc-fade 0.6s ease-out 1.4s both, oc-cue-bob 2.4s ease-in-out 2s infinite;
+}
+@keyframes oc-cue-bob {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(6px); }
+}
+
+/* Mobile — fewer bands, a lower ocean so the copy never meets the water; the
+   boat still sails across (lower + a touch smaller), the headline still the hero. */
+@media (max-width: 640px) {
+  /* The big centred headline leaves no clear sky strip on a phone, so the sun +
+     clouds drop out and the waves + boat carry the mobile scene. */
+  .oc-band-c,
+  .oc-dist,
+  .oc-cloud-1,
+  .oc-cloud-2,
+  .oc-cloud-3,
+  .oc-sun {
+    display: none;
+  }
+  .oc-band-a { height: 34svh; }
+  .oc-band-b { height: 29svh; }
+  .oc-band-front { height: 25svh; }
+  .oc-boat-carry {
+    bottom: 13svh;
+    width: clamp(156px, 36vw, 216px);
   }
 }

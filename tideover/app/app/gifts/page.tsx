@@ -1,10 +1,14 @@
 import { getQueue } from "@/lib/service";
 import { getRepositories } from "@/lib/repositories";
-import { recommendGift } from "@/lib/engines";
+import { activeCatalog } from "@/lib/gift-catalog";
+import { isEscalatedSentiment, recommendGift } from "@/lib/engines";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
+import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { Tag } from "@/components/ui/Badge";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Gifts — Tideover" };
 
 const KIND_LABEL: Record<string, string> = {
   "early-access": "Early access",
@@ -16,6 +20,12 @@ const KIND_LABEL: Record<string, string> = {
 
 const dollars = (cents: number) => `$${(cents / 100).toFixed(0)}`;
 
+const TIER_UNLOCK: Record<string, string> = {
+  base: "any risk level",
+  mid: "watch risk or higher",
+  full: "high risk or escalation",
+};
+
 export default async function GiftsPage({
   searchParams,
 }: {
@@ -24,7 +34,7 @@ export default async function GiftsPage({
   const repos = getRepositories();
   const merchants = await repos.merchants.list();
   if (merchants.length === 0) {
-    return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
+    return <NoMerchantState />;
   }
   const merchantId =
     searchParams.merchant && merchants.some((m) => m.id === searchParams.merchant)
@@ -32,22 +42,23 @@ export default async function GiftsPage({
       : merchants[0].id;
 
   const merchant = merchants.find((m) => m.id === merchantId)!;
-  const [catalog, queue] = await Promise.all([
+  const [allGifts, queue] = await Promise.all([
     repos.gifts.listByMerchant(merchantId),
     getQueue(merchantId),
   ]);
+  // Only the ACTIVE catalog (giftCatalogIds) — a gift retired in /app/settings
+  // keeps its record but must stop showing as offerable.
+  const catalog = activeCatalog(merchant, allGifts);
 
   const recommendations = queue
     .filter((r) => r.band !== "standard")
     .map((r) => ({
       row: r,
       result: recommendGift({
-        customer: r.customer,
-        order: r.order,
-        daysInWait: r.daysInWait,
         riskScore: r.riskScore,
-        highTierCents: merchant.ltvTiers.high,
+        escalated: isEscalatedSentiment(r.ticket.sentiment),
         catalog,
+        daysInWait: r.daysInWait,
       }),
     }))
     .filter((x) => x.result.gift !== null);
@@ -61,7 +72,9 @@ export default async function GiftsPage({
             Goodwill catalog
           </h1>
           <p className="text-[13px] text-ink-mute">
-            One-click goodwill, gated on lifetime value + wait + risk.
+            One-click goodwill, unlocked by refund-risk band.{" "}
+            <span title="Pledge value — total this backer has spent">Pledge value</span> sets
+            priority, not access.
           </p>
         </div>
         <MerchantSwitcher
@@ -94,8 +107,8 @@ export default async function GiftsPage({
                   </span>
                 </div>
                 <div className="mt-1 border-t border-border pt-2 text-[12px] text-ink-mute">
-                  Eligible at LTV ≥ {dollars(g.eligibility.minLtvCents)} · wait ≥{" "}
-                  {g.eligibility.minWaitDays}d · risk ≥ {g.eligibility.minRiskScore}
+                  Tier <span className="font-semibold text-ink">{g.tier}</span> · unlocks at{" "}
+                  {TIER_UNLOCK[g.tier] ?? "—"}
                 </div>
               </div>
             ))}

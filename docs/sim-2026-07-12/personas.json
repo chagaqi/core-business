@@ -1,0 +1,2795 @@
+{
+ "personas": [
+  {
+   "id": "p01-foldwork-solo-ks",
+   "name": "Nia Okafor",
+   "brand": "Foldwork Press",
+   "story": "I funded a 240-page risograph art book on my own, at my kitchen table, and I still cannot believe 420 people gave me money for it. The printer moved my slot twice and now I open Kickstarter every morning with my stomach in a knot. I answer every single message myself, at night, after my day job, and I have started to dread the little red dot.",
+   "path": "ks-csv",
+   "dataReceived": "Kickstarter backer report CSV only (no KS API exists). Tideover receives: Backer Number, Backer Name, Email, Reward Title, Reward Minimum, Pledge Amount, Pledged Status, Shipping Country. POPULATED: email, firstName, orderValueCents, sourceKey->importKey, group=ks-backer. MISSING: no Estimated Delivery column exists, so disclosedEta is undefined for all 420 orders (every one lands in dispute-exposure unknownCount and the evidence pack has no 'we disclosed X' artifact). Pledge-date header name is inconsistent across KS exports (Highview Apps: 'There is not a consistent set of column names in the Kickstarter CSV file'), so the datelessRows counter is the load-bearing signal on day 0. region hardcoded 'US' even though Shipping Country is in the file. ltvCents = summed pledge value, not lifetime value.",
+   "intake": {
+    "brandName": "Foldwork Press",
+    "voice": "A tired, warm, one-person studio. Writes like a person, not a brand. Explains what is physically happening in the print shop and never guesses at a date.",
+    "tone": [
+     "warm",
+     "plain",
+     "specific",
+     "unhurried"
+    ],
+    "banned": [
+     "guaranteed",
+     "definitely",
+     "any day now",
+     "shipping next week",
+     "we promise",
+     "ASAP",
+     "no later than",
+     "on track",
+     "sorry for the inconvenience"
+    ],
+    "signoff": "- Nia, Foldwork Press",
+    "windowMinDays": 90,
+    "windowMaxDays": 120,
+    "stages": [
+     {
+      "key": "sourcing",
+      "label": "Paper sourced",
+      "dayBand": {
+       "from": 0,
+       "to": 20
+      },
+      "blurb": "The uncoated stock for the interior is ordered and the cover board is confirmed with the mill."
+     },
+     {
+      "key": "production",
+      "label": "On press",
+      "dayBand": {
+       "from": 21,
+       "to": 62
+      },
+      "blurb": "Risograph runs one colour at a time. Each pass has to dry before the next one, which is why this stage is the long one."
+     },
+     {
+      "key": "qc",
+      "label": "Binding and check",
+      "dayBand": {
+       "from": 63,
+       "to": 82
+      },
+      "blurb": "Signatures are folded, sewn, and I check a sample from every stack for offset and registration."
+     },
+     {
+      "key": "freight",
+      "label": "To the fulfilment room",
+      "dayBand": {
+       "from": 83,
+       "to": 106
+      },
+      "blurb": "Books move from the bindery to the room where I pack them. Slow, boring, and the part nobody photographs."
+     },
+     {
+      "key": "dispatch",
+      "label": "Packing and posting",
+      "dayBand": {
+       "from": 107,
+       "to": 120
+      },
+      "blurb": "Packed by hand in wave order, oldest pledge first, and handed to the post office in batches."
+     }
+    ],
+    "gifts": [
+     {
+      "name": "Printed process zine (PDF)",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 1200
+     },
+     {
+      "name": "Handwritten note in the parcel",
+      "kind": "founder-note",
+      "tier": "mid",
+      "costCents": 300,
+      "perceivedValueCents": 2500
+     },
+     {
+      "name": "First-wave pack and post",
+      "kind": "priority-dispatch",
+      "tier": "full",
+      "costCents": 900,
+      "perceivedValueCents": 4000
+     },
+     {
+      "name": "Signed print, next drop",
+      "kind": "next-order-credit",
+      "tier": "full",
+      "costCents": 1800,
+      "perceivedValueCents": 6000
+     }
+    ]
+   },
+   "backers": {
+    "count": 420,
+    "orderValueCentsMin": 2500,
+    "orderValueCentsMax": 14000,
+    "pledgeDateSpreadDays": 30,
+    "ltvPattern": "Single pledge each; summed pledge value only. Median $38, long thin tail of $110-$140 collector tiers (about 6% of backers). No repeat orders exist yet, so every ltvCents sits far below the hardcoded $500 high tier - the LTV gate is dead weight here and priority must come from risk band, not money. SIMULATED population."
+   },
+   "events": [
+    {
+     "day": 0,
+     "type": "import",
+     "customerIndex": -1,
+     "subject": "CSV import: 420 backers, day 52 of the wait",
+     "body": "Kickstarter backer report exported this morning and dropped into Tideover.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Run the import and read the datelessRows counter before anything else. If the export's date header missed the aliases, all 420 rows read day 0 and every wait clock, band, and confidence range in the product is wrong. Re-export or set fulfillmentStart by hand, then confirm disclosedEta is undefined for the whole file and accept that the evidence pack has no disclosure artifact for this campaign."
+    },
+    {
+     "day": 1,
+     "type": "wismo",
+     "customerIndex": 12,
+     "subject": "Just checking in, no rush",
+     "body": "Hi Nia, not chasing, just curious how the book is going. I have been quiet on the updates because I figured you would post when there was something to post. Hope the printing is going well.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "This is the reassurance-class backer - loyal, quiet, invisible to any queue sorted by anger or volume. Approve the deterministic draft with the current stage blurb and the confidence band. Cheapest ticket in the queue to keep, most expensive to ignore."
+    },
+    {
+     "day": 2,
+     "type": "wismo",
+     "customerIndex": 47,
+     "subject": "Update?",
+     "body": "There has been no update since the middle of May and no reply to the message I sent two weeks ago. I am not trying to be difficult but the silence is loud.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Note the grievance is the non-reply, not the delay. Approve a draft that names the last update, states the current stage, and gives the band. Do not apologise in the abstract; answer the actual complaint."
+    },
+    {
+     "day": 3,
+     "type": "other",
+     "customerIndex": 3,
+     "subject": "Moved house",
+     "body": "I have moved since I backed. New address below. I updated it on Kickstarter too but I have no idea if that actually goes anywhere.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log the address change against the order. Do not trust the Kickstarter address-update email as the system of record; half of them show no change when you open the spreadsheet. Confirm back in writing so the backer stops asking."
+    },
+    {
+     "day": 5,
+     "type": "refund",
+     "customerIndex": 88,
+     "subject": "Refund",
+     "body": "I backed this in February. It is July. I would like my money back rather than wait another three months for a book I will have stopped caring about.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "High-value tier backer. Score the refund risk, offer the mid-tier goodwill gift with the stage detail, and never counter with a date. If they hold, log the save in the outcome ledger; if they still want out, refund cleanly and record it."
+    },
+    {
+     "day": 6,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Press slot moved three weeks",
+     "body": "Broadcast: the printer lost my press slot to a bigger job. Interior pages move about three weeks later than the last band I gave.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Widen the window band on the status page BEFORE posting, push the update, and expect the wave. The band moves; no new hard date is issued. Watch the WISMO cohort forecast for the next 72 hours."
+    },
+    {
+     "day": 7,
+     "type": "pile-on",
+     "customerIndex": -1,
+     "subject": "Comment wall spike after the delay post",
+     "body": "Public campaign comments, 40+ in six hours. Top comment: 'Another push back. I gave you kind views on the last two delays. This is over the top now.' Reply chain is other backers agreeing.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Answer in public, once, with the band and the stage. Serve the many rather than one at a time. Do not go quiet - the silence after a delay post is what converts backers into detractors. Approve one public-facing reply and let the status page absorb the rest."
+    },
+    {
+     "day": 8,
+     "type": "wismo",
+     "customerIndex": 47,
+     "subject": "Re: Update?",
+     "body": "So the answer is another delay. Cool. At what point does this stop being a delay and start being a pattern?",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Second contact from the same backer, tone escalated. Risk band should have moved. Reply with the specific stage and what physically changed, not with reassurance language."
+    },
+    {
+     "day": 10,
+     "type": "refund",
+     "customerIndex": 88,
+     "subject": "Re: Refund",
+     "body": "No reply to my refund request either. That is what actually bothers me now. Not the book. The fact that nobody answers.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Silence on a refund request is its own grievance. Escalate to the top of the queue, reply same day, and start the evidence pack: pledge date, every update posted, every reply sent."
+    },
+    {
+     "day": 12,
+     "type": "wismo",
+     "customerIndex": 201,
+     "subject": "Shipping to Canada?",
+     "body": "Is Canada in the same shipping wave as the US or do we go later? Last campaign I backed, we went two months later and nobody said so up front.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Region is hardcoded 'US' at import even though the KS export carries Shipping Country. Fix the region on this order by hand or the status page tells a Canadian backer a US story. Answer with the wave logic, published."
+    },
+    {
+     "day": 14,
+     "type": "deposit",
+     "customerIndex": 155,
+     "subject": "Was I charged twice?",
+     "body": "I see two charges from Kickstarter on my card. Did something go wrong with my pledge?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Money question, not a wait question. Answer factually from the pledge record and resolve fast - unanswered money questions become disputes at a much higher rate than unanswered wait questions."
+    },
+    {
+     "day": 16,
+     "type": "wismo",
+     "customerIndex": 12,
+     "subject": "Saw the update, thanks",
+     "body": "Thanks for actually explaining what happened with the press. I would rather have that than a fake date.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Close it, log a CSAT, and note in the ledger that the delay post plus band retained a standard-band backer. This is the evidence the proof pack is built from."
+    },
+    {
+     "day": 19,
+     "type": "other",
+     "customerIndex": 310,
+     "subject": "Add a second copy?",
+     "body": "Can I add another copy for a friend and pay you directly? I do not want to miss the run.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Revenue the merchant would otherwise refuse and convert into a ticket. Handle it as a late-pledge, tag the order, and do not let it queue behind WISMO."
+    },
+    {
+     "day": 22,
+     "type": "wismo",
+     "customerIndex": 47,
+     "subject": "Where is it",
+     "body": "Any actual movement, or is this the part where the updates stop for three months?",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Third contact. Band should be at_risk. Approve a draft with a full-tier goodwill unlock and a specific stage fact. The pattern to break is: creator goes quiet after a delay, backer escalates."
+    },
+    {
+     "day": 25,
+     "type": "refund",
+     "customerIndex": 88,
+     "subject": "Filing with my bank",
+     "body": "I am giving you until Friday and then I am calling my card company. I have asked three times.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Pull the evidence pack now: pledge date, every update posted, every reply sent, the stage timeline. Reply the same day. Decide refund versus save on the ledger, not on mood."
+    },
+    {
+     "day": 28,
+     "type": "wismo",
+     "customerIndex": 380,
+     "subject": "Sorry to add to the pile",
+     "body": "I know you are getting a lot of these. Just wanted to say I am still in and the book will be worth it.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Low-effort approve. Log CSAT. The queue's emotional read of the campaign is set by the 1% who shout; this ticket is the counterweight and belongs in the outcome ledger."
+    },
+    {
+     "day": 30,
+     "type": "wismo",
+     "customerIndex": 260,
+     "subject": "Cohort question",
+     "body": "What batch am I in? Backer number 260, if that helps.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Answer from the wave, not from a spreadsheet lookup. If this ticket still requires opening a spreadsheet to answer, the import did not work."
+    }
+   ],
+   "withoutTideover": "Gmail plus one Google Sheet of the KS backer export, sorted by backer number. Every WISMO is a manual query against that sheet. At the merchant-reported handling time of 5-10 minutes per WISMO ticket (Shopify Community, abhishek27377), and roughly 8-14 tickets a day across a 420-backer campaign in a delay window, that is 0.7-2.3 hours/day of lookup-and-reply - a SIMULATED formula-based estimate from stated assumptions, not a measured result. What slips: the delay post gets written three times and posted late because she is afraid of the comment wall; the refund request at index 88 sits unanswered for eleven days and turns into a chargeback threat; the address change at index 3 is logged in a sheet and never reaches the packing list."
+  },
+  {
+   "id": "p02-lumenfield-big-ks",
+   "name": "Priya Raghunathan",
+   "brand": "Lumen Field",
+   "story": "We raised on Kickstarter for a modular desk light and 18,400 people backed it, which is roughly 18,000 more than we planned for. The tooling vendor cracked a mould in the second shot and the whole thing moved by eight weeks. We have two people answering messages and the comments section has decided we are a scam.",
+   "path": "ks-pledge-manager",
+   "dataReceived": "Kickstarter native Pledge Manager export CSV. Tideover receives the backer-report fields plus add-ons, shipping paid, taxes paid, PM status, survey timestamps, and per-SKU columns. POPULATED: email, firstName, orderValueCents, sourceKey, group, and a real pledge date if the header hits an alias. CRITICAL: add-on / shipping / tax columns are DETECTION-ONLY and never persisted (csv.ts:247-259), so a $95 pledge plus $180 of add-ons imports as $95 - valueExposure and the money-at-risk tile understate by roughly 65% on this population. The PM amount aliases are defensive guesses; no primary source publishes the column spec. No estimated-delivery column, so disclosedEta is undefined for all 18,400 orders.",
+   "intake": {
+    "brandName": "Lumen Field",
+    "voice": "Two engineers who would rather show you the failed part than write a press release. Concrete, technical, calm. No hype, no dates.",
+    "tone": [
+     "direct",
+     "technical",
+     "steady",
+     "unspun"
+    ],
+    "banned": [
+     "on track",
+     "guaranteed",
+     "final date",
+     "we promise",
+     "shipping imminently",
+     "soon",
+     "definitely",
+     "by the end of the month",
+     "no further delays"
+    ],
+    "signoff": "- Priya and Sam, Lumen Field",
+    "windowMinDays": 100,
+    "windowMaxDays": 150,
+    "stages": [
+     {
+      "key": "sourcing",
+      "label": "Components locked",
+      "dayBand": {
+       "from": 0,
+       "to": 18
+      },
+      "blurb": "LEDs, drivers, and the aluminium extrusion are locked with the suppliers and the first lots are paid for."
+     },
+     {
+      "key": "tooling",
+      "label": "Tooling",
+      "dayBand": {
+       "from": 19,
+       "to": 70
+      },
+      "blurb": "Injection moulds for the joint housing. This is the stage that is most likely to move, and it is the stage that moved."
+     },
+     {
+      "key": "production",
+      "label": "Line run",
+      "dayBand": {
+       "from": 71,
+       "to": 108
+      },
+      "blurb": "Units come off the line in batches of about 2,000. Batches ship in the order they are built."
+     },
+     {
+      "key": "qc",
+      "label": "Quality check",
+      "dayBand": {
+       "from": 109,
+       "to": 124
+      },
+      "blurb": "Every unit is powered on and the joint is cycled 200 times. Failed units go back, which slows a batch."
+     },
+     {
+      "key": "freight",
+      "label": "Ocean freight",
+      "dayBand": {
+       "from": 125,
+       "to": 142
+      },
+      "blurb": "Sea freight to the regional hubs. Air freight is not viable at this unit weight."
+     },
+     {
+      "key": "dispatch",
+      "label": "Regional dispatch",
+      "dayBand": {
+       "from": 143,
+       "to": 150
+      },
+      "blurb": "Out of the hub in your region, in build order."
+     }
+    ],
+    "gifts": [
+     {
+      "name": "Digital assembly guide + CAD files",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 1500
+     },
+     {
+      "name": "Note from the founders with the tooling photos",
+      "kind": "founder-note",
+      "tier": "mid",
+      "costCents": 200,
+      "perceivedValueCents": 2000
+     },
+     {
+      "name": "Spare joint module in the box",
+      "kind": "digital-perk",
+      "tier": "mid",
+      "costCents": 1400,
+      "perceivedValueCents": 3900
+     },
+     {
+      "name": "First batch, first out",
+      "kind": "priority-dispatch",
+      "tier": "full",
+      "costCents": 2200,
+      "perceivedValueCents": 9000
+     },
+     {
+      "name": "$40 credit on the accessory store",
+      "kind": "next-order-credit",
+      "tier": "full",
+      "costCents": 1600,
+      "perceivedValueCents": 4000
+     }
+    ]
+   },
+   "backers": {
+    "count": 18400,
+    "orderValueCentsMin": 6500,
+    "orderValueCentsMax": 48000,
+    "pledgeDateSpreadDays": 34,
+    "ltvPattern": "Base pledge $95-$140, but 41% of backers bought add-ons averaging $170 that Tideover does not persist. Real exposure is roughly 1.65x what the money-at-risk tile shows. About 380 backers cleared $400+ in true pledge-plus-add-on value; on the imported number most of them read as standard tier, so the $500 high-tier threshold almost never fires and the save gate stays shut on the people most worth saving. SIMULATED population.",
+    "ltvNote": "Operator must know the tile is low before quoting it to anyone."
+   },
+   "events": [
+    {
+     "day": 0,
+     "type": "import",
+     "customerIndex": -1,
+     "subject": "Pledge Manager export: 18,400 backers, day 34 of the wait",
+     "body": "KS pledge manager CSV, 18,400 rows, 41% with add-ons.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Import, then check datelessRows and the money-at-risk tile. Add-ons are detected but not persisted, so the tile is understating exposure by roughly 65%. Do not quote that number to anyone until it is corrected. Confirm disclosedEta is undefined across the file."
+    },
+    {
+     "day": 1,
+     "type": "wismo",
+     "customerIndex": 4021,
+     "subject": "Wave question",
+     "body": "Which batch am I in? Backer 4021. I have read every update and I still cannot work out whether I am early or late in the queue.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "The queue order was never published, which is where fairness anger starts. Publish the wave logic on the status page, then reply with this backer's wave."
+    },
+    {
+     "day": 2,
+     "type": "wismo",
+     "customerIndex": 9110,
+     "subject": "Retail listing?",
+     "body": "I just saw the light listed on a retail site with a ship date. Are retail preorders going out at the same time as backers? Because I would be shocked, except no I would not, because you have not been telling us anything.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Deprioritisation fear plus sarcasm. Answer in public. State the backer-first build order explicitly and put it on the status page, or this becomes the top comment for a month."
+    },
+    {
+     "day": 4,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Tooling: cracked mould, eight weeks",
+     "body": "Broadcast: second-shot mould cracked at the joint housing. Re-cut is 6-8 weeks. The band moves; there is no new date.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Widen the band on the status page first, then post with the photo of the cracked tool. Send the cohort a status link. Expect the WISMO forecast to spike for 5-7 days and staff for it."
+    },
+    {
+     "day": 5,
+     "type": "pile-on",
+     "customerIndex": -1,
+     "subject": "Comment wall: 300+ comments in 12 hours",
+     "body": "Public comments after the tooling post. Recurring lines: 'nothing but false promises', 'this is how it starts', 'has anyone here actually received a product from these people'. Backers from an unrelated failed campaign are showing up.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "One public reply, in the update thread, with the tool photo and the band. Do not answer 300 comments one at a time. This is the moment morale collapses and creators stop posting - the status page exists so the merchant does not have to win an argument to stay visible."
+    },
+    {
+     "day": 6,
+     "type": "refund",
+     "customerIndex": 9110,
+     "subject": "Refund, all of it",
+     "body": "Eight weeks becomes twelve, then it becomes a year. Refund my pledge and my add-ons.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Look at the true value including add-ons, not the imported number. This is a high-value backer wearing a standard-tier badge because the importer dropped $220 of add-ons. Unlock the full-tier gift manually if the band does not do it, and start the evidence pack."
+    },
+    {
+     "day": 7,
+     "type": "wismo",
+     "customerIndex": 15502,
+     "subject": "It is fine",
+     "body": "Five months late is normal for this kind of thing. Just keep posting.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Baseline tolerance is high. Approve, log, move on - and read it as confirmation that update cadence, not speed, is the product."
+    },
+    {
+     "day": 8,
+     "type": "other",
+     "customerIndex": 220,
+     "subject": "Address change - moved countries",
+     "body": "I have moved from Germany to Ireland since backing. Does that change my wave?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Address change that also changes the freight cohort. Log both. Region matters here because EU hub timing differs from US."
+    },
+    {
+     "day": 9,
+     "type": "wismo",
+     "customerIndex": 6640,
+     "subject": "Two questions",
+     "body": "Hi. When will it actually SHIP, not when will it arrive. Those are different questions and the updates keep answering the second one.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "The question is about the pre-label period. Answer the ship band, not the delivery band. Every tracking tool in the market is blind to this window, which is precisely why the ticket exists."
+    },
+    {
+     "day": 11,
+     "type": "deposit",
+     "customerIndex": 12008,
+     "subject": "Add-on payment",
+     "body": "I paid an extra $180 in the pledge manager for the wall mounts. Is that recorded anywhere? It does not show on anything you have sent me.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Tideover did not persist the add-on. Answer from the pledge manager, not from Tideover, and flag the gap. Do not let the customer status page contradict what they paid."
+    },
+    {
+     "day": 13,
+     "type": "refund",
+     "customerIndex": 3301,
+     "subject": "Cancel",
+     "body": "By the time this ships the tech will have moved on. That happened to me with a drone campaign and I am not doing it twice.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Delivery-window obsolescence. Reassurance about the wait will not land; the fear is about the product's value at delivery. Counter with what the spec still does, offer the mid-tier gift, log the outcome either way."
+    },
+    {
+     "day": 15,
+     "type": "wismo",
+     "customerIndex": 4021,
+     "subject": "Re: Wave question",
+     "body": "Thanks for publishing the batch order. First campaign that has actually told me where I am in the queue.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Close, log CSAT, and note in the ledger that publishing the wave logic reduced repeat WISMO from this cohort. That is a measurable deflection claim, sourced from the ledger, not asserted."
+    },
+    {
+     "day": 17,
+     "type": "other",
+     "customerIndex": 88,
+     "subject": "VIP: our reviewer copy",
+     "body": "This is Marcus at a tech publication. We were promised an early unit for review and our slot is now closed. What is happening?",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "VIP escalation with reach. Route to the founder, not the queue. Do not send a templated reply. Log it as an escalation in the ledger with the reply the founder actually sent."
+    },
+    {
+     "day": 19,
+     "type": "wismo",
+     "customerIndex": 17880,
+     "subject": "You have gone quiet again",
+     "body": "Two weeks since the tooling post. Backers count the gap in months and we do notice.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Cadence is being audited by the crowd. Ship a short stage update even when nothing has changed. 'Nothing changed, here is why' is a valid update; silence is not."
+    },
+    {
+     "day": 21,
+     "type": "refund",
+     "customerIndex": 9110,
+     "subject": "Chargeback filed",
+     "body": "Filed with my card issuer. Two months, no product, a delay announcement, and a reply that took six days.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Generate the evidence pack: pledge date, every update posted, reply timestamps, stage timeline, the band that was disclosed and when. Note the missing artifact: no disclosedEta exists on this import, so there is no 'we disclosed X' record - that gap is the cost of the KS export having no delivery column."
+    },
+    {
+     "day": 24,
+     "type": "wismo",
+     "customerIndex": 10450,
+     "subject": "Batch 3 or batch 4",
+     "body": "Simple question, which batch. It is my third time asking.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Third ask means the first two answers did not reach them or did not answer. Check the status-link delivery, not the reply quality."
+    },
+    {
+     "day": 26,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Re-cut tool is in",
+     "body": "Broadcast: the re-cut mould passed first shot. Production restarts. Band narrows by two weeks.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Narrow the band on the status page and push the update. Good news moves the band too. Watch whether refund requests fall in the following week and log the delta from the baseline."
+    },
+    {
+     "day": 28,
+     "type": "wismo",
+     "customerIndex": 2210,
+     "subject": "Customs",
+     "body": "Will I be charged import duty in Australia? Last hardware campaign hit me with an $80 entry fee plus $600 of duty and nobody warned me.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Duty shock is a real post-delivery refund driver. Put the regional duty note on the status page for the AU/EU cohorts rather than answering it 300 times."
+    },
+    {
+     "day": 30,
+     "type": "wismo",
+     "customerIndex": 15502,
+     "subject": "Still in",
+     "body": "Good update. Still in.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log CSAT. Use the 30-day outcome ledger to compute the actual reply-time delta versus the day-0 baseline - and state the assumptions inline when reporting it."
+    }
+   ],
+   "withoutTideover": "Two people in a shared Gmail inbox, a Google Sheet exported from the pledge manager, and the Kickstarter comment wall. At 18,400 backers, a delay post generates a wave they physically cannot answer one at a time. Using the merchant-sourced figure of 5-10 minutes per WISMO ticket and a delay-week volume of 120-260 tickets/day, the reply load runs 10-43 person-hours/day against a 2-person team - a SIMULATED formula-based estimate from stated assumptions, not a measured result. What actually happens: they stop answering individually, the comment wall becomes the only channel, morale drops, the next update gets delayed because nobody wants to face the thread, and the refund/chargeback tail is discovered at the bank rather than in the inbox."
+  },
+  {
+   "id": "p03-hollowfell-backerkit",
+   "name": "Devon Marsh",
+   "brand": "Hollowfell Games",
+   "story": "We funded a 400-page TTRPG hardback on Kickstarter and moved everyone into BackerKit for the pledge manager and late pledges, which is what everyone told us to do. The print run is fine. What is not fine is that our BackerKit exports are three different files and none of them contains everything, so we are reconciling by hand at midnight. Backers are now asking why we cannot even tell them what they ordered.",
+   "path": "backerkit",
+   "dataReceived": "BackerKit exports. No single BackerKit export carries email + money + date + tier together. The Fulfillment export (the obvious one to grab) is email + SKUs with NO money, so every row would hit Tideover's $50 order-value floor - which pegs ltvCents at $50 against the hardcoded $500 high tier, meaning the gift/save gate never fires for anyone. The Collected Revenue export has backer ID, email, transaction ID, date, amount, source - but no reward tier and no name. Only the Custom Export builder gets close: Order ID, Order Status, charge amount, pledge amount, reward title + price, timestamp of payment. Even then, firstName is not in the Custom Export field list, so drafts open 'Hi dana87' from the email local-part. No estimated-delivery column on any export, so disclosedEta is undefined.",
+   "intake": {
+    "brandName": "Hollowfell Games",
+    "voice": "Game designers who talk to their table like a table. Playful but precise. Never hand-waves a date, never oversells a stage.",
+    "tone": [
+     "playful",
+     "precise",
+     "collegial",
+     "candid"
+    ],
+    "banned": [
+     "guaranteed",
+     "any day",
+     "shipping soon",
+     "we promise",
+     "definitely",
+     "final print date",
+     "should be with you shortly"
+    ],
+    "signoff": "- Devon, Hollowfell Games",
+    "windowMinDays": 90,
+    "windowMaxDays": 130,
+    "stages": [
+     {
+      "key": "sourcing",
+      "label": "Files to printer",
+      "dayBand": {
+       "from": 0,
+       "to": 24
+      },
+      "blurb": "Print-ready files, paper stock, and foil are locked with the printer. Proofs are next."
+     },
+     {
+      "key": "production",
+      "label": "Printing and binding",
+      "dayBand": {
+       "from": 25,
+       "to": 74
+      },
+      "blurb": "Offset print, then case binding. A 400-page hardback with foil is a multi-week job on its own."
+     },
+     {
+      "key": "qc",
+      "label": "Proof check",
+      "dayBand": {
+       "from": 75,
+       "to": 90
+      },
+      "blurb": "We check a bound copy for colour drift, foil registration, and page order before the run is released."
+     },
+     {
+      "key": "freight",
+      "label": "To the fulfilment hubs",
+      "dayBand": {
+       "from": 91,
+       "to": 118
+      },
+      "blurb": "Pallets move to the US, EU, and UK hubs. Hubs get their pallets on different weeks."
+     },
+     {
+      "key": "dispatch",
+      "label": "Hub dispatch",
+      "dayBand": {
+       "from": 119,
+       "to": 130
+      },
+      "blurb": "Your hub packs and posts. Late pledges ship after the campaign wave."
+     }
+    ],
+    "gifts": [
+     {
+      "name": "PDF of the core book, now",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 2500
+     },
+     {
+      "name": "Bonus adventure PDF",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 1200
+     },
+     {
+      "name": "Designer note in the box",
+      "kind": "founder-note",
+      "tier": "mid",
+      "costCents": 250,
+      "perceivedValueCents": 2000
+     },
+     {
+      "name": "First pallet, first out",
+      "kind": "priority-dispatch",
+      "tier": "full",
+      "costCents": 1500,
+      "perceivedValueCents": 5000
+     },
+     {
+      "name": "$25 credit in the webstore",
+      "kind": "next-order-credit",
+      "tier": "full",
+      "costCents": 1000,
+      "perceivedValueCents": 2500
+     }
+    ]
+   },
+   "backers": {
+    "count": 2600,
+    "orderValueCentsMin": 3500,
+    "orderValueCentsMax": 32000,
+    "pledgeDateSpreadDays": 96,
+    "ltvPattern": "Campaign wave (2,180 backers, pledged in a 30-day window) plus a late-pledge tail (420 backers spread across the following 66 days) - so the pledge-date spread is 96 days and wait clocks legitimately differ by three months inside one merchant. Median $70, deluxe tier $185-$320. FAILURE MODE TO EXERCISE: if the operator imports the Fulfillment export, all 2,600 rows land on the $50 floor and the entire risk/gift layer goes inert without erroring. SIMULATED population."
+   },
+   "events": [
+    {
+     "day": 0,
+     "type": "import",
+     "customerIndex": -1,
+     "subject": "BackerKit import: which export?",
+     "body": "Three BackerKit exports on the desktop: Fulfillment, Collected Revenue, and a Custom Export. Operator picks Fulfillment because it is the one with the SKUs.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "STOP. The Fulfillment export has no money column - every row will hit the $50 floor, ltvCents pegs at $50 against a $500 high tier, and the gift gate silently never fires. Re-run with a Custom Export that carries charge amount plus timestamp of payment. Then accept that firstName is absent and fix the draft salutation before approving anything, or the first 40 replies open 'Hi dana87'."
+    },
+    {
+     "day": 1,
+     "type": "wismo",
+     "customerIndex": 60,
+     "subject": "hi",
+     "body": "hi",
+     "sentiment": "calm",
+     "expectedOperatorAction": "The one-word ticket. Half the work is identifying the order before a reply is even possible. Match on email, pull the order, then reply with stage plus band. If the match fails, this becomes an unmatched ticket - placeholder customer, no draft, invisible in the queue."
+    },
+    {
+     "day": 2,
+     "type": "other",
+     "customerIndex": 412,
+     "subject": "Never got my survey",
+     "body": "Everyone in the Discord is talking about the survey. I never got one. Did you skip me?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Documented high-frequency BackerKit ticket with a mechanical cause: spam filter, or an Apple Pay private-relay address. Resend the survey and tell them to allowlist the BackerKit sender. Do not treat it as a wait ticket."
+    },
+    {
+     "day": 3,
+     "type": "wismo",
+     "customerIndex": 2410,
+     "subject": "Late pledge - am I in the same wave?",
+     "body": "I late-pledged six weeks after the campaign closed. Am I in the same shipment or do I wait longer? Nobody has said.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Late pledges are a different cohort with a different wait clock, which the 96-day pledge-date spread makes real. Answer with the late-pledge wave and put it on the status page so the other 419 do not have to ask."
+    },
+    {
+     "day": 5,
+     "type": "refund",
+     "customerIndex": 88,
+     "subject": "Cancel my deluxe tier",
+     "body": "I put $320 in on the deluxe tier and I have heard nothing since the survey closed. I want out.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Highest-value backer in the file. If the operator imported the wrong export, this order reads $50 and the save gate refuses to unlock the full-tier gift. Check the imported value BEFORE the risk score, then unlock and reply."
+    },
+    {
+     "day": 6,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Foil registration failed on the proof",
+     "body": "Broadcast: the foil on the cover drifted on the bound proof. Printer is re-running the covers. Band widens by about three weeks.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Widen the band, post with the proof photo, push status links to both cohorts. Note the late-pledge cohort's band is different and their status page must say so."
+    },
+    {
+     "day": 7,
+     "type": "pile-on",
+     "customerIndex": -1,
+     "subject": "BackerKit comment thread + Discord spike",
+     "body": "Comment thread after the delay post. Loudest voice: 'This is how they all start - a delay, then radio silence, then nothing.' A second poster is quoting an unrelated campaign that went dark.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "The merchant inherits the platform's trust deficit. Reply in public once with the proof photo and the stage. Do not go quiet - the accusation being pre-loaded is 'went dark', so the only defence is visible cadence."
+    },
+    {
+     "day": 9,
+     "type": "wismo",
+     "customerIndex": 1104,
+     "subject": "I cannot even reach a human",
+     "body": "BackerKit tells me to contact the creator. The creator link goes to a form. Is anyone actually there?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Platform-blame ticket. The anger lands on whoever answers. Answer fast, with a name, and give them a status link they can bookmark so they never have to hunt for a human again."
+    },
+    {
+     "day": 11,
+     "type": "other",
+     "customerIndex": 733,
+     "subject": "Address change",
+     "body": "Moving on the 20th. New address attached. Please confirm you got this, because last time I sent one it vanished.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log it against the order and confirm in writing. The second grievance in this ticket is the unconfirmed change, not the move."
+    },
+    {
+     "day": 13,
+     "type": "deposit",
+     "customerIndex": 1590,
+     "subject": "Shipping charge",
+     "body": "I was charged shipping in the pledge manager and now I am reading that shipping is charged at fulfilment. Am I paying twice?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Money question. Answer from the BackerKit charge record. Wrong answers here become disputes; if uncertain, say what you will check and by when - a slow correct answer beats a confident wrong one."
+    },
+    {
+     "day": 15,
+     "type": "wismo",
+     "customerIndex": 60,
+     "subject": "hi again",
+     "body": "any news",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Second one-word ticket from the same person. They are not information-seeking, they are anxiety-seeking. Send the status link, not a paragraph."
+    },
+    {
+     "day": 18,
+     "type": "refund",
+     "customerIndex": 88,
+     "subject": "Re: Cancel my deluxe tier",
+     "body": "Nine days and no answer to a refund request. That is the actual problem now.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "The unanswered refund request is now the grievance. Escalate to the top, reply same day, and open the evidence pack."
+    },
+    {
+     "day": 20,
+     "type": "other",
+     "customerIndex": 1902,
+     "subject": "Add to my order",
+     "body": "Can I add the dice set to my order? The BackerKit store says my order is closed for changes.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Revenue being refused by a system message and converted into a ticket. Take the money manually or explain the cutoff, but do not leave it unanswered."
+    },
+    {
+     "day": 23,
+     "type": "wismo",
+     "customerIndex": 2410,
+     "subject": "Late pledge, still waiting",
+     "body": "Still not clear whether late pledges ship with everyone else or three months after. This is the third time.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Third ask means the answer never reached them. Fix the status-link delivery to the late-pledge cohort rather than writing the reply again."
+    },
+    {
+     "day": 26,
+     "type": "wismo",
+     "customerIndex": 990,
+     "subject": "Just say something",
+     "body": "I do not need a date. I need to know somebody is still working on this.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "The clearest statement of what the whole product is for. Approve the stage-blurb draft, send the status link, log the CSAT."
+    },
+    {
+     "day": 29,
+     "type": "wismo",
+     "customerIndex": 1450,
+     "subject": "Cover looks great",
+     "body": "Saw the re-run cover photo. Worth the wait. Thanks for showing the failure instead of hiding it.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log CSAT. Note in the ledger that publishing the failure (not the fix) produced the positive - that pattern is the copy doctrine, evidenced."
+    }
+   ],
+   "withoutTideover": "Three BackerKit exports reconciled by hand in Excel, a shared support@ inbox, and a Discord where the loudest backers set the mood. The reconciliation is the tax: nothing in BackerKit gives money, name, tier, and date in one file, so answering 'what did I order and when does it ship' means joining two spreadsheets on backer ID. At 2,600 backers with two cohorts on different clocks, and 15-25 tickets/day in a delay week at 5-10 min each, that is 1.3-4.2 hours/day before any reconciliation - a SIMULATED formula-based estimate from stated assumptions, not a measured result. What slips: the late-pledge cohort never gets told they are on a different clock, the $320 deluxe backer waits nine days for a refund answer, and the 'I never got my survey' tickets get treated as wait complaints instead of the mechanical spam-filter problem they are."
+  },
+  {
+   "id": "p04-brasslight-gamefound",
+   "name": "Teodora Iliev",
+   "brand": "Brasslight Miniatures",
+   "story": "We moved to Gamefound after our third Kickstarter because the pledge manager is better for miniatures with fifty add-ons. 5,800 backers, a lot of them at 200 dollars plus. The problem is not the factory. The problem is that our EU pallet and our US pallet are now on completely different timelines and every single backer thinks their own wave is the one that got forgotten.",
+   "path": "gamefound",
+   "dataReceived": "Gamefound backer export CSV, run through the same header-alias path as Kickstarter (there is no dedicated Gamefound adapter; it is the KS CSV rail with different headers). POPULATED where aliases hit: email, firstName, orderValueCents (pledge column only), sourceKey->importKey, group. Add-on columns are DETECTION-ONLY and never persisted, which on a miniatures campaign is the majority of the money: a $60 core pledge with $180 of expansion add-ons imports as $60. No estimated-delivery column, so disclosedEta is undefined. Shipping country is present in the export but region is hardcoded 'US' at import, which is actively wrong for a campaign that is 48% EU.",
+   "intake": {
+    "brandName": "Brasslight Miniatures",
+    "voice": "A tabletop studio that treats its backers as fellow hobbyists. Detailed, unglamorous, honest about logistics without using the word. Never gives a ship date.",
+    "tone": [
+     "hobbyist",
+     "detailed",
+     "grounded",
+     "patient"
+    ],
+    "banned": [
+     "guaranteed",
+     "in your hands by",
+     "shipping this month",
+     "we promise",
+     "definitely",
+     "on schedule",
+     "no more delays"
+    ],
+    "signoff": "- Teodora, Brasslight",
+    "windowMinDays": 110,
+    "windowMaxDays": 160,
+    "stages": [
+     {
+      "key": "sourcing",
+      "label": "Resin and moulds",
+      "dayBand": {
+       "from": 0,
+       "to": 22
+      },
+      "blurb": "Resin lots and the master moulds are locked. Add-on sculpts get their own moulds, which is why add-on-heavy pledges take longer."
+     },
+     {
+      "key": "production",
+      "label": "Casting",
+      "dayBand": {
+       "from": 23,
+       "to": 78
+      },
+      "blurb": "Casting runs in SKU order, not backer order. A pledge that includes a late-sculpted expansion waits for that expansion."
+     },
+     {
+      "key": "qc",
+      "label": "Sprue check",
+      "dayBand": {
+       "from": 79,
+       "to": 96
+      },
+      "blurb": "We pull a sample per lot and check for short shots and flash. Failed lots get recast, which slows the whole SKU."
+     },
+     {
+      "key": "freight",
+      "label": "Sea freight to hubs",
+      "dayBand": {
+       "from": 97,
+       "to": 140
+      },
+      "blurb": "Separate containers for the EU and US hubs. They sail on different weeks and clear customs at different speeds. This is where the two waves separate."
+     },
+     {
+      "key": "dispatch",
+      "label": "Hub pick and pack",
+      "dayBand": {
+       "from": 141,
+       "to": 160
+      },
+      "blurb": "Your regional hub picks your pledge and posts it. Big add-on pledges take longer to pick."
+     }
+    ],
+    "gifts": [
+     {
+      "name": "Digital paint guide + STL preview",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 1500
+     },
+     {
+      "name": "Exclusive resin mini in the box",
+      "kind": "digital-perk",
+      "tier": "mid",
+      "costCents": 400,
+      "perceivedValueCents": 2200
+     },
+     {
+      "name": "Studio note with the casting photos",
+      "kind": "founder-note",
+      "tier": "mid",
+      "costCents": 150,
+      "perceivedValueCents": 1500
+     },
+     {
+      "name": "First pick at your hub",
+      "kind": "priority-dispatch",
+      "tier": "full",
+      "costCents": 1800,
+      "perceivedValueCents": 6000
+     },
+     {
+      "name": "$40 credit on the next campaign",
+      "kind": "next-order-credit",
+      "tier": "full",
+      "costCents": 1500,
+      "perceivedValueCents": 4000
+     }
+    ]
+   },
+   "backers": {
+    "count": 5800,
+    "orderValueCentsMin": 4500,
+    "orderValueCentsMax": 62000,
+    "pledgeDateSpreadDays": 45,
+    "ltvPattern": "Core pledge median $60, but 62% add expansions averaging $150-$210 that the importer discards. True mean order is roughly $185; imported mean is roughly $72. Around 700 backers are genuinely $400+ and read as standard tier after import. 48% of the population is EU, all tagged region 'US' by the hardcoded default. SIMULATED population."
+   },
+   "events": [
+    {
+     "day": 0,
+     "type": "import",
+     "customerIndex": -1,
+     "subject": "Gamefound export: 5,800 backers, day 61 of the wait",
+     "body": "Gamefound backer CSV. Add-on columns present. 48% EU.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Import, then check three counters before touching the queue: datelessRows, unparseableMoneyRows, and the money-at-risk tile. Add-ons are detected but not persisted, so the tile is understating by roughly 60% on this file. Then fix region: everything imported as 'US' and half this campaign is in the EU, which means half the status pages are telling the wrong freight story."
+    },
+    {
+     "day": 1,
+     "type": "wismo",
+     "customerIndex": 2200,
+     "subject": "EU wave",
+     "body": "I am in Germany. Are the EU pallets on the same boat as the US ones or not? The last campaign I backed shipped the US in March and the EU in July and never said a word about it in advance.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Answer with the freight-stage blurb, which already says the two containers sail separately. Then put the EU/US split on the status page permanently or answer this 2,700 more times."
+    },
+    {
+     "day": 3,
+     "type": "wismo",
+     "customerIndex": 410,
+     "subject": "SKU order",
+     "body": "I have the base game plus four expansions. Does that make me later than someone with just the base game?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Yes, and the production stage blurb says so. This is the fairness question in advance rather than in anger. Answer it plainly and put the SKU-order logic on the status page."
+    },
+    {
+     "day": 5,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Container rolled at origin",
+     "body": "Broadcast: the EU container got rolled to the next sailing. EU band moves out roughly three weeks. US container is unaffected.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Cohort-level delay. Widen the band for the EU cohort ONLY. If region is still hardcoded 'US', this is impossible and the announcement will go out to the wrong people - fix region first, then announce."
+    },
+    {
+     "day": 6,
+     "type": "pile-on",
+     "customerIndex": -1,
+     "subject": "Gamefound comments: EU backers",
+     "body": "Comment wall: 'Same story every campaign, EU always goes last and we always find out afterwards.' Ninety comments, mostly EU, several tagging other creators.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Reply in public with the container facts and the two bands. The grievance is not the delay, it is being told after the fact. Cadence is the fix."
+    },
+    {
+     "day": 7,
+     "type": "refund",
+     "customerIndex": 2200,
+     "subject": "Refund my whole pledge",
+     "body": "Three weeks becomes three months. I have 240 euro in this. I want it back before it becomes a two-year wait like the last one.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "The imported value on this order says $60. The true value is $240 in add-ons plus base. Check the Gamefound record, not the Tideover tile, before choosing the gift tier. Unlock full-tier manually."
+    },
+    {
+     "day": 9,
+     "type": "other",
+     "customerIndex": 3801,
+     "subject": "Address change - and can I switch hubs?",
+     "body": "I have moved from the UK to Spain. Does that move me from the UK hub to the EU one, and does that change my wait?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Address change that changes the freight cohort AND the band. Log both, update the region, and reconfirm the new band in writing."
+    },
+    {
+     "day": 11,
+     "type": "wismo",
+     "customerIndex": 5100,
+     "subject": "Customs",
+     "body": "Am I paying duty on this in the EU? A campaign I backed last year hit me with a customs bill bigger than the pledge and I had already paid VAT.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Duty shock is an unbudgeted charge arriving after the customer already paid in full, and it converts to refund demands even on delivered goods. Publish the duty position per region on the status page."
+    },
+    {
+     "day": 13,
+     "type": "deposit",
+     "customerIndex": 1220,
+     "subject": "Add-on charge",
+     "body": "My pledge manager total says 310 dollars but the confirmation email says 60. Which is real?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "This is the add-on persistence gap surfacing as a customer-facing contradiction. Answer from Gamefound. Do not let the Tideover status page quote the imported number to this customer."
+    },
+    {
+     "day": 15,
+     "type": "wismo",
+     "customerIndex": 4402,
+     "subject": "Not angry, just checking",
+     "body": "I have been quiet through both delays. I would rather wait and get it right. Just wanted a sign of life.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Reassurance-class backer. Cheapest to keep, invisible to a queue sorted by anger. Approve, send the status link, log CSAT."
+    },
+    {
+     "day": 17,
+     "type": "refund",
+     "customerIndex": 77,
+     "subject": "This is the third slip",
+     "body": "I gave you the benefit of the doubt on the mould delay and on the resin delay. This is the third one. I am done being reasonable.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Goodwill spent on earlier delays is now gone. A generic reassurance draft will make this worse. Reply with the specific container fact, unlock the full-tier gift, and log the outcome."
+    },
+    {
+     "day": 19,
+     "type": "wismo",
+     "customerIndex": 2200,
+     "subject": "Re: Refund my whole pledge",
+     "body": "Still nothing. Twelve days.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Escalate immediately. Twelve days of silence on a 240-euro refund request is the exact shape that becomes a dispute. Open the evidence pack."
+    },
+    {
+     "day": 22,
+     "type": "other",
+     "customerIndex": 903,
+     "subject": "VIP: our review copy",
+     "body": "This is the miniatures channel you comped a review set to. My slot ships in three weeks and I have no product and no reply from you in a month.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "VIP escalation with distribution reach. Route to the founder. Do not send a queue draft. Log the escalation and the actual reply."
+    },
+    {
+     "day": 24,
+     "type": "wismo",
+     "customerIndex": 3390,
+     "subject": "US wave",
+     "body": "The EU delay does not affect us, right? I want to be sure the US container is still moving.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Answer with the US band and confirm the containers are independent. Cohort-specific answers require correct region data - if region is still hardcoded, this answer is guesswork."
+    },
+    {
+     "day": 27,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "EU container sailed",
+     "body": "Broadcast: the EU container is on the water. EU band narrows.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Narrow the EU band, push the status link to the EU cohort only, and measure the drop in EU WISMO in the following week against the day-0 baseline."
+    },
+    {
+     "day": 30,
+     "type": "wismo",
+     "customerIndex": 4402,
+     "subject": "Nice",
+     "body": "Container is on the water. That is all I wanted to hear.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log CSAT. Close."
+    }
+   ],
+   "withoutTideover": "Gamefound's own message centre, a shared inbox, and a spreadsheet keyed on pledge ID. The killer is cohort granularity: there is no way to announce a delay to only the EU half, so every announcement goes to everyone and creates panic in the cohort that was not affected. Delay-week volume runs 40-90 tickets/day at 5-10 minutes each, which is 3.3-15 person-hours/day against a 2-person studio - a SIMULATED formula-based estimate from stated assumptions, not a measured result. What slips: EU backers learn about the rolled container from another backer's comment rather than from the studio; the 240-euro refund request sits twelve days; the review-channel VIP goes unanswered for a month and posts about it."
+  },
+  {
+   "id": "p05-grindhouse-shopify-gorgias",
+   "name": "Aiden Brahim",
+   "brand": "Grindhouse Supply",
+   "story": "We sell a hand coffee grinder we machine in small batches, and every batch is a preorder because we cannot afford to build stock. The wait is 90 to 110 days and we say so at checkout, in the product description, in the confirmation email. People still email us on day six asking where it is. Then our preorder app let Shopify send a stock confirmation saying it ships in three to five days, and my inbox turned into a nightmare overnight.",
+   "path": "shopify-gorgias",
+   "dataReceived": "Assume the Gorgias webhook is connected. Tideover receives per ticket ONLY the documented Gorgias template variables: ticket.id -> externalId, ticket.subject -> subject, ticket.customer.email -> customerEmail, ticket.created_datetime -> createdAt. CRITICAL: our shipped template also pulls ticket.messages.last.body_text, ticket.tags, and ticket.meta.order_id - none of these appear in any documented Gorgias variable list, so body/tags/order_ref are guesses. CanonicalIngestSchema uses body: z.string() with no .min(1), so an unrendered placeholder ingests SILENTLY as an empty body -> inferType returns 'other', inferSentiment returns 'calm', and a chargeback threat sorts to the BOTTOM of the risk queue. SECOND CRITICAL: Gorgias offers only a static Authorization header or OAuth2 - no per-request HMAC anywhere - so this merchant physically cannot produce X-Tideover-Signature and every ticket 401s the moment DEMO_MODE=false. NO helpdesk carries money: order value comes from Shopify or nowhere. Shopify is NOT WIRED, so orderValueCents falls to the $50 floor unless imported by CSV.",
+   "intake": {
+    "brandName": "Grindhouse Supply",
+    "voice": "A machinist who would rather show you the tolerance chart than sell you anything. Short sentences. Facts about metal. No marketing.",
+    "tone": [
+     "blunt",
+     "technical",
+     "unfussy",
+     "respectful"
+    ],
+    "banned": [
+     "ships in 3-5 days",
+     "guaranteed",
+     "definitely",
+     "any day now",
+     "on its way",
+     "we promise",
+     "shortly",
+     "fast shipping"
+    ],
+    "signoff": "- Aiden, Grindhouse",
+    "windowMinDays": 90,
+    "windowMaxDays": 110,
+    "stages": [
+     {
+      "key": "sourcing",
+      "label": "Steel and burr sets",
+      "dayBand": {
+       "from": 0,
+       "to": 16
+      },
+      "blurb": "Bar stock and the hardened burr sets are ordered. The burrs come from one supplier and they set the pace of the batch."
+     },
+     {
+      "key": "production",
+      "label": "Machining",
+      "dayBand": {
+       "from": 17,
+       "to": 58
+      },
+      "blurb": "Bodies are turned and milled in batches of 120. Your batch number is on your status page."
+     },
+     {
+      "key": "qc",
+      "label": "Assembly and grind test",
+      "dayBand": {
+       "from": 59,
+       "to": 80
+      },
+      "blurb": "Every unit is assembled and grind-tested. Units that fail the consistency test get pulled and rebuilt, which is why a batch never ships 100% at once."
+     },
+     {
+      "key": "dispatch",
+      "label": "Packing and posting",
+      "dayBand": {
+       "from": 81,
+       "to": 110
+      },
+      "blurb": "Packed in batch order, oldest order first."
+     }
+    ],
+    "gifts": [
+     {
+      "name": "Dialling-in guide (PDF)",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 900
+     },
+     {
+      "name": "Spare burr set in the box",
+      "kind": "digital-perk",
+      "tier": "mid",
+      "costCents": 1200,
+      "perceivedValueCents": 3500
+     },
+     {
+      "name": "Note from the shop with your batch number",
+      "kind": "founder-note",
+      "tier": "mid",
+      "costCents": 100,
+      "perceivedValueCents": 1200
+     },
+     {
+      "name": "Front of the current batch",
+      "kind": "priority-dispatch",
+      "tier": "full",
+      "costCents": 1500,
+      "perceivedValueCents": 6000
+     },
+     {
+      "name": "$30 store credit",
+      "kind": "next-order-credit",
+      "tier": "full",
+      "costCents": 1200,
+      "perceivedValueCents": 3000
+     }
+    ]
+   },
+   "backers": {
+    "count": 900,
+    "orderValueCentsMin": 15500,
+    "orderValueCentsMax": 24500,
+    "pledgeDateSpreadDays": 62,
+    "ltvPattern": "Rolling preorder drops, so orders are spread across 62 days and wait clocks differ by two months inside one queue. Mean order $185, tight distribution. About 90 customers are repeat buyers whose real Shopify Customer.amountSpent would put them at $400-$700 - but Shopify is not wired, so ltvCents falls back to the imported order value and nobody crosses the hardcoded $500 high tier. SIMULATED population."
+   },
+   "events": [
+    {
+     "day": 0,
+     "type": "import",
+     "customerIndex": -1,
+     "subject": "Gorgias webhook connected, DEMO_MODE still true",
+     "body": "Gorgias HTTP integration pointed at the Tideover ingest endpoint with an Authorization: Bearer header.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "BLOCKER, surface it now: Gorgias can only attach a static header or OAuth2. It cannot compute a per-request HMAC, so it cannot produce X-Tideover-Signature. The instant DEMO_MODE goes false, every ticket 401s. Second check: send one test ticket and confirm the body is not empty - CanonicalIngestSchema has no .min(1) on body, so an unrendered placeholder ingests silently as empty, classifies as 'other'/'calm', and buries anything urgent at the bottom of the queue."
+    },
+    {
+     "day": 1,
+     "type": "wismo",
+     "customerIndex": 44,
+     "subject": "Order #4412 - shipping?",
+     "body": "Your confirmation email says my order ships in 3 to 5 days. It has been six. Where is it?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "The preorder app let Shopify send the wrong ship window. This is not a customer error, it is a manufactured WISMO. Correct the window in the reply, send the status link, and go turn off the app's stock-confirmation email before this fires at the other 899."
+    },
+    {
+     "day": 2,
+     "type": "wismo",
+     "customerIndex": 120,
+     "subject": "3-5 days??",
+     "body": "Same email here. 3 to 5 days. Then a second email saying 90 days, which went to my spam folder. Which one is true?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Confirm the 90-110 band, apologise for the app's email specifically, and send the status link. Log this as a systemic cause, not 900 individual tickets."
+    },
+    {
+     "day": 3,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Correcting the shipping email",
+     "body": "Broadcast to every open preorder: the confirmation email you received quoted a 3-5 day window. That was wrong. The real band is 90-110 days from order, which is what the product page says.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Send it before the wave hits, not after. Include the status link in the correction. A wrong hard date fires a support avalanche across the whole list at once - this is the clearest live proof for the hard-date-free doctrine in the whole product."
+    },
+    {
+     "day": 4,
+     "type": "refund",
+     "customerIndex": 44,
+     "subject": "Cancel then",
+     "body": "If it is 90 days and not 5 days I want to cancel. I ordered it for a birthday.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "A cancellation caused entirely by the app's wrong email. Offer the mid-tier gift and the real band. If they still cancel, refund cleanly and log the cause as 'wrong-date email', not 'delay' - the ledger should say what actually went wrong."
+    },
+    {
+     "day": 6,
+     "type": "wismo",
+     "customerIndex": 511,
+     "subject": "(no subject)",
+     "body": "",
+     "sentiment": "calm",
+     "expectedOperatorAction": "EMPTY BODY. This is the schema hole: no .min(1) on body, so this ingested silently. It is classified 'other'/'calm' and sorted to the bottom, and there is no way to know from Tideover whether this was a placeholder that failed to render or a genuinely blank ticket. Open it in Gorgias, then fix the template."
+    },
+    {
+     "day": 8,
+     "type": "wismo",
+     "customerIndex": 233,
+     "subject": "Batch number?",
+     "body": "The status page says batch 4. What batch am I actually in and how many batches are ahead of me?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Answer from the batch, which is the whole reason the status page has one. Approve the deterministic draft."
+    },
+    {
+     "day": 10,
+     "type": "other",
+     "customerIndex": 78,
+     "subject": "Change my address",
+     "body": "Moving next month. Can you change the delivery address on order #4390?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log against the order and confirm in writing. Shopify is not wired, so this does not flow back to the store - the operator has to change it in Shopify by hand and the two systems will disagree until they do."
+    },
+    {
+     "day": 12,
+     "type": "wismo",
+     "customerIndex": 640,
+     "subject": "Not the arrival - the SHIP date",
+     "body": "I am not asking when it arrives. I am asking when it ships. Every tracking tool you people use only works after there is a tracking number and I do not have one.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "The pre-label period is the entire product. Answer with the machining stage and the batch. Do not offer tracking, because there is nothing to track."
+    },
+    {
+     "day": 14,
+     "type": "refund",
+     "customerIndex": 302,
+     "subject": "Refund - 90 days is too long",
+     "body": "I did not read the fine print, that is on me, but 90 days for a grinder is absurd. Please refund.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Low-heat refund. Offer the base gift and the band. If they leave, refund and log. Not every refund is a save."
+    },
+    {
+     "day": 16,
+     "type": "deposit",
+     "customerIndex": 810,
+     "subject": "Charged already?",
+     "body": "You took the full amount on day one for something that ships in three months. Is that normal?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Money question, and the one most likely to become a dispute. Answer factually about the charge and why the batch is funded up front. Do not be defensive."
+    },
+    {
+     "day": 18,
+     "type": "wismo",
+     "customerIndex": 120,
+     "subject": "Still nothing",
+     "body": "Three emails, no reply. It is not the wait, it is that nobody answers.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Check whether these tickets are ingesting at all. If the Gorgias signature issue is live, they are 401ing and the operator has never seen them. This is what silent ingest failure looks like from the customer side."
+    },
+    {
+     "day": 20,
+     "type": "refund",
+     "customerIndex": 302,
+     "subject": "Re: Refund",
+     "body": "Six days for a refund reply. I have contacted my bank.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Evidence pack: order date, the disclosed 90-110 band on the product page, every reply timestamp, the correction broadcast. Note that the app's wrong 3-5 day email is now evidence AGAINST the merchant."
+    },
+    {
+     "day": 23,
+     "type": "wismo",
+     "customerIndex": 700,
+     "subject": "Batch 5",
+     "body": "Any movement on batch 5? No rush, just like knowing.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Send the status link and close. This is the ticket the status page should have deflected - if it did not, the link is not reaching people."
+    },
+    {
+     "day": 25,
+     "type": "other",
+     "customerIndex": 15,
+     "subject": "VIP: our cafe's staff order",
+     "body": "This is Rowan from the cafe that carries you. We ordered eight units for staff and we are being asked about them in the shop daily. Where are we?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Wholesale/VIP escalation. Real value is 8 x $185 = $1,480, but Tideover sees one order at $185 or less. Escalate manually - the LTV tier will not catch this, because Shopify's amountSpent is one GraphQL field away and is not wired."
+    },
+    {
+     "day": 28,
+     "type": "wismo",
+     "customerIndex": 233,
+     "subject": "Thanks",
+     "body": "The batch page is exactly what I wanted. I stopped emailing you because I can just look.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log CSAT. This is the deflection claim in a customer's own words. Record it in the outcome ledger - and label it SIMULATED wherever it is quoted."
+    },
+    {
+     "day": 30,
+     "type": "wismo",
+     "customerIndex": 866,
+     "subject": "New order, same question",
+     "body": "Just ordered. Will I get the same 3-5 day email everyone is complaining about?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "If yes, the systemic fix was never made. Answer, then verify the app email is off."
+    }
+   ],
+   "withoutTideover": "Gorgias with macros, plus Shopify admin in a second tab, plus the preorder app's own dashboard in a third. The macros collapse the moment reality diverges from the happy path, which in a 90-day preorder is every ticket, every day - there is no tracking number to paste for three months. He rejected the same-category tools on price: usage-based support pricing bills hardest exactly when a delay blows the inbox up, which is exactly when a preorder brand is most cash-fragile. At 15-25 WISMO/day (higher in the week after the wrong-date email) and 5-10 minutes each, that is 1.3-4.2 hours/day - a SIMULATED formula-based estimate from stated assumptions, not a measured result. What slips: the wrong-ship-date email is never corrected in bulk, only one reply at a time; the wholesale cafe order is treated as a single $185 ticket; and three customers file disputes citing a 3-5 day promise the merchant never made."
+  },
+  {
+   "id": "p06-vantage-zendesk",
+   "name": "Camille Roy",
+   "brand": "Vantage Audio",
+   "story": "We do limited runs of a headphone amplifier. Six thousand people are waiting, we have three people on Zendesk, and the tags are how we route everything. Our last run slipped four weeks on a capacitor shortage and I found out we had lost tickets when a customer forwarded me the chargeback paperwork for an email we never received.",
+   "path": "zendesk",
+   "dataReceived": "Zendesk trigger -> webhook -> Tideover ingest. Tideover receives: ticket.id -> externalId, ticket.title -> subject (there is no ticket.subject in Zendesk), ticket.description -> body, ticket.requester.email -> customerEmail, ticket.created_at_with_timestamp -> createdAt (ISO-8601), ticket.tags. Our template field names are CORRECT here, and this is the only helpdesk where the canonical rail actually fits. THREE LIVE DEFECTS: (1) {{ticket.tags}} renders as a SPACE-SEPARATED STRING, not an array. Our template emits \"tags\": [\"{{ticket.tags}}\"] which yields [\"presale wismo urgent\"] as ONE element, and drop-at-edge does an exact allowed.includes(t) check - so any ticket with 2+ tags is silently 200-'discarded' and never persisted. This merchant routes everything on multi-tag. (2) {{ticket.description}} is the FIRST comment and, per Zendesk's own placeholder reference, includes the requester's name and the comment date as a preamble - so the body we classify and feed the drafter is never the latest customer message. (3) the order_ref placeholder needs a numeric custom-field ID the merchant must look up. NO helpdesk carries money: Zendesk's placeholder reference has zero financial placeholders, so orderValueCents must come from a CSV or it hits the $50 floor.",
+   "intake": {
+    "brandName": "Vantage Audio",
+    "voice": "An audio company that talks to people who read spec sheets for fun. Measured, specific, allergic to marketing adjectives.",
+    "tone": [
+     "measured",
+     "specific",
+     "technical",
+     "courteous"
+    ],
+    "banned": [
+     "guaranteed",
+     "definitely",
+     "any day now",
+     "shipping imminently",
+     "we promise",
+     "on schedule",
+     "world-class",
+     "amazing"
+    ],
+    "signoff": "- Camille, Vantage Audio",
+    "windowMinDays": 75,
+    "windowMaxDays": 105,
+    "stages": [
+     {
+      "key": "sourcing",
+      "label": "Components",
+      "dayBand": {
+       "from": 0,
+       "to": 20
+      },
+      "blurb": "Transformers, capacitors, and the op-amps are allocated. Capacitor lead times are the single biggest source of movement in this band."
+     },
+     {
+      "key": "production",
+      "label": "Board assembly",
+      "dayBand": {
+       "from": 21,
+       "to": 55
+      },
+      "blurb": "Boards are populated and reflowed in runs of 500. Your run number is on your status page."
+     },
+     {
+      "key": "qc",
+      "label": "Burn-in and measurement",
+      "dayBand": {
+       "from": 56,
+       "to": 78
+      },
+      "blurb": "Every unit runs a 48-hour burn-in and gets a measured THD sheet, which ships in the box. Units that miss spec are rebuilt."
+     },
+     {
+      "key": "freight",
+      "label": "Air freight",
+      "dayBand": {
+       "from": 79,
+       "to": 92
+      },
+      "blurb": "Units fly rather than sail. This band is short and rarely moves."
+     },
+     {
+      "key": "dispatch",
+      "label": "Dispatch",
+      "dayBand": {
+       "from": 93,
+       "to": 105
+      },
+      "blurb": "Out of the warehouse in run order."
+     }
+    ],
+    "gifts": [
+     {
+      "name": "Your unit's measured THD sheet, early",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 1000
+     },
+     {
+      "name": "Premium interconnect cable in the box",
+      "kind": "digital-perk",
+      "tier": "mid",
+      "costCents": 1800,
+      "perceivedValueCents": 5500
+     },
+     {
+      "name": "Note from Camille with the bench photos",
+      "kind": "founder-note",
+      "tier": "mid",
+      "costCents": 150,
+      "perceivedValueCents": 1500
+     },
+     {
+      "name": "First run, first shipped",
+      "kind": "priority-dispatch",
+      "tier": "full",
+      "costCents": 2500,
+      "perceivedValueCents": 9000
+     },
+     {
+      "name": "$50 credit toward the next unit",
+      "kind": "next-order-credit",
+      "tier": "full",
+      "costCents": 2000,
+      "perceivedValueCents": 5000
+     }
+    ]
+   },
+   "backers": {
+    "count": 6400,
+    "orderValueCentsMin": 24000,
+    "orderValueCentsMax": 79000,
+    "pledgeDateSpreadDays": 40,
+    "ltvPattern": "Mean order $340; the flagship tier is $790 and about 300 customers bought it. Repeat buyers exist (roughly 12% own a prior unit) and their true lifetime spend would clear $1,000 - but nothing feeds ltvCents except the imported order value, so the $500 hardcoded high tier only fires for the flagship buyers and misses every repeat customer on a $340 order. Three seats on the account. SIMULATED population."
+   },
+   "events": [
+    {
+     "day": 0,
+     "type": "import",
+     "customerIndex": -1,
+     "subject": "Zendesk trigger live + CSV of 6,400 preorders",
+     "body": "Zendesk webhook trigger firing on new tickets. Order CSV imported separately for money and dates.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Send a test ticket carrying TWO tags. It will be silently 200-discarded, because {{ticket.tags}} renders as one space-separated string and drop-at-edge does an exact match. This merchant multi-tags everything, so a naive setup drops most of the queue while reporting success. Fix the template to split on whitespace, or set presaleTags to undefined and accept everything - noting presaleTags has NO write path outside tests, so 'untagged tickets never reach us' is currently unwired."
+    },
+    {
+     "day": 1,
+     "type": "wismo",
+     "customerIndex": 900,
+     "subject": "Run 3 status",
+     "body": "Camille Roy, Jan 14 - Which run am I in and has board assembly started on it?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Note the body carries the requester-name and date preamble that Zendesk's ticket.description injects. The drafter is reading that preamble as customer text. Approve the draft only after checking the salutation is not addressed to the preamble."
+    },
+    {
+     "day": 2,
+     "type": "wismo",
+     "customerIndex": 2200,
+     "subject": "Capacitor shortage?",
+     "body": "I read on a forum that the capacitor you use is on 40-week lead time industry-wide. Is that why we have heard nothing?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Backers are researching the supply chain themselves. Answer with what is actually allocated, not with reassurance. A technical audience will catch a vague answer and post about it."
+    },
+    {
+     "day": 4,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Capacitor allocation slipped four weeks",
+     "body": "Broadcast: our capacitor allocation moved. Sourcing band widens by roughly four weeks. Runs 1 and 2 are unaffected; runs 3 through 6 move.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Cohort delay by run. Widen the band for runs 3-6 only and push status links to those runs. Then watch the WISMO forecast; a technical audience will generate a spike of specific questions, not generic ones."
+    },
+    {
+     "day": 5,
+     "type": "pile-on",
+     "customerIndex": -1,
+     "subject": "Head-fi thread: 'Vantage has gone quiet'",
+     "body": "Forum thread, 200 posts. Top post: 'Four weeks becomes eight. Anyone else notice they stopped replying to tickets two weeks ago?' Several people report emails with no response at all.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "The 'no response at all' reports are the tell. Those are the multi-tag tickets that were silently discarded at the edge. Check the ingest discard counter before writing a single reply - the reputational damage here is caused by a data bug, not by the team's effort."
+    },
+    {
+     "day": 6,
+     "type": "refund",
+     "customerIndex": 2200,
+     "subject": "URGENT REFUND - no reply in 3 weeks",
+     "body": "Camille Roy, Jan 19 - I have opened three tickets. None of them have been answered. I have $790 with you. Refund it or I go to my bank on Friday.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Flagship-tier customer, three tickets, no reply - almost certainly the multi-tag discard. Reply personally today. Then fix the tag parsing, because this is happening to an unknown number of others who have not escalated yet."
+    },
+    {
+     "day": 7,
+     "type": "wismo",
+     "customerIndex": 3311,
+     "subject": "presale wismo urgent",
+     "body": "[TICKET NEVER ARRIVED - three tags on the Zendesk side, discarded at the edge with a 200]",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "This event exists to make the failure visible in the harness. The customer sent it; Tideover 200'd it and dropped it. Nobody sees it. The merchant's inbox looks calm and their reputation is on fire on a forum."
+    },
+    {
+     "day": 9,
+     "type": "other",
+     "customerIndex": 118,
+     "subject": "Address change",
+     "body": "Camille Roy, Jan 22 - Moving to a new apartment on the 15th. Please update order VA-2211.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log against the order. Note the order_ref placeholder needs a numeric Zendesk field ID the merchant has to look up - if that was never configured, this ticket has no order attached and lands as unmatched: placeholder customer, no draft, skipped by getQueue, invisible in the cockpit."
+    },
+    {
+     "day": 11,
+     "type": "wismo",
+     "customerIndex": 5502,
+     "subject": "Where is my order",
+     "body": "Camille Roy, Jan 24 - It has been eleven weeks. Your page said 75 to 105 days. We are inside that and I still feel like I am being ignored, which is worse than the wait.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Inside the disclosed band, and still anxious. Reassurance ticket, not information ticket. Send the run status and the status link. This is the ticket type that proves faster typing is not the fix."
+    },
+    {
+     "day": 13,
+     "type": "deposit",
+     "customerIndex": 4001,
+     "subject": "Double charge",
+     "body": "Camille Roy, Jan 26 - Two authorisations on my card for the same order.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Money question. Zendesk carries zero financial data, so this cannot be answered from the ticket - the operator has to go to the payment processor. Answer within hours, not days."
+    },
+    {
+     "day": 15,
+     "type": "refund",
+     "customerIndex": 812,
+     "subject": "Refund request",
+     "body": "Camille Roy, Jan 28 - I ordered in October. It is now February. I would rather have the money than the amp.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Score it, offer the mid-tier gift with the run status, and log the outcome either way."
+    },
+    {
+     "day": 17,
+     "type": "other",
+     "customerIndex": 7,
+     "subject": "VIP: reviewer unit",
+     "body": "Camille Roy, Jan 30 - This is the reviewer you promised an early unit to. My video slot is in two weeks. What do I tell 90,000 subscribers?",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "VIP escalation with reach. Route to Camille directly. Do not let this sit in the general queue behind 300 WISMOs."
+    },
+    {
+     "day": 19,
+     "type": "wismo",
+     "customerIndex": 2200,
+     "subject": "Thank you for actually replying",
+     "body": "Camille Roy, Feb 1 - You explained the tag problem and it makes sense. I have withdrawn the bank dispute.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log the save in the outcome ledger with the cause: 'reply after ingest defect fixed'. That is a real, ledger-backed save - record it as such and state the assumption inline whenever it is quoted."
+    },
+    {
+     "day": 21,
+     "type": "wismo",
+     "customerIndex": 4780,
+     "subject": "Run 5",
+     "body": "Camille Roy, Feb 3 - Run 5 here. Still in the widened band or is that runs 3 and 4 only?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Answer per run. If cohort banding by run is not configured, this answer is a guess and the customer will know."
+    },
+    {
+     "day": 24,
+     "type": "refund",
+     "customerIndex": 812,
+     "subject": "Re: Refund request",
+     "body": "Camille Roy, Feb 6 - Still waiting on my refund answer. Nine days.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Nine days on a refund request is the shape of a dispute. Evidence pack, same-day reply, decide and record."
+    },
+    {
+     "day": 26,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Capacitors landed",
+     "body": "Broadcast: allocation arrived. Runs 3-6 back on the original band. Burn-in schedule published.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Narrow the band. Push the status link to the affected runs. Measure the WISMO drop against the day-0 baseline and report it with the assumptions stated."
+    },
+    {
+     "day": 28,
+     "type": "wismo",
+     "customerIndex": 5502,
+     "subject": "Good",
+     "body": "Camille Roy, Feb 10 - Thanks for the run-level detail. That is the first time a company has told me where I actually am in a queue.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log CSAT and close."
+    },
+    {
+     "day": 30,
+     "type": "other",
+     "customerIndex": -1,
+     "subject": "Ingest audit",
+     "body": "Operator reviews the discard counter for the month.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Count how many tickets were 200-discarded by the tag bug across 30 days and report it as a number, not an impression. That count IS the answer to 'why did people say we never replied'."
+    }
+   ],
+   "withoutTideover": "Zendesk with three agents, macros, and views keyed on tags - plus a spreadsheet of orders because Zendesk carries no money at all. The team is fast and the tooling is real, and it still fails, because every ticket in a 75-105 day window is an exception ticket: there is no tracking number, no carrier scan, nothing to paste. Their macros answer questions about parcels that do not exist yet. At 30-60 tickets/day across three seats at 5-10 minutes each, that is 2.5-10 person-hours/day of pure lookup-and-reassure - a SIMULATED formula-based estimate from stated assumptions, not a measured result. What slips: they discover the lost tickets from a forum thread rather than a dashboard; the $790 flagship customer opens three tickets and gets three silences; the reviewer with 90,000 subscribers waits in the same queue as everyone else."
+  },
+  {
+   "id": "p07-keyframe-helpscout",
+   "name": "Wes Kaminski",
+   "brand": "Keyframe Keyboards",
+   "story": "We run group buys. You pay up front, we do a 120-day production cycle with a factory in Shenzhen, and everyone knows the rules going in because this community has done it fifty times. We use Help Scout because it is the only inbox that does not feel like a call centre. What I did not know is that Help Scout cannot actually send us to anything - the webhook payload is fixed, you cannot template it, and it signs with a completely different scheme. So we are forwarding emails and losing people.",
+   "path": "helpscout",
+   "dataReceived": "THE CANONICAL RAIL DOES NOT WORK HERE. Help Scout webhooks are NOT templatable (fixed v2 Conversation payload) and sign with X-HelpScout-Signature = base64(HMAC-SHA1), while Tideover requires merchant-templated canonical JSON plus X-Tideover-Signature: sha256=<hex>. Riding the shipped ingest rail is impossible without a net-new vendor adapter, a normalizer, and a second signature scheme. WORKAROUND IN PLAY FOR THIS SIM: the merchant forwards Help Scout conversation notifications to their Tideover inbound address (<inboxToken>@in.tideover.app, ADR-0008). That means Tideover receives an EMAIL, not a ticket - and the From header is Help Scout, not the customer, so customerEmail is wrong on every forwarded item unless the parser digs it out of the body. Result: unmatched tickets -> placeholder customer, presale:unmatched tag, NO draft, and getQueue skips order-less tickets, so they are invisible in the cockpit. Money comes from a CSV of group-buy orders or not at all. Help Scout tags are OBJECTS, not strings, so any tag-based filtering built for the string rail misreads them.",
+   "intake": {
+    "brandName": "Keyframe Keyboards",
+    "voice": "Group-buy native. Talks to a community that already knows what tooling and injection moulding mean. Zero condescension, zero hype, dates never promised.",
+    "tone": [
+     "community-native",
+     "transparent",
+     "dry",
+     "matter-of-fact"
+    ],
+    "banned": [
+     "guaranteed",
+     "ETA locked",
+     "definitely",
+     "shipping next month",
+     "we promise",
+     "any day now",
+     "hang tight"
+    ],
+    "signoff": "- Wes, Keyframe",
+    "windowMinDays": 110,
+    "windowMaxDays": 150,
+    "stages": [
+     {
+      "key": "sourcing",
+      "label": "Colourway approval",
+      "dayBand": {
+       "from": 0,
+       "to": 25
+      },
+      "blurb": "Resin colour samples go back and forth with the factory. A rejected sample costs two weeks and we will reject a bad one."
+     },
+     {
+      "key": "tooling",
+      "label": "Tooling",
+      "dayBand": {
+       "from": 26,
+       "to": 60
+      },
+      "blurb": "Moulds for the novelty caps. Novelties are always the long pole - if your kit has novelties, you are on the slower clock."
+     },
+     {
+      "key": "production",
+      "label": "Doubleshot run",
+      "dayBand": {
+       "from": 61,
+       "to": 105
+      },
+      "blurb": "Caps are doubleshot in kit order. The base kit runs first, extras run after."
+     },
+     {
+      "key": "qc",
+      "label": "Legend check",
+      "dayBand": {
+       "from": 106,
+       "to": 122
+      },
+      "blurb": "We check legend alignment and colour drift against the approved sample. Failed lots get re-run."
+     },
+     {
+      "key": "freight",
+      "label": "Freight to the proxies",
+      "dayBand": {
+       "from": 123,
+       "to": 142
+      },
+      "blurb": "Kits ship to the regional proxies (US, EU, UK, AU). Proxies then ship to you. Your proxy sets your last mile."
+     },
+     {
+      "key": "dispatch",
+      "label": "Proxy dispatch",
+      "dayBand": {
+       "from": 143,
+       "to": 150
+      },
+      "blurb": "Your regional proxy packs and posts."
+     }
+    ],
+    "gifts": [
+     {
+      "name": "Desk-mat PDF + wallpaper set",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 800
+     },
+     {
+      "name": "Extra novelty cap in the kit",
+      "kind": "digital-perk",
+      "tier": "mid",
+      "costCents": 600,
+      "perceivedValueCents": 3000
+     },
+     {
+      "name": "Note from Wes with the colour sample photos",
+      "kind": "founder-note",
+      "tier": "mid",
+      "costCents": 100,
+      "perceivedValueCents": 1200
+     },
+     {
+      "name": "Priority at your proxy",
+      "kind": "priority-dispatch",
+      "tier": "full",
+      "costCents": 1200,
+      "perceivedValueCents": 4500
+     },
+     {
+      "name": "$35 credit on the next group buy",
+      "kind": "next-order-credit",
+      "tier": "full",
+      "costCents": 1400,
+      "perceivedValueCents": 3500
+     }
+    ]
+   },
+   "backers": {
+    "count": 1150,
+    "orderValueCentsMin": 9500,
+    "orderValueCentsMax": 41000,
+    "pledgeDateSpreadDays": 21,
+    "ltvPattern": "Group buy closed in a 21-day window, so wait clocks are tight and the whole population moves together - which means a delay hits everyone at once and the WISMO wave is a spike, not a trickle. Mean order $190. Roughly 40% are repeat group-buy customers whose real lifetime spend is $600-$1,400, and none of that is visible: no Shopify wiring, no helpdesk money, so ltvCents is the single order value and the $500 high tier fires for almost nobody. SIMULATED population."
+   },
+   "events": [
+    {
+     "day": 0,
+     "type": "import",
+     "customerIndex": -1,
+     "subject": "Help Scout will not connect - forwarding instead",
+     "body": "Attempted the standard webhook setup. Help Scout's payload is fixed and signs with base64(HMAC-SHA1) under X-HelpScout-Signature. Tideover wants templated canonical JSON and sha256 hex under X-Tideover-Signature.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "SURFACE THIS, do not work around it quietly. The canonical ingest rail cannot accept Help Scout at all; a real integration is a net-new vendor adapter plus a normalizer plus a second signature scheme. For this sim, set up email forwarding into the inbound address and expect the identity problem below. Also note Help Scout tags are objects, not strings - any tag filter written for the string rail misreads them."
+    },
+    {
+     "day": 1,
+     "type": "wismo",
+     "customerIndex": 300,
+     "subject": "Fwd: [Keyframe] Colourway question",
+     "body": "Forwarded from Help Scout. The From header is Help Scout's notification address. The customer's real email is buried in the body.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "This ingests as an UNMATCHED ticket: placeholder customer, presale:unmatched tag, no draft, and getQueue skips order-less tickets - so it is invisible in the cockpit. Go find the unmatched bucket by hand. If the operator does not know it exists, this customer is never answered and never appears to exist."
+    },
+    {
+     "day": 2,
+     "type": "wismo",
+     "customerIndex": 55,
+     "subject": "Colour sample rejected?",
+     "body": "Saw on Discord that the second colour sample got rejected. Does that push the whole GB or just the novelties?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Community found out before the merchant announced. Answer with the stage blurb and get ahead of it with an update - in this community the Discord is faster than the inbox and always will be."
+    },
+    {
+     "day": 3,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Second colour sample rejected",
+     "body": "Broadcast: we rejected the second resin sample - the alpha was off by enough to matter. Third sample is running. Band widens by about two weeks and I would rather do that than ship you a bad colour.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Widen the band. Post the sample photos. In this community, showing the rejected sample buys more goodwill than any apology copy could - so let the photo do the work and keep the copy short."
+    },
+    {
+     "day": 5,
+     "type": "wismo",
+     "customerIndex": 812,
+     "subject": "Novelties clock",
+     "body": "My kit has novelties. Am I on the slower clock or does everything ship together?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "The tooling stage blurb already answers this. Approve and send the status link so the next 200 people can read it themselves."
+    },
+    {
+     "day": 7,
+     "type": "refund",
+     "customerIndex": 44,
+     "subject": "Out",
+     "body": "I have been in six group buys and this is the second one you have pushed. I want a refund before this turns into an eighteen-month wait.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Repeat customer with real lifetime spend around $900 that Tideover cannot see. Do not let the standard band decide the gift tier here. Escalate manually and unlock full tier."
+    },
+    {
+     "day": 9,
+     "type": "other",
+     "customerIndex": 610,
+     "subject": "Fwd: [Keyframe] Change my proxy",
+     "body": "Forwarded. Customer has moved from the US to the EU and wants to change proxy regions before freight.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "A proxy change is an address change that also changes the freight cohort and the band. This arrives as an unmatched forwarded email - match it by hand, then update region and band."
+    },
+    {
+     "day": 11,
+     "type": "wismo",
+     "customerIndex": 970,
+     "subject": "Two weeks, no reply",
+     "body": "I emailed twice. Nothing. Not asking for a date, asking whether anyone is reading these.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Both prior emails almost certainly landed in the unmatched bucket, unseen and undrafted. This is the Help Scout gap producing exactly the injury it is supposed to prevent. Reply personally and go audit the unmatched bucket."
+    },
+    {
+     "day": 13,
+     "type": "deposit",
+     "customerIndex": 220,
+     "subject": "Extras payment",
+     "body": "I paid for extras in the second round. Is that on my order or is it separate?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Money question with no helpdesk data behind it. Answer from the group-buy spreadsheet."
+    },
+    {
+     "day": 15,
+     "type": "pile-on",
+     "customerIndex": -1,
+     "subject": "Discord: #keyframe-gb channel",
+     "body": "Channel spike. 'Anyone actually heard back from Wes?' 'I emailed twice, nothing.' 'This is how the last one went before it died.'",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "The accusation is silence, and the silence is real but not intentional - it is the unmatched bucket. Post in the channel, then fix the matching. In a community this tight, one thread sets the mood for the entire remaining wait."
+    },
+    {
+     "day": 17,
+     "type": "refund",
+     "customerIndex": 44,
+     "subject": "Re: Out",
+     "body": "Ten days. Nobody has answered a refund request. That is not a delay problem, that is a you problem.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Evidence pack. Same-day reply. Then count how many refund requests are sitting in the unmatched bucket right now - that number is the actual risk."
+    },
+    {
+     "day": 19,
+     "type": "wismo",
+     "customerIndex": 55,
+     "subject": "Third sample",
+     "body": "Third sample photo looks right. Thanks for not shipping the bad one.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log CSAT. Rejecting the sample and showing it publicly is the reassurance move; record it in the ledger with the outcome."
+    },
+    {
+     "day": 21,
+     "type": "wismo",
+     "customerIndex": 1090,
+     "subject": "Proxy timing",
+     "body": "How long after freight lands does the EU proxy actually post? Last GB it was five weeks and nobody warned us.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "The last mile after freight is a real hidden band. Add the proxy dwell time to the freight stage blurb rather than answering it 300 times."
+    },
+    {
+     "day": 24,
+     "type": "other",
+     "customerIndex": 3,
+     "subject": "VIP: the reviewer kit",
+     "body": "This is the keyboard channel you sent a kit to. My review is scheduled and I have no kit and no reply.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "VIP escalation, arriving as an unmatched forwarded email like everything else. Route to Wes. Do not let the queue swallow it."
+    },
+    {
+     "day": 27,
+     "type": "wismo",
+     "customerIndex": 812,
+     "subject": "Status link",
+     "body": "The status page is good. I would stop emailing if you put that link in the order confirmation instead of making me find it.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "The customer is telling the merchant the P1: the page only deflects if the link is delivered. Get the link into the confirmation and every update, then measure the WISMO drop against the baseline."
+    },
+    {
+     "day": 30,
+     "type": "other",
+     "customerIndex": -1,
+     "subject": "Unmatched bucket audit",
+     "body": "Operator opens the unmatched bucket for the first time in 30 days.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Count the tickets that never got a draft, never appeared in the queue, and never got a reply. Report the count as a number. That number is the cost of not having a real Help Scout adapter, and it is the strongest argument for building one."
+    }
+   ],
+   "withoutTideover": "Help Scout with saved replies, a Discord server that moves faster than the inbox, and a Google Sheet of the group-buy order list. Group buys have an unusual property: everyone paid on the same three days, so a delay lands on 1,150 people simultaneously and the inbox spikes rather than trickles. At a spike week of 60-110 emails/day and the merchant-reported 5-10 minutes each, that is 5-18 person-hours/day against one founder - a SIMULATED formula-based estimate from stated assumptions, not a measured result. What slips: he stops answering email entirely and lives in Discord, which serves the loud and abandons the quiet; the refund requests sit for ten days; and the community concludes he has gone dark, which is the accusation that kills the next group buy before it opens."
+  },
+  {
+   "id": "p08-marrow-email-only",
+   "name": "Sunny Oyelaran",
+   "brand": "Marrow & Mould",
+   "story": "I throw and glaze every piece myself and I take preorders because a kiln run takes six weeks and I cannot afford to make things nobody has bought. Two hundred and ten orders is not a lot to anybody else. It is a lot when it is you, at eleven at night, on your phone, in bed, answering the same question for the ninth time.",
+   "path": "email-only",
+   "dataReceived": "No helpdesk at all. Orders arrive as a CSV exported from her storefront and imported by hand; customer messages arrive as plain email to the Tideover inbound address (<inboxToken>@in.tideover.app, ADR-0008) via a Gmail forward. POPULATED from the CSV: email, firstName, orderValueCents, sourceKey->importKey, createdAt (if the date header hits an alias). Inbound email carries subject, body, and the customer's real From address, so identity matching actually works on this path - this is the cleanest data of any persona here, and it is the one with the least tooling. MISSING: no disclosedEta anywhere (she states the band on the product page, which no export carries), no LTV beyond the imported order value, and the $500 high tier will never fire on a $65-$300 population.",
+   "intake": {
+    "brandName": "Marrow & Mould",
+    "voice": "One potter, writing like a person who is tired and cares. Sensory, concrete, slightly apologetic without grovelling. Never invents a date.",
+    "tone": [
+     "warm",
+     "personal",
+     "sensory",
+     "plain"
+    ],
+    "banned": [
+     "guaranteed",
+     "definitely",
+     "any day now",
+     "shipping this week",
+     "we promise",
+     "our team",
+     "we apologise for the inconvenience"
+    ],
+    "signoff": "- Sunny",
+    "windowMinDays": 60,
+    "windowMaxDays": 95,
+    "stages": [
+     {
+      "key": "production",
+      "label": "Throwing",
+      "dayBand": {
+       "from": 0,
+       "to": 25
+      },
+      "blurb": "Every piece is thrown by hand and then dries slowly. Rushing this stage is how pieces crack, so it is the stage I refuse to rush."
+     },
+     {
+      "key": "qc",
+      "label": "Bisque and glaze",
+      "dayBand": {
+       "from": 26,
+       "to": 55
+      },
+      "blurb": "First firing, then glaze, then the glaze firing. Roughly one piece in eight does not survive and gets remade, which is why a kiln run never ships whole."
+     },
+     {
+      "key": "dispatch",
+      "label": "Wrapping and posting",
+      "dayBand": {
+       "from": 56,
+       "to": 95
+      },
+      "blurb": "Wrapped by hand in the order the pieces came out of the kiln."
+     }
+    ],
+    "gifts": [
+     {
+      "name": "Photos of your piece on the wheel",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 600
+     },
+     {
+      "name": "Handwritten card in the box",
+      "kind": "founder-note",
+      "tier": "mid",
+      "costCents": 200,
+      "perceivedValueCents": 1800
+     },
+     {
+      "name": "Small test tile from your glaze batch",
+      "kind": "digital-perk",
+      "tier": "mid",
+      "costCents": 400,
+      "perceivedValueCents": 2200
+     },
+     {
+      "name": "Next kiln out, first wrapped",
+      "kind": "priority-dispatch",
+      "tier": "full",
+      "costCents": 700,
+      "perceivedValueCents": 3000
+     },
+     {
+      "name": "£20 off the next piece",
+      "kind": "next-order-credit",
+      "tier": "full",
+      "costCents": 800,
+      "perceivedValueCents": 2000
+     }
+    ]
+   },
+   "backers": {
+    "count": 210,
+    "orderValueCentsMin": 6500,
+    "orderValueCentsMax": 30000,
+    "pledgeDateSpreadDays": 44,
+    "ltvPattern": "Rolling preorders across 44 days, so three kiln cohorts exist at once and every customer is on a different clock. Mean order $118. About 30 repeat customers whose real lifetime spend is $300-$600, invisible to Tideover because nothing feeds ltvCents but the single imported order. Nobody clears the $500 high tier, so the entire LTV gate is inert - risk band must do all the work. SIMULATED population."
+   },
+   "events": [
+    {
+     "day": 0,
+     "type": "import",
+     "customerIndex": -1,
+     "subject": "CSV import: 210 orders, three kiln cohorts",
+     "body": "Storefront CSV. Gmail forwarding set to the Tideover inbound address.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Import and check datelessRows. Because orders span 44 days, three kiln cohorts coexist and a single band would be wrong for two-thirds of them - verify each cohort's wait clock before sending anything. Confirm the Gmail forward is delivering with the customer's real From address intact, which is what makes matching work on this path."
+    },
+    {
+     "day": 1,
+     "type": "wismo",
+     "customerIndex": 12,
+     "subject": "Hi!",
+     "body": "Hi! No pressure at all, I know it is handmade. Just wondering roughly where in the process my mugs are.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Approve the stage-blurb draft, send the status link. Sixty percent of her inbox is this exact message and it is the one the status page eliminates."
+    },
+    {
+     "day": 2,
+     "type": "wismo",
+     "customerIndex": 88,
+     "subject": "order",
+     "body": "hey any update",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Two words, no order reference. Match on the From address, which works on this path. Reply with the stage."
+    },
+    {
+     "day": 4,
+     "type": "other",
+     "customerIndex": 45,
+     "subject": "Wrong address",
+     "body": "I typed my old flat number at checkout. Can you fix it before it ships? I do not want it going to my ex.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Log the change and confirm in writing. She has no order-management system that will surface this at packing time, so it also has to go on the physical packing list."
+    },
+    {
+     "day": 6,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Kiln element failed",
+     "body": "Broadcast: the kiln element blew mid-firing and I lost most of a glaze load. The replacement is ordered. Everything in kiln cohort 2 moves out by roughly three weeks.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Cohort-specific delay - only cohort 2 is affected. Do NOT blast all 210. Widen the band for cohort 2, push status links to that cohort, and leave cohorts 1 and 3 alone or you manufacture panic in people who are fine."
+    },
+    {
+     "day": 7,
+     "type": "wismo",
+     "customerIndex": 99,
+     "subject": "Am I affected?",
+     "body": "Saw your post about the kiln. Am I one of the ones that got lost? I ordered in March.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Answer from the cohort, not from memory. This is the question a cohort-aware status page answers before it is asked."
+    },
+    {
+     "day": 8,
+     "type": "refund",
+     "customerIndex": 33,
+     "subject": "Refund please",
+     "body": "I ordered this as a wedding gift and the wedding is in four weeks. If it will not make it I need the money back to buy something else.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Deadline-driven refund - reassurance will not help, because the constraint is external. Be straight about whether the cohort can make it. If it cannot, refund fast and offer the store credit. Log the cause as 'deadline miss', not 'delay'."
+    },
+    {
+     "day": 10,
+     "type": "wismo",
+     "customerIndex": 88,
+     "subject": "hey",
+     "body": "still nothing?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Second contact from a customer who has not been given a status link. Send the link this time. The repeat WISMO is the metric that says the link is not landing."
+    },
+    {
+     "day": 12,
+     "type": "other",
+     "customerIndex": 140,
+     "subject": "Can I add a second mug?",
+     "body": "I want to add a second mug to my order so it goes in the same kiln. Can I just Paypal you?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Revenue arriving as a support ticket. Take it, add it to the order, and do not let it sit for three days behind WISMO."
+    },
+    {
+     "day": 14,
+     "type": "wismo",
+     "customerIndex": 176,
+     "subject": "sorry to bother you",
+     "body": "Sorry to bother you, I know you are one person. I just want to know it is still happening.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "The definitional reassurance ticket. Two sentences and a status link close it. This customer will never chargeback and will buy again - and a queue sorted by volume or anger will never show them to her."
+    },
+    {
+     "day": 16,
+     "type": "wismo",
+     "customerIndex": 33,
+     "subject": "Re: Refund please",
+     "body": "It has been six days and the wedding is in three weeks now. Please just answer me.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Six days on a deadline-driven refund is the failure. The queue kept filling while she slept and this one sank. Reply today, refund, log it."
+    },
+    {
+     "day": 18,
+     "type": "deposit",
+     "customerIndex": 201,
+     "subject": "Payment taken twice?",
+     "body": "There are two charges on my card from you.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Money question, answer within hours from the payment processor."
+    },
+    {
+     "day": 21,
+     "type": "wismo",
+     "customerIndex": 12,
+     "subject": "Thank you",
+     "body": "The photo of my mugs on the wheel made my week. Take as long as you need.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "The base-tier gift (process photos, zero cost) converted an anxious wait into a fan. Log the CSAT and note the gift cost was $0 - that is the cheapest save in the catalogue and it should be the default for standard-band tickets."
+    },
+    {
+     "day": 24,
+     "type": "refund",
+     "customerIndex": 190,
+     "subject": "Cancel",
+     "body": "Ten weeks. I have stopped caring about the mug.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Low-heat refund from delivery-window fatigue. Offer the base gift and the band. If they go, refund and record it. Not every refund is a failure."
+    },
+    {
+     "day": 27,
+     "type": "wismo",
+     "customerIndex": 99,
+     "subject": "Cohort 2 update",
+     "body": "Any word on the new element? Not angry, just planning.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Answer per cohort. Send the link."
+    },
+    {
+     "day": 30,
+     "type": "wismo",
+     "customerIndex": 176,
+     "subject": "Got the link",
+     "body": "The status page is lovely. I have stopped emailing you, which I think is the point.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log CSAT. Compute the 30-day repeat-WISMO delta against the day-0 baseline, state the assumptions inline, and label it SIMULATED wherever it is shown."
+    }
+   ],
+   "withoutTideover": "Gmail on a phone, a spreadsheet, and a paper notebook by the kiln. There is no helpdesk, no macros, no automation, and no way to email every customer waiting on one kiln cohort - the native path for that message does not exist, and merchants in this position end up exporting their unfulfilled list into a hand-built database and mail-merging the number of days until shipping by hand. At 8-15 emails/day and 5-10 minutes each, that is 0.7-2.5 hours/day, mostly after 10pm - a SIMULATED formula-based estimate from stated assumptions, not a measured result. What slips: the queue fills while she sleeps and the wedding-gift refund sinks for six days; the kiln-failure announcement goes to all 210 people instead of the 70 affected, panicking two cohorts that were fine; and the address correction never reaches the packing table."
+  },
+  {
+   "id": "p09-twolantern-multi-campaign",
+   "name": "Jamie Sorensen",
+   "brand": "Two Lantern Studio",
+   "story": "We are fulfilling our second game while our third is funding, which everybody told us not to do and which we did anyway because the studio does not eat otherwise. So half my inbox is people who paid eighteen months ago and want to know where their box is, and the other half is people who paid last week and are watching how we answer the first half before they decide whether to trust us.",
+   "path": "multi-campaign",
+   "dataReceived": "Two Kickstarter CSV imports into ONE merchant record: Campaign A (Deepwater, 2,400 backers, day 78 of fulfilment) and Campaign B (Saltmarsh, 900 early backers, day 4). Tideover receives per row: email, firstName, orderValueCents, sourceKey->importKey, group. CRITICAL STRUCTURAL PROBLEM: campaignName/wave are NEVER MAPPED at import - the field does not survive - so both campaigns land in one undifferentiated population with wildly different fulfillmentStart dates (74 days apart) and there is no first-class cohort key to separate them. The merchant.stages day-bands are a single set applied to both, so Campaign B backers on day 4 are being scored against a stage model built for Campaign A. productionStage is derived at import from elapsed days vs stages[].dayBand and is a SNAPSHOT that nothing advances, so it goes stale by exactly the number of days since import - which on a two-campaign record means one cohort's stage is drifting while the other's is meaningless. About 640 people are backers of BOTH campaigns and appear as two orders with two clocks under one email.",
+   "intake": {
+    "brandName": "Two Lantern Studio",
+    "voice": "A two-person studio that talks to its backers like adults and does not pretend the two campaigns are unrelated. Names the awkwardness out loud.",
+    "tone": [
+     "candid",
+     "warm",
+     "self-aware",
+     "specific"
+    ],
+    "banned": [
+     "guaranteed",
+     "definitely",
+     "shipping soon",
+     "on track",
+     "we promise",
+     "no delays expected",
+     "any day now"
+    ],
+    "signoff": "- Jamie, Two Lantern",
+    "windowMinDays": 100,
+    "windowMaxDays": 140,
+    "stages": [
+     {
+      "key": "sourcing",
+      "label": "Components sourced",
+      "dayBand": {
+       "from": 0,
+       "to": 26
+      },
+      "blurb": "Cardstock, wood tokens, and the miniatures resin are locked with the manufacturer."
+     },
+     {
+      "key": "production",
+      "label": "Manufacturing",
+      "dayBand": {
+       "from": 27,
+       "to": 76
+      },
+      "blurb": "Printing, punching, and moulding. This is the longest band and the one most likely to move."
+     },
+     {
+      "key": "qc",
+      "label": "Pre-production copy",
+      "dayBand": {
+       "from": 77,
+       "to": 92
+      },
+      "blurb": "We get one full copy, play it, and check every component against the manifest before the run is released."
+     },
+     {
+      "key": "freight",
+      "label": "Sea freight",
+      "dayBand": {
+       "from": 93,
+       "to": 128
+      },
+      "blurb": "Containers to the regional hubs. Hubs receive on different weeks and clear customs at different speeds."
+     },
+     {
+      "key": "dispatch",
+      "label": "Hub dispatch",
+      "dayBand": {
+       "from": 129,
+       "to": 140
+      },
+      "blurb": "Your regional hub packs and posts in backer order."
+     }
+    ],
+    "gifts": [
+     {
+      "name": "Print-and-play of the new game",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 1500
+     },
+     {
+      "name": "Promo card pack in the box",
+      "kind": "digital-perk",
+      "tier": "mid",
+      "costCents": 350,
+      "perceivedValueCents": 2000
+     },
+     {
+      "name": "Note from Jamie with the factory photos",
+      "kind": "founder-note",
+      "tier": "mid",
+      "costCents": 150,
+      "perceivedValueCents": 1500
+     },
+     {
+      "name": "First hub pallet, first out",
+      "kind": "priority-dispatch",
+      "tier": "full",
+      "costCents": 1600,
+      "perceivedValueCents": 5500
+     },
+     {
+      "name": "Free upgrade on the new campaign",
+      "kind": "next-order-credit",
+      "tier": "full",
+      "costCents": 2500,
+      "perceivedValueCents": 6000
+     }
+    ]
+   },
+   "backers": {
+    "count": 3300,
+    "orderValueCentsMin": 3000,
+    "orderValueCentsMax": 26000,
+    "pledgeDateSpreadDays": 118,
+    "ltvPattern": "Campaign A: 2,400 backers, mean $88, all pledged in a 28-day window ending 78 days before sim start. Campaign B: 900 backers, mean $95, pledged in the last 4 days. The combined pledge-date spread is 118 days, which is the widest in this set and the whole point of the persona. 640 people are in BOTH campaigns; their true studio LTV is $180+ and they are the most valuable and most dangerous people in the file, because a bad Campaign A experience cancels a Campaign B pledge in one click. Tideover cannot see that link - it sees two orders. SIMULATED population."
+   },
+   "events": [
+    {
+     "day": 0,
+     "type": "import",
+     "customerIndex": -1,
+     "subject": "Two CSVs, one merchant record",
+     "body": "Deepwater backer report (2,400, day 78) and Saltmarsh early backer report (900, day 4) imported into the same merchant.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Recognise the structural break before sending anything: campaignName/wave is not mapped, so both campaigns are one undifferentiated population under one set of stage day-bands. Campaign B backers on day 4 will be scored against a stage model for a campaign 74 days ahead of them. Either separate the merchants or hand-tag the cohort - do not let the drafter tell a Saltmarsh backer about a Deepwater freight container."
+    },
+    {
+     "day": 1,
+     "type": "wismo",
+     "customerIndex": 400,
+     "subject": "Deepwater - freight?",
+     "body": "Backed Deepwater in the spring. Where is the container? And I notice you had time to launch a new campaign.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "The core cross-campaign grievance, and it will repeat all month. Answer the freight question first, then answer the resentment directly rather than ducking it. A defensive reply here becomes a comment-wall screenshot."
+    },
+    {
+     "day": 2,
+     "type": "wismo",
+     "customerIndex": 2900,
+     "subject": "Saltmarsh - should I be worried?",
+     "body": "I just backed Saltmarsh. Then I read the Deepwater comments. Should I be pulling my pledge?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "New-campaign backer auditing the old campaign's comment wall before deciding to trust you. The Deepwater inbox is now Saltmarsh's conversion funnel. Answer with specifics about Deepwater, not with reassurance about Saltmarsh."
+    },
+    {
+     "day": 3,
+     "type": "other",
+     "customerIndex": 1877,
+     "subject": "I am in both",
+     "body": "I backed Deepwater and Saltmarsh. Can you ship them together and save me the shipping?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "One of the 640 dual backers. Tideover sees two orders on one email and no link between them. Answer the combine question and flag the customer manually - these are the most valuable people in the file and the product cannot see it."
+    },
+    {
+     "day": 5,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Deepwater: pre-production copy failed the check",
+     "body": "Broadcast to Deepwater only: the pre-production copy came back with two component errors. The run is held while the manufacturer re-does the punchboard. Deepwater band widens by roughly four weeks. Saltmarsh is unaffected.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "This announcement MUST reach Deepwater only. With no campaign key mapped, the default blast hits all 3,300 - including 900 people who just pledged four days ago and will read it as 'this studio ships late'. Segment by hand before sending. This is the single highest-stakes operator action in the persona."
+    },
+    {
+     "day": 6,
+     "type": "pile-on",
+     "customerIndex": -1,
+     "subject": "Deepwater comments + Saltmarsh comments, simultaneously",
+     "body": "Deepwater: 'Four weeks becomes four months, and meanwhile they are taking money for a NEW game.' Saltmarsh: someone has cross-posted the Deepwater delay into the new campaign's comments with the words 'read this before you pledge'.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "The delay is now a live sales objection on a funding campaign. Reply in public on BOTH campaigns, with the same facts, in the same voice, within the hour. Silence on either wall funds the other wall's argument."
+    },
+    {
+     "day": 7,
+     "type": "refund",
+     "customerIndex": 400,
+     "subject": "Refund Deepwater and cancel Saltmarsh",
+     "body": "You are taking new money while my old money is eighteen months old. Refund one and I am cancelling the other.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "A dual backer whose combined value is roughly $190 and whose cancellation is visible to the whole Saltmarsh campaign. Escalate to Jamie. Unlock the full-tier gift. This is the exact customer the LTV tier cannot see."
+    },
+    {
+     "day": 9,
+     "type": "wismo",
+     "customerIndex": 3050,
+     "subject": "Saltmarsh timeline",
+     "body": "What is the actual production timeline for Saltmarsh? And be more careful with it than you were with Deepwater.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Answer with Saltmarsh's own band. Do NOT let the drafter reach for the shared stage model, which is currently pointing at Deepwater's freight stage - it would tell a day-4 backer about a container."
+    },
+    {
+     "day": 11,
+     "type": "wismo",
+     "customerIndex": 1204,
+     "subject": "Deepwater - which hub?",
+     "body": "EU hub here. Does the punchboard reprint push the EU container specifically?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Regional cohort inside a campaign cohort. Two dimensions, neither of which the import gives you. Answer by hand and get the segmentation fixed."
+    },
+    {
+     "day": 13,
+     "type": "other",
+     "customerIndex": 990,
+     "subject": "Address change on Deepwater",
+     "body": "I have moved twice since I backed Deepwater. Please use the address on my Saltmarsh pledge.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "The address change crosses campaigns, which the data model does not support. Log it on both orders manually. Do not assume the KS address-update email is truthful - half of them show no change when you open the record."
+    },
+    {
+     "day": 15,
+     "type": "deposit",
+     "customerIndex": 2455,
+     "subject": "Saltmarsh charge",
+     "body": "Kickstarter charged me for Saltmarsh already? I thought that happened at the end.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Money question from a brand-new backer. Answer fast and factually. A confused charge on a funding campaign turns into a cancelled pledge within a day."
+    },
+    {
+     "day": 17,
+     "type": "wismo",
+     "customerIndex": 1877,
+     "subject": "Re: I am in both",
+     "body": "Still no answer on combining. This is why people stop backing studios.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "A dual backer, the most valuable segment, waiting two weeks on an operational question. Answer today. Then build the dual-backer list by hand, because Tideover will not build it for you."
+    },
+    {
+     "day": 19,
+     "type": "wismo",
+     "customerIndex": 2900,
+     "subject": "Re: Should I be worried?",
+     "body": "You answered, you were specific, and you did not get defensive. I am staying in.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log the save and its cause. A specific non-defensive reply to a Deepwater question retained a Saltmarsh pledge. That is the cross-campaign proof point and it belongs in the ledger with the assumption stated."
+    },
+    {
+     "day": 22,
+     "type": "refund",
+     "customerIndex": 620,
+     "subject": "Deepwater refund",
+     "body": "Eighteen months. I have moved house, changed jobs, and stopped playing board games. Please refund.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Long-wait attrition, no anger. Offer the base gift, then refund cleanly if they still want out and log the cause as 'wait-length attrition'."
+    },
+    {
+     "day": 24,
+     "type": "other",
+     "customerIndex": 11,
+     "subject": "VIP: the review channel",
+     "body": "This is the board game channel that covered Deepwater. We are being asked in our comments why we recommended it. What do we tell them?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "VIP with reach across BOTH campaigns. Route to Jamie. Give them the punchboard facts and the photos - a specific answer defends both campaigns at once."
+    },
+    {
+     "day": 26,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Deepwater: punchboard re-approved",
+     "body": "Broadcast to Deepwater only: corrected punchboard approved, run released, container booked. Band narrows.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Segment again. Narrow the Deepwater band. Then push the same facts to the Saltmarsh comment wall as evidence, because the objection lives there now."
+    },
+    {
+     "day": 28,
+     "type": "wismo",
+     "customerIndex": 3050,
+     "subject": "Saltmarsh",
+     "body": "Deepwater got fixed and you told everyone. That is basically all I wanted to see before I upgraded my Saltmarsh pledge.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log it. The handling of Campaign A's delay is what closed the upgrade on Campaign B. That is the entire thesis of this persona and it should be recorded in the ledger with its assumptions stated, labelled SIMULATED."
+    },
+    {
+     "day": 30,
+     "type": "other",
+     "customerIndex": -1,
+     "subject": "Cohort audit",
+     "body": "Operator reviews how many messages went to the wrong campaign this month.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Count the cross-campaign misfires. Every one is a day-4 backer who was told about a delayed container that has nothing to do with them. Report the count and fix the campaign key at import."
+    }
+   ],
+   "withoutTideover": "Two Kickstarter dashboards, two comment walls, one shared inbox, and a spreadsheet per campaign with no join between them. The specific failure is segmentation: there is no way to send a delay announcement to only the campaign that is delayed, so either everyone hears it (and the funding campaign takes the hit) or nobody does (and the fulfilling campaign concludes the studio has gone dark). At 25-50 tickets/day across two campaigns at 5-10 minutes each, that is 2-8 person-hours/day against two people who are also making a game - a SIMULATED formula-based estimate from stated assumptions, not a measured result. What slips: the Deepwater delay post gets cross-posted into the Saltmarsh campaign by an angry backer before the studio can frame it; the 640 dual backers are never identified as a segment; and a chargeback threat from a dual backer is discovered in the Kickstarter comments rather than the inbox."
+  },
+  {
+   "id": "p10-foundryone-hardware-slip",
+   "name": "Odette Lindqvist",
+   "brand": "Foundry One",
+   "story": "We sell an 800-dollar desktop CNC as a preorder, we have taken nine thousand of them, and last month we told everybody it would be six months later than we said. I have three people on support and we are all writing the same three paragraphs a hundred times a day. The word I keep reading in the tickets is not late. It is lies.",
+   "path": "shopify-gorgias",
+   "dataReceived": "Shopify store plus a Gorgias helpdesk. Assume the Gorgias webhook is connected. Per ticket Tideover receives ONLY the documented Gorgias variables: ticket.id -> externalId, ticket.subject -> subject, ticket.customer.email -> customerEmail, ticket.created_datetime -> createdAt. body/tags/order_ref come from template variables that appear in NO documented Gorgias list, so they are guesses that can render empty - and CanonicalIngestSchema has no .min(1) on body, so an empty body ingests silently, classifies as 'other'/'calm', and buries a chargeback threat at the bottom of the risk queue. Gorgias offers only a static header or OAuth2, never per-request HMAC, so X-Tideover-Signature cannot be produced and every ticket 401s once DEMO_MODE=false. Shopify is NOT WIRED (zero code), so the fields that would make this persona's money real - Customer.amountSpent, Order.totalPriceSet, Order.createdAt - are unavailable; order value and dates come from a CSV export or hit the $50 floor. Even if Shopify were wired, it has NO estimated-delivery field and NO production-stage concept on Order, so it would still not supply a wait clock.",
+   "intake": {
+    "brandName": "Foundry One",
+    "voice": "An engineering company that has already lost the room and knows it. Plain, non-defensive, specific about what physically happened. Never issues a new hard date, because the last two were wrong.",
+    "tone": [
+     "plain",
+     "non-defensive",
+     "specific",
+     "accountable"
+    ],
+    "banned": [
+     "guaranteed",
+     "final date",
+     "definitely",
+     "on track",
+     "we promise",
+     "no further delays",
+     "any day now",
+     "shipping imminently",
+     "we apologise for the inconvenience"
+    ],
+    "signoff": "- Odette, Foundry One",
+    "windowMinDays": 150,
+    "windowMaxDays": 240,
+    "stages": [
+     {
+      "key": "sourcing",
+      "label": "Long-lead parts",
+      "dayBand": {
+       "from": 0,
+       "to": 40
+      },
+      "blurb": "Linear rails, spindles, and the control boards. The spindle supplier is single-source and is the reason this stage moved."
+     },
+     {
+      "key": "tooling",
+      "label": "Enclosure tooling",
+      "dayBand": {
+       "from": 41,
+       "to": 95
+      },
+      "blurb": "Sheet-metal tooling and the cast base. Tooling is the stage that took the six months."
+     },
+     {
+      "key": "production",
+      "label": "Assembly line",
+      "dayBand": {
+       "from": 96,
+       "to": 165
+      },
+      "blurb": "Units are assembled in blocks of 500. Your block number is on your status page and it is set by your order date, oldest first."
+     },
+     {
+      "key": "qc",
+      "label": "Calibration and cut test",
+      "dayBand": {
+       "from": 166,
+       "to": 200
+      },
+      "blurb": "Every machine cuts a calibration part and the part is measured. Machines that miss tolerance go back to the bench, which is why a block never ships whole."
+     },
+     {
+      "key": "freight",
+      "label": "Freight",
+      "dayBand": {
+       "from": 201,
+       "to": 228
+      },
+      "blurb": "Palletised sea freight to regional warehouses. This machine is too heavy to fly."
+     },
+     {
+      "key": "dispatch",
+      "label": "Dispatch",
+      "dayBand": {
+       "from": 229,
+       "to": 240
+      },
+      "blurb": "Out of your regional warehouse, in block order."
+     }
+    ],
+    "gifts": [
+     {
+      "name": "Full software licence, unlocked now",
+      "kind": "digital-perk",
+      "tier": "base",
+      "costCents": 0,
+      "perceivedValueCents": 19900
+     },
+     {
+      "name": "Materials starter pack in the crate",
+      "kind": "digital-perk",
+      "tier": "mid",
+      "costCents": 4200,
+      "perceivedValueCents": 12000
+     },
+     {
+      "name": "Note from Odette with the tooling report",
+      "kind": "founder-note",
+      "tier": "mid",
+      "costCents": 200,
+      "perceivedValueCents": 2000
+     },
+     {
+      "name": "Moved to the front of the next block",
+      "kind": "priority-dispatch",
+      "tier": "full",
+      "costCents": 9000,
+      "perceivedValueCents": 40000
+     },
+     {
+      "name": "$150 credit on tooling and bits",
+      "kind": "next-order-credit",
+      "tier": "full",
+      "costCents": 6000,
+      "perceivedValueCents": 15000
+     }
+    ]
+   },
+   "backers": {
+    "count": 9000,
+    "orderValueCentsMin": 64900,
+    "orderValueCentsMax": 129900,
+    "pledgeDateSpreadDays": 210,
+    "ltvPattern": "Rolling preorders taken over seven months, so the pledge-date spread is 210 days and a single merchant contains people who are 20 days in and people who are 230 days in - on the same product, with the same broken promise. Mean order $799; the Pro configuration is $1,299 and about 1,400 people bought it. This is the ONE persona where the $500 hardcoded high-LTV tier fires for nearly everyone, which makes it useless as a discriminator: if all 9,000 are 'high', the tier tells the operator nothing and the refund-risk band has to carry the entire priority decision by itself. SIMULATED population.",
+    "ltvNote": "The high tier firing for 100% of the file is itself the finding."
+   },
+   "events": [
+    {
+     "day": 0,
+     "type": "import",
+     "customerIndex": -1,
+     "subject": "9,000 preorders, day 140, six-month slip announced last month",
+     "body": "CSV export from Shopify (no API wiring). Gorgias connected. Average order $799.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Three checks before the queue is trusted. (1) The Gorgias signature problem: no per-request HMAC exists, so every ticket 401s once DEMO_MODE is false. (2) The empty-body hole: send a test ticket and confirm the body renders, or a chargeback threat sorts to the bottom as 'other/calm'. (3) The LTV tier fires for all 9,000 at $799 vs a $500 threshold, so it is not a discriminator here - priority has to come from the refund-risk band alone."
+    },
+    {
+     "day": 1,
+     "type": "refund",
+     "customerIndex": 220,
+     "subject": "Refund - the wait has been too long",
+     "body": "The wait has been too long, too many delays, and no conclusive answer about when the final date actually is. How do I go about getting a refund?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "The ask is for certainty and the refund is the fallback. Answer with the band and the block number, unlock the base gift (the software licence, $0 cost, $199 perceived), and log the outcome. If the answer is another vague 'soon', this converts."
+    },
+    {
+     "day": 2,
+     "type": "wismo",
+     "customerIndex": 1490,
+     "subject": "My referral shipped before me",
+     "body": "My referral ordered four days after I did and his machine has shipped. Mine has not. Same configuration. What is the ordering logic here, because from where I sit there is not one.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Queue-fairness anger, and it is the most corrosive kind because it implies the queue is arbitrary. Publish the block logic (order date, oldest first, config-dependent) on the status page and answer with this customer's block number. An unexplained queue is read as favouritism."
+    },
+    {
+     "day": 4,
+     "type": "refund",
+     "customerIndex": 66,
+     "subject": "Three years, four thousand dollars",
+     "body": "I paid in full three years ago for the Pro. I have been fed an excuse with every delay. I am done. Refund the money I paid three years ago.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "The expensive tail: highest value, longest wait, most credible grievance. Escalate to Odette personally, not the queue. Unlock the full-tier gift. If the refund happens, refund it fast and cleanly - a slow refund on a three-year wait is the story that ends up in a news article."
+    },
+    {
+     "day": 5,
+     "type": "delay-announcement",
+     "customerIndex": -1,
+     "subject": "Enclosure tooling: what actually happened",
+     "body": "Broadcast: the sheet-metal tool failed final validation twice. We have moved to a second tooling vendor. Band moves to 150-240 days from order. We are not issuing a new hard date, because the last two we issued were wrong and that is worse than saying we do not know.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Widen the band, publish the tooling report, push status links to every block. Refuse to issue a date - the customer word in the tickets is already 'lies', which is what a slipped hard date becomes. Then staff the next 10 days for the wave: expect the WISMO forecast to spike and refund requests to follow 48-72 hours behind."
+    },
+    {
+     "day": 6,
+     "type": "pile-on",
+     "customerIndex": -1,
+     "subject": "Community forum: 400 posts in 24 hours",
+     "body": "Forum spike after the announcement. 'Seriously. This is pathetic. Another push back. I gave you kind views on every previous delay and this is over the top now.' Second thread is people comparing refund-request response times.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Goodwill from previous delays is spent and cannot be recharged with words. Post once, in public, with the tooling report attached. Then let the status page carry the weight - one-to-one replies to 400 posts is not a strategy, it is a way to lose a week."
+    },
+    {
+     "day": 7,
+     "type": "refund",
+     "customerIndex": 3311,
+     "subject": "Consumer law",
+     "body": "You delayed shipping, you did not notify me, and you will not give a new date because you do not know. The 30-day rule applies when no date was given at order. You DID give a date at order. I have read the rule and I am building a case.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Regulatory escalation. This customer is assembling evidence. Route to the founder plus whoever handles legal. Generate the evidence pack immediately: order date, the disclosed date at time of order, every update, every reply. Note the disclosed-date artifact is the one thing the KS/CSV path never carries - on this path it exists on the Shopify product page and must be captured by hand."
+    },
+    {
+     "day": 9,
+     "type": "wismo",
+     "customerIndex": 5502,
+     "subject": "(empty)",
+     "body": "",
+     "sentiment": "calm",
+     "expectedOperatorAction": "EMPTY BODY from the ingest hole. It classified as 'other'/'calm' and sorted to the bottom. Open it in Gorgias. If it turns out to be a chargeback threat, that is the schema defect producing exactly the failure it was warned about - no .min(1) on body, no .email() on customer_email."
+    },
+    {
+     "day": 11,
+     "type": "other",
+     "customerIndex": 780,
+     "subject": "Upgrade to Pro - and your system said no",
+     "body": "I tried to upgrade to the Pro and got 'Your order is ineligible for upgrades at this time. Please contact customer service.' I emailed customer service. It said three days. That was nine days ago.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Revenue the merchant is refusing to take, converted into a ticket, then ignored for nine days. Take the upgrade manually. This ticket is worth $500 of margin and it is sitting in a WISMO queue."
+    },
+    {
+     "day": 13,
+     "type": "other",
+     "customerIndex": 2044,
+     "subject": "Address change - and can I collect in the US?",
+     "body": "I am in Canada. My date moved again. I know people who have changed their shipping address to a US one and driven across the border to collect. Can I do that?",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Address change that changes the freight cohort AND is a signal of how far people will go to escape the queue. Log it, update the region, and note the pattern - if customers are re-routing across borders, the regional wave story is not being told clearly."
+    },
+    {
+     "day": 15,
+     "type": "deposit",
+     "customerIndex": 4100,
+     "subject": "You have had my $799 for eight months",
+     "body": "You have held eight hundred dollars of my money for eight months and produced nothing. Explain to me why that is not a loan I did not agree to give you.",
+     "sentiment": "hostile",
+     "expectedOperatorAction": "Money-held-hostage framing, which is the emotional core of every preorder dispute at this price point. Do not get defensive and do not explain cash-flow. State the stage, the band, and the option to leave. Log it."
+    },
+    {
+     "day": 17,
+     "type": "wismo",
+     "customerIndex": 7800,
+     "subject": "Just tell me the block",
+     "body": "I do not need a date. I need my block number and whether block 6 has started. That is it.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "The exact ticket the status page eliminates. Send the block and the link. If this ticket exists at all, the link is not being delivered - which is the P1, not the page."
+    },
+    {
+     "day": 19,
+     "type": "refund",
+     "customerIndex": 220,
+     "subject": "Re: Refund",
+     "body": "Nobody has come back to me. It has been eighteen days. I had a live chat with someone called Dakota about cancelling and I still have no answer about when I get my money.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "The second grievance is now the unanswered refund request itself, not the wait. This is the shape that becomes a dispute and a review. Answer today, refund, and record the reply time in the ledger - reply latency on refund requests is the single most predictive number this merchant has."
+    },
+    {
+     "day": 21,
+     "type": "other",
+     "customerIndex": 88,
+     "subject": "VIP: our maker-space bought twelve",
+     "body": "We are the maker-space that ordered twelve machines. Our members are asking. We are the reason forty of your other customers ordered.",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Twelve units, roughly $9,600, plus referral reach. Gorgias sees one ticket at one email; Shopify's Customer.amountSpent would show the real number and is not wired. Escalate manually and treat as a channel partner."
+    },
+    {
+     "day": 23,
+     "type": "wismo",
+     "customerIndex": 6200,
+     "subject": "Customs",
+     "body": "AU here. I have just read that another customer paid an 83 dollar entry fee and 605 dollars of duty on top of a machine they had already paid for in full. Is that what is waiting for me?",
+     "sentiment": "anxious",
+     "expectedOperatorAction": "Duty shock at the border, on top of an eight-month wait, on an $800 machine. Publish the regional duty position on the status page now. This turns into refund demands AFTER delivery if it is a surprise."
+    },
+    {
+     "day": 25,
+     "type": "refund",
+     "customerIndex": 66,
+     "subject": "Filed",
+     "body": "Bank dispute opened. Three years, four thousand dollars, and a company that will not give me a date.",
+     "sentiment": "chargeback-threat",
+     "expectedOperatorAction": "Evidence pack: order date, disclosed date at order, every update posted, every reply and its timestamp, the current band, the tooling report. This is the pack's hardest test - a three-year wait with two slipped hard dates is close to indefensible, and the pack's job is to be accurate, not to win."
+    },
+    {
+     "day": 27,
+     "type": "wismo",
+     "customerIndex": 1490,
+     "subject": "Re: My referral shipped before me",
+     "body": "You published the block logic. It makes sense. I am block 7 and I can live with that.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log the save. Publishing the queue order converted queue-fairness rage into acceptance without shipping anything. That is a ledger-backed result and it should be stated with its assumptions, labelled SIMULATED."
+    },
+    {
+     "day": 29,
+     "type": "wismo",
+     "customerIndex": 7800,
+     "subject": "Block 6 started",
+     "body": "Saw block 6 started on the status page. I have not emailed you in three weeks because I do not need to.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Log CSAT. Compute the WISMO reduction against the day-0 baseline and report it as a formula with the assumptions stated inline - never as a measured customer result, and always labelled SIMULATED."
+    },
+    {
+     "day": 30,
+     "type": "other",
+     "customerIndex": -1,
+     "subject": "30-day outcome review",
+     "body": "Operator reviews the ledger: refunds requested, refunds prevented, disputes filed, reply-time distribution.",
+     "sentiment": "calm",
+     "expectedOperatorAction": "Report from the ledger only. Any refunds-prevented or hours-saved figure must be shown as a formula with its assumptions (tickets x AHT, or requests x save-rate) and labelled SIMULATED. Do not assert a measured result from a simulated run."
+    }
+   ],
+   "withoutTideover": "Gorgias with three agents, Shopify admin, a shipping-block spreadsheet, and a community forum that is louder than all of them. The support team writes the same three paragraphs a hundred times a day because there is nothing to paste: no tracking number exists for another four months, and the block spreadsheet is the only source of truth. At 90-160 tickets/day in the month after a six-month slip, at 5-10 minutes each, the load is 7.5-26 person-hours/day against three seats - a SIMULATED formula-based estimate from stated assumptions, not a measured result. What slips: refund requests wait 15-20 days for a first reply, which is the grievance that produces the chargeback, the BBB complaint, and the review; the $500 Pro upgrade sits in the WISMO queue for nine days; the twelve-unit maker-space partner is indistinguishable from a single $799 order; and the block logic that would defuse the fairness anger is never published because nobody has time to write it down."
+  }
+ ]
+}

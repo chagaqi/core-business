@@ -1,10 +1,13 @@
 import { getRepositories } from "@/lib/repositories";
 import { scoreFeed } from "@/lib/engines";
 import { MerchantSwitcher } from "@/components/product/MerchantSwitcher";
+import { NoMerchantState } from "@/components/product/NoMerchantState";
 import { Tag } from "@/components/ui/Badge";
 import { clsx } from "clsx";
+import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
+export const metadata: Metadata = { title: "Social — Tideover" };
 
 const PLATFORM_LABEL: Record<string, string> = {
   twitter: "Twitter",
@@ -20,7 +23,7 @@ export default async function SocialPage({
   const repos = getRepositories();
   const merchants = await repos.merchants.list();
   if (merchants.length === 0) {
-    return <div className="p-8 text-ink-mute">No merchants seeded.</div>;
+    return <NoMerchantState />;
   }
   const merchantId =
     searchParams.merchant && merchants.some((m) => m.id === searchParams.merchant)
@@ -38,9 +41,7 @@ export default async function SocialPage({
         <div>
           <div className="flex items-center gap-2">
             <p className="kicker">Social-signal monitor</p>
-            <span className="inline-flex items-center rounded-full bg-terracotta px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink-inverse">
-              Add-on
-            </span>
+            <Tag>Add-on</Tag>
           </div>
           <h1 className="font-serif text-[34px] leading-tight text-ink">
             Public wait-anxiety

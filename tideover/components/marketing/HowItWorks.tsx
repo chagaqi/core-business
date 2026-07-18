@@ -1,14 +1,23 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { Button } from "@/components/ui/Button";
+import { CornerFold } from "@/components/marketing/paper/CornerFold";
+import { FoldCard } from "@/components/marketing/paper/FoldCard";
 
 /**
  * "How it works" — the presale-specialist layer. Four feature cards, then a
  * routing diagram (your data → Tideover presale layer routing WISMO only → your
  * helpdesk, which stays as-is), then the comparison table with the Tideover
  * column highlighted in bg-accent-card. All styled divs/arrows — no chart libs.
+ *
+ * Single source of truth for both the Home overview and the standalone
+ * /how-it-works page: pass `condensed` to render only the intro + 4 feature
+ * cards (Home's teaser, with a link to the full page); omit it (default) for
+ * the full section — cards + routing diagram + comparison table — used on
+ * /how-it-works.
  */
 function FeatureIcon({ path }: { path: React.ReactNode }) {
   return (
-    <span className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-[11px] bg-accent-card">
+    <span className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-[11px] bg-accent-card transition-transform duration-300 ease-out group-hover:-translate-y-0.5">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
         {path}
       </svg>
@@ -16,10 +25,12 @@ function FeatureIcon({ path }: { path: React.ReactNode }) {
   );
 }
 
-const FEATURES: readonly { title: string; body: string; icon: React.ReactNode }[] = [
+// `id` = stable anchor target for the Features mega-menu (e.g. /how-it-works#stack).
+const FEATURES: readonly { id: string; title: string; body: string; icon: React.ReactNode }[] = [
   {
+    id: "stack",
     title: "Plugs into your existing stack",
-    body: "We bolt onto the Gorgias, Tidio, or Intercom you already run. No migration, no second inbox, no infra change.",
+    body: "We bolt onto the Gorgias, Zendesk, Tidio, or Intercom you already run, reading the presale tickets you route to us. You approve and send from your own inbox. No migration, no infra change.",
     icon: (
       <>
         <rect x="3" y="4" width="8" height="7" rx="2" stroke="#0E5366" strokeWidth="1.7" />
@@ -29,6 +40,7 @@ const FEATURES: readonly { title: string; body: string; icon: React.ReactNode }[
     ),
   },
   {
+    id: "timeline",
     title: "Knows each order's real timeline",
     body: "Tideover reads order data and your production schedule, so every reply is grounded in where that specific order actually is — tooling, production, QC, packing, dispatch.",
     icon: (
@@ -39,8 +51,9 @@ const FEATURES: readonly { title: string; body: string; icon: React.ReactNode }[
     ),
   },
   {
+    id: "replies",
     title: "Timeline-aware, day-stage replies",
-    body: "A Day 7 nudge and a Day 89 worry need different words. Replies meet the buyer at the emotional stage they're in, in honest confidence bands — never an invented hard date.",
+    body: "A Day 7 nudge and a Day 89 worry need different words. Replies meet the buyer at the emotional stage they're in, in confidence bands — never an invented hard date.",
     icon: (
       <>
         <path d="M4 5h16v11H8l-4 3V5Z" stroke="#0E5366" strokeWidth="1.7" fill="none" strokeLinejoin="round" />
@@ -49,6 +62,7 @@ const FEATURES: readonly { title: string; body: string; icon: React.ReactNode }[
     ),
   },
   {
+    id: "approval",
     title: "Every novel reply is human-approved",
     body: "Nothing auto-fires a promise. New situations get a real person's eyes before they ever reach your customer.",
     icon: (
@@ -68,6 +82,9 @@ const COMPARISON: readonly { row: string; generic: string; tideover: string }[] 
   { row: "Tone", generic: "Canned & transactional", tideover: "Warm, human, calm" },
   { row: "Replaces your stack", generic: "It is the stack", tideover: "Plugs in — nothing to replace" },
   { row: "Setup", generic: "Migration, new tool to learn", tideover: "Bolt-on — zero infra change" },
+  { row: "Pricing model", generic: "Ticket fee, plus a per-AI-resolution meter*", tideover: "One flat fee on presale tickets" },
+  { row: "Who approves replies", generic: "A confidence threshold decides", tideover: "You approve every reply" },
+  { row: "If you leave", generic: "Export what you can", tideover: "Every reply was sent from your own helpdesk; status page off" },
 ];
 
 function Arrow() {
@@ -78,7 +95,68 @@ function Arrow() {
   );
 }
 
-export function HowItWorks() {
+/**
+ * The numbered pipeline (S6): five paper stepping-stones across the tide.
+ * Steps 1–4 are calm paper stones; step 5 — routing to a person for approval —
+ * is the emphasized terminal beacon (teal, with the tide glyph and a terracotta
+ * corner-fold), because the visible human-approval step is the proof-only,
+ * human-in-the-loop moat. Rendered on both the Home overview and /how-it-works.
+ */
+const PIPELINE_STEPS: readonly { n: number; label: React.ReactNode; note?: string }[] = [
+  { n: 1, label: "Detect a presale WISMO ticket" },
+  { n: 2, label: <>Pull the order&rsquo;s real production stage</> },
+  { n: 3, label: "Score refund risk", note: "factors shown" },
+  { n: 4, label: "Draft an on-brand reply in a confidence band" },
+];
+
+function Pipeline() {
+  return (
+    <div id="pipeline" className="mb-11 mt-12 scroll-mt-24">
+      <Reveal index={0}>
+        <span className="kicker mb-5">The pipeline</span>
+      </Reveal>
+      <ol className="m-0 grid list-none grid-cols-1 gap-3.5 p-0 sm:grid-cols-2 lg:grid-cols-5">
+        {PIPELINE_STEPS.map((s, i) => (
+          <FoldCard
+            key={s.n}
+            as="li"
+            index={i}
+            className="group flex h-full flex-col gap-2.5 rounded-[16px] border border-border bg-paper p-5"
+          >
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-accent-card font-serif text-[15px] font-bold text-teal transition-transform duration-300 ease-out group-hover:-translate-y-0.5">
+              {s.n}
+            </span>
+            <p className="m-0 text-[14px] font-semibold leading-snug text-ink">{s.label}</p>
+            {s.note && <span className="text-[12.5px] italic text-ink-mute">the {s.note}</span>}
+          </FoldCard>
+        ))}
+
+        {/* Step 5 — the emphasized terminal beacon (human approval). */}
+        <FoldCard
+          as="li"
+          index={4}
+          lift="strong"
+          className="group relative flex h-full flex-col gap-2 overflow-hidden rounded-[16px] bg-teal p-5 text-ink-inverse sm:col-span-2 lg:col-span-1"
+        >
+          <CornerFold corner="tr" grow />
+          <svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden className="mb-0.5">
+            <path d="M2 23 Q9 17 16 23 T30 23" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" />
+            <path d="M5 17 Q11 12 16 17 T27 17" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" opacity="0.66" />
+            <path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" opacity="0.4" />
+          </svg>
+          <span className="text-[12px] font-bold uppercase tracking-[0.06em] text-ink-inverse opacity-85">
+            5 &middot; Route to a person for approval
+          </span>
+          <h3 className="m-0 font-serif text-[16.5px] font-semibold leading-snug text-ink-inverse">
+            Every reply to a worried buyer waits for your yes.
+          </h3>
+        </FoldCard>
+      </ol>
+    </div>
+  );
+}
+
+export function HowItWorks({ condensed = false }: { condensed?: boolean } = {}) {
   return (
     <section id="how" className="section section-sand2 scroll-mt-20">
       <div className="wrap">
@@ -94,18 +172,35 @@ export function HowItWorks() {
         </Reveal>
 
         {/* 4 feature cards */}
-        <div className="mb-11 grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4">
+        <div className={condensed ? "grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4" : "mb-11 grid grid-cols-1 gap-[18px] sm:grid-cols-2 lg:grid-cols-4"}>
           {FEATURES.map((f, i) => (
-            <Reveal key={f.title} index={i}>
-              <div className="h-full rounded-[18px] border border-border bg-paper p-[26px] shadow-card">
-                <FeatureIcon path={f.icon} />
-                <h3 className="mb-2 font-serif text-[19px] font-semibold text-ink">{f.title}</h3>
-                <p className="m-0 text-[14.5px] leading-relaxed text-slate">{f.body}</p>
-              </div>
-            </Reveal>
+            <FoldCard
+              key={f.title}
+              id={f.id}
+              index={i}
+              className="group h-full scroll-mt-24 rounded-[18px] border border-border bg-paper p-[26px]"
+            >
+              <FeatureIcon path={f.icon} />
+              <h3 className="mb-2 font-serif text-[19px] font-semibold text-ink">{f.title}</h3>
+              <p className="m-0 text-[14.5px] leading-relaxed text-slate">{f.body}</p>
+            </FoldCard>
           ))}
         </div>
 
+        <Pipeline />
+
+        {condensed && (
+          <Reveal index={5}>
+            <div>
+              <Button href="/how-it-works" variant="quiet">
+                See how it works &rarr;
+              </Button>
+            </div>
+          </Reveal>
+        )}
+
+        {!condensed && (
+        <>
         {/* routing diagram */}
         <Reveal index={0}>
           <div className="mb-11 rounded-[22px] border border-border bg-paper p-6 shadow-card md:p-10">
@@ -138,7 +233,7 @@ export function HowItWorks() {
                   <path d="M8 11 Q12.5 7 16 11 T24 11" stroke="#F4F9F9" strokeWidth="2.1" fill="none" strokeLinecap="round" opacity="0.4" />
                 </svg>
                 <div className="font-serif text-[21px] font-semibold">Tideover</div>
-                <div className="mt-0.5 text-[12.5px] opacity-80">presale layer &middot; routes WISMO only</div>
+                <div className="mt-0.5 text-[12.5px] opacity-80">presale layer &middot; drafts replies you approve</div>
               </div>
 
               <Arrow />
@@ -148,7 +243,7 @@ export function HowItWorks() {
                 <div className="mb-0.5 text-center text-[12px] font-bold uppercase tracking-[0.05em] text-[#8A9A9D]">
                   Your helpdesk
                 </div>
-                {["Gorgias", "Tidio", "Intercom"].map((d) => (
+                {["Gorgias", "Zendesk", "Tidio", "Intercom"].map((d) => (
                   <div
                     key={d}
                     className="rounded-xl border border-border bg-sand-2 px-4 py-2.5 text-center text-[14px] font-semibold text-slate"
@@ -156,7 +251,9 @@ export function HowItWorks() {
                     {d}
                   </div>
                 ))}
-                <div className="mt-0.5 text-center text-[12px] italic text-[#8A9A9D]">stays exactly as it is</div>
+                <div className="mt-0.5 text-center text-[12px] italic text-[#8A9A9D]">
+                  you approve &amp; send there &mdash; it stays as it is
+                </div>
               </div>
             </div>
           </div>
@@ -176,7 +273,7 @@ export function HowItWorks() {
                     <th scope="col" className="border-b border-border px-5 py-4 text-left text-[14px] font-semibold text-slate">
                       Generic helpdesk
                       <br />
-                      <span className="text-[12.5px] font-normal text-[#9AA8AB]">Gorgias / Tidio / Intercom</span>
+                      <span className="text-[12.5px] font-normal text-[#9AA8AB]">Gorgias / Zendesk / Tidio / Intercom</span>
                     </th>
                     <th
                       scope="col"
@@ -204,8 +301,23 @@ export function HowItWorks() {
                 </tbody>
               </table>
             </div>
+            <p className="border-t border-[#F1EADC] px-6 py-4 text-[12.5px] leading-relaxed text-ink-mute">
+              <span aria-hidden>* </span>Gorgias publishes AI Agent pricing of roughly $0.90&ndash;1.00 per resolved
+              conversation, billed on top of its per-ticket fee. (Source:{" "}
+              <a
+                className="link-quiet"
+                href="https://www.gorgias.com/blog/ai-agent-pricing"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Gorgias published pricing
+              </a>
+              .)
+            </p>
           </div>
         </Reveal>
+        </>
+        )}
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { FoldCard } from "@/components/marketing/paper/FoldCard";
 import { citedStat } from "@/lib/proof";
 
 /**
@@ -49,10 +50,7 @@ const STAKES: readonly { title: string; body: string }[] = [
   },
   {
     title: "WISMO floods the inbox",
-    body: `“Where's my order?” arrives in waves for months, burying the tickets that actually need you. ${citedStat(
-      "Presale-heavy stores see 5–10× more “where is my order?” tickets during long waits",
-      "YepAI 2026, industry benchmark",
-    )}.`,
+    body: "“Where's my order?” arrives in waves for months, burying the tickets that actually need you. The longer the wait runs, the more of your inbox becomes the same question — asked again at day 7, day 30, and day 60, often by the same buyer.",
   },
   {
     title: "“Scam” reviews stick",
@@ -76,31 +74,67 @@ export function LongWait() {
           </div>
         </Reveal>
 
-        <ol className="mb-14 grid list-none grid-cols-1 gap-[18px] p-0 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mb-7 grid list-none grid-cols-1 gap-[18px] p-0 sm:grid-cols-2 lg:grid-cols-4">
           {STAGES.map((s, i) => (
-            <Reveal key={s.day} index={i} as="li">
-              <div className="h-full rounded-[18px] border border-border bg-paper p-[22px] shadow-card">
-                <div className="mb-3 flex items-center gap-2.5">
-                  <span className="h-3 w-3 rounded-full" style={{ background: s.dot }} />
-                  <span className="text-[13px] font-bold tracking-[0.05em]" style={{ color: s.dayColor }}>
-                    {s.day}
-                  </span>
-                </div>
-                <h3 className="mb-[7px] font-serif text-[20px] font-semibold text-ink">{s.title}</h3>
-                <p className="m-0 text-[14.5px] leading-snug text-slate">{s.body}</p>
+            <FoldCard
+              key={s.day}
+              as="li"
+              index={i}
+              className="group h-full rounded-[18px] border border-border bg-paper p-[22px]"
+            >
+              <div className="mb-3 flex items-center gap-2.5">
+                <span
+                  className="h-3 w-3 rounded-full transition-transform duration-300 ease-out group-hover:scale-125"
+                  style={{ background: s.dot }}
+                />
+                <span className="text-[13px] font-bold tracking-[0.05em]" style={{ color: s.dayColor }}>
+                  {s.day}
+                </span>
               </div>
-            </Reveal>
+              <h3 className="mb-[7px] font-serif text-[20px] font-semibold text-ink">{s.title}</h3>
+              <p className="m-0 text-[14.5px] leading-snug text-slate">{s.body}</p>
+            </FoldCard>
           ))}
         </ol>
 
+        {/* Rising paper tide-line: the emotional arc drawn as a warming wave beneath
+            the stages — calm teal (day 7) rising to tan/amber dispute-risk (day 89).
+            Terracotta stays action-only, so it is deliberately absent here. Static
+            (decorative); reduced-motion needs no special handling. */}
+        <Reveal index={0}>
+          <div className="mb-14 mt-1 overflow-hidden rounded-[14px] border border-border" aria-hidden>
+            <svg viewBox="0 0 1160 64" preserveAspectRatio="none" className="block h-12 w-full md:h-16" role="presentation">
+              <defs>
+                <linearGradient id="tideWarm" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#0E5366" />
+                  <stop offset="34%" stopColor="#3C7E92" />
+                  <stop offset="72%" stopColor="#E1C07A" />
+                  <stop offset="100%" stopColor="#E9B486" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M0,42 C193,30 387,52 580,40 C773,28 967,42 1160,28 L1160,64 L0,64 Z"
+                fill="url(#tideWarm)"
+                opacity="0.38"
+              />
+              <path
+                d="M0,34 C193,20 387,44 580,30 C773,16 967,32 1160,16 L1160,64 L0,64 Z"
+                fill="url(#tideWarm)"
+              />
+            </svg>
+          </div>
+        </Reveal>
+
         <div className="grid grid-cols-1 gap-[18px] md:grid-cols-3">
           {STAKES.map((s, i) => (
-            <Reveal key={s.title} index={i}>
-              <div className="h-full rounded-[18px] border border-border bg-sand-2 p-[26px]">
-                <h3 className="mb-2.5 font-serif text-[20px] font-semibold text-ink">{s.title}</h3>
-                <p className="m-0 text-[15px] leading-relaxed text-slate">{s.body}</p>
-              </div>
-            </Reveal>
+            <FoldCard
+              key={s.title}
+              index={i}
+              className="group h-full rounded-[18px] border border-border bg-sand-2 p-[26px]"
+            >
+              <h3 className="mb-2.5 font-serif text-[20px] font-semibold text-ink">{s.title}</h3>
+              <p className="m-0 text-[15px] leading-relaxed text-slate">{s.body}</p>
+            </FoldCard>
           ))}
         </div>
       </div>

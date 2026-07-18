@@ -11,7 +11,12 @@ export const CASE_STUDY_PLACEHOLDER =
 // matches things that look like a specific calendar date / hard ship date
 const HARD_DATE_PATTERNS: RegExp[] = [
   /\b\d{4}-\d{2}-\d{2}\b/, // 2026-07-14
-  /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?\b/i,
+  /\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\.?\s+\d{1,2}(?:st|nd|rd|th)?\b/i, // "April 3", "Apr 3rd"
+  // Day-first ordinal, the mirror of the line above: the status-board write gate
+  // blocked "April 3" and would have passed "the 3rd of April" — the same promise,
+  // spelled the other way round. Found while testing the board; the model writes
+  // this shape naturally.
+  /\b\d{1,2}(?:st|nd|rd|th)\s+(?:of\s+)?(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b/i,
   /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/, // 7/14/26
   /\bships?\s+on\s+\w/i, // "ships on ..."
   /\bguarantee\w*\s+(?:delivery|ship|arrival)\b/i,
@@ -23,7 +28,7 @@ export function containsHardDate(text: string): boolean {
 }
 
 /**
- * Assert a customer-facing reply uses only honest confidence bands. Throws in
+ * Assert a customer-facing reply uses only confidence bands, never a hard date. Throws in
  * dev so a bad template fails loudly before it can reach a customer.
  */
 export function assertNoHardDate(text: string): void {

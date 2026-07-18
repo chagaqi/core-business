@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { TextArea } from "@/components/ui/Field";
+import { readableAccent } from "@/lib/color";
 
 /**
  * "Have a question about your order?" — a small textarea that turns a customer's
@@ -13,6 +14,8 @@ import { TextArea } from "@/components/ui/Field";
 export function AskBox({ token, accent, compact = false }: { token: string; accent?: string; compact?: boolean }) {
   const [message, setMessage] = useState("");
   const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  // Contrast-safe accent for the success tick (a thin icon on the paper card).
+  const iconAccent = accent ? readableAccent(accent) : undefined;
 
   async function submit() {
     const trimmed = message.trim();
@@ -38,14 +41,25 @@ export function AskBox({ token, accent, compact = false }: { token: string; acce
         className="flex items-start gap-3 rounded-2xl border border-border bg-paper p-5"
         role="status"
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden className="mt-0.5 flex-none text-teal" style={accent ? { color: accent } : undefined}>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden className="mt-0.5 flex-none text-teal" style={iconAccent ? { color: iconAccent } : undefined}>
           <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.6" />
           <path d="M8 12.5l2.5 2.5L16 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        <p className="m-0 text-[14.5px] leading-relaxed text-slate">
-          <strong className="text-ink">Got it — someone will follow up.</strong> You&rsquo;re not being
-          ignored. We read every message and a real person will reply.
-        </p>
+        <div>
+          <p className="m-0 text-[14.5px] leading-relaxed text-slate">
+            <strong className="text-ink">Got it — someone will follow up.</strong> You&rsquo;re not being
+            ignored. We read every message and a real person will reply.
+          </p>
+          {/* UX-72: the form used to be replaced permanently after sending — a
+              second question meant no way back short of reloading. */}
+          <button
+            type="button"
+            onClick={() => setState("idle")}
+            className="mt-2 text-[13px] font-semibold text-ink-mute underline decoration-border underline-offset-2"
+          >
+            Ask another question
+          </button>
+        </div>
       </div>
     );
   }
@@ -69,7 +83,12 @@ export function AskBox({ token, accent, compact = false }: { token: string; acce
         aria-label="Your question about your order"
       />
       <div className="mt-3 flex items-center gap-3">
-        <Button onClick={submit} disabled={state === "sending" || !message.trim()}>
+        {/* min-h-[44px] + min-w-[44px]: comfortable mobile touch target (WCAG 2.5.5). */}
+        <Button
+          onClick={submit}
+          disabled={state === "sending" || !message.trim()}
+          className="min-h-[44px] min-w-[44px]"
+        >
           {state === "sending" ? "Sending…" : "Send"}
         </Button>
         {state === "error" ? (

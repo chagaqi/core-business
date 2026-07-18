@@ -1,0 +1,71 @@
+{
+ "summary": "Checked what's NOT already tracked in F5b/T3b/EN1/GTM2/CASL. Confirmed several things are actually fine (worth stating so they aren't re-flagged elsewhere): /api/analyze still has its ADR-0019 SSRF guard + auth gate + rate limit; the /privacy subprocessor list DOES already name Auth0, MongoDB Atlas, Resend, and DeepSeek correctly and currently. The real gaps cluster around three things a paying customer or a real incident would expose: (1) backup/recovery only covers Mongo data, not Auth0 tenant config, Vercel env, or a proven restore; (2) no secrets-rotation runbook exists even though a STATUS_TOKEN_SECRET-related repair just happened today; (3) the DeepSeek (China) subprocessor disclosure has zero GDPR transfer safeguard for a global backer base. Secondary findings: rate limiting is applied to some public token routes (status, analyze, widget-submit) but not others (CSAT, both ingest webhooks); /terms never states a refund/cancellation policy for Tideover's own prepaid-annual subscription; the uptime monitor is documented as a manual step but nothing confirms it was actually wired; there's no production log drain, no accessibility statement, no cookie-consent gate on the unconditional Cal.com embed, and the status-token signature compare is non-constant-time in code that only comments on this being fine \"for the demo\" despite running in production.",
+ "gaps": [
+  {
+   "gap": "No documented backup/export path for Auth0 tenant config or Vercel project env vars — only Mongo data is backed up.",
+   "evidence": "docs/ops-backup.md:1-44 covers three layers, all Mongo-only (Atlas snapshots, npm run backup, planned nightly offsite). tideover/.env.example lists 9+ required production secrets (APP_PASSWORD, AUTH_SECRET, STATUS_TOKEN_SECRET, AUTH0_CLIENT_SECRET, AUTH0_SECRET, RESEND_WEBHOOK_SECRET, WEBHOOK_ROOT_SECRET, CRON_SECRET, LLM_API_KEY) with no stated backup location; RELEASE.md:20 notes 'the Vercel creds live on Dylan's machine' — a single point of failure with no documented copy.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW — mission-control F5b ('Automated nightly offsite backup upload') is scoped to Mongo data only per its own detail text and docs/ops-backup.md."
+  },
+  {
+   "gap": "No secrets-rotation runbook exists despite an active rotation incident the same day.",
+   "evidence": "tideover/scripts/resign-status-tokens.mjs (dated 2026-07-16 per its own header) is a one-off repair script for a demo-DB token mismatch caused by the STATUS_TOKEN_SECRET landing in Vercel on 07-11 — it is not a rotation procedure. Repo-wide grep for rotat|SECRET across docs/ found no docs/SECRETS.md or rotation runbook; each secret's rotation blast-radius is documented individually and only inline in .env.example (e.g. 'rotating it logs everyone out', 'rotates every merchant's credentials') with no consolidated who/when/how record.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW"
+  },
+  {
+   "gap": "The DeepSeek subprocessor disclosure names a China-based processor for customer support text with zero GDPR cross-border transfer safeguard (no SCCs, no adequacy claim), while the ICP (Kickstarter/BackerKit backers) is a global, EU-inclusive customer base.",
+   "evidence": "tideover/lib/security-content.ts:109-112 — the DeepSeek entry states ticket subject/text and buyer first name go to DeepSeek's servers 'in the People's Republic of China' but contains no transfer-mechanism language. grep -i 'SCC|standard contractual|adequacy|GDPR' across 24-pilot-agreement-and-intake.md and docs/gtm-campaign/GTM-CAMPAIGN-2026-07.md returned zero hits.",
+   "severity": "P1-blocks-finished",
+   "tracked": "NEW — distinct from T3b (DPA template) and the CASL lawyer consult in GTM2, neither of which mentions international transfer mechanisms."
+  },
+  {
+   "gap": "The documented backup restore procedure has never been drill-tested end-to-end.",
+   "evidence": "docs/ops-backup.md:26-30 gives restore steps (mongoimport / mongorestore / seed reset) as prescriptive instructions only. mission-control/tideover-hq.html LOG (the full project history) has no entry describing a restore drill. Only one manual dump exists: tideover/backups/tideover-backup-2026-07-04T13-33-24-811Z.json, never proven restorable.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW — F5b tracks the nightly-upload wire-up only, not a restore verification."
+  },
+  {
+   "gap": "Rate limiting is applied inconsistently across public token/webhook routes — /api/csat/[token] has none at all, and both webhook ingest routes have none either.",
+   "evidence": "tideover/app/api/csat/[token]/route.ts has no createRateLimiter import, unlike tideover/app/api/status/[token]/route.ts:11 (60/min). tideover/app/api/ingest/[channel]/[token]/route.ts and tideover/app/api/inbound/resend/route.ts also import no rate limiter. Since CSAT re-taps REPLACE the prior value (route.ts:44-50 comment), anyone holding one leaked /status/[token] link can flood-flip a merchant's CSAT with no throttle, corrupting the proof-only Script Performance metric surface described in TORCH-PASS-TO-OPUS.md.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW"
+  },
+  {
+   "gap": "/terms has no cancellation/refund policy for Tideover's own subscription — distinct from merchants' policies toward their customers.",
+   "evidence": "tideover/app/terms/page.tsx Section 2 (lines 35-44) states 'Annual billing is prepaid for the year' and 'You can cancel at any time' but never says what happens to money already paid on a mid-term cancellation of that prepaid annual plan. The 'first-cycle guarantee' (components/marketing/PricingParts.tsx GuaranteeBox, ~line 291: 'if your first cycle doesn't move them, you don't pay') is a pre-invoice non-billing condition, not a refund mechanism for funds already collected.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW — explicitly flagged as likely-missing in the task brief; confirmed missing."
+  },
+  {
+   "gap": "External uptime monitoring is documented as a manual step but nothing confirms it was ever wired up.",
+   "evidence": "tideover/RELEASE.md:55-71 instructs Dylan to sign up for UptimeRobot/Cronitor/BetterStack and point it at /api/health — written as a NEEDS-DYLAN instruction, not a completed action. mission-control/tideover-hq.html DYLAN array (lines 234-237, the live action-item list) and the full LOG contain no entry confirming an external monitor was registered.",
+   "severity": "P2-punches-below-weight",
+   "tracked": "NEW — F6 in the board LOG (2026-07-04) shipped only the /api/health endpoint and wrote the RELEASE.md instructions; the external-monitor step itself was never tracked to done."
+  },
+  {
+   "gap": "No production log drain — structured JSON events (llm_lint_reject, ticket-ingest.discarded, outcome-event.csat-failed, etc.) go only to console.log/warn, which Vercel retains briefly and does not index for search.",
+   "evidence": "lib/drafting/LlmDrafter.ts:333, app/api/ticket-ingest/route.ts:123-130, app/api/csat/[token]/route.ts:62-69 all emit structured console output with no configured destination; grep for Logtail|Axiom|Datadog|Sentry|log drain across README.md/RELEASE.md/package.json returned nothing.",
+   "severity": "P3-polish",
+   "tracked": "NEW — distinct from LRN1 (torch pass §9A LEARN-2), which is a per-tenant product-telemetry feature for draft-quality learning, not general operational log retention for incident response."
+  },
+  {
+   "gap": "No accessibility statement page exists.",
+   "evidence": "find app -iname '*accessib*' returned nothing; no /accessibility route in the app tree alongside the existing /privacy, /terms, /security pages.",
+   "severity": "P3-polish",
+   "tracked": "NEW"
+  },
+  {
+   "gap": "No cookie-consent mechanism anywhere on the site; the Cal.com booking embed on /book loads unconditionally and sets third-party cookies before any user interaction.",
+   "evidence": "tideover/components/booking/BookCal.tsx mounts the <Cal> iframe directly in a useEffect with no gating; no consent-banner component exists under tideover/components/. Privacy page (app/privacy/page.tsx:52-56) discloses the embed exists but doesn't gate it. The ICP's customers (Kickstarter/BackerKit backers) are global, so EU visitors reaching /book is plausible.",
+   "severity": "P3-polish",
+   "tracked": "NEW"
+  },
+  {
+   "gap": "verifyStatusToken compares the HMAC signature with a non-constant-time '===', in code explicitly commented as acceptable only 'for the demo' but the function gates every real /status/[token] and /api/csat/[token] request in production too.",
+   "evidence": "tideover/lib/ids.ts:65-70 — 'return sign(raw) === mac ? raw : null;' with comment 'constant-ish time compare is overkill for the demo; correctness is the point.' Contrast with lib/ingest-auth.ts, lib/webhook-secret.ts, and lib/svix.ts, which all correctly use crypto.timingSafeEqual for their HMAC comparisons — the safe pattern already exists elsewhere in the codebase and simply wasn't applied here.",
+   "severity": "P3-polish",
+   "tracked": "NEW"
+  }
+ ]
+}

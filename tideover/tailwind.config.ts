@@ -26,19 +26,24 @@ const config: Config = {
         terracotta: "#D9762F",
         "terracotta-600": "#C25C29",
         "terracotta-300": "#E0833D",
+        "terracotta-700": "#B85422", // AA-safe terracotta for small-text labels
+
         tan: "#E9B486", // warm tan, dark-section emphasis
 
         // ink / type
         ink: "#11252A", // headlines / body (near-black cool)
         slate: "#374A4F", // secondary copy
         "ink-inverse": "#F4F9F9", // text on dark
-        "ink-mute": "#6A7B80", // muted labels
+        "ink-mute": "#5A6B70", // muted labels (darkened for WCAG AA on sand+paper)
+
+        // caution / watch — warm gold, deliberately NOT terracotta (D1: terracotta = action)
+        "amber-status": "#8A6612",
 
         // lines / state
         border: "#EBE2D0", // warm card borders/dividers
         "risk-red": "#C0463B",
-        "risk-amber": "#D9762F",
-        "risk-green": "#3E8E6E",
+        "risk-amber": "#8A6612", // = amber-status; caution ≠ terracotta action
+        "risk-green": "#2C7A57",
       },
       fontFamily: {
         // Fraunces (warm serif ≈ Iowan Old Style) display; Inter body.
