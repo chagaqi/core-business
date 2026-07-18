@@ -1,5 +1,5 @@
 import type { CampaignRow, EnrichedContact, Lead } from "@/lib/prospect/types";
-import { scoreCampaign } from "@/lib/prospect/scoring";
+import { scoreCampaign, isFit } from "@/lib/prospect/scoring";
 import { buildCaslRecord } from "@/lib/prospect/casl";
 import { draftOutreach } from "@/lib/prospect/draft";
 
@@ -15,6 +15,10 @@ import { draftOutreach } from "@/lib/prospect/draft";
  * score + compliance record + draft into a single outreach-ready object.
  */
 export function buildLead(campaign: CampaignRow, contact: EnrichedContact, now: Date = new Date()): Lead | null {
+  if (!isFit(campaign)) return null; // outside the ICP — never draft/emit (matches the live filter)
+  if (contact.mx_valid === false) return null; // the enricher flagged the domain undeliverable
+  if (contact.confidence === "none") return null; // no real contact was found
+
   const casl = buildCaslRecord(campaign, contact, now);
   if (!casl) return null; // no email or no publication basis → not contactable
 
@@ -59,14 +63,23 @@ export function buildLeads(campaigns: CampaignRow[], contacts: EnrichedContact[]
 }
 
 /**
- * Drop leads already contacted. `seen` holds prior pids AND emails (either match
+ * Drop leads already contacted, AND collapse intra-batch duplicates. `seen` holds
+ * prior pids AND emails from past runs (lowercased by the loader). Either match
  * suppresses — a creator re-running a second campaign shouldn't be re-hit, and the
- * same address surfacing under two pids shouldn't double-send).
+ * same address surfacing under two pids shouldn't double-send. Keys are lowercased on
+ * BOTH sides (the loader lowercases too), so a mixed-case pid can't slip the guard.
+ * Emitted leads are added to the working set so two leads sharing an email within one
+ * batch don't both survive.
  */
 export function dedupeLeads(leads: Lead[], seen: Set<string>): Lead[] {
   const out: Lead[] = [];
+  const working = new Set(seen); // clone so intra-batch additions don't mutate the caller's set
   for (const lead of leads) {
-    if (seen.has(lead.pid) || seen.has(lead.email.toLowerCase())) continue;
+    const pidKey = lead.pid.toLowerCase();
+    const emailKey = lead.email.toLowerCase();
+    if (working.has(pidKey) || working.has(emailKey)) continue;
+    working.add(pidKey);
+    working.add(emailKey);
     out.push(lead);
   }
   return out;

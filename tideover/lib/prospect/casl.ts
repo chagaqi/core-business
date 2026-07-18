@@ -12,10 +12,23 @@ import type { CampaignRow, CaslRecord, EnrichedContact } from "@/lib/prospect/ty
  * the conspicuous-publication basis.
  */
 
+// The only email-derivation methods that support a conspicuous-publication basis:
+// the address was seen ON a page (observed) or on a linked social profile (social).
+// Anything else — a pattern-guessed address, an unknown/blank method — has no
+// publication basis and is refused. Matched case-insensitively and exactly (an
+// allowlist, so no "Pattern"/"guess"/undefined slips through, unlike the old
+// exact-"pattern" denylist).
+const PUBLISHED_SOURCE = /^(observed|social)$/i;
+
 /**
  * Build the compliance record for a contact, or null if it can't stand on the
- * conspicuous-publication basis (no email, or no real source URL — e.g. a pattern-
- * guessed address the enricher never actually observed on a page).
+ * conspicuous-publication basis. Requirements (all must hold):
+ *  - a non-empty email,
+ *  - an ACTUAL observed source URL — the page the enricher found the address on. We
+ *    do NOT fall back to the campaign/homepage URL, because that isn't where THIS
+ *    address was published; a fabricated source is worse than none for the record,
+ *  - an email_source on the published allowlist (observed | social). A guessed
+ *    (pattern) or unknown derivation is refused outright.
  */
 export function buildCaslRecord(
   campaign: CampaignRow,
@@ -25,12 +38,10 @@ export function buildCaslRecord(
   const email = contact.email?.trim();
   if (!email) return null;
 
-  // The source URL is the address's due-diligence anchor. Prefer the page the
-  // enricher actually found it on; fall back to the creator's own site. A
-  // pattern-sourced address with no observed page has no publication basis.
-  const sourceUrl = contact.source_url?.trim() || contact.website?.trim() || campaign.website?.trim();
-  if (!sourceUrl) return null;
-  if (contact.email_source === "pattern" && !contact.source_url?.trim()) return null;
+  const sourceUrl = contact.source_url?.trim();
+  if (!sourceUrl) return null; // no observed page → no publication basis
+
+  if (!PUBLISHED_SOURCE.test(contact.email_source ?? "")) return null; // pattern/unknown → refuse
 
   return {
     email,

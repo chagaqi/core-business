@@ -23,18 +23,46 @@ function daysSince(iso: string | undefined, now: Date): number | null {
 // games, software/apps, music, film, podcasts, journalism, performance do not.
 const DIGITAL_CATEGORY = /video game|software|mobile app|web app|saas|music|album|film|documentary|podcast|journalism|dance|theater|theatre|webcomic/i;
 
+// Hosts that are marketplaces, socials, fundraising aggregators, or link shims — NOT
+// a business site the enricher can crawl for a contact. A crowdfunding creator's
+// "website" is very often one of these (verified on the live scrape: Gumroad product
+// links, Fundrazr, ArtStation, Patreon). We need their OWN domain.
+const NON_BUSINESS_HOST =
+  /(^|\.)(gumroad\.com|fundrazr\.com|kickstarter\.com|indiegogo\.com|gamefound\.com|backerkit\.com|patreon\.com|artstation\.com|myminifactory\.com|etsy\.com|amazon\.[a-z.]+|facebook\.com|instagram\.com|twitter\.com|x\.com|tiktok\.com|youtube\.com|youtu\.be|discord\.(gg|com)|linktr\.ee|bit\.ly|linkedin\.com|threads\.net|bsky\.app|reddit\.com|notion\.site|substack\.com|carrd\.co|tumblr\.com)$/i;
+
+/**
+ * The best enrichable business domain for a campaign, or null. Picks the first URL
+ * across `website` + `websites_all` whose host is a real own-domain — skipping the
+ * marketplace / social / aggregator hosts the enricher can't pull a contact from.
+ * This is the field the enricher should actually receive, not the raw `website`.
+ */
+export function bestEnrichableSite(row: CampaignRow): string | null {
+  const urls = [row.website, ...(row.websites_all ?? [])].filter(
+    (u): u is string => typeof u === "string" && u.trim().length > 0,
+  );
+  for (const u of urls) {
+    let host: string;
+    try {
+      host = new URL(u.trim()).hostname.replace(/^www\./i, "");
+    } catch {
+      continue; // not a parseable absolute URL
+    }
+    if (!NON_BUSINESS_HOST.test(host)) return u.trim();
+  }
+  return null;
+}
+
 /**
  * ICP fit: a funded (or late-pledge) campaign that owes physical fulfillment, has a
- * creator website we can enrich, and cleared a minimum backer floor. Digital-only
- * categories are excluded. Human review + the actor's `category` targeting do the
- * fine sorting; this is the coarse gate.
+ * real enrichable creator domain (not a marketplace/social link), and cleared a
+ * backer floor. Digital-only categories are excluded. Human review + the actor's
+ * `category` targeting do the fine sorting; this is the coarse gate.
  */
 export function isFit(row: CampaignRow): boolean {
   const funded = row.state === "successful" || row.is_late_pledge === true;
-  const hasSite = Boolean(row.website && row.website.trim());
   const backers = row.backers_count ?? 0;
   const digital = DIGITAL_CATEGORY.test(`${row.category ?? ""} ${row.category_parent ?? ""}`);
-  return funded && hasSite && backers >= 100 && !digital;
+  return funded && bestEnrichableSite(row) !== null && backers >= 100 && !digital;
 }
 
 /** The citable lateness signal, phrased as a clause the draft drops in. */

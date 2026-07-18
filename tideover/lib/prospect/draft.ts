@@ -11,6 +11,20 @@ import type { CampaignRow, EnrichedContact, OutreachDraft, ScoredCampaign } from
  * deliverability + the CASL posture. Pure, no I/O.
  */
 
+/**
+ * Scraped fields (project_name, first_name) are untrusted. Strip control chars
+ * (Unicode control category), collapse whitespace, and cap length so a hostile or
+ * malformed campaign title can't mangle the draft. Not a security boundary (Dylan
+ * reviews every send), just hygiene.
+ */
+function clean(s: string, max: number): string {
+  return s
+    .replace(/\p{Cc}+/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, max);
+}
+
 /** A natural, non-creepy phrasing of where the campaign is in its wait. */
 function waitClause(score: ScoredCampaign): string {
   const d = score.waitDays;
@@ -31,8 +45,8 @@ export function draftOutreach(
   contact: EnrichedContact,
   score: ScoredCampaign,
 ): OutreachDraft {
-  const first = (contact.first_name || contact.contact_name?.split(/\s+/)[0] || "there").trim();
-  const brand = campaign.project_name.trim();
+  const first = clean(contact.first_name || contact.contact_name?.split(/\s+/)[0] || "there", 40) || "there";
+  const brand = clean(campaign.project_name, 80) || "your campaign";
 
   const subject = `${first} — the stretch after ${brand} funded`;
 
