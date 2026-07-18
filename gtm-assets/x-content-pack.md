@@ -252,6 +252,45 @@ Post 1/day, weekdays. Thread = post the first tweet, reply-chain the rest. Merge
 
 ---
 
+## REPLY-TARGET PLAYBOOK (build your follow list in 15 min, then it's automatic)
+
+I'm not handing you a list of handles I can't verify are live and real. Fabricated
+follows would burn your first 15 minutes on dead accounts. Instead, here's the exact
+way to build a real list fast, plus the vetting test so every follow earns its slot.
+
+**Run these searches on X (Latest tab, not Top), follow 3–5 good ones from each:**
+- `preorder shipping delay` — creators mid-crisis, live prospects and peers.
+- `"where's my order"` OR `WISMO` — DTC operators talking about the exact pain.
+- `crowdfunding fulfillment` / `kickstarter fulfillment` — the beachhead ICP.
+- `build in public` `shopify` — the founder cluster that engages back.
+- `dtc twitter` / `ecommerce founder` — the curated-list genre §9.4 named.
+- Search a known preorder app's name (Purple Dot, PreProduct, BackerKit) — the people replying to those are running preorders right now.
+
+**The four archetypes to fill (aim ~5 each, 20 total to start):**
+1. DTC/Shopify operators who post about fulfillment, support, or ops.
+2. Crowdfunding/tabletop creators mid-campaign or mid-fulfillment.
+3. Build-in-public SaaS founders (they reply, and they retweet peers).
+4. The mid-fulfillment complainers — these are live prospects; reply with help, never a pitch, let the pinned post sell.
+
+**10-second vetting test before you follow — all four or skip it:**
+- Posted in the last ~2 weeks (not dormant).
+- Actually in or adjacent to the ICP (preorder / DTC / crowdfunding / fulfillment).
+- Gets replies (an audience that engages, not a broadcast-only account).
+- You'd have something real to add to their threads.
+
+**Then turn on notifications for the best 8–10.** That's your daily reply queue: when
+they post, you're early, and early + useful is what the ranking rewards. The §4 block
+becomes: open notifications, add real value to 5–8 threads, done in 12 minutes.
+
+**What "real value" is (never "great post"):** a specific tell you noticed, a
+counter-example from running the inbox, or the day-stage lens applied to their exact
+situation. The bank's own posts are your raw material — if someone's describing the
+day-60 refund wave, your reply is a tight version of D13 or D11, not a link.
+
+(If you'd rather I browser-verify a concrete handle list, hand me a logged-in session
+or say the word and I'll source real accounts from public DTC-founder lists. Until
+then this playbook builds the list faster than I could guess it.)
+
 ## CONVERSION NOTES (for the newsletter + community frames in the bank)
 
 The bank's 3 newsletter outlines feed the nurture list (already built: `lead-magnet-nurture-sequence.md`) and the §9.3 weekly blurb. The 8 community-comment frames (CT-1…8) are Reddit-native already; keep them for the §4 Reddit block, one sub at a time, value-first, never scheduled. Don't cross-post X threads to Reddit verbatim: Reddit wants self-text with a finding in the title, no link in the body.
