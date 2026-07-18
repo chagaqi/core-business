@@ -37,3 +37,6 @@ yarn-error.log*
 .vercel
 
 .vercel
+
+# Prospect engine output — contains scraped contact emails (PII); never commit
+scripts/_data/

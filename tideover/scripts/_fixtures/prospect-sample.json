@@ -1,0 +1,108 @@
+{
+  "_note": "Synthetic sample matching the ScrapersDelight crowdfunding + enricher output schema, for the prospect-engine --fixture dry run. Not real people. Dates are set relative to mid-2026 so the wait-window scoring demonstrates.",
+  "campaigns": [
+    {
+      "pid": "ks_hot1",
+      "project_name": "Aether Clockwork Miniatures",
+      "project_url": "https://www.kickstarter.com/projects/aetherforge/clockwork-minis",
+      "category": "Tabletop Games",
+      "category_parent": "Games",
+      "state": "successful",
+      "backers_count": 1240,
+      "comments_count": 312,
+      "updates_count": 4,
+      "percent_funded": 480,
+      "state_changed_at": "2026-05-01T00:00:00.000Z",
+      "creator_name": "Mara Vinstra",
+      "website": "https://aetherforge.example",
+      "socials": { "instagram": "aetherforge" },
+      "location_country": "US",
+      "platform": "kickstarter"
+    },
+    {
+      "pid": "ks_warm1",
+      "project_name": "Tidepool Pour-Over Kettle",
+      "project_url": "https://www.kickstarter.com/projects/tidepool/pour-over",
+      "category": "Product Design",
+      "category_parent": "Design",
+      "state": "successful",
+      "backers_count": 340,
+      "comments_count": 22,
+      "updates_count": 10,
+      "percent_funded": 210,
+      "state_changed_at": "2026-06-08T00:00:00.000Z",
+      "creator_name": "Ben Cole",
+      "website": "https://tidepoolgoods.example",
+      "socials": {},
+      "location_country": "CA",
+      "platform": "kickstarter"
+    },
+    {
+      "pid": "ks_digital1",
+      "project_name": "Neon Drift (a roguelike)",
+      "project_url": "https://www.kickstarter.com/projects/neondrift/game",
+      "category": "Video Games",
+      "category_parent": "Games",
+      "state": "successful",
+      "backers_count": 900,
+      "comments_count": 200,
+      "updates_count": 2,
+      "state_changed_at": "2026-05-20T00:00:00.000Z",
+      "creator_name": "Studio Halcyon",
+      "website": "https://neondrift.example",
+      "platform": "kickstarter"
+    },
+    {
+      "pid": "ks_nosite1",
+      "project_name": "Handbound Field Journals",
+      "project_url": "https://www.kickstarter.com/projects/journals/field",
+      "category": "Crafts",
+      "category_parent": "Crafts",
+      "state": "successful",
+      "backers_count": 210,
+      "comments_count": 30,
+      "updates_count": 5,
+      "state_changed_at": "2026-06-01T00:00:00.000Z",
+      "creator_name": "Priya N",
+      "website": "",
+      "platform": "kickstarter"
+    }
+  ],
+  "contacts": [
+    {
+      "id": "ks_hot1",
+      "contact_name": "Mara Vinstra",
+      "first_name": "Mara",
+      "email": "mara@aetherforge.example",
+      "email_source": "observed",
+      "confidence": "high",
+      "mx_valid": true,
+      "source_url": "https://aetherforge.example/about",
+      "status": "ok",
+      "company": "Aether Clockwork Miniatures"
+    },
+    {
+      "id": "ks_warm1",
+      "contact_name": "Ben Cole",
+      "first_name": "Ben",
+      "email": "hello@tidepoolgoods.example",
+      "email_source": "observed",
+      "confidence": "medium",
+      "mx_valid": true,
+      "source_url": "https://tidepoolgoods.example/contact",
+      "status": "ok",
+      "company": "Tidepool Pour-Over Kettle"
+    },
+    {
+      "id": "ks_digital1",
+      "contact_name": "Studio Halcyon",
+      "first_name": "",
+      "email": "team@neondrift.example",
+      "email_source": "observed",
+      "confidence": "medium",
+      "mx_valid": true,
+      "source_url": "https://neondrift.example/about",
+      "status": "ok"
+    }
+  ]
+}
