@@ -141,11 +141,18 @@ export function computeTimeline(
     ? null
     : (merchant.stages.find((s) => s.key === order.productionStage) ?? merchant.stages[0]);
 
-  // remaining lower bound: whichever is later — the current stage ceiling or the
-  // fulfillment-window remainder — clamped at zero.
+  // Remaining lower bound = whichever is LATER: the fulfillment-window remainder
+  // or the current stage's ceiling. The band is a SHIP estimate, so it must be
+  // anchored to the merchant's promised window (windowRemaining), never to the
+  // current stage's exit — a stage ending is not a shipment. The old code took
+  // Math.min, rendering the current stage's exit as the ship promise: an order at
+  // day 7 of a 109-day window was told "ships in weeks 1-3", promising shipment
+  // months early — the exact incoherent-band failure the sim flagged (proof-only).
+  // Max keeps the stage ceiling only as a FLOOR (can't ship before this stage ends
+  // in the rare case a stage overruns the window).
   const stageRemaining = stageDef ? Math.max(0, stageDef.dayBand.to - elapsed) : 0;
   const windowRemaining = Math.max(0, total - elapsed);
-  const remainingLo = Math.max(0, Math.min(stageRemaining || windowRemaining, windowRemaining));
+  const remainingLo = Math.max(stageRemaining, windowRemaining);
   const remainingHi = remainingLo + variance;
   const overdue = overrun || elapsed > total;
 

@@ -14,6 +14,7 @@
 import { computeTicketIntelligence, ltvPriorityBoost } from "@/lib/engines/index";
 import { scoreFeed, DEFAULT_SOCIAL_CONFIG } from "@/lib/engines/social-signal";
 import { containsHardDate } from "@/lib/proof";
+import { computeTimeline, bandVariance, daysBetween } from "@/lib/time";
 import {
   loadSeed,
   catalogFor,
@@ -183,6 +184,26 @@ for (const shape of shapes) {
           check(isRelativeWindow(band), ctx, `confidence band is not a relative window: ${band}`);
           const range = parseBandRange(band);
           if (range) check(range.lo <= range.hi, ctx, `band lo>hi: ${band}`);
+
+          // 4b. WINDOW-ANCHORED band (ADR-0002, proof-only). A non-overdue order's
+          //     ship band must NEVER promise delivery before the merchant's own
+          //     promised window remainder. computeTimeline anchors the lower bound
+          //     to Math.max(stageRemaining, windowRemaining); a regression to
+          //     Math.min renders the current STAGE's exit as the ship date and
+          //     promises delivery weeks-to-months early (day 48 of a 104-day window
+          //     → "ships in weeks 3–5"), the incoherent-band failure the ten-backer
+          //     sim flagged as a company-killer. This makes that regression fail loud.
+          const tl = computeTimeline(order, merchant, now);
+          if (!tl.overdue) {
+            const total = Math.max(1, daysBetween(order.fulfillmentStart, order.fulfillmentEnd));
+            const windowRemaining = Math.max(0, total - tl.daysInWait);
+            const remainingLo = tl.daysRemainingUpper - bandVariance(total);
+            check(
+              remainingLo >= windowRemaining,
+              ctx,
+              `band promises shipment before the promised window: lo=${remainingLo}d < windowRemaining=${windowRemaining}d (band="${band}")`,
+            );
+          }
 
           // 5. escalation happens IFF sentiment is hostile / chargeback-threat.
           const shouldEscalate = ESCALATING.has(sentiment);
