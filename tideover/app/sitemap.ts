@@ -20,6 +20,17 @@ const ROUTES: { path: string; changeFrequency: MetadataRoute.Sitemap[number]["ch
   // SEO pillar #2 (GTM §9.2/§9.1) — the ungated fulfillment-update template library,
   // also the destination the X bio/pinned post links to.
   { path: "/templates", changeFrequency: "monthly", priority: 0.8 },
+  // The guides hub (GTM §9.1) — internal-link authority between the pillars.
+  { path: "/guides", changeFrequency: "monthly", priority: 0.6 },
+  // SEO pillar #1 (GTM §9.1) — the crowdfunding chargeback-evidence guide (weakest
+  // open SERP; mirrors the evidence-pack feature).
+  { path: "/guides/kickstarter-chargeback-evidence", changeFrequency: "monthly", priority: 0.7 },
+  // SEO pillar #3 (GTM §9.1) — "how late is too late" delay stats (top SERP result
+  // is a 2012 CNN article).
+  { path: "/guides/how-late-crowdfunding-delivery", changeFrequency: "monthly", priority: 0.7 },
+  // SEO pillar #4 (GTM §9.1) — the angry-backer response playbook, tiered by severity
+  // (mirrors the risk-scored inbox).
+  { path: "/guides/respond-to-angry-backers", changeFrequency: "monthly", priority: 0.7 },
   { path: "/case-study", changeFrequency: "monthly", priority: 0.6 },
   { path: "/security", changeFrequency: "monthly", priority: 0.5 },
   { path: "/procurement", changeFrequency: "monthly", priority: 0.5 },
