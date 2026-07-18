@@ -52,6 +52,13 @@ export function bestEnrichableSite(row: CampaignRow): string | null {
   return null;
 }
 
+// States that mean a campaign is NOT yet owing fulfillment. Everything else —
+// successful, funded, ended, late_pledge, or an unlabeled row from a scrape already
+// filtered to funded (searchState) — counts as owing. Platform-robust: Kickstarter
+// labels a funded campaign "successful", Gamefound uses a different value, so a rigid
+// `state === "successful"` was dropping real funded Gamefound leads (verified).
+const NON_FUNDED_STATE = /^(live|upcoming|started|failed|canceled|cancelled|suspended|draft)$/i;
+
 /**
  * ICP fit: a funded (or late-pledge) campaign that owes physical fulfillment, has a
  * real enrichable creator domain (not a marketplace/social link), and cleared a
@@ -59,7 +66,7 @@ export function bestEnrichableSite(row: CampaignRow): string | null {
  * `category` targeting do the fine sorting; this is the coarse gate.
  */
 export function isFit(row: CampaignRow): boolean {
-  const funded = row.state === "successful" || row.is_late_pledge === true;
+  const funded = !NON_FUNDED_STATE.test(row.state ?? "") || row.is_late_pledge === true;
   const backers = row.backers_count ?? 0;
   const digital = DIGITAL_CATEGORY.test(`${row.category ?? ""} ${row.category_parent ?? ""}`);
   return funded && bestEnrichableSite(row) !== null && backers >= 100 && !digital;
