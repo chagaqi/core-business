@@ -16,6 +16,7 @@
     "stripe:products": "node --env-file-if-exists=.env.local scripts/create-stripe-products.mjs",
     "seed:test-account": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-test-account.mjs",
     "seed:test-tickets": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-test-tickets.mjs",
+    "seed:personas": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-personas.mjs",
     "backup": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/backup.mjs",
     "smoke:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/mongo-smoke.mjs",
     "smoke": "node --env-file-if-exists=.env.local scripts/smoke.mjs",
