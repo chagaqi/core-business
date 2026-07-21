@@ -1,0 +1,7 @@
+# Swan teardown media — huge, don't commit. The synthesis (STEAL-THIS.md) + the
+# text transcripts/lists are the durable artifacts.
+*.mp4
+*.mov
+*.webm
+frames/
+*.png
