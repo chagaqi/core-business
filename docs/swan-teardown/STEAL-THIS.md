@@ -44,3 +44,21 @@ These three together reproduce Swan's core loop — *show the work → refuse fa
 
 ---
 Grounding note: every row ties to a specific Swan artifact (screen timestamp, transcript beat, or capability) and lands on a named Tideover surface (`wizard` / first-run / empty state / inbox / `lib/engines/reassurance.ts` / `app/app/page.tsx`). Rows 1, 4, 7 map directly onto the existing Deliverer send-seam and DraftRail/ApprovalBar; row 10 also doubles as the memory-flagged import reliability fix (wait-clocks break / 2k cap).
+
+---
+
+## 6. What the full verbatim chat adds (ONBOARDING-CHAT-FULL.md)
+
+The complete chat transcript surfaces five patterns the frames/screenshots couldn't, all high-value:
+
+**A. The copy voice is a masterclass — steal it for our reassurance drafts + outreach.** Every message leads with the hit, one true specific per target, zero hedging. "you're #4, not #1." "They paid for the slot." "4.9 rating, money-back guarantee, third-party tested. Almost nobody we list has all three. You're stuck at #5." When Dylan said "too soft," Swan recorded it as a *standing voice rule* and rewrote tighter. → Two ports: (1) our draft engine should expose a **voice dial** (the merchant tunes "warmer / more direct" once and it's saved as a rule, exactly like Swan did), and (2) this is the exemplar for `copy-standard.md` — short, blunt, one concrete truth, no fluff.
+
+**B. The trust refrain, repeated at literally every step:** "Nothing sends without you hitting approve" appears 5+ times — after drafts, at the connect ask, during the bug, in the recap. It's not said once; it's the drumbeat. → Our send-seam UX should repeat "nothing sends without your approval" at every send-adjacent moment (DraftRail, ApprovalBar, connect-channel card, onboarding recap), not bury it once.
+
+**C. Never dead-end on a broken dependency — the single best robustness lesson.** When email-connect bugged out, Swan: diagnosed it as browser-side (*not your fault*), gave ordered fixes most-common-first, escalated to the team ("don't burn any more time on it tonight"), and crucially **reframed the blocker as non-fatal**: "none of this blocks the pipeline. I can build the automation now so it's running before you wake up." It kept building the parts that didn't need the connection. → Our onboarding must never hard-stop on a failed connect/import. If the store-data or sending-channel connect fails, keep configuring voice/stages/drafts and stage everything so it's one approval away when the connection lands. Degrade to "review on your Desk," never to a dead screen.
+
+**D. Consultative, not order-taking.** Dylan asked "can we do more than 5?" Swan didn't just comply — it gave a reasoned table (5-10 best / 15-20 autopilot risk / whole-list = torched domain), a recommendation (10/day warmest-first), and the *why* (warm list is finite, one shot per vendor). → Our product should push back with reasoning on the calls that matter — send cadence, import size, which backers to prioritize — instead of silently doing whatever's asked. Advisory posture reads as expertise.
+
+**E. The onboarding-complete recap is a template — copy the shape verbatim.** ✅ Done tonight · ✅ Every morning · 📬 Where they land · ⚠️ Your one open item (named honestly — the email bug) · 📈 Week 1 looks like. Scannable, sets expectations, and names the single unresolved thing instead of hiding it. → Our wizard-complete screen should recap exactly this shape: what's set up, what runs daily (the reassurance cron), where replies land (the inbox), the one thing still needed (connect channel / import backers), and what week 1 looks like.
+
+**Bonus — the automation IS proof-only-in-a-skill.** The skill Swan built bakes the guardrails into the spec: "one shot per vendor," "never invent an address," "never invent stats," "skip if no email found." That's our proof-only doctrine expressed as an automation contract. We already have the equivalents (reassurance guardrails + the trial-reminder cron); the steal is to make them **inspectable** — an "here are the rules your automation follows" surface, which doubles as trust-building (ties to steal #9, the editable memory doc).
