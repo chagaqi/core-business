@@ -17,6 +17,7 @@
     "seed:test-account": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-test-account.mjs",
     "seed:test-tickets": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-test-tickets.mjs",
     "seed:personas": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/seed-personas.mjs",
+    "agent:repl": "node --env-file-if-exists=.env.local --experimental-strip-types --import ./scripts/register-hooks.mjs scripts/agent-repl.mjs",
     "backup": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/backup.mjs",
     "smoke:mongo": "node --env-file-if-exists=.env.local --import ./scripts/local-dns.mjs scripts/mongo-smoke.mjs",
     "smoke": "node --env-file-if-exists=.env.local scripts/smoke.mjs",
