@@ -1,16 +1,29 @@
 import type { Metadata } from "next";
+import { OnboardingFlow } from "./flow/OnboardingFlow";
 import { OnboardingWizard } from "./OnboardingWizard";
 
 export const metadata: Metadata = {
-  title: "Set up Tideover — near-frictionless onboarding",
+  title: "Set up Tideover — watch it do the homework",
   description:
-    "Answer a few questions about your brand, your tools, and your real production timeline. Tideover turns them into a working day-stage reassurance playbook.",
+    "Give Tideover your store or campaign URL and watch it read your page, diagnose the wait-experience gaps, and turn three answers into a working reassurance playbook.",
 };
 
-export default function OnboardingPage() {
-  return (
-    <main className="min-h-screen bg-sand">
-      <OnboardingWizard />
-    </main>
-  );
+/**
+ * /onboarding (SWAN SPRINT P2, build step 6) — the conversational flow is the
+ * default; ?classic=1 keeps the proven 5-step wizard one query-param away
+ * (escape hatch until the flow soaks; delete nothing).
+ */
+export default function OnboardingPage({
+  searchParams,
+}: {
+  searchParams?: { classic?: string };
+}) {
+  if (searchParams?.classic) {
+    return (
+      <main className="min-h-screen bg-sand">
+        <OnboardingWizard />
+      </main>
+    );
+  }
+  return <OnboardingFlow />;
 }

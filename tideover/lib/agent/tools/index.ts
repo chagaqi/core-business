@@ -28,6 +28,16 @@ function clampLimit(value: unknown, fallback: number, max: number): number {
 const scrapePage: AgentTool = {
   name: "tideover-scrape-page",
   label: "Reading the page",
+  labelFor(args) {
+    try {
+      const u = new URL(String(args.url ?? ""));
+      const path = u.pathname === "/" ? "" : u.pathname;
+      return `Reading ${u.hostname.replace(/^www\./, "")}${path}`;
+    } catch {
+      return "Reading the page";
+    }
+  },
+  maxCalls: 2, // the skill's two-scrape ceiling, enforced structurally
   description:
     "Fetch and analyze a merchant's store or campaign page (platform, brand name, stated delivery estimate, reward tiers). Call this when the merchant gives a URL — never guess page contents. One call per URL per conversation.",
   parameters: {

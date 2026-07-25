@@ -169,6 +169,32 @@ test("skill registry + bodies load with the Swan anatomy sections", async () => 
   assert.ok(guardrails.includes("Never send"));
 });
 
+test("runner enforces a tool's maxCalls ceiling structurally", async () => {
+  const events: AgentEvent[] = [];
+  const capped: AgentTool = { ...echoTool, maxCalls: 1 };
+  const result = await runAgent({
+    skill: "diagnose-page",
+    input: "check",
+    chat: chatScript([
+      {
+        content: "",
+        toolCalls: [
+          { id: "c1", type: "function", function: { name: "fake-echo", arguments: "{}" } },
+          { id: "c2", type: "function", function: { name: "fake-echo", arguments: "{}" } },
+        ],
+      },
+      { content: "Worked with what I had.", toolCalls: [] },
+    ]),
+    tools: [capped],
+    onEvent: (e) => events.push(e),
+  });
+  assert.equal(result.ok, true);
+  const dones = events.filter((e) => e.type === "tool_done");
+  assert.equal(dones.length, 2);
+  assert.equal(dones[0].type === "tool_done" && dones[0].ok, true);
+  assert.equal(dones[1].type === "tool_done" && dones[1].ok, false, "second call over the ceiling errors");
+});
+
 test("every tool a skill declares resolves in the registry", () => {
   for (const [name, meta] of Object.entries(SKILLS)) {
     for (const toolName of meta.tools) {

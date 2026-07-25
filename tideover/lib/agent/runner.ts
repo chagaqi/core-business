@@ -92,6 +92,7 @@ export async function runAgent(opts: RunAgentOptions): Promise<RunAgentResult> {
 
     const ctx = { merchantId: opts.merchantId, now: opts.now };
     let toolCount = 0;
+    const callsPerTool = new Map<string, number>();
     let lastBand: string | undefined;
     const maxTurns = opts.maxTurns ?? DEFAULT_MAX_TURNS;
     const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
@@ -123,7 +124,23 @@ export async function runAgent(opts: RunAgentOptions): Promise<RunAgentResult> {
         toolCount++;
         if (toolCount > MAX_TOOL_CALLS) return fail("tool-budget-exhausted");
         const tool = skillTools.find((t) => t.name === call.function.name);
-        const label = tool?.label ?? call.function.name;
+
+        // parse args BEFORE emitting so the checklist line can name its target
+        let args: Record<string, unknown> = {};
+        let argsOk = true;
+        try {
+          args = JSON.parse(call.function.arguments || "{}") as Record<string, unknown>;
+        } catch {
+          argsOk = false;
+        }
+        let label = tool?.label ?? call.function.name;
+        if (tool?.labelFor && argsOk) {
+          try {
+            label = tool.labelFor(args);
+          } catch {
+            /* fall back to the static label */
+          }
+        }
         emit({ type: "tool_started", id: call.id, tool: call.function.name, label });
 
         let output: string;
@@ -132,13 +149,18 @@ export async function runAgent(opts: RunAgentOptions): Promise<RunAgentResult> {
           ok = false;
           output = JSON.stringify({ error: `unknown tool ${call.function.name}` });
         } else {
-          let args: Record<string, unknown> = {};
-          try {
-            args = JSON.parse(call.function.arguments || "{}") as Record<string, unknown>;
-          } catch {
+          const used = (callsPerTool.get(tool.name) ?? 0) + 1;
+          callsPerTool.set(tool.name, used);
+          if (!argsOk) {
             ok = false;
-          }
-          if (ok) {
+            output = JSON.stringify({ error: "malformed-arguments" });
+          } else if (tool.maxCalls && used > tool.maxCalls) {
+            // the skill's prose ceiling, enforced structurally
+            ok = false;
+            output = JSON.stringify({
+              error: `tool-call-limit: ${tool.name} allows at most ${tool.maxCalls} calls per run — work with what you have`,
+            });
+          } else {
             try {
               output = await tool.run(args, ctx);
               ok = !output.startsWith(`{"error"`);
@@ -147,8 +169,6 @@ export async function runAgent(opts: RunAgentOptions): Promise<RunAgentResult> {
               output = JSON.stringify({ error: err instanceof Error ? err.message : "tool-failed" });
               warnAgent("tool_error", `${call.function.name}: ${output.slice(0, 120)}`, opts.merchantId);
             }
-          } else {
-            output = JSON.stringify({ error: "malformed-arguments" });
           }
           if (ok && tool.name === "tideover-draft-reply") {
             try {

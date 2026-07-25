@@ -1,11 +1,17 @@
 import { agentConfigured, isSkillName, runAgent, SKILLS, TENANT_TOOLS, type AgentEvent } from "@/lib/agent";
+import { authMode } from "@/lib/auth-mode";
+import { clientIp, createRateLimiter } from "@/lib/rate-limit";
 import { getRepositories } from "@/lib/repositories";
+import { resolveModeFromRequest } from "@/lib/request-mode";
 import { getTenantSession } from "@/lib/tenant";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const MAX_INPUT_CHARS = 4_000;
+
+// Each run costs real provider pennies — bound anonymous/demo usage hard.
+const rateLimited = createRateLimiter(5);
 
 /**
  * POST /api/agent/stream (SWAN SPRINT P1) — run a skill for the session's
@@ -33,11 +39,25 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ error: "agent-disabled" }, { status: 503 });
   }
 
-  const session = await getTenantSession();
-  if (!session) return Response.json({ error: "unauthorized" }, { status: 401 });
+  if (rateLimited(clientIp(req))) {
+    return Response.json({ error: "rate-limited" }, { status: 429 });
+  }
+
+  // Session is required in real+auth0 mode (same defense-in-depth re-check as
+  // POST /api/onboarding); demo mode runs session-less so localhost and the
+  // public demo host can show the live research beat (rate-limited above).
+  let session = null;
+  if (resolveModeFromRequest() === "real" && authMode() === "auth0") {
+    session = await getTenantSession();
+    if (!session) return Response.json({ error: "unauthorized" }, { status: 401 });
+  } else {
+    session = await getTenantSession().catch(() => null);
+  }
   // Merchant is OPTIONAL (P2 onboarding runs diagnose-page before a merchant
   // exists) — but any skill whose tools read tenant data requires one.
-  const merchant = await getRepositories().merchants.findByMemberOrOwnerSub(session.sub);
+  const merchant = session
+    ? await getRepositories().merchants.findByMemberOrOwnerSub(session.sub)
+    : null;
   if (!merchant && SKILLS[skill].tools.some((t) => TENANT_TOOLS.has(t))) {
     return Response.json({ error: "no-merchant" }, { status: 404 });
   }

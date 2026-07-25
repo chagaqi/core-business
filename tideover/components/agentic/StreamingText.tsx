@@ -1,7 +1,7 @@
 "use client";
 
 import { clsx } from "clsx";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 /**
  * StreamingText (ADR-0023) — streamed agent prose with a caret while text is arriving.
@@ -66,11 +66,38 @@ export function StreamingText({
   const streaming = active || (typewriter && wordCount < words.length);
 
   return (
-    <span className={clsx("whitespace-pre-wrap text-[15px] leading-relaxed text-ink", className)}>
-      {visible}
+    <span className={clsx("text-[15px] leading-relaxed text-ink", className)}>
+      {renderMdLite(visible)}
       {streaming ? (
         <span aria-hidden className="ml-0.5 inline-block h-[1em] w-[2px] translate-y-[2px] animate-pulse bg-terracotta" />
       ) : null}
     </span>
   );
+}
+
+/**
+ * Minimal, injection-safe markdown: **bold**, bullet lines, paragraph gaps,
+ * horizontal rules dropped. Models emit this shape no matter how firmly the
+ * prompt asks for plain prose — render the common cases instead of showing
+ * asterisks to a merchant. React nodes only, never raw HTML.
+ */
+function renderMdLite(text: string): ReactNode[] {
+  return text.split("\n").map((line, i) => {
+    const trimmed = line.trim();
+    if (trimmed === "---" || trimmed === "***" || trimmed === "___") {
+      return <span key={i} className="block h-2" aria-hidden />;
+    }
+    if (trimmed === "") return <span key={i} className="block h-3" aria-hidden />;
+    const bulleted = /^[-*•]\s+/.test(trimmed);
+    const src = (bulleted ? trimmed.replace(/^[-*•]\s+/, "") : trimmed).replace(/^#{1,4}\s+/, "");
+    const parts: ReactNode[] = src.split(/(\*\*[^*]+\*\*)/g).map((seg, j) => {
+      const bold = /^\*\*([^*]+)\*\*$/.exec(seg);
+      return bold ? <strong key={j}>{bold[1]}</strong> : <span key={j}>{seg}</span>;
+    });
+    return (
+      <span key={i} className="block">
+        {bulleted ? <>•&nbsp;{parts}</> : parts}
+      </span>
+    );
+  });
 }

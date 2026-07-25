@@ -99,6 +99,36 @@ export function useAgentStream() {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
+      // Delta batching: fast providers stream 100+ tokens/sec, and a setState
+      // per token can freeze the renderer on a long transcript (seen live
+      // 2026-07-25). Coalesce text deltas and flush on a ~40ms cadence; any
+      // non-text event flushes first so ordering is preserved.
+      let pendingText = "";
+      let flushTimer: ReturnType<typeof setTimeout> | null = null;
+      const flushText = () => {
+        if (!pendingText) return;
+        const chunk = pendingText;
+        pendingText = "";
+        setState((prev) => reduce(prev, { type: "text_delta", text: chunk }));
+      };
+      const apply = (event: AgentEvent) => {
+        if (event.type === "text_delta") {
+          pendingText += event.text;
+          if (!flushTimer) {
+            flushTimer = setTimeout(() => {
+              flushTimer = null;
+              flushText();
+            }, 40);
+          }
+          return;
+        }
+        if (flushTimer) {
+          clearTimeout(flushTimer);
+          flushTimer = null;
+        }
+        flushText();
+        setState((prev) => reduce(prev, event));
+      };
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -109,13 +139,14 @@ export function useAgentStream() {
           const line = frame.split("\n").find((l) => l.startsWith("data: "));
           if (!line) continue;
           try {
-            const event = JSON.parse(line.slice(6)) as AgentEvent;
-            setState((prev) => reduce(prev, event));
+            apply(JSON.parse(line.slice(6)) as AgentEvent);
           } catch {
             /* torn frame — the next complete one carries state forward */
           }
         }
       }
+      if (flushTimer) clearTimeout(flushTimer);
+      flushText();
       // stream closed without a terminal event = the mid-stream-drop branch
       setState((prev) =>
         prev.status === "running" ? { ...prev, status: "error", reason: "stream-ended" } : prev,

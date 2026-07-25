@@ -140,6 +140,14 @@ export function OnboardingFlow() {
 
   const stream = useAgentStream();
   const previewFiredRef = useRef(false);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+
+  // Swan's anchor-to-newest: keep the freshest content in view as the
+  // transcript grows (checklist lines, streamed text, new cards).
+  useEffect(() => {
+    const reduce = typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    bottomRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "end" });
+  }, [beat, stream.checklist.length, stream.text, previews, result, createError, importChoice]);
 
   const reached = useCallback(
     (b: BeatId) => BEAT_ORDER.indexOf(beat) >= BEAT_ORDER.indexOf(b),
@@ -326,7 +334,10 @@ export function OnboardingFlow() {
         <ChatTurn role="agent">
           <p>
             Setting up <strong>{brandName}</strong>
-            {prefill.platform ? ` (${prefill.platform})` : ""}. One question at a time — three total.
+            {prefill.platform && !["generic", "unknown"].includes(prefill.platform)
+              ? ` (${prefill.platform})`
+              : ""}
+            . One question at a time — three total.
           </p>
         </ChatTurn>
       ) : null}
@@ -472,7 +483,7 @@ export function OnboardingFlow() {
                 <button type="button" className="btn btn-ghost px-3 py-1.5 text-[13px]" onClick={() => void finish()}>
                   Try again
                 </button>{" "}
-                <Link href="/onboarding" className="link-quiet ml-2 text-[13px]">
+                <Link href="/onboarding?classic=1" className="link-quiet ml-2 text-[13px]">
                   or use the classic form →
                 </Link>
               </p>
@@ -546,10 +557,11 @@ export function OnboardingFlow() {
 
       <p className="pt-6 text-center text-[12px] text-ink-mute">
         Prefer a form?{" "}
-        <Link href="/onboarding" className="link-quiet">
+        <Link href="/onboarding?classic=1" className="link-quiet">
           Use the classic setup instead
         </Link>
       </p>
+      <div ref={bottomRef} aria-hidden />
     </main>
   );
 }

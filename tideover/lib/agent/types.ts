@@ -15,6 +15,13 @@ export interface AgentTool {
   name: string;
   /** human checklist line, present tense: "Reading the page" */
   label: string;
+  /** derive a per-call label from the parsed args ("Reading tideover.app/pricing") */
+  labelFor?: (args: Record<string, unknown>) => string;
+  /**
+   * hard per-run call ceiling, ENFORCED by the runner (a skill's prose rule is
+   * guidance; this is the guardrail). Exceeding calls return a tool error.
+   */
+  maxCalls?: number;
   /** for the model — prescriptive about WHEN to call it */
   description: string;
   /** JSON Schema for arguments (OpenAI function-calling shape) */
