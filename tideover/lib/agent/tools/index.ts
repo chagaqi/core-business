@@ -165,6 +165,17 @@ const readSkill: AgentTool = {
 
 export const CORE_TOOLS: readonly AgentTool[] = [scrapePage, readOrders, readTickets, draftReply, readSkill];
 
+/**
+ * Tools that read tenant data and therefore require a merchant scope. A skill
+ * whose allowlist touches one of these cannot run for a session that has no
+ * merchant yet (the onboarding case) — the stream route enforces this.
+ */
+export const TENANT_TOOLS: ReadonlySet<string> = new Set([
+  readOrders.name,
+  readTickets.name,
+  draftReply.name,
+]);
+
 export function toolByName(name: string): AgentTool | undefined {
   return CORE_TOOLS.find((t) => t.name === name);
 }

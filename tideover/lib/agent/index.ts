@@ -6,5 +6,5 @@ export { runAgent, type RunAgentOptions, type RunAgentResult } from "./runner";
 export { agentConfigured } from "./provider";
 export { SKILLS, isSkillName, loadSkillBody, READABLE_DOCS, type SkillName } from "./skills";
 export { guardAgentText, type GuardVerdict } from "./guardrails";
-export { CORE_TOOLS, toolByName } from "./tools";
+export { CORE_TOOLS, TENANT_TOOLS, toolByName } from "./tools";
 export type { AgentEvent, AgentTool, AgentContext, AgentAudience } from "./types";

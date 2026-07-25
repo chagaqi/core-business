@@ -11,3 +11,4 @@ export { RecapCard, type RecapRow } from "./RecapCard";
 export { EmptyState, AllCaughtUp, type EmptyStateAction } from "./EmptyState";
 export { ResumeBanner } from "./ResumeBanner";
 export { ChatTurn, DraftArtifact } from "./ChatTurn";
+export { useAgentStream, type AgentStreamState, type AgentStreamStatus } from "./useAgentStream";

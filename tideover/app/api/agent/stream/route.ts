@@ -1,4 +1,4 @@
-import { agentConfigured, isSkillName, runAgent, type AgentEvent } from "@/lib/agent";
+import { agentConfigured, isSkillName, runAgent, SKILLS, TENANT_TOOLS, type AgentEvent } from "@/lib/agent";
 import { getRepositories } from "@/lib/repositories";
 import { getTenantSession } from "@/lib/tenant";
 
@@ -35,8 +35,12 @@ export async function POST(req: Request): Promise<Response> {
 
   const session = await getTenantSession();
   if (!session) return Response.json({ error: "unauthorized" }, { status: 401 });
+  // Merchant is OPTIONAL (P2 onboarding runs diagnose-page before a merchant
+  // exists) — but any skill whose tools read tenant data requires one.
   const merchant = await getRepositories().merchants.findByMemberOrOwnerSub(session.sub);
-  if (!merchant) return Response.json({ error: "no-merchant" }, { status: 404 });
+  if (!merchant && SKILLS[skill].tools.some((t) => TENANT_TOOLS.has(t))) {
+    return Response.json({ error: "no-merchant" }, { status: 404 });
+  }
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
@@ -48,7 +52,7 @@ export async function POST(req: Request): Promise<Response> {
           /* client went away mid-run — the runner finishes, events drop */
         }
       };
-      void runAgent({ skill, input, merchantId: merchant.id, onEvent: send })
+      void runAgent({ skill, input, merchantId: merchant?.id, onEvent: send })
         .catch(() => {
           /* runAgent never throws by contract; belt-and-braces */
         })

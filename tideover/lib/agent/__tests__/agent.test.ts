@@ -169,6 +169,14 @@ test("skill registry + bodies load with the Swan anatomy sections", async () => 
   assert.ok(guardrails.includes("Never send"));
 });
 
+test("every tool a skill declares resolves in the registry", () => {
+  for (const [name, meta] of Object.entries(SKILLS)) {
+    for (const toolName of meta.tools) {
+      assert.ok(toolByName(toolName), `${name} references missing tool ${toolName}`);
+    }
+  }
+});
+
 test("tideover-read-skill refuses anything outside the allowlist", async () => {
   const tool = toolByName("tideover-read-skill");
   assert.ok(tool);
