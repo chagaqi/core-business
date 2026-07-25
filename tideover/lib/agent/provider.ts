@@ -62,7 +62,10 @@ async function streamOpenAiCompatible(
         authorization: `Bearer ${process.env.LLM_API_KEY}`,
       },
       body: JSON.stringify({
-        model: process.env.LLM_MODEL || "deepseek-chat",
+        // AGENT_LLM_MODEL lets the agent run a stronger model than the
+        // latency-bound drafter without touching LLM_MODEL. DeepSeek ids as of
+        // the 2026-07 rename: deepseek-v4-flash (fast) / deepseek-v4-pro.
+        model: process.env.AGENT_LLM_MODEL || process.env.LLM_MODEL || "deepseek-v4-flash",
         messages: opts.messages,
         ...(opts.tools.length > 0 ? { tools: opts.tools } : {}),
         temperature: TEMPERATURE,

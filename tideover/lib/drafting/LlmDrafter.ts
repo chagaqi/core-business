@@ -221,7 +221,11 @@ async function callOpenAiCompatible(
         authorization: `Bearer ${process.env.LLM_API_KEY}`,
       },
       body: JSON.stringify({
-        model: process.env.LLM_MODEL || "deepseek-chat",
+        // DeepSeek retired "deepseek-chat" (2026-07 rename): current ids are
+        // deepseek-v4-flash (fast tier — fits the 4.5-8s draft timeouts) and
+        // deepseek-v4-pro. A stale LLM_MODEL env pin silently floors every
+        // draft, so keep env + this default in sync.
+        model: process.env.LLM_MODEL || "deepseek-v4-flash",
         messages: [
           { role: "system", content: system },
           { role: "user", content: user },
