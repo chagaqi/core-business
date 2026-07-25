@@ -41,7 +41,7 @@ All primitives are **new files** under `components/agentic/` — zero hot-file r
 
 ## Phase 1 — Agent core: runner, tools, guardrails, skills, test rig
 
-The engine behind onboarding, inbox triage, and the homepage demo. TypeScript, `@anthropic-ai/sdk`, model `claude-opus-5` (streaming, adaptive thinking default). Zod already in deps → `betaZodTool` + `client.beta.messages.toolRunner`.
+The engine behind onboarding, inbox triage, and the homepage demo. **Provider: DeepSeek** (Dylan 2026-07-24 — reuse the key already wired for drafting: `LLM_PROVIDER=deepseek` + `LLM_API_KEY`, OpenAI-compatible chat completions with tool calling + streaming, same raw-fetch idiom as `LlmDrafter.ts`, no new deps). The runner keeps the same provider-switch seam `LlmDrafter` has, so Anthropic/others are a config case later, never a rewrite. Guardrail safety is provider-independent by design — enforcement is post-generation and the deterministic engine owns every band.
 
 **`lib/agent/` layout:**
 - `runner.ts` — tool-runner loop; emits structured progress events (tool_started/tool_done/text_delta) consumed by SSE route `app/api/agent/stream` → feeds ToolChecklist live.
@@ -60,7 +60,7 @@ The engine behind onboarding, inbox triage, and the homepage demo. TypeScript, `
 **Test rig:** `scripts/agent-repl.mjs` — run any skill against the 5 seeded personas from the terminal, streaming the checklist; records fixtures. Guardrail unit tests run offline (recorded fixtures + validator); live-API tests behind `ANTHROPIC_API_KEY` presence.
 
 - Done means: repl streams a real `diagnose-page` run end-to-end; guardrail tests green offline; verify+tests green.
-- **Blocked on Dylan:** `ANTHROPIC_API_KEY` (console.anthropic.com → key → `tideover/.env.local` + Vercel env). Test-phase spend ≈ $5–20. Cost per onboarding research run ≈ $1–2 at worst on claude-opus-5 ($5/$25 per MTok) — fine now; pricing/credits model is a later Dylan call.
+- **No Dylan unlock needed** — the existing DeepSeek key covers live runs (deepseek-chat is ~$0.28/$0.42 per MTok; an onboarding research run costs cents). Pricing/credits model stays a later Dylan call.
 
 ## Phase 2 — Onboarding revamp (the aha)
 
@@ -108,7 +108,7 @@ Dylan's words: the single biggest overhaul needed to be publicly launchable is "
 P0 → P1 → P2 → P3 → P4. P0/P1 parallelizable internally; P3 strictly serialized (hot files). Anything ambiguous in auth/billing/engine territory stops and surfaces — no improvising (charter).
 
 **Dylan's items:**
-1. **ANTHROPIC_API_KEY** — unblocks P1 live testing (P0 and all offline work proceed without it).
+1. ~~ANTHROPIC_API_KEY~~ **Resolved 2026-07-24: the agent runs on the existing DeepSeek key** (`LLM_PROVIDER`/`LLM_API_KEY`, already in .env.local + Vercel). Nothing to do.
 2. Record the homepage demo video (P4 slot will be waiting).
 3. "Merge it" calls per deploy.
 4. Optional: pick the positioning one-liner.
