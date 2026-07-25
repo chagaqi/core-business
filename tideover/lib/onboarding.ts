@@ -1,4 +1,5 @@
 import { newId, newInboxToken, newStatusToken } from "@/lib/ids";
+import { DEFAULT_STAGES } from "@/lib/onboarding-defaults";
 import { getRepositories } from "@/lib/repositories";
 import { draftReassurance } from "@/lib/engines/reassurance";
 import { importBackerRows, type ImportResult } from "@/lib/import";
@@ -161,14 +162,10 @@ export function ensureBaseLadder(gifts: GiftInput[]): GiftInput[] {
   return [...gifts, ...ZERO_COST_BASE_GIFTS];
 }
 
-const DEFAULT_STAGES: IntakeData["stages"] = [
-  { key: "sourcing", label: "Sourcing", from: 0, to: 12, blurb: "components are being sourced" },
-  { key: "tooling", label: "Tooling & sampling", from: 12, to: 32, blurb: "tooling and the first samples are underway" },
-  { key: "production", label: "Production run", from: 32, to: 72, blurb: "your unit is on the production line" },
-  { key: "qc", label: "QC & inspection", from: 72, to: 84, blurb: "your unit is going through quality control" },
-  { key: "freight", label: "Freight", from: 84, to: 104, blurb: "your batch is in transit to the warehouse" },
-  { key: "dispatch", label: "Pick, pack & dispatch", from: 104, to: 118, blurb: "your order is being packed for dispatch" },
-];
+// DEFAULT_STAGES moved to lib/onboarding-defaults.ts (client-safe — the P2
+// chat flow scales these bands in the browser and this module can't enter a
+// client bundle). Imported above for the builder; re-exported for callers.
+export { DEFAULT_STAGES };
 
 /**
  * The four seeded day-stage templates — the DETERMINISTIC FLOOR.
