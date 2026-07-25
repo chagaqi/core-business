@@ -300,31 +300,17 @@ export class AlreadyOnboardedError extends Error {
   }
 }
 
-export async function createMerchantFromIntake(
+/**
+ * Build the Merchant + gift catalog from intake WITHOUT persisting anything.
+ * Extracted from createMerchantFromIntake (SWAN SPRINT P2) so the pre-create
+ * preview endpoint (/api/onboarding/preview) runs the EXACT construction the
+ * real create runs — zero drift between what a merchant is shown and what they
+ * get. Pure apart from id generation.
+ */
+export function buildMerchantFromIntake(
   intake: IntakeData,
-  opts: {
-    /**
-     * Auth0 user (`sub`) the new merchant belongs to (ADR-0020). Stamped from
-     * the SESSION by the API layer — never from the client body. null/absent =
-     * ownerless (demo sandbox, legacy password mode): exactly the pre-Auth0
-     * behavior.
-     */
-    ownerSub?: string | null;
-  } = {},
-): Promise<{
-  merchant: Merchant;
-  previews: Array<{ stageKey: DayStageKey; text: string }>;
-  /** Counts from the atomic backer import, or null when no rows were staged. */
-  imported: ImportResult | null;
-}> {
-  const repos = getRepositories();
-  const ownerSub = opts.ownerSub ?? null;
-  if (ownerSub) {
-    // Member-or-owner: an attached teammate is "already onboarded" too — one
-    // merchant per user holds across both roles (their 409 routes them to /app).
-    const existing = await repos.merchants.findByMemberOrOwnerSub(ownerSub);
-    if (existing) throw new AlreadyOnboardedError(existing.id);
-  }
+  ownerSub: string | null = null,
+): { merchant: Merchant; gifts: Gift[] } {
   const slug = intake.brandName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   const stages: StageDef[] = (intake.stages.length ? intake.stages : DEFAULT_STAGES).map((s) => ({
     key: s.key,
@@ -412,6 +398,89 @@ export async function createMerchantFromIntake(
   // (not just the returned object) carries the ids.
   merchant.giftCatalogIds = gifts.map((g) => g.id);
 
+  return { merchant, gifts };
+}
+
+/**
+ * Generate the per-day-stage preview replies for a merchant — pure on the
+ * merchant object (in-memory sample customer + orders through draftReassurance,
+ * no repository reads), so it serves both the real create and the pre-create
+ * preview endpoint.
+ */
+export function buildStagePreviews(
+  merchant: Merchant,
+  now: Date = new Date(),
+): Array<{ stageKey: DayStageKey; text: string }> {
+  const sampleCustomer: Customer = {
+    id: "cus_preview",
+    merchantId: merchant.id,
+    email: "preview@example.com",
+    firstName: "Dana",
+    ltvCents: 60000,
+    orderIds: [],
+    ticketCount: 0,
+    lastSentiment: "anxious",
+  };
+  const total = merchant.fulfillmentWindowDays.max;
+  // The preview's production stage is DERIVED from the sample wait against the
+  // merchant's OWN bands — the same resolution every real order gets at read time.
+  // It used to be hardcoded (day-60 → "production", always), so the preview could
+  // show a merchant a stage their own plan says is impossible at that wait, and
+  // the first thing they ever saw the product do was contradict them.
+  const sampleWaits: Record<DayStageKey, number> = {
+    "day-7": 5,
+    "day-30": 24,
+    "day-60": 50,
+    "day-89": 82,
+  };
+  return (Object.keys(sampleWaits) as DayStageKey[]).map((stageKey) => {
+    const wait = sampleWaits[stageKey];
+    const order: Order = {
+      id: "ord_preview",
+      merchantId: merchant.id,
+      customerId: sampleCustomer.id,
+      group: "new-preorder",
+      orderValueCents: 30000,
+      createdAt: new Date(now.getTime() - (wait + 1) * 86400000).toISOString(),
+      fulfillmentStart: new Date(now.getTime() - wait * 86400000).toISOString(),
+      fulfillmentEnd: new Date(now.getTime() - (wait - total) * 86400000).toISOString(),
+      productionStage: resolveStageFromBands(merchant.stages, wait),
+      region: "US",
+      statusToken: newStatusToken(),
+      preorderEtaSource: "manual",
+    };
+    const r = draftReassurance({ order, merchant, firstName: "Dana", sentiment: "anxious", now });
+    return { stageKey, text: r.draftText };
+  });
+}
+
+export async function createMerchantFromIntake(
+  intake: IntakeData,
+  opts: {
+    /**
+     * Auth0 user (`sub`) the new merchant belongs to (ADR-0020). Stamped from
+     * the SESSION by the API layer — never from the client body. null/absent =
+     * ownerless (demo sandbox, legacy password mode): exactly the pre-Auth0
+     * behavior.
+     */
+    ownerSub?: string | null;
+  } = {},
+): Promise<{
+  merchant: Merchant;
+  previews: Array<{ stageKey: DayStageKey; text: string }>;
+  /** Counts from the atomic backer import, or null when no rows were staged. */
+  imported: ImportResult | null;
+}> {
+  const repos = getRepositories();
+  const ownerSub = opts.ownerSub ?? null;
+  if (ownerSub) {
+    // Member-or-owner: an attached teammate is "already onboarded" too — one
+    // merchant per user holds across both roles (their 409 routes them to /app).
+    const existing = await repos.merchants.findByMemberOrOwnerSub(ownerSub);
+    if (existing) throw new AlreadyOnboardedError(existing.id);
+  }
+  const { merchant, gifts } = buildMerchantFromIntake(intake, ownerSub);
+
   await repos.merchants.create(merchant);
   await repos.gifts.createMany(gifts);
 
@@ -438,49 +507,7 @@ export async function createMerchantFromIntake(
         })
       : null;
 
-  // generate preview scripts against sample orders at each day-stage
-  const sampleCustomer: Customer = {
-    id: "cus_preview",
-    merchantId: merchant.id,
-    email: "preview@example.com",
-    firstName: "Dana",
-    ltvCents: 60000,
-    orderIds: [],
-    ticketCount: 0,
-    lastSentiment: "anxious",
-  };
-  const total = merchant.fulfillmentWindowDays.max;
-  // The preview's production stage is DERIVED from the sample wait against the
-  // merchant's OWN bands — the same resolution every real order gets at read time.
-  // It used to be hardcoded (day-60 → "production", always), so the preview could
-  // show a merchant a stage their own plan says is impossible at that wait, and
-  // the first thing they ever saw the product do was contradict them.
-  const sampleWaits: Record<DayStageKey, number> = {
-    "day-7": 5,
-    "day-30": 24,
-    "day-60": 50,
-    "day-89": 82,
-  };
-  const now = new Date();
-  const previews = (Object.keys(sampleWaits) as DayStageKey[]).map((stageKey) => {
-    const wait = sampleWaits[stageKey];
-    const order: Order = {
-      id: "ord_preview",
-      merchantId: merchant.id,
-      customerId: sampleCustomer.id,
-      group: "new-preorder",
-      orderValueCents: 30000,
-      createdAt: new Date(now.getTime() - (wait + 1) * 86400000).toISOString(),
-      fulfillmentStart: new Date(now.getTime() - wait * 86400000).toISOString(),
-      fulfillmentEnd: new Date(now.getTime() - (wait - total) * 86400000).toISOString(),
-      productionStage: resolveStageFromBands(merchant.stages, wait),
-      region: "US",
-      statusToken: newStatusToken(),
-      preorderEtaSource: "manual",
-    };
-    const r = draftReassurance({ order, merchant, firstName: "Dana", sentiment: "anxious", now });
-    return { stageKey, text: r.draftText };
-  });
+  const previews = buildStagePreviews(merchant);
 
   return { merchant, previews, imported };
 }

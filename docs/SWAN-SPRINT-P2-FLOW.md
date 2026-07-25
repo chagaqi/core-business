@@ -24,9 +24,11 @@ Backlog #4 ("drafts before connect") has a chicken-and-egg problem: drafting nee
 
 **Beat 5 — drafts BEFORE connect (the trust beat).** "Here's what I'd send your backers today." 2–3 preview drafts via `/api/onboarding/preview-draft` — against their real staged CSV rows when Beat 4 imported, else the SAMPLE-labeled canned ticket. Rendered as DraftArtifact (indented/muted/italic), each with the band visibly coming from THEIR timeline. Refrain line beneath: **"Nothing sends without you hitting approve."**
 
-**Beat 6 — the connect ask, late.** Only now: the existing `ConnectPanel` (helpdesk/ingest) as a beat — "to have real tickets land here drafted, connect your helpdesk." Skippable with the graceful line (pattern C): "Skip — everything still works; drafts stage in your inbox and you can connect any time."
+**Beat 6 — finish (silent).** On the merchant's go: `POST /api/onboarding` (existing, unchanged — owner-scoped idempotency, 409→/app redirect preserved). *Scout correction 2026-07-25:* the connect kit (per-merchant ingest URLs/secrets) is computed server-side at creation and returned on the response — so creation must precede the connect beat. Drafts (Beat 5) still precede BOTH, so the trust ordering holds.
 
-**Beat 7 — finish + recap.** Atomic `POST /api/onboarding` (existing, unchanged) → RecapCard: ✅ set up today (voice · N stages · N backers) · ✅ every morning (tickets arrive drafted; you approve) · 📬 where they land (your Inbox — first drafts waiting) · ⚠️ your one open item (whatever was skipped: connect/import — named plainly) · 📈 week 1. One CTA: "Open your Inbox".
+**Beat 7 — the connect ask, late.** The existing `ConnectPanel`, fed from the response's `connect` kit — "to have real tickets land here drafted, connect your helpdesk." Skippable with the graceful line (pattern C): "Skip — everything still works; drafts stage in your inbox and you can connect any time." Then the RecapCard: ✅ set up today (voice · N stages · N backers) · ✅ every morning (tickets arrive drafted; you approve) · 📬 where they land (your Inbox — first drafts waiting) · ⚠️ your one open item (whatever was skipped: connect/import — named plainly) · 📈 week 1. One CTA: "Open your Inbox".
+
+*Deferred from Beat 0 (scout finding):* "how did you find us" has no backend field — attribution ships later as its own small schema change, not smuggled into P2.
 
 **Beat 8 — the pull-back.** ResumeBanner across /app until completeness hits 100% (that wiring is SW6/P3; the completeness signal is defined by which beats were skipped).
 
