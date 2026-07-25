@@ -39,7 +39,7 @@ const scrapePage: AgentTool = {
   },
   maxCalls: 2, // the skill's two-scrape ceiling, enforced structurally
   description:
-    "Fetch and analyze a merchant's store or campaign page (platform, brand name, stated delivery estimate, reward tiers). Call this when the merchant gives a URL — never guess page contents. One call per URL per conversation.",
+    "Fetch and analyze a merchant's store or campaign page (platform, brand name, stated delivery estimate, reward tiers; for Shopify stores also real products[] with preorder flags from the public storefront endpoint). Call this when the merchant gives a URL — never guess page contents. Kickstarter campaign URLs return reason kickstarter-blocks-tools (their bot protection) — ask for the merchant's own site instead. One call per URL per conversation.",
   parameters: {
     type: "object",
     properties: { url: { type: "string", description: "The page URL exactly as the merchant gave it" } },

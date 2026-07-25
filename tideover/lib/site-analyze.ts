@@ -35,6 +35,14 @@ export interface GiftCandidate {
   source: "site" | "fallback";
 }
 
+export interface ProductSignal {
+  title: string;
+  /** first-variant price in the STORE'S currency — never asserted as USD */
+  price?: number;
+  /** title/tags/handle matched a preorder pattern (pre-order, presale, waitlist, back-order…) */
+  preorder: boolean;
+}
+
 export interface SiteAnalysis {
   platform: Platform;
   brandName?: string;
@@ -42,6 +50,10 @@ export interface SiteAnalysis {
   estimatedDelivery?: string;
   rewardTiers?: RewardTier[];
   giftCandidates: GiftCandidate[];
+  /** Shopify only: real products from the public /products.json storefront endpoint */
+  products?: ProductSignal[];
+  /** how many of `products` carry a preorder signal */
+  preorderCount?: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -276,6 +288,20 @@ export async function analyzeSite(raw: string, opts: AnalyzeOptions = {}): Promi
   const timeoutMs = opts.timeoutMs ?? 8000;
   const maxRedirects = opts.maxRedirects ?? 3;
 
+  // Kickstarter hard-blocks tool access (Cloudflare challenge on campaign pages
+  // AND the oEmbed endpoint — verified live 2026-07-25). We never spoof a
+  // browser to get around bot protection, so a campaign URL gets a tagged
+  // reason BEFORE any fetch: callers tell the merchant plainly and ask for
+  // their own site instead.
+  try {
+    const host = new URL(raw).hostname.toLowerCase();
+    if (host === "kickstarter.com" || host.endsWith(".kickstarter.com")) {
+      return { ok: false, reason: "kickstarter-blocks-tools" };
+    }
+  } catch {
+    /* not parseable here — assertUrlAllowed below reports the proper reason */
+  }
+
   let current = raw;
   let originHost: string | null = null;
 
@@ -309,7 +335,18 @@ export async function analyzeSite(raw: string, opts: AnalyzeOptions = {}): Promi
       if (!/text\/html|application\/xhtml/i.test(ctype)) return { ok: false, reason: "not-html" };
 
       const html = await readCapped(res, maxBytes);
-      return { ok: true, ...extractFromHtml(html, guard.url) };
+      const analysis = extractFromHtml(html, guard.url);
+      if (analysis.platform === "shopify") {
+        // Second, same-origin fetch of the PUBLIC storefront products endpoint —
+        // the only way to actually know a Shopify store's (preorder) products.
+        // Entirely fail-soft: any problem just leaves `products` absent.
+        const products = await fetchShopifyProducts(guard.url, doFetch, timeoutMs, opts.lookup);
+        if (products && products.length > 0) {
+          analysis.products = products;
+          analysis.preorderCount = products.filter((p) => p.preorder).length;
+        }
+      }
+      return { ok: true, ...analysis };
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
       if (msg === "too-large") return { ok: false, reason: "too-large" };
@@ -322,6 +359,66 @@ export async function analyzeSite(raw: string, opts: AnalyzeOptions = {}): Promi
     }
   }
   return { ok: false, reason: "too-many-redirects" };
+}
+
+const PREORDER_RE =
+  /pre[-\s]?order|pre[-\s]?sale|presale|wait[-\s]?list|back[-\s]?order|coming\s+soon|ships?\s+in\s+\d|deposit/i;
+
+/**
+ * Pure parse of a Shopify /products.json payload → capped product signals.
+ * Price is the first variant's, in the store's own currency (never claimed as
+ * USD). Preorder detection is a pattern match over title + tags + handle —
+ * a signal, not a certainty, and callers phrase it that way.
+ */
+export function extractShopifyProducts(json: unknown): ProductSignal[] {
+  if (!isRecord(json) || !Array.isArray(json.products)) return [];
+  const out: ProductSignal[] = [];
+  for (const p of json.products) {
+    if (out.length >= 12) break;
+    if (!isRecord(p) || typeof p.title !== "string" || !p.title.trim()) continue;
+    const tags = Array.isArray(p.tags) ? p.tags.filter((t): t is string => typeof t === "string") : [];
+    const handle = typeof p.handle === "string" ? p.handle : "";
+    const haystack = `${p.title} ${tags.join(" ")} ${handle}`;
+    const firstVariant = Array.isArray(p.variants) && isRecord(p.variants[0]) ? p.variants[0] : null;
+    const rawPrice = firstVariant ? Number(firstVariant.price) : NaN;
+    const signal: ProductSignal = {
+      title: p.title.trim().slice(0, 120),
+      preorder: PREORDER_RE.test(haystack),
+    };
+    if (Number.isFinite(rawPrice) && rawPrice > 0) signal.price = rawPrice;
+    out.push(signal);
+  }
+  return out;
+}
+
+/** Fetch + parse the public storefront products endpoint. Fail-soft: undefined on any problem. */
+async function fetchShopifyProducts(
+  pageUrl: URL,
+  doFetch: FetchLike,
+  timeoutMs: number,
+  lookupFn?: LookupFn,
+): Promise<ProductSignal[] | undefined> {
+  try {
+    const target = `${pageUrl.origin}/products.json?limit=50`;
+    const guard = await assertUrlAllowed(target, { lookup: lookupFn });
+    if (!guard.ok) return undefined;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const res = await doFetch(guard.url, {
+        redirect: "manual",
+        signal: controller.signal,
+        headers: { "user-agent": USER_AGENT, accept: "application/json" },
+      });
+      if (res.status !== 200) return undefined;
+      const text = await readCapped(res, 1024 * 1024);
+      return extractShopifyProducts(JSON.parse(text) as unknown);
+    } finally {
+      clearTimeout(timer);
+    }
+  } catch {
+    return undefined;
+  }
 }
 
 // ---------------------------------------------------------------------------

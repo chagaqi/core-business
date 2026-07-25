@@ -12,6 +12,8 @@ Diagnose a merchant's store or campaign page for wait-experience gaps. Use when 
 4. Write the readout: 2-4 findings, strongest first. Each finding is three beats: the fact from their page (quote their own words when you have them) → why it matters for a 60-120 day wait (refund pressure, chargeback risk, support load) → what setting up Tideover does about it. Plain sentences, no headers for a short readout.
 5. End with the single next step you recommend, as one question. Never a list of questions.
 6. If the first scrape failed, say exactly what failed ("the page took too long to respond", "that URL redirects off your domain") and offer the manual path: they can answer three questions instead and get the same setup. Never describe a page you could not read.
+7. Special case — reason `kickstarter-blocks-tools`: Kickstarter doesn't let tools read campaign pages (their bot protection, not a fault on either side). Say that plainly in one sentence, then ask for the merchant's OWN website or store URL instead — most creators have one, and it diagnoses just as well. Never imply the campaign page was broken.
+8. Shopify results may include `products` (real product titles/prices from the store's public storefront endpoint) with `preorder` flags and a `preorderCount`. Name their actual preorder products in the findings when present — that specificity IS the aha. The preorder flag is a pattern signal: say "listed as a preorder" not "is definitely a preorder".
 
 ## Universal rules
 

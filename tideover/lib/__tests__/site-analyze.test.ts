@@ -4,6 +4,7 @@ import {
   analyzeSite,
   assertUrlAllowed,
   extractFromHtml,
+  extractShopifyProducts,
   isBlockedIp,
   type FetchLike,
   type LookupFn,
@@ -210,7 +211,7 @@ test("analyzeSite blocks a cross-domain redirect", async () => {
 
 test("analyzeSite happy path returns extracted analysis (mocked fetch)", async () => {
   const fetchImpl: FetchLike = async () => htmlResponse(KS_HTML);
-  const res = await analyzeSite("https://www.kickstarter.com/projects/acme/acme-watch", {
+  const res = await analyzeSite("https://example.com/", {
     fetchImpl,
     lookup: publicLookup,
   });
@@ -218,7 +219,62 @@ test("analyzeSite happy path returns extracted analysis (mocked fetch)", async (
   if (res.ok) {
     assert.equal(res.brandName, "Acme Watch");
     assert.ok(res.giftCandidates.length >= 1);
-    assert.equal(res.platform, "kickstarter");
+  }
+});
+
+test("analyzeSite short-circuits kickstarter.com with a tagged reason, zero fetches", async () => {
+  // KS bot protection blocks tools (verified live 2026-07-25); we never spoof
+  // around it, so campaign URLs must fail fast with the reason callers can
+  // phrase plainly — and no network attempt at all.
+  let called = false;
+  const fetchImpl: FetchLike = async () => {
+    called = true;
+    return htmlResponse(KS_HTML);
+  };
+  const res = await analyzeSite("https://www.kickstarter.com/projects/acme/acme-watch", {
+    fetchImpl,
+    lookup: publicLookup,
+  });
+  assert.deepEqual(res, { ok: false, reason: "kickstarter-blocks-tools" });
+  assert.equal(called, false);
+});
+
+test("extractShopifyProducts parses titles, prices, preorder flags; caps output", () => {
+  const products = [
+    { title: "Wave Deck — PRE-ORDER (ships in 12 weeks)", handle: "wave-deck", tags: [], variants: [{ price: "58.00" }] },
+    { title: "Sticker Pack", handle: "stickers", tags: ["accessory"], variants: [{ price: "9.50" }] },
+    { title: "Founders Kiln Mug", handle: "kiln-mug", tags: ["waitlist", "batch-2"], variants: [{ price: "0" }] },
+    ...Array.from({ length: 15 }, (_, i) => ({ title: `Filler ${i}`, handle: `f${i}`, tags: [], variants: [] })),
+  ];
+  const out = extractShopifyProducts({ products });
+  assert.equal(out.length, 12, "capped at 12");
+  assert.deepEqual(out[0], { title: "Wave Deck — PRE-ORDER (ships in 12 weeks)", price: 58, preorder: true });
+  assert.deepEqual(out[1], { title: "Sticker Pack", price: 9.5, preorder: false });
+  assert.deepEqual(out[2], { title: "Founders Kiln Mug", preorder: true }, "zero price omitted; tag match flags preorder");
+  assert.deepEqual(extractShopifyProducts({ nope: true }), []);
+});
+
+test("analyzeSite enriches shopify pages from /products.json (mocked, fail-soft)", async () => {
+  const productsJson = JSON.stringify({
+    products: [
+      { title: "Tide Lamp (Presale)", handle: "tide-lamp", tags: [], variants: [{ price: "120.00" }] },
+      { title: "Desk Mat", handle: "desk-mat", tags: [], variants: [{ price: "30.00" }] },
+    ],
+  });
+  const fetchImpl: FetchLike = async (url) => {
+    const u = String(url);
+    if (u.includes("/products.json")) {
+      return new Response(productsJson, { status: 200, headers: { "content-type": "application/json" } });
+    }
+    return htmlResponse(SHOPIFY_HTML);
+  };
+  const res = await analyzeSite("https://nimbus-bottles.example/", { fetchImpl, lookup: publicLookup });
+  assert.equal(res.ok, true);
+  if (res.ok) {
+    assert.equal(res.platform, "shopify");
+    assert.equal(res.products?.length, 2);
+    assert.equal(res.preorderCount, 1);
+    assert.equal(res.products?.[0].title, "Tide Lamp (Presale)");
   }
 });
 
