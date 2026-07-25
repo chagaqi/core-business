@@ -35,7 +35,11 @@ export type ChatFn = (opts: {
 }) => Promise<ChatResult>;
 
 const TEMPERATURE = 0.3;
-const MAX_TOKENS = 2_000;
+// v4-generation DeepSeek models can spend reasoning tokens before the visible
+// answer; a tight cap starves the final text into an empty response (seen live
+// 2026-07-24 on triage-inbox). Cap generously — the runner's turn loop and
+// tool budget bound total spend, not this.
+const MAX_TOKENS = 6_000;
 
 export function agentConfigured(): boolean {
   return Boolean(process.env.LLM_PROVIDER && process.env.LLM_API_KEY);

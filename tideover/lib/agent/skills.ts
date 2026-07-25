@@ -24,7 +24,21 @@ export const SKILLS = {
     audience: "customer",
     tools: ["tideover-read-tickets", "tideover-draft-reply", "tideover-read-skill"],
   },
+  "triage-inbox": {
+    audience: "merchant",
+    tools: ["tideover-read-tickets", "tideover-read-orders", "tideover-read-skill"],
+  },
+  "health-check": {
+    audience: "merchant",
+    tools: ["tideover-read-orders", "tideover-read-tickets", "tideover-read-skill"],
+  },
+  skillify: {
+    audience: "merchant",
+    tools: ["tideover-read-skill"],
+  },
 } as const satisfies Record<string, SkillMeta>;
+// import-backers is DEFERRED to P2 (SW4): its tools (CSV mapping in the wizard)
+// don't exist yet, and a skill may never reference a tool the runner lacks.
 
 export type SkillName = keyof typeof SKILLS;
 

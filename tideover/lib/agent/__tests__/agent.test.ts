@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { afterEach, beforeEach, test } from "node:test";
 import { guardAgentText } from "@/lib/agent/guardrails";
 import { runAgent } from "@/lib/agent/runner";
-import { isSkillName, loadSkillBody, READABLE_DOCS } from "@/lib/agent/skills";
+import { isSkillName, loadSkillBody, READABLE_DOCS, SKILLS, type SkillName } from "@/lib/agent/skills";
 import { toolByName } from "@/lib/agent/tools";
 import type { ChatFn } from "@/lib/agent/provider";
 import type { AgentEvent, AgentTool } from "@/lib/agent/types";
@@ -159,7 +159,7 @@ test("runner without provider config fails soft (agent-disabled), never throws",
 test("skill registry + bodies load with the Swan anatomy sections", async () => {
   assert.equal(isSkillName("diagnose-page"), true);
   assert.equal(isSkillName("not-a-skill"), false);
-  for (const name of ["diagnose-page", "draft-reassurance"] as const) {
+  for (const name of Object.keys(SKILLS) as SkillName[]) {
     const body = await loadSkillBody(name);
     for (const section of ["## Purpose", "## Procedure", "## Universal rules", "## Anti-patterns", "## What good looks like"]) {
       assert.ok(body.includes(section), `${name} has ${section}`);
