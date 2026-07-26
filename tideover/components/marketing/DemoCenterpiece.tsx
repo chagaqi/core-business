@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
+import { AgenticDemo } from "@/components/marketing/AgenticDemo";
 import { CalButton } from "@/components/booking/CalButton";
 import { FoldCard } from "@/components/marketing/paper/FoldCard";
-import { ImageSlot } from "@/components/marketing/paper/ImageSlot";
 
 /**
  * S5 — Live before→after demo, DAY-ONE FALLBACK. The single large labeled
@@ -49,8 +49,9 @@ export function DemoCenterpiece() {
             <span className="kicker mb-3.5">See it run</span>
             <h2 className="mb-4 text-balance">The tide coming in on a flooded inbox.</h2>
             <p className="mx-auto max-w-[560px] text-[17px] leading-relaxed text-slate">
-              Watch a day-89 &ldquo;where IS my order??&rdquo; become a calm, approved reply in your voice. This is the
-              live cockpit, on sample data.
+              A store URL becomes a diagnosis, and a day-89 &ldquo;where IS my order??&rdquo; becomes a calm,
+              approved reply in your voice. A scripted replay of the real flow, on sample data —
+              the live version runs the moment you onboard.
             </p>
           </div>
         </Reveal>
@@ -62,7 +63,7 @@ export function DemoCenterpiece() {
             hover={false}
             className="overflow-hidden rounded-[24px] border border-border bg-paper"
           >
-            <ImageSlot slotId="demo-cockpit-capture" aspect="16/10" />
+            <AgenticDemo />
           </FoldCard>
           <Reveal index={2}>
             <figcaption className="mt-4 flex flex-col items-center gap-1 text-center">
@@ -72,7 +73,7 @@ export function DemoCenterpiece() {
                 </span>
               ) : null}
               <span className="text-[13px] font-medium uppercase tracking-wide text-ink-mute">
-                Live cockpit on sample data
+                Scripted replay &middot; sample data
               </span>
             </figcaption>
           </Reveal>
