@@ -236,7 +236,10 @@ export function DraftRail({
 
       {!alreadySent ? (
         <p className="text-[11px] leading-snug text-ink-mute">
-          Your customer&rsquo;s status link is included when you copy.
+          {/* SW8 (backlog #14): the trust refrain at the send-adjacent moment —
+              same sentence the onboarding drafts beat and connect card carry. */}
+          Nothing reaches a buyer until you approve it. Your customer&rsquo;s status link is
+          included when you copy.
         </p>
       ) : null}
     </div>
