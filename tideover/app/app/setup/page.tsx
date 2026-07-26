@@ -10,6 +10,7 @@ import { ConnectPanel } from "@/app/onboarding/ConnectPanel";
 import { ImportPanel } from "@/app/onboarding/ImportPanel";
 import { helpdeskSetups } from "@/lib/ingest-templates";
 import { getIngestStatus, type IngestStatus } from "@/lib/setup-status";
+import { computeTimeline } from "@/lib/time";
 import type { Metadata } from "next";
 
 /**
@@ -178,6 +179,17 @@ export default async function SetupPage({
   // this page, which reported `quiet: false` when NOTHING had ever arrived — i.e.
   // it was coded to stay silent about the one merchant who is actually broken.
   const ingest = await getIngestStatus(merchantId);
+
+  // SW10 (backlog #11): the wait-time health signal — orders past EVERY planned
+  // band, and whether a posted status is covering them. Derived from the same
+  // timeline math every reply uses; the "covered" bit reuses the checklist's
+  // status-visible predicate rather than inventing a second definition.
+  const allOrders = await repos.orders.listByMerchant(merchantId);
+  const healthNow = new Date();
+  const overdueCount = allOrders.filter(
+    (o) => computeTimeline(o, merchant, healthNow).overdue,
+  ).length;
+  const statusCovered = checklist.items.find((i) => i.key === "status-visible")?.done ?? false;
   const lastInboundLabel =
     ingest == null || ingest.quietDays == null
       ? null
@@ -220,6 +232,27 @@ export default async function SetupPage({
           current={merchantId}
         />
       </header>
+
+      {overdueCount > 0 ? (
+        <div
+          className="panel flex flex-wrap items-center justify-between gap-3 border-l-4 px-5 py-4"
+          style={{ borderLeftColor: statusCovered ? "var(--amber-status)" : "var(--risk-red)" }}
+        >
+          <div>
+            <p className="text-[14px] font-semibold text-ink">
+              {overdueCount} order{overdueCount === 1 ? " is" : "s are"} past every planned band
+            </p>
+            <p className="max-w-[560px] text-[13px] text-slate">
+              {statusCovered
+                ? "Your status board is covering them — keep it fresh so every reply stays true."
+                : "Buyers on these orders have no posted update, so the engine can only say a human is looking into it. One posted status fixes every one of them at once."}
+            </p>
+          </div>
+          <Link href={resolveHref("/app/status")} className="btn btn-ghost px-4 py-2 text-[13px]">
+            Post a status update
+          </Link>
+        </div>
+      ) : null}
 
       {/* Progress: one segment per step, filled when that step is derived-done. */}
       <div className="flex items-center gap-3">
