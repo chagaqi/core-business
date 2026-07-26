@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
+import { ResumeBanner } from "@/components/agentic";
 import { Sidebar } from "@/components/product/Sidebar";
 import { DemoBadge } from "@/components/ui/DemoBadge";
 import { TrialBanner } from "@/components/product/TrialBanner";
 import { getDemoOperator, isDemoMode } from "@/lib/auth";
 import { authMode } from "@/lib/auth-mode";
 import { getRepositories } from "@/lib/repositories";
+import { getSetupChecklist } from "@/lib/service";
 import { trialState } from "@/lib/trial";
 
 /**
@@ -35,6 +37,14 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   // list is tenant-scoped to the caller's own merchant; demo merchants are
   // not-applicable and render nothing).
   const trial = !demo && merchants[0] ? trialState(merchants[0], new Date()) : null;
+  // SW6 (backlog #6): the persistent pull-back until setup completeness hits
+  // 100% — driven by the REAL checklist (lib/setup.ts), never a stored flag.
+  // Demo merchants are fully seeded, so the banner self-hides there. Fail-soft:
+  // a checklist error just means no banner, never a broken shell.
+  const checklist = merchants[0]
+    ? await getSetupChecklist(merchants[0].id).catch(() => null)
+    : null;
+  const resume = checklist && !checklist.allDone ? checklist : null;
   return (
     // Stack on narrow widths (Sidebar renders its own mobile top bar + drawer),
     // restore the fixed sidebar + main row at lg. Desktop layout is unchanged.
@@ -42,6 +52,13 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       <Sidebar operator={operator} isDemo={demo} signOutHref={signOutHref} />
       <main className="min-w-0 flex-1">
         {trial ? <TrialBanner phase={trial.phase} daysLeft={trial.daysLeft} /> : null}
+        {resume ? (
+          <ResumeBanner
+            message={`Your setup is still in progress — ${resume.completed} of ${resume.total} done.`}
+            ctaLabel="Pick up where you left off"
+            href="/app/setup"
+          />
+        ) : null}
         {children}
       </main>
       {demo && <DemoBadge />}

@@ -43,6 +43,7 @@ const NAV_GROUPS: Array<{
     label: "Account",
     items: [
       { href: "/app/setup", label: "Setup", hint: "Onboarding checklist" },
+      { href: "/app/memory", label: "Memory", hint: "What Tideover knows" },
       { href: "/app/settings", label: "Settings", hint: "Brand, timeline, gifts" },
       { href: "/app/team", label: "Team", hint: "Seats + invites" },
       { href: "/app/updates", label: "Updates", hint: "Workshop feed" },
