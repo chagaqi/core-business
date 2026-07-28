@@ -21,9 +21,13 @@ import type { Merchant } from "@/lib/types";
  * (same rule the LLM drafter's send gate uses).
  */
 
-const DEFAULT_TIMEOUT_MS = 60_000;
+const DEFAULT_TIMEOUT_MS = 30_000;
 const DEFAULT_MAX_TURNS = 6;
 const MAX_TOOL_CALLS = 12;
+// Whole-run wall-clock budget (pre-merge review 2026-07-27): timeoutMs is
+// per-provider-call, so without this one request could hold a worker for
+// minutes across turns + tool fetches. Kept under the route's maxDuration.
+const DEFAULT_DEADLINE_MS = 55_000;
 
 export interface RunAgentOptions {
   skill: SkillName;
@@ -37,6 +41,10 @@ export interface RunAgentOptions {
   tools?: AgentTool[];
   maxTurns?: number;
   timeoutMs?: number;
+  /** whole-run wall-clock budget; the loop stops before starting a turn past it */
+  deadlineMs?: number;
+  /** external abort (client disconnect) — stops the loop and the in-flight call */
+  signal?: AbortSignal;
   now?: Date;
 }
 
@@ -96,13 +104,25 @@ export async function runAgent(opts: RunAgentOptions): Promise<RunAgentResult> {
     let lastBand: string | undefined;
     const maxTurns = opts.maxTurns ?? DEFAULT_MAX_TURNS;
     const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+    const deadline = Date.now() + (opts.deadlineMs ?? DEFAULT_DEADLINE_MS);
+    // Customer-facing text passes the send gate; NOT streaming its tokens keeps
+    // an unvetted draft (e.g. a hard date) off the client until the guard has
+    // run (pre-merge review 2026-07-27). Merchant-facing skills (diagnose-page,
+    // the onboarding research beat) still stream live — that's the wow, and
+    // their gate permits quoting the merchant's own page.
+    const streamDeltas = meta.audience === "merchant";
 
     for (let turn = 0; turn < maxTurns; turn++) {
+      if (opts.signal?.aborted) return fail("aborted");
+      const remaining = deadline - Date.now();
+      if (remaining <= 0) return fail("deadline");
+
       const result = await chat({
         messages,
         tools: schemas,
-        timeoutMs,
-        onTextDelta: (text) => emit({ type: "text_delta", text }),
+        timeoutMs: Math.min(timeoutMs, remaining),
+        signal: opts.signal,
+        onTextDelta: streamDeltas ? (text) => emit({ type: "text_delta", text }) : undefined,
       });
 
       if (result.toolCalls.length === 0) {
@@ -163,7 +183,16 @@ export async function runAgent(opts: RunAgentOptions): Promise<RunAgentResult> {
           } else {
             try {
               output = await tool.run(args, ctx);
-              ok = !output.startsWith(`{"error"`);
+              // A tool "failed" if it returned {error:...} OR analyzeSite's
+              // {ok:false,...} shape — the old startsWith('{"error"') check
+              // reported a blocked Kickstarter scrape as tool_done{ok:true}
+              // (pre-merge review 2026-07-27).
+              try {
+                const parsed = JSON.parse(output) as { error?: unknown; ok?: unknown };
+                ok = parsed.error === undefined && parsed.ok !== false;
+              } catch {
+                ok = true; // non-JSON output is a plain success payload
+              }
             } catch (err) {
               ok = false;
               output = JSON.stringify({ error: err instanceof Error ? err.message : "tool-failed" });

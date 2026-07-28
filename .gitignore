@@ -14,3 +14,11 @@ skills-lock.json
 
 # any credential/env dumps, wherever they land
 *.env
+
+# Prospect/TAM data — scraped contact PII, NEVER commit (CASL/privacy).
+# These are working data files, not source. Kept local + on Dylan's drive.
+presale_stores.csv
+tideover/presale_stores.csv
+docs/gtm-campaign/master_tam.csv
+docs/gtm-campaign/*.csv
+tideover/scripts/_data/

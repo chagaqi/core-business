@@ -27,7 +27,16 @@ export const POST = withApiErrorHandling("/api/analyze", async (req: Request): P
   const ip = clientIp(req);
   if (rateLimited(ip)) return Response.json({ ok: false, reason: "rate-limited" }, { status: 429 });
 
-  const parsed = Body.safeParse(await req.json().catch(() => null));
+  // Body cap before parse (pre-merge review 2026-07-27): the body is just {url}.
+  const raw = await req.text();
+  if (raw.length > 8_000) return Response.json({ ok: false, reason: "too-large" }, { status: 413 });
+  let json: unknown = null;
+  try {
+    json = JSON.parse(raw);
+  } catch {
+    /* invalid-body reject below */
+  }
+  const parsed = Body.safeParse(json);
   if (!parsed.success) return Response.json({ ok: false, reason: "invalid-body" }, { status: 400 });
 
   const result = await analyzeSite(parsed.data.url);

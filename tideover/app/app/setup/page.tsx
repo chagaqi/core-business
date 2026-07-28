@@ -180,9 +180,11 @@ export default async function SetupPage({
   // it was coded to stay silent about the one merchant who is actually broken.
   const ingest = await getIngestStatus(merchantId);
 
-  // SW10 (backlog #11): the wait-time health signal — orders past EVERY planned
-  // band, and whether a posted status is covering them. Derived from the same
-  // timeline math every reply uses; the "covered" bit reuses the checklist's
+  // SW10 (backlog #11): the wait-time health signal — orders past the delivery
+  // WINDOW the merchant promised (computeTimeline().overdue), and whether a
+  // posted status is covering them. "overdue" = past the window, NOT "past every
+  // band" (that's the OVERRUN stage) — the copy below says window, accurately
+  // (pre-merge review 2026-07-27). "covered" reuses the checklist's own
   // status-visible predicate rather than inventing a second definition.
   const allOrders = await repos.orders.listByMerchant(merchantId);
   const healthNow = new Date();
@@ -240,12 +242,13 @@ export default async function SetupPage({
         >
           <div>
             <p className="text-[14px] font-semibold text-ink">
-              {overdueCount} order{overdueCount === 1 ? " is" : "s are"} past every planned band
+              {overdueCount} order{overdueCount === 1 ? " is" : "s are"} past the delivery window you
+              promised
             </p>
             <p className="max-w-[560px] text-[13px] text-slate">
               {statusCovered
                 ? "Your status board is covering them — keep it fresh so every reply stays true."
-                : "Buyers on these orders have no posted update, so the engine can only say a human is looking into it. One posted status fixes every one of them at once."}
+                : "Buyers on these orders have no posted update, so replies fall back to the overdue reassurance instead of a real one. One posted status covers every one of them at once."}
             </p>
           </div>
           <Link href={resolveHref("/app/status")} className="btn btn-ghost px-4 py-2 text-[13px]">

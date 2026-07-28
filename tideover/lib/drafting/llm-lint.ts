@@ -101,6 +101,32 @@ export function maskBands(text: string, band?: string): string {
   return out;
 }
 
+/** the ordered digit sequence in a band token — what actually distinguishes one band from another. */
+function bandDigits(s: string): string {
+  return (s.match(/\d+/g) ?? []).join(",");
+}
+
+/**
+ * Any band-shaped timing token in `text` whose NUMBERS differ from the engine's
+ * own `band`. The agent may only echo the band a tool returned; if it invents
+ * or rewrites one (day-89 draft "shortened" from weeks 9–11 to weeks 3–5), that
+ * foreign band is returned here so the guard can reject it — this is what makes
+ * the "band stays byte-identical" guarantee real (pre-merge review 2026-07-27).
+ * Comparison is on the digit sequence, so the two BAND_SHAPES that both match a
+ * single legit band ("in weeks 9–11" vs "weeks 9–11") don't false-positive.
+ * Returns null when `band` is unknown or carries no digits (nothing to compare).
+ */
+export function foreignBandIn(text: string, band?: string): string | null {
+  const engineDigits = bandDigits(band?.trim() ?? "");
+  if (!engineDigits) return null;
+  for (const re of BAND_SHAPES) {
+    for (const m of text.matchAll(re)) {
+      if (bandDigits(m[0]) !== engineDigits) return m[0].trim();
+    }
+  }
+  return null;
+}
+
 // ─── date lexicon (unchanged catches) ───────────────────────────────────────
 
 // Full names plus preposition-guarded abbreviations ("by Fri.", "next Tues").

@@ -1465,14 +1465,16 @@ export async function getSetupChecklist(merchantId: string): Promise<SetupCheckl
   const merchant = await repos.merchants.findById(merchantId);
   if (!merchant) return null;
 
-  const [orders, tickets, updates] = await Promise.all([
+  // statusViews via the MERCHANT-wide index, not one listByOrder() per order —
+  // this runs on every /app render (app/app/layout.tsx ResumeBanner), so the old
+  // per-order fan-out was an unbounded N+1 on the hottest path (pre-merge review
+  // 2026-07-27). listByMerchant is served from the {merchantId, viewedAt} index.
+  const [orders, tickets, updates, statusViews] = await Promise.all([
     repos.orders.listByMerchant(merchantId),
     repos.tickets.list({ merchantId }),
     repos.merchantUpdates.listByMerchant(merchantId),
+    repos.statusViews.listByMerchant(merchantId),
   ]);
-  const statusViews = (
-    await Promise.all(orders.map((o) => repos.statusViews.listByOrder(o.id)))
-  ).flat();
 
   return computeSetupChecklist({ merchant, orders, tickets, updates, statusViews });
 }

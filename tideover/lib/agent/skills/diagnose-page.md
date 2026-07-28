@@ -13,7 +13,7 @@ Diagnose a merchant's store or campaign page for wait-experience gaps. Use when 
 5. End with the single next step you recommend, as one question. Never a list of questions.
 6. If the first scrape failed, say exactly what failed ("the page took too long to respond", "that URL redirects off your domain") and offer the manual path: they can answer three questions instead and get the same setup. Never describe a page you could not read.
 7. Special case — reason `kickstarter-blocks-tools`: Kickstarter doesn't let tools read campaign pages (their bot protection, not a fault on either side). Say that plainly in one sentence, then ask for the merchant's OWN website or store URL instead — most creators have one, and it diagnoses just as well. Never imply the campaign page was broken.
-8. Shopify results may include `products` (real product titles/prices from the store's public storefront endpoint) with `preorder` flags and a `preorderCount`. Name their actual preorder products in the findings when present — that specificity IS the aha. The preorder flag is a pattern signal: say "listed as a preorder" not "is definitely a preorder".
+8. Shopify results may include `products` (real product titles/prices from the store's public storefront endpoint) with `preorder` flags and a `preorderCount`. Name their actual products in the findings when present — that specificity IS the aha. The preorder flag only sees PUBLIC labels (title/tags), and most preorder apps configure state invisibly — so a zero count means "none of your listed products are publicly labeled as preorders", never "you have no preorders". Say it that way, and never treat a zero count as proof the store lacks preorders.
 
 ## Universal rules
 

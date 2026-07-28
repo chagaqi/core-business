@@ -55,6 +55,35 @@ test("merchant audience: quoting the merchant's own page (dates included) passes
   assert.equal(verdict.ok, true);
 });
 
+test("band verbatim ENFORCED: a rewritten confidence band is rejected (both audiences)", () => {
+  // the engine gave weeks 9–11; the agent "shortened" it to weeks 3–5
+  for (const audience of ["customer", "merchant"] as const) {
+    const verdict = guardAgentText("Hi Sam — your order is in freight, in weeks 3–5. — Team", {
+      audience,
+      band: "in weeks 9–11",
+    });
+    assert.equal(verdict.ok, false, `foreign band must be blocked for ${audience}`);
+    if (!verdict.ok) assert.equal(verdict.reason, "band-mismatch");
+  }
+});
+
+test("band verbatim: echoing the engine's exact band passes", () => {
+  const verdict = guardAgentText("Hi Sam — your order is in freight, in weeks 9–11. — Team", {
+    audience: "customer",
+    band: "in weeks 9–11",
+  });
+  assert.equal(verdict.ok, true);
+});
+
+test("merchant audience: a capability claim (address change) is rejected", () => {
+  // merchant-facing text must still not claim an action the product can't take
+  const verdict = guardAgentText("I've updated the shipping address on ORD-1042 for you.", {
+    audience: "merchant",
+  });
+  assert.equal(verdict.ok, false);
+  if (!verdict.ok) assert.ok(verdict.reason.startsWith("capability:"), `got ${verdict.reason}`);
+});
+
 test("customer audience: plain factual text without dates passes", () => {
   const verdict = guardAgentText(
     "Thanks Sam — your order is in the anodizing stage today, and your status page always has the current window. — Dylan",

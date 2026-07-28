@@ -31,6 +31,8 @@ export type ChatFn = (opts: {
   messages: ChatMessage[];
   tools: ToolSchema[];
   timeoutMs: number;
+  /** external abort (client disconnect) — combined with the per-call timeout */
+  signal?: AbortSignal;
   onTextDelta?: (text: string) => void;
 }) => Promise<ChatResult>;
 
@@ -58,6 +60,12 @@ async function streamOpenAiCompatible(
 ): Promise<ChatResult> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), opts.timeoutMs);
+  // A client disconnect aborts the in-flight provider call too, so a hung-up
+  // caller stops accruing provider spend (pre-merge review 2026-07-27).
+  if (opts.signal) {
+    if (opts.signal.aborted) controller.abort();
+    else opts.signal.addEventListener("abort", () => controller.abort(), { once: true });
+  }
   try {
     const res = await fetch(endpoint, {
       method: "POST",

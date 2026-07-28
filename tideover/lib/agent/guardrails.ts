@@ -1,5 +1,5 @@
-import { enabledCapabilities } from "@/lib/drafting/capabilities";
-import { llmDraftBlocked } from "@/lib/drafting/llm-lint";
+import { capabilityCommitment, enabledCapabilities } from "@/lib/drafting/capabilities";
+import { foreignBandIn, llmDraftBlocked } from "@/lib/drafting/llm-lint";
 import type { Merchant } from "@/lib/types";
 import type { AgentAudience } from "@/lib/agent/types";
 
@@ -33,17 +33,25 @@ export function guardAgentText(
   opts: { audience: AgentAudience; merchant?: Merchant | null; band?: string },
 ): GuardVerdict {
   const banned = [...(opts.merchant?.brand.banned ?? []), BANNED_CRUTCH];
+  const caps = opts.merchant ? enabledCapabilities(opts.merchant) : [];
+
+  // GUARDRAILS.md rule 4, ENFORCED (pre-merge review 2026-07-27): an edited
+  // draft's timing sentence must stay the engine's band verbatim. A rewritten
+  // or invented band is a foreign band → reject, both audiences.
+  if (foreignBandIn(text, opts.band)) return { ok: false, reason: "band-mismatch" };
 
   if (opts.audience === "customer") {
-    const reason = llmDraftBlocked(text, {
-      banned,
-      band: opts.band,
-      capabilities: opts.merchant ? enabledCapabilities(opts.merchant) : [],
-    });
+    const reason = llmDraftBlocked(text, { banned, band: opts.band, capabilities: caps });
     return reason ? { ok: false, reason } : { ok: true };
   }
 
-  // merchant-facing: banned-word gate only (quoting their own page is allowed)
+  // Merchant-facing text may quote the merchant's own page (dates and all), so
+  // the hard-date lint does NOT apply — but the banned list AND the capability
+  // lint DO (rule 6: never claim an action the product can't take, even to the
+  // merchant. "I've updated the address" is a lie in either direction).
+  const hit = capabilityCommitment(text, caps);
+  if (hit) return { ok: false, reason: `capability:${hit.key}` };
+
   const lower = text.toLowerCase();
   for (const word of banned) {
     const w = word.trim().toLowerCase();

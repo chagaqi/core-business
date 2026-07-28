@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { AgentEvent } from "@/lib/agent/types";
 import type { ChecklistStep } from "./ToolChecklist";
 
@@ -75,6 +75,11 @@ export function useAgentStream() {
     abortRef.current?.abort();
     abortRef.current = null;
   }, []);
+
+  // Abort the in-flight fetch (and, via req.signal, the server run) if the
+  // component unmounts mid-stream — e.g. the user clicks "Use the classic setup
+  // instead" or navigates away (pre-merge review 2026-07-27).
+  useEffect(() => () => abortRef.current?.abort(), []);
 
   const start = useCallback(async (skill: string, input: string): Promise<void> => {
     abortRef.current?.abort();

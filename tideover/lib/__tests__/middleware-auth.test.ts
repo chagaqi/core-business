@@ -51,6 +51,12 @@ const ROOT_ADDITION = ["/"];
  *  deliberately NOT here — it self-authenticates on its signature, like ingest. */
 const BILLING_ADDITIONS = ["/api/billing/:path*"];
 
+/** SWAN sprint (pre-merge review 2026-07-27): the agent stream + the pre-create
+ *  preview must be operator-gated in real mode too. `/api/onboarding` matches
+ *  only that exact path, so `/preview` is listed separately. Defense-in-depth on
+ *  top of each route's own session check (demo hosts skip middleware entirely). */
+const SWAN_ADDITIONS = ["/api/agent/:path*", "/api/onboarding/preview"];
+
 const ENV_KEYS = ["DEMO_MODE", "REAL_APP_HOST", ...AUTH0_ENV_VARS] as const;
 
 async function withEnv(env: Record<string, string>, fn: () => Promise<void>): Promise<void> {
@@ -88,7 +94,7 @@ test("matcher regression: every legacy operator surface is still covered", () =>
 test("matcher: exactly the legacy list + the ADR-0020 + evidence + settings additions, nothing else", () => {
   assert.deepEqual(
     [...config.matcher].sort(),
-    [...LEGACY_MATCHER, ...ADR_0020_ADDITIONS, ...EVIDENCE_ADDITIONS, ...SETTINGS_ADDITIONS, ...ROOT_ADDITION, ...BILLING_ADDITIONS].sort(),
+    [...LEGACY_MATCHER, ...ADR_0020_ADDITIONS, ...EVIDENCE_ADDITIONS, ...SETTINGS_ADDITIONS, ...ROOT_ADDITION, ...BILLING_ADDITIONS, ...SWAN_ADDITIONS].sort(),
   );
 });
 

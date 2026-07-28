@@ -108,11 +108,20 @@ interface Preview {
 
 type ConnectProps = ComponentProps<typeof ConnectPanel>;
 
+interface ImportCounts {
+  ordersCreated: number;
+  skipped?: number;
+  datelessRows?: number;
+  failedAtChunk?: number | null;
+}
+
 interface CreateResult {
   merchantId: string;
   slug: string;
   connect?: ConnectProps;
   previews: Preview[];
+  /** the server's REAL import outcome — dedup/dateless/partial, not the staged count */
+  imported?: ImportCounts | null;
 }
 
 export function OnboardingFlow() {
@@ -229,7 +238,11 @@ export function OnboardingFlow() {
       tone: [...preset.tone],
       banned: [] as string[],
       signoff: signoff.trim() || `— ${brandName.trim()}`,
-      helpdesk: "gorgias",
+      // "email" is the universal fallback (ADR-0008 forward path works for every
+      // merchant); the connect beat is where they wire their real helpdesk.
+      // Hardcoding "gorgias" here stuck every non-Gorgias merchant with the wrong
+      // "paste into gorgias" copy and no settings UI to fix it (pre-merge review).
+      helpdesk: "email",
       preorderApp: "",
       windowMinDays: windowMin,
       windowMaxDays: windowMax,
@@ -379,21 +392,23 @@ export function OnboardingFlow() {
         </ChatTurn>
       ) : null}
 
-      {/* ── Beat 3d: gifts ── */}
+      {/* ── Beat 3d: gifts (honest acknowledgment, not a false binary — the
+          server always builds the suggested ladder incl. a no-cost gesture, so
+          the old two-option choice did nothing; pre-merge review 2026-07-27) ── */}
       {beat === "gifts" ? (
         <DecisionCard
           index={{ n: 3, of: 3 }}
-          question="When a long wait needs a goodwill gesture, start with the suggested ladder? (Always includes one that costs you nothing — you can edit all of it later in Settings.)"
-          options={["Use the suggested ladder", "Fine — decide per case later"]}
+          question="For long waits, I'll set you up with a small goodwill-gift ladder — always including one that costs you nothing. You can edit or remove any of it in Settings."
+          options={["Sounds good"]}
           allowOther={false}
-          onSelect={(choice) => {
-            setKeepGifts(choice === "Use the suggested ladder");
+          onSelect={() => {
+            setKeepGifts(true);
             advance("import");
           }}
         />
       ) : null}
       {reached("import") && keepGifts !== null ? (
-        <ChatTurn role="user">{keepGifts ? "Suggested ladder" : "Decide later"}</ChatTurn>
+        <ChatTurn role="user">Sounds good</ChatTurn>
       ) : null}
 
       {/* ── Beat 4: backers ── */}
@@ -531,8 +546,12 @@ export function OnboardingFlow() {
               {
                 icon: "✅",
                 label: "Done today:",
+                // The REAL imported count from the server (dedup + dateless rows
+                // dropped), never the staged row count (pre-merge review).
                 value: `voice set, ${stages.length} stages on a ${windowMin}–${windowMax} day window${
-                  stagedRows.length > 0 ? `, ${stagedRows.length.toLocaleString()} backers imported` : ""
+                  result.imported && result.imported.ordersCreated > 0
+                    ? `, ${result.imported.ordersCreated.toLocaleString()} backers imported`
+                    : ""
                 }.`,
               },
               {

@@ -171,6 +171,8 @@ export const config = {
     "/api/social-signal-feed",
     "/api/orders/:path*",
     "/api/onboarding",
+    "/api/onboarding/preview",
+    "/api/agent/:path*",
     "/api/analyze",
     "/api/import",
     "/api/updates",

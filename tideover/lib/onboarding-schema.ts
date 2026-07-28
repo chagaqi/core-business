@@ -55,8 +55,12 @@ export const OnboardingBodySchema = z.object({
   signoff: z.string().default(""),
   helpdesk: z.enum(["mock", "gorgias", "tidio", "intercom", "email"]).default("email"),
   preorderApp: z.string().default(""),
-  windowMinDays: z.number().default(90),
-  windowMaxDays: z.number().default(120),
+  // Bounded (pre-merge review 2026-07-27): these reach Date arithmetic in
+  // buildStagePreviews, and an unbounded value threw a RangeError AFTER the
+  // merchant was persisted — a half-built workspace the user couldn't retry
+  // into. Finite integer days only; the object-level refine below enforces max>min.
+  windowMinDays: z.number().int().min(1).max(3650).default(90),
+  windowMaxDays: z.number().int().min(2).max(3650).default(120),
   stages: z.array(StageSchema).default([]),
   // Backer rows staged in the wizard's "Connect your data" step, parsed
   // client-side and submitted here so create-merchant + import is ONE atomic
@@ -92,6 +96,14 @@ export const OnboardingBodySchema = z.object({
         });
       }
     }),
+}).superRefine((body, ctx) => {
+  if (body.windowMaxDays <= body.windowMinDays) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["windowMaxDays"],
+      message: "The longest wait must be greater than the shortest.",
+    });
+  }
 });
 
 export type OnboardingBody = z.infer<typeof OnboardingBodySchema>;

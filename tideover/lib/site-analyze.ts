@@ -481,13 +481,20 @@ function detectPlatform(html: string, url: URL): Platform {
 
 const TITLE_SEP = /\s+[|–—•·]\s+|\s+[-:]\s+/;
 
+// A brand name is a name, not a document. Cap every path (pre-merge review
+// 2026-07-27): an uncapped <title>/og:site_name on a hostile page became a
+// multi-MB string replayed into every provider request AND persisted as the
+// merchant name. 120 chars matches extractShopifyProducts' cap.
+const BRAND_NAME_MAX = 120;
+const capName = (s: string): string => (s.length > BRAND_NAME_MAX ? s.slice(0, BRAND_NAME_MAX).trimEnd() : s);
+
 function extractBrandName(html: string): string | undefined {
   const ogSite =
     metaContent(html, "property", "og:site_name") ?? metaContent(html, "name", "og:site_name");
-  if (ogSite?.trim()) return decodeEntities(ogSite.trim());
+  if (ogSite?.trim()) return capName(decodeEntities(ogSite.trim()));
 
   const jsonLd = extractJsonLdOrgName(html);
-  if (jsonLd) return jsonLd;
+  if (jsonLd) return capName(jsonLd);
 
   const rawTitle = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1];
   if (rawTitle) {
@@ -498,9 +505,9 @@ function extractBrandName(html: string): string | undefined {
       .filter((s) => s.length >= 2);
     if (segs.length) {
       segs.sort((a, b) => a.length - b.length);
-      return segs.find((s) => s.length <= 60) ?? title;
+      return capName(segs.find((s) => s.length <= 60) ?? title);
     }
-    if (title) return title;
+    if (title) return capName(title);
   }
   return undefined;
 }

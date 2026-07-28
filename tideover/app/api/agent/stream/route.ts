@@ -1,32 +1,48 @@
 import { agentConfigured, isSkillName, runAgent, SKILLS, TENANT_TOOLS, type AgentEvent } from "@/lib/agent";
-import { authMode } from "@/lib/auth-mode";
 import { clientIp, createRateLimiter } from "@/lib/rate-limit";
 import { getRepositories } from "@/lib/repositories";
-import { resolveModeFromRequest } from "@/lib/request-mode";
 import { getTenantSession } from "@/lib/tenant";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+// A run makes multiple provider calls; without this the platform kills the
+// function mid-stream (pre-merge review 2026-07-27). Kept above the runner's
+// 55s wall-clock deadline; lower to your plan's ceiling if needed.
+export const maxDuration = 60;
 
 const MAX_INPUT_CHARS = 4_000;
+// Hard byte cap read BEFORE JSON.parse — App Router handlers have no default
+// body limit, so an unbounded req.json() would buffer any payload (pre-merge
+// review 2026-07-27). Generous headroom over MAX_INPUT_CHARS for JSON framing.
+const MAX_BODY_BYTES = 16_000;
 
 // Each run costs real provider pennies — bound anonymous/demo usage hard.
 const rateLimited = createRateLimiter(5);
 
 /**
  * POST /api/agent/stream (SWAN SPRINT P1) — run a skill for the session's
- * merchant, streaming AgentEvents as SSE (`data: <json>\n\n`). The first SSE
- * surface in the repo; the UI ToolChecklist/StreamingText consume it.
+ * merchant, streaming AgentEvents as SSE (`data: <json>\n\n`).
  *
- * Tenant safety: the merchant is ALWAYS resolved from the authenticated session
- * (same pattern as lib/team-route.ts) — the request body cannot name one.
- * No-dead-end: unconfigured provider → 503 with a JSON reason so callers fall
- * back to the deterministic path instead of hanging on an empty stream.
+ * AUTH (pre-merge review 2026-07-27): a valid session is REQUIRED in every
+ * mode. This route is also in the middleware matcher, but middleware skips
+ * demo hosts entirely — so the route-level gate is the only control there, and
+ * a missing session returns 503 `agent-disabled` (not 401), which the client
+ * hook treats as "degrade to the manual branch" rather than an auth error. The
+ * old real+auth0-only gate let the agent (and its outbound-fetch tool) run
+ * unauthenticated on demo/*.vercel.app hosts and in password mode.
+ *
+ * Tenant safety: the merchant is ALWAYS resolved from the session — the body
+ * cannot name one. Merchant is optional (onboarding runs diagnose-page before
+ * one exists), but any skill whose tools read tenant data requires it.
  */
 export async function POST(req: Request): Promise<Response> {
+  const raw = await req.text();
+  if (raw.length > MAX_BODY_BYTES) {
+    return Response.json({ error: "payload-too-large" }, { status: 413 });
+  }
   let body: { skill?: unknown; input?: unknown };
   try {
-    body = (await req.json()) as { skill?: unknown; input?: unknown };
+    body = JSON.parse(raw) as { skill?: unknown; input?: unknown };
   } catch {
     return Response.json({ error: "bad-json" }, { status: 400 });
   }
@@ -43,21 +59,14 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ error: "rate-limited" }, { status: 429 });
   }
 
-  // Session is required in real+auth0 mode (same defense-in-depth re-check as
-  // POST /api/onboarding); demo mode runs session-less so localhost and the
-  // public demo host can show the live research beat (rate-limited above).
-  let session = null;
-  if (resolveModeFromRequest() === "real" && authMode() === "auth0") {
-    session = await getTenantSession();
-    if (!session) return Response.json({ error: "unauthorized" }, { status: 401 });
-  } else {
-    session = await getTenantSession().catch(() => null);
+  // A session is required, full stop. No session (demo host, password mode,
+  // anonymous) → 503 so the flow degrades to the manual branch, never runs the
+  // agent unauthenticated.
+  const session = await getTenantSession().catch(() => null);
+  if (!session) {
+    return Response.json({ error: "agent-disabled" }, { status: 503 });
   }
-  // Merchant is OPTIONAL (P2 onboarding runs diagnose-page before a merchant
-  // exists) — but any skill whose tools read tenant data requires one.
-  const merchant = session
-    ? await getRepositories().merchants.findByMemberOrOwnerSub(session.sub)
-    : null;
+  const merchant = await getRepositories().merchants.findByMemberOrOwnerSub(session.sub);
   if (!merchant && SKILLS[skill].tools.some((t) => TENANT_TOOLS.has(t))) {
     return Response.json({ error: "no-merchant" }, { status: 404 });
   }
@@ -69,10 +78,12 @@ export async function POST(req: Request): Promise<Response> {
         try {
           controller.enqueue(encoder.encode(`data: ${JSON.stringify(event)}\n\n`));
         } catch {
-          /* client went away mid-run — the runner finishes, events drop */
+          /* client went away mid-run — the abort below stops the run */
         }
       };
-      void runAgent({ skill, input, merchantId: merchant?.id, onEvent: send })
+      // A client disconnect aborts the run so provider spend stops (the request
+      // AbortSignal fires when the connection closes on the Node runtime).
+      void runAgent({ skill, input, merchantId: merchant?.id, signal: req.signal, onEvent: send })
         .catch(() => {
           /* runAgent never throws by contract; belt-and-braces */
         })
