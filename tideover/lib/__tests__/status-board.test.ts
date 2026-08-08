@@ -218,7 +218,12 @@ test("the board is append-only: an update never destroys what the customer was p
 
 test("getCurrentStatus resolves the merchant's own words for ONE order, through the real repos", async () => {
   const merchant = await freshMerchant();
-  const now = new Date("2026-06-01T00:00:00.000Z");
+  // Anchored to REAL now, not a fixed date: productionStage is resolved LIVE
+  // against wall-clock time (lib/repositories/live-stage.ts), so a hardcoded
+  // anchor silently ages — on 2026-08-08 these "60-day-old" orders had drifted
+  // past every band and the assertion below flipped band → overrun. The offsets
+  // are what this test is about; the epoch never was.
+  const now = new Date();
   await importBackerRows(
     merchant.id,
     [
