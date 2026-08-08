@@ -32,6 +32,7 @@ type BeatId =
   | "readout"
   | "brand"
   | "voice"
+  | "signoff"
   | "timeline"
   | "gifts"
   | "import"
@@ -46,6 +47,7 @@ const BEAT_ORDER: BeatId[] = [
   "readout",
   "brand",
   "voice",
+  "signoff",
   "timeline",
   "gifts",
   "import",
@@ -146,6 +148,7 @@ export function OnboardingFlow() {
   const [createError, setCreateError] = useState<string | null>(null);
   const [result, setResult] = useState<CreateResult | null>(null);
   const [connectSkipped, setConnectSkipped] = useState(false);
+  const [wantsDetail, setWantsDetail] = useState(false);
 
   const stream = useAgentStream();
   const previewFiredRef = useRef(false);
@@ -284,11 +287,21 @@ export function OnboardingFlow() {
   }, [advance, stagedRows, brandName, voicePreset, customVoice, signoff, windowMin, windowMax, stages]);
 
   const voiceLabel = customVoice ? "Your own words" : (voicePreset?.label ?? "");
-  const openItem = connectSkipped
-    ? "your helpdesk isn't connected yet — replies stage as drafts in your Inbox; connect any time from Setup."
-    : importChoice === "skip"
-      ? "no backers imported yet — add your CSV any time from Setup."
-      : "none — you're fully set.";
+  // Name EVERY open item, in the same terms /app/setup uses — the old version
+  // named only one, so a merchant who skipped both was told "you're set up" and
+  // then met "You're 2 of 5 set up" seconds later (persona walk 2026-08-08).
+  const openItems: string[] = [];
+  if (importChoice === "skip") openItems.push("your backers aren't imported yet");
+  if (connectSkipped) openItems.push("your helpdesk isn't connected");
+  const openItem =
+    openItems.length === 0
+      ? "none — you're fully set."
+      : `${openItems.join(" and ")} — both live on your Setup page, and it tracks what's left.`;
+  // A skipped connect means NOTHING arrives on its own. Saying "tickets arrive
+  // drafted" to that merchant is a promise the product cannot keep.
+  const everyMorning = connectSkipped
+    ? "nothing reaches you automatically until a channel is connected — until then you paste a buyer's message into the inbox and approve the draft."
+    : "new tickets arrive drafted; you approve — nothing sends itself.";
 
   return (
     <main className="wrap max-w-2xl space-y-6 py-10">
@@ -323,12 +336,32 @@ export function OnboardingFlow() {
       ) : null}
 
       {/* ── Beat 2: the readout's one question ── */}
+      {beat === "readout" && wantsDetail ? (
+        <ChatTurn role="agent">
+          <p>
+            Straight answer: Tideover reads each buyer&apos;s real order timeline and drafts the
+            reply you&apos;d have written, in your voice, for you to approve. It never states a
+            delivery date, never sends anything on its own, and never invents a status. Setup is
+            three questions; you&apos;ll see real sample replies before connecting anything.
+          </p>
+        </ChatTurn>
+      ) : null}
       {beat === "readout" ? (
         <DecisionCard
-          question="Want me to set this up so backers stop asking?"
-          options={["Set it up — three questions and you're live"]}
-          allowOther={false}
-          onSelect={() => advance(brandName ? "voice" : "brand")}
+          // They don't want buyers to STOP asking — they want to answer without
+          // disappearing. And the old label undercounted the flow (persona walk).
+          question="Want me to set this up so you can answer all of them without disappearing?"
+          options={[
+            "Set it up — three questions, then your list and a preview",
+            "Not yet — tell me more first",
+          ]}
+          onSelect={(choice) => {
+            if (choice.startsWith("Not yet")) {
+              setWantsDetail(true);
+              return;
+            }
+            advance(brandName ? "voice" : "brand");
+          }}
         />
       ) : null}
 
@@ -365,12 +398,27 @@ export function OnboardingFlow() {
             const preset = VOICE_PRESETS.find((p) => p.label === choice);
             if (preset) setVoicePreset(preset);
             else setCustomVoice(choice);
-            setSignoff(`— ${brandName}`);
+            advance("signoff");
+          }}
+        />
+      ) : null}
+      {reached("signoff") ? <ChatTurn role="user">{voiceLabel}</ChatTurn> : null}
+
+      {/* ── Beat 3b-ii: who signs. All five personas flagged the silent
+          "— BrandName" sign-off as the exact tell that reads as a bot. ── */}
+      {beat === "signoff" ? (
+        <TextCard
+          question="Who signs these replies?"
+          hint="Buyers trust a person more than a company. This appears at the end of every reply."
+          defaultValue={`— ${brandName}`}
+          placeholder="— Mara"
+          onSubmit={(v) => {
+            setSignoff(v);
             advance("timeline");
           }}
         />
       ) : null}
-      {reached("timeline") ? <ChatTurn role="user">{voiceLabel}</ChatTurn> : null}
+      {reached("timeline") && signoff ? <ChatTurn role="user">{signoff}</ChatTurn> : null}
 
       {/* ── Beat 3c: timeline ── */}
       {beat === "timeline" ? (
@@ -398,24 +446,28 @@ export function OnboardingFlow() {
       {beat === "gifts" ? (
         <DecisionCard
           index={{ n: 3, of: 3 }}
-          question="For long waits, I'll set you up with a small goodwill-gift ladder — always including one that costs you nothing. You can edit or remove any of it in Settings."
-          options={["Sounds good"]}
+          // SHOW the gestures rather than describing them: a merchant's real fear
+          // is a tool committing something to their buyers sight-unseen (persona
+          // walk 2026-08-08). Skipping is a real option — nothing is ever offered
+          // to a buyer without the merchant approving that specific reply anyway.
+          question="For long waits I'll stock three goodwill gestures you can offer a frustrated buyer: a founder thank-you note (costs you nothing), priority dispatch, and a next-order credit. They're only ever offered if you approve a reply that offers one — and you can edit or delete them in Settings."
+          options={["Stock those three", "Skip gifts — I'll decide case by case"]}
           allowOther={false}
-          onSelect={() => {
-            setKeepGifts(true);
+          onSelect={(choice) => {
+            setKeepGifts(choice.startsWith("Stock"));
             advance("import");
           }}
         />
       ) : null}
       {reached("import") && keepGifts !== null ? (
-        <ChatTurn role="user">Sounds good</ChatTurn>
+        <ChatTurn role="user">{keepGifts ? "Stock those three" : "Skip gifts for now"}</ChatTurn>
       ) : null}
 
       {/* ── Beat 4: backers ── */}
       {beat === "import" && importChoice === null ? (
         <DecisionCard
-          question="Bring your backers in now? Real orders make everything real — drafts, timelines, the status page."
-          options={["Upload my backer CSV", "Skip for now"]}
+          question="Bring your buyers in now? Real orders make everything real — drafts, timelines, the status page. Any CSV with a name, email and order date works: a Kickstarter or BackerKit export, a Shopify/Woo order export, or your own spreadsheet."
+          options={["Upload my CSV", "Skip for now"]}
           allowOther={false}
           onSelect={(choice) => setImportChoice(choice === "Skip for now" ? "skip" : "upload")}
         />
@@ -455,15 +507,20 @@ export function OnboardingFlow() {
         <ChatTurn role="agent">
           {previews ? (
             <>
-              <p>Here&apos;s what I&apos;d send your backers today — your voice, your timeline (sample backer):</p>
-              {previews.slice(1, 3).map((p) => (
+              {/* The refrain leads: for a burned merchant the frightening
+                  sentence must not arrive before the antidote (persona walk). */}
+              <p className="text-[13px] font-medium text-ink">
+                Nothing sends without you hitting approve — that never changes. Here&apos;s what
+                these would say, on a sample buyer:
+              </p>
+              {/* The early check-in AND the hard one. Showing the two middle
+                  months hid the day-89 draft — the one they opened the tab to
+                  read (both personas, 2026-08-08). */}
+              {[previews[1], previews[previews.length - 1]].filter(Boolean).map((p) => (
                 <DraftArtifact key={p.stageKey} title={`Draft — ${p.stageKey.replace("day-", "day ")} check-in (SAMPLE)`}>
                   {p.text}
                 </DraftArtifact>
               ))}
-              <p className="text-[13px] font-medium text-ink">
-                Nothing sends without you hitting approve — that never changes.
-              </p>
             </>
           ) : previewFailed ? (
             <p>
@@ -554,11 +611,7 @@ export function OnboardingFlow() {
                     : ""
                 }.`,
               },
-              {
-                icon: "✅",
-                label: "Every morning:",
-                value: "new tickets arrive drafted; you approve — nothing sends itself.",
-              },
+              { icon: "✅", label: "Every morning:", value: everyMorning },
               { icon: "📬", label: "Where they land:", value: "your Inbox." },
               { icon: "⚠️", label: "Your one open item:", value: openItem },
               {
@@ -593,15 +646,24 @@ function AdvanceOnMount({ to, advance }: { to: BeatId; advance: (b: BeatId) => v
   return null;
 }
 
+/** Accept what a merchant actually types: "voltfield.com" is a URL to a human. */
+function normalizeUrl(raw: string): string {
+  const v = raw.trim();
+  if (!v) return "";
+  return /^https?:\/\//i.test(v) ? v : `https://${v}`;
+}
+
 function UrlCard({ onSubmit }: { onSubmit: (url: string) => void }) {
   const [value, setValue] = useState("");
-  const valid = /^https?:\/\/\S+\.\S+/.test(value.trim());
+  // A bare domain is valid — we add the scheme (both personas stalled on a dead
+  // button here with no explanation; persona walk 2026-08-08).
+  const valid = /^(https?:\/\/)?\S+\.\S{2,}/i.test(value.trim());
   return (
     <form
       className="panel p-4"
       onSubmit={(e) => {
         e.preventDefault();
-        if (valid) onSubmit(value.trim());
+        if (valid) onSubmit(normalizeUrl(value));
       }}
     >
       <label className="mb-1 block text-[13px] font-semibold text-ink" htmlFor="flow-url">
@@ -612,7 +674,7 @@ function UrlCard({ onSubmit }: { onSubmit: (url: string) => void }) {
           id="flow-url"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          placeholder="https://…"
+          placeholder="yourstore.com"
           inputMode="url"
           className="w-full rounded-[10px] border border-border bg-paper px-3.5 py-2.5 text-[14px] text-ink placeholder:text-ink-mute/60"
         />
@@ -632,14 +694,18 @@ function UrlCard({ onSubmit }: { onSubmit: (url: string) => void }) {
 
 function TextCard({
   question,
+  hint,
   placeholder,
+  defaultValue = "",
   onSubmit,
 }: {
   question: string;
+  hint?: string;
   placeholder: string;
+  defaultValue?: string;
   onSubmit: (value: string) => void;
 }) {
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(defaultValue);
   return (
     <form
       className="panel p-4"
@@ -648,7 +714,8 @@ function TextCard({
         if (value.trim()) onSubmit(value.trim());
       }}
     >
-      <p className="mb-2 text-[15px] font-semibold text-ink">{question}</p>
+      <p className="mb-1 text-[15px] font-semibold text-ink">{question}</p>
+      {hint ? <p className="mb-2 text-[13px] text-slate">{hint}</p> : null}
       <div className="flex gap-2">
         <input
           value={value}
@@ -685,14 +752,24 @@ function TimelineCard({
         How long after an order closes do backers actually wait?
       </p>
       {estimatedDelivery ? (
-        <p className="mb-2 text-[13px] text-slate">
+        <p className="mb-1 text-[13px] text-slate">
           Your page says: <em>&ldquo;{estimatedDelivery}&rdquo;</em> — set the real window below.
         </p>
       ) : (
-        <p className="mb-2 text-[13px] text-slate">
+        <p className="mb-1 text-[13px] text-slate">
           Be real, not optimistic — every reply and status page runs on this window.
         </p>
       )}
+      {/* THE most important sentence in the flow. Without it, an already-late
+          merchant's only way forward is to invent a longer window — which
+          silently un-overdues every order and turns the engine's honest "we're
+          behind" into a fabricated confidence band. The product would be
+          manufacturing the exact lie it exists to prevent (persona walk,
+          overrun merchant, 2026-08-08). */}
+      <p className="mb-2 text-[13px] text-slate">
+        <strong className="text-ink">Already past it?</strong> Enter the window you originally
+        promised. Tideover marks those orders overdue and says so, instead of inventing a new date.
+      </p>
       <div className="flex items-center gap-2 text-[14px] text-ink">
         <input
           type="number"
@@ -720,7 +797,7 @@ function TimelineCard({
           disabled={!valid}
           onClick={() => onConfirm(min, max)}
         >
-          That&apos;s the window
+          That&apos;s what I promised
         </button>
       </div>
       <p className="mt-2 text-[12px] text-ink-mute">
